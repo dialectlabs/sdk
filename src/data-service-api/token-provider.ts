@@ -1,49 +1,47 @@
-export interface TokenProvider {
-  get(): Token;
-}
+import { Token, TokenSigner } from './token';
+import { InMemoryTokenStore, TokenStore } from './token-store';
+import { Duration } from 'luxon';
 
-export class CachedTokenProvider implements TokenProvider {
-  constructor(private readonly tokenStore: TokenStore) {}
+export abstract class TokenProvider {
+  abstract get(): Promise<Token>;
 
-  get(): Token {
-    // TODO: implement
-    return {
-      raw: 'fsdfs',
-      expiresAt: new Date(),
-    };
+  create(
+    signer: TokenSigner,
+    ttl: Duration = Duration.fromObject({ hours: 1 }),
+    tokenStore: TokenStore = new InMemoryTokenStore(),
+  ): TokenProvider {
+    const defaultTokenProvider = new DefaultTokenProvider(signer, ttl);
+    return new CachedTokenProvider(defaultTokenProvider, tokenStore);
   }
 }
 
-export interface TokenStore {
-  get(): Token;
-
-  save(token: Token): void;
-}
-
-export class InMemoryTokenStore implements TokenStore {
-  get(): Token {
-    return {
-      raw: 'fsdfs',
-      expiresAt: new Date(),
-    };
+class DefaultTokenProvider extends TokenProvider {
+  constructor(
+    private readonly signer: TokenSigner,
+    private readonly ttl: Duration,
+  ) {
+    super();
   }
 
-  save(token: Token): void {
-    console.log(token);
-    return;
+  get(): Promise<Token> {
+    return Token.generate(this.signer, this.ttl);
   }
 }
 
-export class SessionStorageTokenStore implements TokenStore {
-  get(): Token {
-    return {
-      raw: 'fsdfs',
-      expiresAt: new Date(),
-    };
+class CachedTokenProvider extends TokenProvider {
+  constructor(
+    private readonly delegate: TokenProvider,
+    private readonly tokenStore: TokenStore,
+  ) {
+    super();
   }
 
-  save(token: Token): void {
-    console.log(token);
-    return;
+  async get(): Promise<Token> {
+    const existingToken = this.tokenStore.get();
+    if (!existingToken || (existingToken && Token.isExpired(existingToken))) {
+      const newToken = await this.delegate.get();
+      return Promise.resolve(this.tokenStore.save(newToken));
+    }
+    return existingToken;
   }
 }
