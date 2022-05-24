@@ -93,13 +93,6 @@ export class Token {
   }
 
   static isValid(token: Token) {
-    if (!Token.isSignatureValid(token)) {
-      return false;
-    }
-    return !Token.isExpired(token);
-  }
-
-  static isSignatureValid(token: Token) {
     const signedPayload = token.base64Header + '.' + token.base64Body;
     const signingPayload = this.getSigningPayload(signedPayload);
     const signatureValid = nacl.sign.detached.verify(
@@ -107,12 +100,11 @@ export class Token {
       token.signature,
       new PublicKey(token.body.sub).toBytes(),
     );
-    return signatureValid;
-  }
-
-  static isExpired(token: Token) {
+    if (!signatureValid) {
+      return false;
+    }
     const nowUtcSeconds = new Date().getTime() / 1000;
-    return nowUtcSeconds > token.body.exp;
+    return token.body.exp > nowUtcSeconds;
   }
 
   private static getSigningPayload(signedPayload: string) {
@@ -127,5 +119,4 @@ export class Token {
 }
 
 export class TokenParsingError extends Error {}
-
 export class TokenStructureValidationError extends Error {}

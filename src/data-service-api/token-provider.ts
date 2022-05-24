@@ -1,47 +1,49 @@
-import { Token, TokenSigner } from './token';
-import { InMemoryTokenStore, TokenStore } from './token-store';
-import { Duration } from 'luxon';
+export interface TokenProvider {
+  get(): Token;
+}
 
-export abstract class TokenProvider {
-  abstract get(): Promise<Token>;
+export class CachedTokenProvider implements TokenProvider {
+  constructor(private readonly tokenStore: TokenStore) {}
 
-  create(
-    signer: TokenSigner,
-    ttl: Duration = Duration.fromObject({ hours: 1 }),
-    tokenStore: TokenStore = new InMemoryTokenStore(),
-  ): TokenProvider {
-    const defaultTokenProvider = new DefaultTokenProvider(signer, ttl);
-    return new CachedTokenProvider(defaultTokenProvider, tokenStore);
+  get(): Token {
+    // TODO: implement
+    return {
+      raw: 'fsdfs',
+      expiresAt: new Date(),
+    };
   }
 }
 
-class DefaultTokenProvider extends TokenProvider {
-  constructor(
-    private readonly signer: TokenSigner,
-    private readonly ttl: Duration,
-  ) {
-    super();
+export interface TokenStore {
+  get(): Token;
+
+  save(token: Token): void;
+}
+
+export class InMemoryTokenStore implements TokenStore {
+  get(): Token {
+    return {
+      raw: 'fsdfs',
+      expiresAt: new Date(),
+    };
   }
 
-  get(): Promise<Token> {
-    return Token.generate(this.signer, this.ttl);
+  save(token: Token): void {
+    console.log(token);
+    return;
   }
 }
 
-class CachedTokenProvider extends TokenProvider {
-  constructor(
-    private readonly delegate: TokenProvider,
-    private readonly tokenStore: TokenStore,
-  ) {
-    super();
+export class SessionStorageTokenStore implements TokenStore {
+  get(): Token {
+    return {
+      raw: 'fsdfs',
+      expiresAt: new Date(),
+    };
   }
 
-  async get(): Promise<Token> {
-    const existingToken = this.tokenStore.get();
-    if (!existingToken || (existingToken && Token.isExpired(existingToken))) {
-      const newToken = await this.delegate.get();
-      return Promise.resolve(this.tokenStore.save(newToken));
-    }
-    return existingToken;
+  save(token: Token): void {
+    console.log(token);
+    return;
   }
 }
