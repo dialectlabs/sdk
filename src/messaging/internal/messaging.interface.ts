@@ -19,12 +19,13 @@ export interface Message {
 }
 
 export interface CreateDialectCommand {
-  otherMember: PublicKey;
+  me: Omit<DialectMember, 'publicKey'>;
+  otherMember: DialectMember;
+  enableEncryption: boolean;
 }
 
 export interface FindDialectQuery {
-  otherMember?: PublicKey;
-  address?: PublicKey;
+  address: PublicKey;
 }
 
 export interface Dialect {
