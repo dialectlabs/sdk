@@ -1,10 +1,22 @@
 {
   "name": "@dialectlabs/sdk",
   "version": "0.1.0",
-  "main": "index.js",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    "import": "./lib/esm/index.js",
+    "require": "./lib/cjs/index.js"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "npm run clean && npm run build:cjs || npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json"
+  },
   "devDependencies": {
     "@types/ed2curve": "^0.2.2",
     "@types/jest": "^27.5.1",

@@ -12,7 +12,7 @@ export interface SendMessageCommand {
   text: string;
 }
 
-interface Message {
+export interface Message {
   text: string;
   timestamp: Date;
   author: DialectMember;

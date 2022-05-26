@@ -56,14 +56,14 @@ export class MessagingFacadeImpl implements MessagingFacade {
   ) {}
 
   create(command: CreateDialectCommand): Promise<Dialect> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 
   find(query: FindDialectByMemberQuery): Promise<Dialect | null> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 
   list(): Promise<Dialect[]> {
-    return Promise.resolve([]);
+    throw new Error('Not implemented');
   }
 }
