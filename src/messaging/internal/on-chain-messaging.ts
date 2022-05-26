@@ -2,25 +2,27 @@ import type { Wallet } from '../../wallet-interfaces';
 import type {
   CreateDialectCommand,
   Dialect,
+  DialectMember,
   FindDialectQuery,
+  Message,
   Messaging,
+  SendMessageCommand,
 } from './messaging.interface';
-import type { DialectMember, SendMessageCommand } from './messaging.interface';
-import type { Message, PublicKey } from '@solana/web3.js';
+import type { PublicKey } from '@solana/web3.js';
 
 export class OnChainMessaging implements Messaging {
   constructor(private readonly wallet: Wallet) {}
 
   create(command: CreateDialectCommand): Promise<Dialect> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 
   find(query: FindDialectQuery): Promise<Dialect | null> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 
   list(): Promise<Dialect[]> {
-    return Promise.resolve([]);
+    throw new Error('Not implemented');
   }
 }
 
@@ -33,14 +35,14 @@ export class Web3Dialect implements Dialect {
   ) {}
 
   delete(): Promise<void> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 
   messages(): Promise<Message[]> {
-    return Promise.resolve([]);
+    throw new Error('Not implemented');
   }
 
   send(command: SendMessageCommand): Promise<void> {
-    return Promise.resolve(undefined);
+    throw new Error('Not implemented');
   }
 }

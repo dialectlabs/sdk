@@ -1,13 +1,8 @@
-import {
-  MessagingFacade,
-  MessagingFacadeImpl,
-} from './messaging/messaging-facade';
-import { Dapps, Wallets } from './dapp/dapps';
-import { OnChainMessaging } from './messaging/internal/on-chain-messaging';
-import { OffChainMessaging } from './messaging/internal/off-chain-messaging';
-import { Wallet } from './wallet-interfaces';
-import { PublicKey } from '@solana/web3.js';
-import { TokenStore } from './data-service-api/token';
+import type { MessagingFacade } from './messaging/messaging-facade';
+import type { Dapps, Wallets } from './dapp/dapps';
+import type { Wallet } from './wallet-interfaces';
+import type { PublicKey } from '@solana/web3.js';
+import type { TokenStore } from './data-service-api/token';
 
 export interface SupportedApi {
   encryption: boolean;
@@ -32,9 +27,7 @@ export class DialectSDK {
   }
 
   static create(config: Config): DialectSDK {
-    const onChainMessaging = new OnChainMessaging(config.wallet);
-    const offChainMessaging = new OffChainMessaging(config.wallet.publicKey);
-    return new DialectSDK(config, new MessagingFacadeImpl(this.config.wallet));
+    throw new Error('Not implemented');
   }
 }
 

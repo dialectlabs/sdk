@@ -5,7 +5,7 @@ import { Duration } from 'luxon';
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 
-  create(
+  static create(
     signer: TokenSigner,
     ttl: Duration = Duration.fromObject({ hours: 1 }),
     tokenStore: TokenStore = new InMemoryTokenStore(),
