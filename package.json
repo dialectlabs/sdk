@@ -13,7 +13,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && npm run build:cjs || npm run build:esm",
+    "build": "npm run clean && npm run build:cjs && npm run build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json"
   },
