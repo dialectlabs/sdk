@@ -3,15 +3,18 @@ import axios from 'axios';
 import type { PublicKey } from '@solana/web3.js';
 
 export class DataServiceApi {
-  private constructor(readonly dialects: DialectsApi) {}
+  private constructor(readonly dialectsApi: DataServiceDialectsApi) {}
 
   create(baseUrl: string, tokenProvider: TokenProvider) {
-    const dialectsApi = new DialectsApiClient(baseUrl, tokenProvider);
+    const dialectsApi = new DataServiceDialectsApiClient(
+      baseUrl,
+      tokenProvider,
+    );
     return new DataServiceApi(dialectsApi);
   }
 }
 
-export interface DialectsApi {
+export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
   list(): Promise<DialectAccountDto[]>;
@@ -26,7 +29,7 @@ export interface DialectsApi {
   ): Promise<DialectAccountDto | null>;
 }
 
-export class DialectsApiClient implements DialectsApi {
+export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
   constructor(
     private readonly baseUrl: string,
     private readonly tokenProvider: TokenProvider,
