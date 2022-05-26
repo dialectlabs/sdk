@@ -4,7 +4,8 @@ import type {
   Web2Wallet,
   Web3Wallet,
 } from './wallet-interfaces';
-import { ed25519KeyPairToCurve25519 } from '@dialectlabs/web3/lib/types/utils/ecdh-encryption';
+import nacl from 'tweetnacl';
+import { convertKeyPair } from 'ed2curve';
 
 export class EmbeddedWallet
   implements Web2Wallet, Web3Wallet, EncryptionKeyProviderWalletAdapterProps
@@ -35,17 +36,19 @@ export class EmbeddedWallet
   }
 
   signMessage(message: Uint8Array): Promise<Uint8Array> {
-    return Promise.resolve(message); // TODO: implement
+    return Promise.resolve(nacl.sign.detached(message, this.keypair.secretKey));
   }
 
   diffieHellman(
     publicKey: Uint8Array,
   ): Promise<{ publicKey: Uint8Array; secretKey: Uint8Array }> {
-    return Promise.resolve(
-      ed25519KeyPairToCurve25519({
-        publicKey,
-        secretKey: this.keypair.secretKey,
-      }),
-    );
+    const keypair = convertKeyPair({
+      secretKey: this.keypair.secretKey,
+      publicKey,
+    });
+    if (!keypair) {
+      throw new Error('Failed to convert keypair');
+    }
+    return Promise.resolve(keypair);
   }
 }
