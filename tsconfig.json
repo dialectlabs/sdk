@@ -6,6 +6,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     // build
+    "types": [],
     "esModuleInterop": true,
     "preserveConstEnums": true,
     "skipLibCheck": true,
@@ -15,8 +16,8 @@
     "isolatedModules": true,
     // linting
     "strict": true,
-//    "noUnusedLocals": true,
-//    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,

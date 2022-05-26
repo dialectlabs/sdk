@@ -3,12 +3,11 @@ import type {
   Dialect,
   DialectMember,
   FindDialectQuery,
-  Message,
   Messaging,
   SendMessageCommand,
 } from './messaging.interface';
-import type { PublicKey } from '@solana/web3.js';
-import type { TokenProvider } from '../../data-service-api/token-provider';
+import type { Message, PublicKey } from '@solana/web3.js';
+import type { TokenProvider } from '../../data-service-api/token';
 
 export class OffChainMessaging implements Messaging {
   constructor(
@@ -17,15 +16,15 @@ export class OffChainMessaging implements Messaging {
   ) {}
 
   create(command: CreateDialectCommand): Promise<Dialect> {
-    throw new Error('Not implemented');
+    return Promise.resolve(undefined);
   }
 
   find(query: FindDialectQuery): Promise<Dialect | null> {
-    throw new Error('Not implemented');
+    return Promise.resolve(undefined);
   }
 
   list(): Promise<Dialect[]> {
-    throw new Error('Not implemented');
+    return Promise.resolve([]);
   }
 }
 
@@ -38,14 +37,14 @@ export class Web2Dialect implements Dialect {
   ) {}
 
   delete(): Promise<void> {
-    throw new Error('Not implemented');
+    return Promise.resolve(undefined);
   }
 
   messages(): Promise<Message[]> {
-    throw new Error('Not implemented');
+    return Promise.resolve([]);
   }
 
   send(command: SendMessageCommand): Promise<void> {
-    throw new Error('Not implemented');
+    return Promise.resolve(undefined);
   }
 }

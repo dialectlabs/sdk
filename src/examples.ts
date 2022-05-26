@@ -5,9 +5,10 @@
 import { Keypair } from '@solana/web3.js';
 import { EmbeddedWallet } from './wallet';
 import type { Wallet } from './wallet-interfaces';
+import { StorageType } from './messaging/messaging-facade';
+import { SessionStorageTokenStore } from './data-service-api/token';
 import { DialectMemberRole } from './messaging/internal/messaging.interface';
 import { DialectSDK } from './sdk';
-import { SessionStorageTokenStore } from './data-service-api/token-store';
 
 const wallet: Wallet = EmbeddedWallet.create();
 
@@ -74,7 +75,6 @@ async function notificaitonCenter() {
     await foundByAddress.delete();
   }
 }
-
 /*
  * Case 3: Monitoring service dialectThreadSink
  * */
