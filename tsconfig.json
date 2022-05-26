@@ -6,7 +6,6 @@
     "module": "commonjs",
     "moduleResolution": "node",
     // build
-    "types": [],
     "esModuleInterop": true,
     "preserveConstEnums": true,
     "skipLibCheck": true,
