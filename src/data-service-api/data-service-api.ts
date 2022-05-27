@@ -1,11 +1,11 @@
 import type { TokenProvider } from './token-provider';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import type { PublicKey } from '@solana/web3.js';
 
 export class DataServiceApi {
-  private constructor(readonly dialectsApi: DataServiceDialectsApi) {}
+  private constructor(readonly dialects: DataServiceDialectsApi) {}
 
-  create(baseUrl: string, tokenProvider: TokenProvider) {
+  static create(baseUrl: string, tokenProvider: TokenProvider) {
     const dialectsApi = new DataServiceDialectsApiClient(
       baseUrl,
       tokenProvider,
@@ -37,17 +37,26 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    return axios
-      .post<DialectAccountDto>(`${this.baseUrl}/api/dialects`, command, {
-        headers: { Authorization: `Bearer ${token.rawValue}` },
-      })
-      .then((it) => it.data);
+    try {
+      return await axios
+        .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
+          headers: { Authorization: `Bearer ${token.rawValue}` },
+        })
+        .then((it) => it.data);
+    } catch (e) {
+      const err = e as AxiosError;
+      const data = err.response?.data as {
+        // TODO: create rest exception mapper
+        statusCode: number;
+      };
+      throw new Error(JSON.stringify(data));
+    }
   }
 
   async list(): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
     return axios
-      .get<DialectAccountDto[]>(`${this.baseUrl}/api/dialects`, {
+      .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
         headers: { Authorization: `Bearer ${token.rawValue}` },
       })
       .then((it) => it.data);
@@ -57,7 +66,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     // TODO: handle 404
     const token = await this.tokenProvider.get();
     return axios
-      .get<DialectAccountDto>(`${this.baseUrl}/api/dialects/${publicKey}`, {
+      .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
         headers: { Authorization: `Bearer ${token.rawValue}` },
       })
       .then((it) => it.data);
@@ -66,7 +75,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
   async delete(publicKey: PublicKey): Promise<void> {
     const token = await this.tokenProvider.get();
     return axios
-      .delete<void>(`${this.baseUrl}/api/dialects/${publicKey}`, {
+      .delete<void>(`${this.baseUrl}/api/dialects/v0/${publicKey}`, {
         headers: { Authorization: `Bearer ${token.rawValue}` },
       })
       .then((it) => it.data);
@@ -79,7 +88,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return axios
       .post<DialectAccountDto>(
-        `${this.baseUrl}/api/dialects/${publicKey}/messages`,
+        `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
         command,
         {
           headers: { Authorization: `Bearer ${token.rawValue}` },
@@ -90,13 +99,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 }
 
 export class CreateDialectCommand {
-  readonly members!: [PostMemberDto, PostMemberDto];
+  readonly members!: PostMemberDto[];
   readonly encrypted!: boolean;
 }
 
 export class PostMemberDto {
   readonly publicKey!: string;
-  readonly scopes!: [boolean, boolean];
+  readonly scopes!: MemberScopeDto[];
 }
 
 export class DialectAccountDto {
@@ -115,7 +124,12 @@ export class DialectDto {
 
 export class MemberDto {
   readonly publicKey!: string;
-  readonly scopes!: [boolean, boolean];
+  readonly scopes!: MemberScopeDto[];
+}
+
+export enum MemberScopeDto {
+  Admin = 'ADMIN',
+  Write = 'WRITE',
 }
 
 export class MessageDto {

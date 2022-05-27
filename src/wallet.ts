@@ -7,14 +7,14 @@ import type {
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
 
-export class EmbeddedWallet
+export class EmbeddedWalletAdapter
   implements Web2Wallet, Web3Wallet, EncryptionKeyProviderWalletAdapterProps
 {
   static create(keypair?: Keypair) {
     if (!keypair) {
-      return new EmbeddedWallet(Keypair.generate());
+      return new EmbeddedWalletAdapter(Keypair.generate());
     }
-    return new EmbeddedWallet(keypair);
+    return new EmbeddedWalletAdapter(keypair);
   }
 
   constructor(private readonly keypair: Keypair) {}

@@ -3,13 +3,13 @@
 // https://localhost:8899
 
 import { Keypair } from '@solana/web3.js';
-import { EmbeddedWallet } from './wallet';
+import { EmbeddedWalletAdapter } from './wallet';
 import type { Wallet } from './wallet-interfaces';
 import { DialectMemberRole } from './messaging/internal/messaging.interface';
 import { DialectSDK } from './sdk';
 import { SessionStorageTokenStore } from './data-service-api/token-store';
 
-const wallet: Wallet = EmbeddedWallet.create();
+const wallet: Wallet = EmbeddedWalletAdapter.create();
 
 /*
  * Case 1: Decentralized inbox
@@ -43,7 +43,7 @@ async function decentalizedInbox() {
  * Case 2: Notification center
  * */
 async function notificaitonCenter() {
-  const wallet: EmbeddedWallet = EmbeddedWallet.create();
+  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
   const sdk = DialectSDK.create({
     environment: 'production',
@@ -79,7 +79,7 @@ async function notificaitonCenter() {
  * Case 3: Monitoring service dialectThreadSink
  * */
 async function monitoringServiceDialectThreadSink() {
-  const wallet: EmbeddedWallet = EmbeddedWallet.create();
+  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
 
   const subscriber = Keypair.generate().publicKey;
@@ -101,7 +101,7 @@ async function monitoringServiceDialectThreadSink() {
  * Future case 4: Monitoring service & CLI
  * */
 async function monitoringServiceAndCli() {
-  const wallet: EmbeddedWallet = EmbeddedWallet.create();
+  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
   const sdk = DialectSDK.create({
     environment: 'production',
