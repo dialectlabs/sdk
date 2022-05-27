@@ -11,6 +11,17 @@ export class DataServiceApi {
     );
     return new DataServiceApi(dialectsApi);
   }
+
+  static async withHttpErrorBodyParsing<T>(restCall: Promise<T>) {
+    try {
+      return await restCall;
+    } catch (e) {
+      const err = e as AxiosError;
+      const data = err.response?.data;
+      console.error(data);
+      throw data;
+    }
+  }
 }
 
 export interface DataServiceDialectsApi {
@@ -36,48 +47,47 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    try {
-      return await axios
+    return DataServiceApi.withHttpErrorBodyParsing(
+      axios
         .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
         })
-        .then((it) => it.data);
-    } catch (e) {
-      const err = e as AxiosError;
-      const data = err.response?.data as {
-        // TODO: create rest exception mapper
-        statusCode: number;
-      };
-      throw new Error(JSON.stringify(data));
-    }
+        .then((it) => it.data),
+    );
   }
 
   async list(): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
-    return axios
-      .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
-        headers: { Authorization: `Bearer ${token.rawValue}` },
-      })
-      .then((it) => it.data);
+    return DataServiceApi.withHttpErrorBodyParsing(
+      axios
+        .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
+          headers: { Authorization: `Bearer ${token.rawValue}` },
+        })
+        .then((it) => it.data),
+    );
   }
 
   async get(publicKey: string): Promise<DialectAccountDto | null> {
     // TODO: handle 404
     const token = await this.tokenProvider.get();
-    return axios
-      .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-        headers: { Authorization: `Bearer ${token.rawValue}` },
-      })
-      .then((it) => it.data);
+    return DataServiceApi.withHttpErrorBodyParsing(
+      axios
+        .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
+          headers: { Authorization: `Bearer ${token.rawValue}` },
+        })
+        .then((it) => it.data),
+    );
   }
 
   async delete(publicKey: string): Promise<void> {
     const token = await this.tokenProvider.get();
-    return axios
-      .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-        headers: { Authorization: `Bearer ${token.rawValue}` },
-      })
-      .then((it) => it.data);
+    return DataServiceApi.withHttpErrorBodyParsing(
+      axios
+        .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
+          headers: { Authorization: `Bearer ${token.rawValue}` },
+        })
+        .then((it) => it.data),
+    );
   }
 
   async sendMessage(
@@ -85,15 +95,17 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     command: SendMessageCommand,
   ): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    return axios
-      .post<DialectAccountDto>(
-        `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
-        command,
-        {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
-        },
-      )
-      .then((it) => it.data);
+    return DataServiceApi.withHttpErrorBodyParsing(
+      axios
+        .post<DialectAccountDto>(
+          `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
+          command,
+          {
+            headers: { Authorization: `Bearer ${token.rawValue}` },
+          },
+        )
+        .then((it) => it.data),
+    );
   }
 }
 
@@ -127,16 +139,16 @@ export class MemberDto {
 }
 
 export enum MemberScopeDto {
-  Admin = 'ADMIN',
-  Write = 'WRITE',
+  ADMIN = 'ADMIN',
+  WRITE = 'WRITE',
 }
 
 export class MessageDto {
   readonly owner!: string;
-  readonly text!: Buffer;
+  readonly text!: number[];
   readonly timestamp!: number;
 }
 
 export class SendMessageCommand {
-  readonly text!: Buffer;
+  readonly text!: number[];
 }
