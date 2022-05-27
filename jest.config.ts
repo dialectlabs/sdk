@@ -5,5 +5,6 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  testTimeout: 60000,
 };
 export default config;

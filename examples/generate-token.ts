@@ -1,8 +1,8 @@
 import { Token } from '../src';
-import { EmbeddedWallet } from '../src/wallet';
+import { EmbeddedWalletAdapter } from '../src/wallet';
 import { Duration } from 'luxon';
 
-const wallet = EmbeddedWallet.create();
+const wallet = EmbeddedWalletAdapter.create();
 
 (async () => {
   const token = await Token.generate(
