@@ -1,6 +1,5 @@
 import type { TokenProvider } from './token-provider';
 import axios, { AxiosError } from 'axios';
-import type { PublicKey } from '@solana/web3.js';
 
 export class DataServiceApi {
   private constructor(readonly dialects: DataServiceDialectsApi) {}
@@ -19,12 +18,12 @@ export interface DataServiceDialectsApi {
 
   list(): Promise<DialectAccountDto[]>;
 
-  get(publicKey: PublicKey): Promise<DialectAccountDto | null>;
+  get(publicKey: string): Promise<DialectAccountDto | null>;
 
-  delete(publicKey: PublicKey): Promise<void>;
+  delete(publicKey: string): Promise<void>;
 
   sendMessage(
-    publicKey: PublicKey,
+    publicKey: string,
     command: SendMessageCommand,
   ): Promise<DialectAccountDto | null>;
 }
@@ -62,7 +61,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
       .then((it) => it.data);
   }
 
-  async get(publicKey: PublicKey): Promise<DialectAccountDto | null> {
+  async get(publicKey: string): Promise<DialectAccountDto | null> {
     // TODO: handle 404
     const token = await this.tokenProvider.get();
     return axios
@@ -72,17 +71,17 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
       .then((it) => it.data);
   }
 
-  async delete(publicKey: PublicKey): Promise<void> {
+  async delete(publicKey: string): Promise<void> {
     const token = await this.tokenProvider.get();
     return axios
-      .delete<void>(`${this.baseUrl}/api/dialects/v0/${publicKey}`, {
+      .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
         headers: { Authorization: `Bearer ${token.rawValue}` },
       })
       .then((it) => it.data);
   }
 
   async sendMessage(
-    publicKey: PublicKey,
+    publicKey: string,
     command: SendMessageCommand,
   ): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
