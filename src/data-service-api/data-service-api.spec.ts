@@ -5,6 +5,7 @@ import {
   DataServiceApi,
   DialectDto,
   MemberScopeDto,
+  SendMessageCommand,
 } from './data-service-api';
 import { TokenProvider } from './token-provider';
 import { Keypair } from '@solana/web3.js';
@@ -45,11 +46,11 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: new Keypair().publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
             {
               publicKey: new Keypair().publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
           ],
         }),
@@ -63,7 +64,7 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
           ],
         }),
@@ -77,15 +78,15 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
             {
               publicKey: new Keypair().publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
             {
               publicKey: new Keypair().publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
           ],
         }),
@@ -99,11 +100,11 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Write, MemberScopeDto.Admin],
+              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
             },
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Write, MemberScopeDto.Admin],
+              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
             },
           ],
         }),
@@ -117,11 +118,11 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Write, MemberScopeDto.Admin],
+              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
             },
             {
               publicKey: 'invalid-public-key',
-              scopes: [MemberScopeDto.Write, MemberScopeDto.Admin],
+              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
             },
           ],
         }),
@@ -134,11 +135,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -157,11 +158,11 @@ describe('Data service api (e2e)', () => {
           members: [
             {
               publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.Write],
+              scopes: [MemberScopeDto.WRITE],
             },
             {
               publicKey: new Keypair().publicKey.toBase58(),
-              scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+              scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
             },
           ],
         }),
@@ -178,11 +179,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -206,11 +207,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: wallet2.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -228,11 +229,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: wallet2.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Write],
+            scopes: [MemberScopeDto.WRITE],
           },
         ],
       };
@@ -251,11 +252,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -264,11 +265,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -316,11 +317,11 @@ describe('Data service api (e2e)', () => {
         members: [
           {
             publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
           {
             publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.Admin, MemberScopeDto.Write],
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
       };
@@ -339,6 +340,61 @@ describe('Data service api (e2e)', () => {
         lastMessageTimestamp: 0,
         nextMessageIdx: 0,
       });
+    });
+
+    test('can send message to dialect', async () => {
+      // given
+      const createDialectCommand: CreateDialectCommand = {
+        encrypted: true,
+        members: [
+          {
+            publicKey: wallet1.publicKey.toBase58(),
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+          {
+            publicKey: wallet2.publicKey.toBase58(),
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+        ],
+      };
+      // when
+      const { publicKey } = await wallet1Api.create(createDialectCommand);
+      const sendMessageCommand1: SendMessageCommand = {
+        text: Array.from(new TextEncoder().encode('Hello world 💬')),
+      };
+      await wallet1Api.sendMessage(publicKey, sendMessageCommand1);
+      const sendMessageCommand2: SendMessageCommand = {
+        text: Array.from(new TextEncoder().encode('Hello')),
+      };
+      const dialectAccountDto = (await wallet2Api.sendMessage(
+        publicKey,
+        sendMessageCommand2,
+      ))!;
+      // then
+      const actualDialectPublicKey = dialectAccountDto?.publicKey!;
+      const actualDialect = dialectAccountDto?.dialect!;
+      expect(actualDialectPublicKey).toBe(publicKey);
+
+      const messages = new Set(
+        actualDialect.messages.map((it) => ({
+          text: it.text,
+          owner: it.owner,
+        })),
+      );
+      expect(messages).toMatchObject(
+        new Set([
+          {
+            text: sendMessageCommand1.text,
+            owner: wallet1.publicKey.toBase58(),
+          },
+          {
+            text: sendMessageCommand2.text,
+            owner: wallet2.publicKey.toBase58(),
+          },
+        ]),
+      );
+      console.log(dialectAccountDto);
+      expect(actualDialect.lastMessageTimestamp).toBe(0);
     });
   });
 });
