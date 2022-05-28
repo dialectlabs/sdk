@@ -1,6 +1,27 @@
 import type { TokenProvider } from './token-provider';
 import axios, { AxiosError } from 'axios';
 
+export interface ApiClientError {
+  message: string;
+  error: string;
+  statusCode: number | string;
+}
+
+async function withReThrowingDataServiceError<T>(restCall: Promise<T>) {
+  try {
+    return await restCall;
+  } catch (e) {
+    const err = e as AxiosError;
+    const errorData = err.response?.data as ApiClientError;
+    const rethrown: ApiClientError = errorData ?? {
+      error: err.name,
+      message: err.message,
+      statusCode: err.status,
+    };
+    throw rethrown;
+  }
+}
+
 export class DataServiceApi {
   private constructor(readonly dialects: DataServiceDialectsApi) {}
 
@@ -11,25 +32,14 @@ export class DataServiceApi {
     );
     return new DataServiceApi(dialectsApi);
   }
-
-  static async withHttpErrorBodyParsing<T>(restCall: Promise<T>) {
-    try {
-      return await restCall;
-    } catch (e) {
-      const err = e as AxiosError;
-      const data = err.response?.data;
-      console.error(data);
-      throw data;
-    }
-  }
 }
 
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
-  list(): Promise<DialectAccountDto[]>;
+  findAll(): Promise<DialectAccountDto[]>;
 
-  get(publicKey: string): Promise<DialectAccountDto | null>;
+  find(publicKey: string): Promise<DialectAccountDto>;
 
   delete(publicKey: string): Promise<void>;
 
@@ -47,7 +57,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    return DataServiceApi.withHttpErrorBodyParsing(
+    return withReThrowingDataServiceError(
       axios
         .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
@@ -56,9 +66,9 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  async list(): Promise<DialectAccountDto[]> {
+  async findAll(): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
-    return DataServiceApi.withHttpErrorBodyParsing(
+    return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
@@ -67,10 +77,9 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  async get(publicKey: string): Promise<DialectAccountDto | null> {
-    // TODO: handle 404
+  async find(publicKey: string): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    return DataServiceApi.withHttpErrorBodyParsing(
+    return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
@@ -81,7 +90,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 
   async delete(publicKey: string): Promise<void> {
     const token = await this.tokenProvider.get();
-    return DataServiceApi.withHttpErrorBodyParsing(
+    return withReThrowingDataServiceError(
       axios
         .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
@@ -95,7 +104,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     command: SendMessageCommand,
   ): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
-    return DataServiceApi.withHttpErrorBodyParsing(
+    return withReThrowingDataServiceError(
       axios
         .post<DialectAccountDto>(
           `${this.baseUrl}/v0/dialects/${publicKey}/messages`,

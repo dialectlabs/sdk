@@ -1,7 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
 
 export interface Messaging {
-  list(): Promise<Dialect[]>;
+  findAll(): Promise<Dialect[]>;
 
   create(command: CreateDialectCommand): Promise<Dialect>;
 
@@ -21,15 +21,15 @@ export interface Message {
 export interface CreateDialectCommand {
   me: Omit<DialectMember, 'publicKey'>;
   otherMember: DialectMember;
-  enableEncryption: boolean;
+  encrypted: boolean;
 }
 
 export interface FindDialectQuery {
-  address: PublicKey;
+  publicKey: PublicKey;
 }
 
 export interface Dialect {
-  address: PublicKey;
+  publicKey: PublicKey;
   me: DialectMember;
   otherMember: DialectMember;
   encryptionEnabled: boolean;
@@ -43,10 +43,10 @@ export interface Dialect {
 
 export interface DialectMember {
   publicKey: PublicKey;
-  roles: DialectMemberRole[];
+  scopes: DialectMemberScope[];
 }
 
-export enum DialectMemberRole {
-  Writer = 'WRITER',
-  Owner = 'OWNER',
+export enum DialectMemberScope {
+  WRITE = 'WRITE',
+  ADMIN = 'ADMIN',
 }

@@ -5,7 +5,7 @@
 import { Keypair } from '@solana/web3.js';
 import { EmbeddedWalletAdapter } from './wallet';
 import type { Wallet } from './wallet-interfaces';
-import { DialectMemberRole } from './messaging/internal/messaging.interface';
+import { DialectMemberScope } from './messaging/internal/messaging.interface';
 import { DialectSDK } from './sdk';
 import { SessionStorageTokenStore } from './data-service-api/token-store';
 
@@ -25,11 +25,11 @@ async function decentalizedInbox() {
   const dialects = sdk.dialects.list();
   const dialect = await sdk.dialects.create({
     me: {
-      roles: [DialectMemberRole.Writer],
+      scopes: [DialectMemberScope.Writer],
     },
     otherMember: {
       publicKey: Keypair.generate().publicKey,
-      roles: [DialectMemberRole.Owner],
+      scopes: [DialectMemberScope.Owner],
     },
     enableEncryption: false,
   });
@@ -54,11 +54,11 @@ async function notificaitonCenter() {
   });
   const dialect = await sdk.dialects.create({
     me: {
-      roles: [],
+      scopes: [],
     },
     otherMember: {
       publicKey: dAppPublicKey,
-      roles: [DialectMemberRole.Writer],
+      scopes: [DialectMemberScope.Writer],
     },
     enableEncryption: false,
   });
@@ -68,7 +68,7 @@ async function notificaitonCenter() {
     await foundByMember.delete();
   }
   const foundByAddress = await sdk.dialects.find({
-    address: dialect.address,
+    address: dialect.publicKey,
   });
   if (foundByAddress) {
     await foundByAddress.delete();
