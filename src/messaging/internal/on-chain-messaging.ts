@@ -21,14 +21,14 @@ export class OnChainMessaging implements Messaging {
     throw new Error('Not implemented');
   }
 
-  list(): Promise<Dialect[]> {
+  findAll(): Promise<Dialect[]> {
     throw new Error('Not implemented');
   }
 }
 
 export class Web3Dialect implements Dialect {
   private constructor(
-    readonly address: PublicKey,
+    readonly publicKey: PublicKey,
     readonly me: DialectMember,
     readonly otherMember: DialectMember,
     readonly encryptionEnabled: boolean,

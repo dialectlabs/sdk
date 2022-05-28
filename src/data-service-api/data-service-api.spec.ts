@@ -13,6 +13,9 @@ import { Keypair } from '@solana/web3.js';
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
+  // TODO: cleanup created resources after tests
+  // Use    expect.arrayContaining([
+  //       expect.objectContaining(
   describe('Dialects', () => {
     let wallet1: EmbeddedWalletAdapter;
     let wallet1Api: DataServiceDialectsApi;
@@ -34,7 +37,7 @@ describe('Data service api (e2e)', () => {
 
     test('can list all dialects', async () => {
       // when
-      const dialects = await wallet1Api.list();
+      const dialects = await wallet1Api.findAll();
       // then
       expect(dialects).toMatchObject([]);
     });
@@ -171,7 +174,7 @@ describe('Data service api (e2e)', () => {
 
     test('can create dialect', async () => {
       // given
-      const before = await wallet1Api.list();
+      const before = await wallet1Api.findAll();
       expect(before).toMatchObject([]);
       // when
       const command: CreateDialectCommand = {
@@ -216,10 +219,10 @@ describe('Data service api (e2e)', () => {
         ],
       };
       const { publicKey } = await wallet1Api.create(command);
-      await expect(wallet2Api.get(publicKey)).resolves.toBeTruthy();
+      await expect(wallet2Api.find(publicKey)).resolves.toBeTruthy();
       // when
       await wallet2Api.delete(publicKey);
-      await expect(wallet2Api.get(publicKey)).rejects.toBeTruthy();
+      await expect(wallet2Api.find(publicKey)).rejects.toBeTruthy();
     });
 
     test('non admin cannot delete dialect', async () => {
@@ -238,14 +241,14 @@ describe('Data service api (e2e)', () => {
         ],
       };
       const { publicKey } = await wallet1Api.create(command);
-      await expect(wallet2Api.get(publicKey)).resolves.toBeTruthy();
+      await expect(wallet2Api.find(publicKey)).resolves.toBeTruthy();
       // when
       await expect(wallet2Api.delete(publicKey)).rejects.toBeTruthy();
     });
 
     test('can list all dialects after creating', async () => {
       // given
-      const before = await wallet1Api.list();
+      const before = await wallet1Api.findAll();
       expect(before).toMatchObject([]);
       const createDialect1Command: CreateDialectCommand = {
         encrypted: false,
@@ -278,7 +281,7 @@ describe('Data service api (e2e)', () => {
         wallet1Api.create(createDialect1Command),
         wallet1Api.create(createDialect2Command),
       ]);
-      const dialectAccountDtos = await wallet1Api.list();
+      const dialectAccountDtos = await wallet1Api.findAll();
       // then
       expect(dialectAccountDtos.length).toBe(2);
       const dialectAccountDto1 = dialectAccountDtos[0]!;
@@ -310,7 +313,7 @@ describe('Data service api (e2e)', () => {
 
     test('can get dialect by key after creating', async () => {
       // given
-      const before = await wallet1Api.list();
+      const before = await wallet1Api.findAll();
       expect(before).toMatchObject([]);
       const createDialectCommand: CreateDialectCommand = {
         encrypted: false,
@@ -327,7 +330,7 @@ describe('Data service api (e2e)', () => {
       };
       // when
       const { publicKey } = await wallet1Api.create(createDialectCommand);
-      const dialectAccountDto = await wallet1Api.get(publicKey);
+      const dialectAccountDto = await wallet1Api.find(publicKey);
       // then
       expect(dialectAccountDto).not.toBeNull();
       const actualDialectPublicKey = dialectAccountDto?.publicKey!;
@@ -397,4 +400,6 @@ describe('Data service api (e2e)', () => {
       expect(actualDialect.lastMessageTimestamp).toBe(0);
     });
   });
+
+  // TODO: non-writer cannot write test
 });
