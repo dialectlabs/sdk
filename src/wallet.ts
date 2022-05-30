@@ -1,20 +1,31 @@
 import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import type {
-  EncryptionKeyProviderWalletAdapterProps,
-  Web2Wallet,
-  Web3Wallet,
-} from './wallet-interfaces';
+import type { DialectWalletAdapter } from './wallet-interfaces';
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
 
-export class EmbeddedWalletAdapter
-  implements Web2Wallet, Web3Wallet, EncryptionKeyProviderWalletAdapterProps
-{
+export class EmbeddedDialectWalletAdapter implements DialectWalletAdapter {
   static create(keypair?: Keypair) {
-    if (!keypair) {
-      return new EmbeddedWalletAdapter(Keypair.generate());
+    if (keypair) {
+      console.log(
+        `Initializing ${EmbeddedDialectWalletAdapter} using provided ${keypair.publicKey.toBase58()} key.`,
+      );
+      return new EmbeddedDialectWalletAdapter(keypair);
     }
-    return new EmbeddedWalletAdapter(keypair);
+    if (process.env.PRIVATE_KEY) {
+      const privateKey = process.env.PRIVATE_KEY;
+      const keypair: Keypair = Keypair.fromSecretKey(
+        new Uint8Array(JSON.parse(privateKey as string)),
+      );
+      console.log(
+        `Initializing ${EmbeddedDialectWalletAdapter} using env-provided ${keypair.publicKey.toBase58()} key.`,
+      );
+      return new EmbeddedDialectWalletAdapter(keypair);
+    }
+    const generated = Keypair.generate();
+    console.log(
+      `Initializing ${EmbeddedDialectWalletAdapter} using generated ${generated.publicKey.toBase58()} key.`,
+    );
+    return new EmbeddedDialectWalletAdapter(generated);
   }
 
   constructor(private readonly keypair: Keypair) {}

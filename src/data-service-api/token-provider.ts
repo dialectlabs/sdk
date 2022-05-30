@@ -1,4 +1,4 @@
-import { Token, TokenSigner } from './token';
+import { Token, Ed25519TokenSigner } from './token';
 import { InMemoryTokenStore, TokenStore } from './token-store';
 import { Duration } from 'luxon';
 
@@ -6,7 +6,7 @@ export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 
   static create(
-    signer: TokenSigner,
+    signer: Ed25519TokenSigner,
     ttl: Duration = Duration.fromObject({ hours: 1 }),
     tokenStore: TokenStore = new InMemoryTokenStore(),
   ): TokenProvider {
@@ -17,7 +17,7 @@ export abstract class TokenProvider {
 
 class DefaultTokenProvider extends TokenProvider {
   constructor(
-    private readonly signer: TokenSigner,
+    private readonly signer: Ed25519TokenSigner,
     private readonly ttl: Duration,
   ) {
     super();

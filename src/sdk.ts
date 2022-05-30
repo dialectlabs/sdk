@@ -1,6 +1,6 @@
 import type { MessagingFacade } from './messaging/messaging-facade';
 import type { Dapps, Wallets } from './dapp/dapps';
-import type { Wallet } from './wallet-interfaces';
+import type { DialectWalletAdapter } from './wallet-interfaces';
 import type { PublicKey } from '@solana/web3.js';
 import type { TokenStore } from './data-service-api/token';
 
@@ -35,7 +35,7 @@ export type Environment = 'production' | 'development' | 'local-development';
 
 export interface Config {
   environment?: Environment;
-  wallet: Wallet;
+  wallet: DialectWalletAdapter;
   web3?: Web3Config;
   web2?: Web2Config;
 }

@@ -1,25 +1,25 @@
 import type { CreateDialectCommand, Messaging } from './messaging.interface';
 import { DialectMemberScope } from './messaging.interface';
 import { OffChainMessaging } from './off-chain-messaging';
-import { EmbeddedWalletAdapter } from '../../wallet';
+import { EmbeddedDialectWalletAdapter } from '../../wallet';
 import { DataServiceApi } from '../../data-service-api/data-service-api';
 import { TokenProvider } from '../../data-service-api/token-provider';
 
 describe('Off chain messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let wallet1: EmbeddedWalletAdapter;
+  let wallet1: EmbeddedDialectWalletAdapter;
   let wallet1Messaging: Messaging;
-  let wallet2: EmbeddedWalletAdapter;
+  let wallet2: EmbeddedDialectWalletAdapter;
   let wallet2Messaging: Messaging;
 
   beforeEach(() => {
-    wallet1 = EmbeddedWalletAdapter.create();
+    wallet1 = EmbeddedDialectWalletAdapter.create();
     wallet1Messaging = new OffChainMessaging(
       wallet1,
       DataServiceApi.create(baseUrl, TokenProvider.create(wallet1)).dialects,
     );
-    wallet2 = EmbeddedWalletAdapter.create();
+    wallet2 = EmbeddedDialectWalletAdapter.create();
     wallet2Messaging = new OffChainMessaging(
       wallet2,
       DataServiceApi.create(baseUrl, TokenProvider.create(wallet2)).dialects,

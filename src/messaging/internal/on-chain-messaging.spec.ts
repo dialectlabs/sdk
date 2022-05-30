@@ -1,22 +1,22 @@
 import type { CreateDialectCommand, Messaging } from './messaging.interface';
 import { DialectMemberScope } from './messaging.interface';
-import { EmbeddedWalletAdapter } from '../../wallet';
+import { EmbeddedDialectWalletAdapter } from '../../wallet';
 import type { Program } from '@project-serum/anchor';
 import { createDialectProgram } from './dialect-connection';
 import { OnChainMessaging } from './on-chain-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 describe('On chain messaging (e2e)', () => {
-  let wallet1: EmbeddedWalletAdapter;
+  let wallet1: EmbeddedDialectWalletAdapter;
   let wallet1Messaging: Messaging;
   let wallet1Program: Program;
 
-  let wallet2: EmbeddedWalletAdapter;
+  let wallet2: EmbeddedDialectWalletAdapter;
   let wallet2Messaging: Messaging;
   let wallet2Program: Program;
 
   beforeEach(async () => {
-    wallet1 = EmbeddedWalletAdapter.create();
+    wallet1 = EmbeddedDialectWalletAdapter.create();
     wallet1Program = await createDialectProgram(wallet1);
     const airDropRequest1 =
       await wallet1Program.provider.connection.requestAirdrop(
@@ -27,7 +27,7 @@ describe('On chain messaging (e2e)', () => {
       airDropRequest1,
     );
     wallet1Messaging = new OnChainMessaging(wallet1, wallet1Program);
-    wallet2 = EmbeddedWalletAdapter.create();
+    wallet2 = EmbeddedDialectWalletAdapter.create();
     wallet2Program = await createDialectProgram(wallet2);
     wallet2Messaging = new OnChainMessaging(wallet2, wallet2Program);
     const airDropRequest2 =

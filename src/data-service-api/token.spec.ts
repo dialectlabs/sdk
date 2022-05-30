@@ -1,11 +1,12 @@
-import { EmbeddedWalletAdapter } from '../wallet';
+import { EmbeddedDialectWalletAdapter } from '../wallet';
 import { Duration } from 'luxon';
 import { Token, TokenBody } from './token';
 import { Keypair } from '@solana/web3.js';
 
 describe('token tests', () => {
   test('when not expired validation returns true', async () => {
-    const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+    const wallet: EmbeddedDialectWalletAdapter =
+      EmbeddedDialectWalletAdapter.create();
     // given
     const token = await Token.generate(
       wallet,
@@ -20,7 +21,8 @@ describe('token tests', () => {
   });
 
   test('when expired validation returns false', async () => {
-    const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+    const wallet: EmbeddedDialectWalletAdapter =
+      EmbeddedDialectWalletAdapter.create();
     // given
     const token = await Token.generate(
       wallet,
@@ -35,7 +37,8 @@ describe('token tests', () => {
   });
 
   test('when sub compromised returns false', async () => {
-    const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+    const wallet: EmbeddedDialectWalletAdapter =
+      EmbeddedDialectWalletAdapter.create();
     // given
     const token = await Token.generate(
       wallet,
@@ -61,7 +64,8 @@ describe('token tests', () => {
   });
 
   test('when exp compromised returns false', async () => {
-    const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+    const wallet: EmbeddedDialectWalletAdapter =
+      EmbeddedDialectWalletAdapter.create();
     // given
     const token = await Token.generate(
       wallet,

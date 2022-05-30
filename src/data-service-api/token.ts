@@ -2,6 +2,8 @@ import nacl from 'tweetnacl';
 import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
+import type { DialectWalletAdapter } from '../wallet-interfaces';
+import { UnsupportedOperationError } from '../errors';
 
 export interface Token {
   rawValue: string;
@@ -24,14 +26,34 @@ export interface TokenBody {
   exp: number;
 }
 
-export interface TokenSigner {
-  publicKey: PublicKey;
+export interface Ed25519TokenSigner {
+  signer: PublicKey;
 
-  signMessage(message: Uint8Array): Promise<Uint8Array>;
+  sign(payload: Uint8Array): Promise<Uint8Array>;
+}
+
+export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
+  constructor(
+    readonly signer: PublicKey,
+    readonly dialectWalletAdapter: DialectWalletAdapter,
+  ) {}
+
+  sign(payload: Uint8Array): Promise<Uint8Array> {
+    if (!this.dialectWalletAdapter.signMessage) {
+      throw new UnsupportedOperationError(
+        'Wallet operation not supported',
+        'Wallet does not support signing, please use wallet that has supports signMessage() operation.',
+      );
+    }
+    return this.dialectWalletAdapter.signMessage(payload);
+  }
 }
 
 export class Token {
-  static async generate(signer: TokenSigner, ttl: Duration): Promise<Token> {
+  static async generate(
+    signer: Ed25519TokenSigner,
+    ttl: Duration,
+  ): Promise<Token> {
     const header: TokenHeader = {
       alg: 'ed25519',
       typ: 'JWT',
@@ -39,7 +61,7 @@ export class Token {
     const base64Header = btoa(JSON.stringify(header));
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
-      sub: signer.publicKey.toBase58(),
+      sub: signer.signer.toBase58(),
       iat: Math.round(nowUtcSeconds),
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };
@@ -47,7 +69,7 @@ export class Token {
     const signingPayload = this.getSigningPayload(
       base64Header + '.' + base64Body,
     );
-    const signature = await signer.signMessage(signingPayload);
+    const signature = await signer.sign(signingPayload);
     const base64Signature = util.encodeBase64(signature);
     const rawValue = `${base64Header}.${base64Body}.${base64Signature}`;
     return {
@@ -102,12 +124,11 @@ export class Token {
   static isSignatureValid(token: Token) {
     const signedPayload = token.base64Header + '.' + token.base64Body;
     const signingPayload = this.getSigningPayload(signedPayload);
-    const signatureValid = nacl.sign.detached.verify(
+    return nacl.sign.detached.verify(
       signingPayload,
       token.signature,
       new PublicKey(token.body.sub).toBytes(),
     );
-    return signatureValid;
   }
 
   static isExpired(token: Token) {
@@ -126,6 +147,7 @@ export class Token {
   }
 }
 
+// TODO: use base sdk error as a parent
 export class TokenParsingError extends Error {}
 
 export class TokenStructureValidationError extends Error {}

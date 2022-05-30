@@ -3,13 +3,13 @@
 // https://localhost:8899
 
 import { Keypair } from '@solana/web3.js';
-import { EmbeddedWalletAdapter } from './wallet';
-import type { Wallet } from './wallet-interfaces';
+import { EmbeddedDialectWalletAdapter } from './wallet';
+import type { DialectWalletAdapter } from './wallet-interfaces';
 import { DialectMemberScope } from './messaging/internal/messaging.interface';
 import { DialectSDK } from './sdk';
 import { SessionStorageTokenStore } from './data-service-api/token-store';
 
-const wallet: Wallet = EmbeddedWalletAdapter.create();
+const wallet: DialectWalletAdapter = EmbeddedDialectWalletAdapter.create();
 
 /*
  * Case 1: Decentralized inbox
@@ -25,11 +25,11 @@ async function decentalizedInbox() {
   const dialects = sdk.dialects.list();
   const dialect = await sdk.dialects.create({
     me: {
-      scopes: [DialectMemberScope.Writer],
+      scopes: [DialectMemberScope.WRITE],
     },
     otherMember: {
       publicKey: Keypair.generate().publicKey,
-      scopes: [DialectMemberScope.Owner],
+      scopes: [DialectMemberScope.ADMIN],
     },
     enableEncryption: false,
   });
@@ -43,7 +43,8 @@ async function decentalizedInbox() {
  * Case 2: Notification center
  * */
 async function notificaitonCenter() {
-  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+  const wallet: EmbeddedDialectWalletAdapter =
+    EmbeddedDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
   const sdk = DialectSDK.create({
     environment: 'production',
@@ -58,7 +59,7 @@ async function notificaitonCenter() {
     },
     otherMember: {
       publicKey: dAppPublicKey,
-      scopes: [DialectMemberScope.Writer],
+      scopes: [DialectMemberScope.WRITE],
     },
     enableEncryption: false,
   });
@@ -79,7 +80,8 @@ async function notificaitonCenter() {
  * Case 3: Monitoring service dialectThreadSink
  * */
 async function monitoringServiceDialectThreadSink() {
-  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+  const wallet: EmbeddedDialectWalletAdapter =
+    EmbeddedDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
 
   const subscriber = Keypair.generate().publicKey;
@@ -101,7 +103,8 @@ async function monitoringServiceDialectThreadSink() {
  * Future case 4: Monitoring service & CLI
  * */
 async function monitoringServiceAndCli() {
-  const wallet: EmbeddedWalletAdapter = EmbeddedWalletAdapter.create();
+  const wallet: EmbeddedDialectWalletAdapter =
+    EmbeddedDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
   const sdk = DialectSDK.create({
     environment: 'production',

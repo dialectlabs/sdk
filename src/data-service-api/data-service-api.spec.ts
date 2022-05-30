@@ -1,4 +1,4 @@
-import { EmbeddedWalletAdapter } from '../index';
+import { EmbeddedDialectWalletAdapter } from '../index';
 import type { DataServiceDialectsApi } from './data-service-api';
 import {
   CreateDialectCommand,
@@ -17,14 +17,14 @@ describe('Data service api (e2e)', () => {
   // Use    expect.arrayContaining([
   //       expect.objectContaining(
   describe('Dialects', () => {
-    let wallet1: EmbeddedWalletAdapter;
+    let wallet1: EmbeddedDialectWalletAdapter;
     let wallet1Api: DataServiceDialectsApi;
-    let wallet2: EmbeddedWalletAdapter;
+    let wallet2: EmbeddedDialectWalletAdapter;
     let wallet2Api: DataServiceDialectsApi;
 
     beforeEach(() => {
-      wallet1 = EmbeddedWalletAdapter.create();
-      wallet2 = EmbeddedWalletAdapter.create();
+      wallet1 = EmbeddedDialectWalletAdapter.create();
+      wallet2 = EmbeddedDialectWalletAdapter.create();
       wallet1Api = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(wallet1),
