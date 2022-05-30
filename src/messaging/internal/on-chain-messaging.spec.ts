@@ -1,16 +1,12 @@
 import type { CreateDialectCommand, Messaging } from './messaging.interface';
 import { DialectMemberScope } from './messaging.interface';
-import { OffChainMessaging } from './off-chain-messaging';
 import { EmbeddedWalletAdapter } from '../../wallet';
-import { DataServiceApi } from '../../data-service-api/data-service-api';
-import { TokenProvider } from '../../data-service-api/token-provider';
 import type { Program } from '@project-serum/anchor';
 import { createDialectProgram } from './dialect-connection';
-import web3 from '@solana/web3.js';
+import { OnChainMessaging } from './on-chain-messaging';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
-describe('Off chain messaging (e2e)', () => {
-  const baseUrl = 'http://localhost:8080';
-
+describe('On chain messaging (e2e)', () => {
   let wallet1: EmbeddedWalletAdapter;
   let wallet1Messaging: Messaging;
   let wallet1Program: Program;
@@ -21,29 +17,23 @@ describe('Off chain messaging (e2e)', () => {
 
   beforeEach(async () => {
     wallet1 = EmbeddedWalletAdapter.create();
-    wallet1Program = createDialectProgram(wallet1);
+    wallet1Program = await createDialectProgram(wallet1);
     const airDropRequest1 =
       await wallet1Program.provider.connection.requestAirdrop(
         wallet1.publicKey,
-        1_000_000,
+        LAMPORTS_PER_SOL * 100,
       );
     await wallet1Program.provider.connection.confirmTransaction(
       airDropRequest1,
     );
-    wallet1Messaging = new OffChainMessaging(
-      wallet1,
-      DataServiceApi.create(baseUrl, TokenProvider.create(wallet1)).dialects,
-    );
+    wallet1Messaging = new OnChainMessaging(wallet1, wallet1Program);
     wallet2 = EmbeddedWalletAdapter.create();
-    wallet2Messaging = new OffChainMessaging(
-      wallet2,
-      DataServiceApi.create(baseUrl, TokenProvider.create(wallet2)).dialects,
-    );
-    wallet2Program = createDialectProgram(wallet2);
+    wallet2Program = await createDialectProgram(wallet2);
+    wallet2Messaging = new OnChainMessaging(wallet2, wallet2Program);
     const airDropRequest2 =
       await wallet2Program.provider.connection.requestAirdrop(
         wallet2.publicKey,
-        1_000_000,
+        LAMPORTS_PER_SOL * 100,
       );
     await wallet2Program.provider.connection.confirmTransaction(
       airDropRequest2,
@@ -137,7 +127,7 @@ describe('Off chain messaging (e2e)', () => {
     await wallet2Dialect.send({
       text: 'Hello',
     });
-    // then
+    // // then
     const wallet1Messages = await wallet1Dialect.messages();
     const wallet2Messages = await wallet2Dialect.messages();
     console.log(wallet1Messages);
