@@ -33,10 +33,11 @@ export interface Ed25519TokenSigner {
 }
 
 export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
-  constructor(
-    readonly signer: PublicKey,
-    readonly dialectWalletAdapter: DialectWalletAdapter,
-  ) {}
+  readonly signer: PublicKey;
+
+  constructor(readonly dialectWalletAdapter: DialectWalletAdapter) {
+    this.signer = dialectWalletAdapter.publicKey;
+  }
 
   sign(payload: Uint8Array): Promise<Uint8Array> {
     if (!this.dialectWalletAdapter.signMessage) {

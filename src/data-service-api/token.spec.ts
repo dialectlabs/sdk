@@ -1,18 +1,28 @@
 import { EmbeddedDialectWalletAdapter } from '../wallet';
 import { Duration } from 'luxon';
-import { Token, TokenBody } from './token';
+import {
+  DialectWalletEd25519TokenSigner,
+  Ed25519TokenSigner,
+  Token,
+  TokenBody,
+} from './token';
 import { Keypair } from '@solana/web3.js';
 
 describe('token tests', () => {
+  let wallet: EmbeddedDialectWalletAdapter;
+  let signer: Ed25519TokenSigner;
+  beforeEach(() => {
+    wallet = EmbeddedDialectWalletAdapter.create();
+    signer = new DialectWalletEd25519TokenSigner(wallet);
+  });
+
   test('when not expired validation returns true', async () => {
-    const wallet: EmbeddedDialectWalletAdapter =
-      EmbeddedDialectWalletAdapter.create();
-    // given
+    // when
     const token = await Token.generate(
-      wallet,
+      signer,
       Duration.fromObject({ seconds: 100 }),
     );
-    // when
+    // then
     const isValid = Token.isValid(token);
     expect(isValid).toBeTruthy();
     const parsedToken = Token.parse(token.rawValue);
@@ -21,14 +31,12 @@ describe('token tests', () => {
   });
 
   test('when expired validation returns false', async () => {
-    const wallet: EmbeddedDialectWalletAdapter =
-      EmbeddedDialectWalletAdapter.create();
-    // given
+    // when
     const token = await Token.generate(
-      wallet,
+      signer,
       Duration.fromObject({ seconds: -100 }),
     );
-    // when
+    // then
     const isValid = Token.isValid(token);
     expect(isValid).toBeFalsy();
     const parsedToken = Token.parse(token.rawValue);
@@ -37,16 +45,14 @@ describe('token tests', () => {
   });
 
   test('when sub compromised returns false', async () => {
-    const wallet: EmbeddedDialectWalletAdapter =
-      EmbeddedDialectWalletAdapter.create();
-    // given
+    // when
     const token = await Token.generate(
-      wallet,
+      signer,
       Duration.fromObject({ minutes: 5 }),
     );
     const isValid = Token.isValid(token);
     expect(isValid).toBeTruthy();
-    // when
+    // then
     const compromisedBody: TokenBody = {
       ...token.body,
       sub: new Keypair().publicKey.toBase58(),
@@ -64,16 +70,14 @@ describe('token tests', () => {
   });
 
   test('when exp compromised returns false', async () => {
-    const wallet: EmbeddedDialectWalletAdapter =
-      EmbeddedDialectWalletAdapter.create();
-    // given
+    // when
     const token = await Token.generate(
-      wallet,
+      signer,
       Duration.fromObject({ minutes: 5 }),
     );
     const isValid = Token.isValid(token);
     expect(isValid).toBeTruthy();
-    // when
+    // then
     const compromisedBody: TokenBody = {
       ...token.body,
       exp: token.body.exp + 10000,

@@ -1,4 +1,7 @@
-import { EmbeddedDialectWalletAdapter } from '../index';
+import {
+  DialectWalletEd25519TokenSigner,
+  EmbeddedDialectWalletAdapter,
+} from '../index';
 import type { DataServiceDialectsApi } from './data-service-api';
 import {
   CreateDialectCommand,
@@ -27,11 +30,11 @@ describe('Data service api (e2e)', () => {
       wallet2 = EmbeddedDialectWalletAdapter.create();
       wallet1Api = DataServiceApi.create(
         baseUrl,
-        TokenProvider.create(wallet1),
+        TokenProvider.create(new DialectWalletEd25519TokenSigner(wallet1)),
       ).dialects;
       wallet2Api = DataServiceApi.create(
         baseUrl,
-        TokenProvider.create(wallet2),
+        TokenProvider.create(new DialectWalletEd25519TokenSigner(wallet2)),
       ).dialects;
     });
 
