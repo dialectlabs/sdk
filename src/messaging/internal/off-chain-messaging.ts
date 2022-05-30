@@ -123,7 +123,7 @@ export class Web2Dialect implements Dialect {
     readonly publicKey: PublicKey,
     readonly me: DialectMember,
     readonly otherMember: DialectMember,
-    readonly encryptionEnabled: boolean,
+    readonly encrypted: boolean,
   ) {}
 
   async delete(): Promise<void> {

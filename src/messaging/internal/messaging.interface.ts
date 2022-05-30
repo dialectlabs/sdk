@@ -32,7 +32,7 @@ export interface Dialect {
   publicKey: PublicKey;
   me: DialectMember;
   otherMember: DialectMember;
-  encryptionEnabled: boolean;
+  encrypted: boolean;
 
   messages(): Promise<Message[]>;
 
