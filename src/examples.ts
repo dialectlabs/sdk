@@ -3,8 +3,8 @@
 // https://localhost:8899
 
 import { Keypair } from '@solana/web3.js';
-import { EmbeddedDialectWalletAdapter } from './wallet';
-import type { DialectWalletAdapter } from './wallet-interfaces';
+import { EmbeddedDialectWalletAdapter } from './node-dialect-wallet-adapter';
+import type { DialectWalletAdapter } from './dialect-wallet-adapter';
 import { DialectMemberScope } from './messaging/internal/messaging.interface';
 import { DialectSDK } from './sdk';
 import { SessionStorageTokenStore } from './data-service-api/token-store';

@@ -1,4 +1,4 @@
-import { EmbeddedDialectWalletAdapter } from '../wallet';
+import { EmbeddedDialectWalletAdapter } from '../node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 import {
   DialectWalletEd25519TokenSigner,

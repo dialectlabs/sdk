@@ -1,28 +1,44 @@
 import type { CreateDialectCommand, Messaging } from './messaging.interface';
 import { DialectMemberScope } from './messaging.interface';
 import { OffChainMessaging } from './off-chain-messaging';
-import { EmbeddedDialectWalletAdapter } from '../../wallet';
+import { EmbeddedDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { DataServiceApi } from '../../data-service-api/data-service-api';
 import { TokenProvider } from '../../data-service-api/token-provider';
+import { DialectWalletEd25519TokenSigner } from '../../data-service-api/token';
+import { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
 describe('Off chain messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let wallet1: EmbeddedDialectWalletAdapter;
+  let walletAdapter1: DialectWalletAdapterDecorator;
   let wallet1Messaging: Messaging;
-  let wallet2: EmbeddedDialectWalletAdapter;
+  let walletAdapter2: DialectWalletAdapterDecorator;
   let wallet2Messaging: Messaging;
 
   beforeEach(() => {
-    wallet1 = EmbeddedDialectWalletAdapter.create();
-    wallet1Messaging = new OffChainMessaging(
-      wallet1,
-      DataServiceApi.create(baseUrl, TokenProvider.create(wallet1)).dialects,
+    walletAdapter1 = new DialectWalletAdapterDecorator(
+      EmbeddedDialectWalletAdapter.create(),
     );
-    wallet2 = EmbeddedDialectWalletAdapter.create();
+    wallet1Messaging = new OffChainMessaging(
+      walletAdapter1,
+      DataServiceApi.create(
+        baseUrl,
+        TokenProvider.create(
+          new DialectWalletEd25519TokenSigner(walletAdapter1),
+        ),
+      ).dialects,
+    );
+    walletAdapter2 = new DialectWalletAdapterDecorator(
+      EmbeddedDialectWalletAdapter.create(),
+    );
     wallet2Messaging = new OffChainMessaging(
-      wallet2,
-      DataServiceApi.create(baseUrl, TokenProvider.create(wallet2)).dialects,
+      walletAdapter2,
+      DataServiceApi.create(
+        baseUrl,
+        TokenProvider.create(
+          new DialectWalletEd25519TokenSigner(walletAdapter2),
+        ),
+      ).dialects,
     );
   });
 
@@ -44,7 +60,7 @@ describe('Off chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -61,7 +77,7 @@ describe('Off chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -81,7 +97,7 @@ describe('Off chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -100,7 +116,7 @@ describe('Off chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -130,7 +146,7 @@ describe('Off chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -150,14 +166,14 @@ describe('Off chain messaging (e2e)', () => {
   test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
     // given
     // @ts-ignore
-    wallet2.diffieHellman = undefined;
+    walletAdapter2.diffieHellman = undefined;
     const command: CreateDialectCommand = {
       encrypted: true,
       me: {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };

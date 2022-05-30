@@ -1,6 +1,6 @@
 import type { MessagingFacade } from './messaging/messaging-facade';
 import type { Dapps, Wallets } from './dapp/dapps';
-import type { DialectWalletAdapter } from './wallet-interfaces';
+import type { DialectWalletAdapter } from './dialect-wallet-adapter';
 import type { PublicKey } from '@solana/web3.js';
 import type { TokenStore } from './data-service-api/token';
 

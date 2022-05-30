@@ -3,13 +3,8 @@ import type {
   DialectMember,
   Messaging,
 } from './internal/messaging.interface';
-import type {
-  Web2EncryptedMessagingWallet,
-  Web2Wallet,
-  Web3EncryptedMessagingWallet,
-  Web3Wallet,
-} from '../wallet-interfaces';
 import type { PublicKey } from '@solana/web3.js';
+import type { DialectWalletAdapterDecorator } from '../internal/dialect-wallet-adapter';
 
 export interface MessagingFacade {
   list(): Promise<Dialect[]>;
@@ -42,15 +37,9 @@ export interface FindDialectByAddressQuery {
 //   OffChain = 'OFF_CHAIN',
 // }
 
-export type MessagingWallet =
-  | Web2Wallet
-  | Web2EncryptedMessagingWallet
-  | Web3Wallet
-  | Web3EncryptedMessagingWallet;
-
 export class MessagingFacadeImpl implements MessagingFacade {
   constructor(
-    private readonly wallet: MessagingWallet,
+    private readonly dialectWalletAdapterDecorator: DialectWalletAdapterDecorator,
     private readonly onChainMessaging: Messaging,
     private readonly offChainMessaging: Messaging,
   ) {}

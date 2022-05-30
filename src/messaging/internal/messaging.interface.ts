@@ -1,4 +1,6 @@
+import type { EncryptionProps } from '@dialectlabs/web3';
 import type { PublicKey } from '@solana/web3.js';
+import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
 export interface Messaging {
   findAll(): Promise<Dialect[]>;
@@ -49,4 +51,16 @@ export interface DialectMember {
 export enum DialectMemberScope {
   WRITE = 'WRITE',
   ADMIN = 'ADMIN',
+}
+
+export async function getEncryptionProps(
+  encrypted: boolean,
+  walletAdapter: DialectWalletAdapterDecorator,
+): Promise<EncryptionProps | undefined> {
+  if (encrypted && walletAdapter.canEncrypt()) {
+    return {
+      diffieHellmanKeyPair: await walletAdapter.diffieHellman(),
+      ed25519PublicKey: walletAdapter.publicKey.toBytes(),
+    };
+  }
 }

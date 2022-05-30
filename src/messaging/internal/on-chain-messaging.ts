@@ -1,8 +1,4 @@
 import type {
-  Web3EncryptedMessagingWallet,
-  Web3Wallet,
-} from '../../wallet-interfaces';
-import type {
   CreateDialectCommand,
   Dialect,
   DialectMember,
@@ -17,31 +13,33 @@ import {
   createDialect,
   deleteDialect,
   DialectAccount,
+  EncryptionProps,
   findDialects,
   getDialect,
   sendMessage,
 } from '@dialectlabs/web3';
 import type { Program } from '@project-serum/anchor';
+import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
 export class OnChainMessaging implements Messaging {
   constructor(
-    private readonly wallet: Web3Wallet | Web3EncryptedMessagingWallet,
-    private program: Program,
+    private readonly walletAdapter: DialectWalletAdapterDecorator,
+    private readonly program: Program,
   ) {}
 
   async create(command: CreateDialectCommand): Promise<Dialect> {
     const encrypted = command.encrypted;
     const encryptionProps = await getEncryptionProps(
       command.encrypted,
-      this.wallet,
+      this.walletAdapter,
     );
     // TODO: same as for web2! accurate handling of dh absence: extract adapter interface + handle sollet
     const dialectAccount = await createDialect(
       this.program,
-      this.wallet,
+      this.walletAdapter,
       [
         {
-          publicKey: this.wallet.publicKey,
+          publicKey: this.walletAdapter.publicKey,
           scopes: [
             command.me.scopes.some((it) => it === DialectMemberScope.ADMIN),
             command.me.scopes.some((it) => it === DialectMemberScope.WRITE),
@@ -62,18 +60,18 @@ export class OnChainMessaging implements Messaging {
       encrypted,
       encryptionProps,
     );
-    return toWeb3Dialect(dialectAccount, this.wallet, this.program);
+    return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
   }
 
   async find(query: FindDialectQuery): Promise<Dialect | null> {
-    const encryptionProps = await getEncryptionProps(true, this.wallet);
+    const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
     try {
       const dialectAccount = await getDialect(
         this.program,
         query.publicKey,
         encryptionProps,
       );
-      return toWeb3Dialect(dialectAccount, this.wallet, this.program);
+      return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
     } catch (e) {
       const err = e as Error;
       if (err?.message.includes('Account does not exist')) return null;
@@ -85,15 +83,17 @@ export class OnChainMessaging implements Messaging {
     // TODO: rn we have different behavior for web3 and web2 versions: this one always returns empty msgs
     // TODO: why we don't pass encryptionProps here in protocol?
     const dialects = await findDialects(this.program, {
-      userPk: this.wallet.publicKey,
+      userPk: this.walletAdapter.publicKey,
     });
-    return dialects.map((it) => toWeb3Dialect(it, this.wallet, this.program));
+    return dialects.map((it) =>
+      toWeb3Dialect(it, this.walletAdapter, this.program),
+    );
   }
 }
 
 export class Web3Dialect implements Dialect {
   constructor(
-    readonly wallet: Web3Wallet | Web3EncryptedMessagingWallet,
+    readonly walletAdapter: DialectWalletAdapterDecorator,
     readonly program: Program,
     readonly publicKey: PublicKey,
     readonly me: DialectMember,
@@ -103,11 +103,11 @@ export class Web3Dialect implements Dialect {
   ) {}
 
   async delete(): Promise<void> {
-    await deleteDialect(this.program, this.dialectAccount, this.wallet);
+    await deleteDialect(this.program, this.dialectAccount, this.walletAdapter);
   }
 
   async messages(): Promise<Message[]> {
-    const encryptionProps = await getEncryptionProps(true, this.wallet);
+    const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
     this.dialectAccount = await getDialect(
       this.program,
       this.dialectAccount.publicKey,
@@ -123,12 +123,12 @@ export class Web3Dialect implements Dialect {
   async send(command: SendMessageCommand): Promise<void> {
     const encryptionProps = await getEncryptionProps(
       this.encrypted,
-      this.wallet,
+      this.walletAdapter,
     );
     await sendMessage(
       this.program,
       this.dialectAccount,
-      this.wallet,
+      this.walletAdapter,
       command.text,
       encryptionProps,
     );
@@ -137,21 +137,21 @@ export class Web3Dialect implements Dialect {
 
 function toWeb3Dialect(
   dialectAccount: DialectAccount,
-  wallet: Web3Wallet | Web3EncryptedMessagingWallet,
+  walletAdapter: DialectWalletAdapterDecorator,
   program: Program,
 ) {
   const { dialect, publicKey } = dialectAccount;
   const meMember = dialect.members.find((it) =>
-    it.publicKey.equals(wallet.publicKey),
+    it.publicKey.equals(walletAdapter.publicKey),
   );
   const otherMember = dialect.members.find(
-    (it) => !it.publicKey.equals(wallet.publicKey),
+    (it) => !it.publicKey.equals(walletAdapter.publicKey),
   );
   if (!meMember || !otherMember) {
     throw new Error('Should not happen');
   }
   return new Web3Dialect(
-    wallet,
+    walletAdapter,
     program,
     publicKey,
     {
@@ -175,17 +175,12 @@ function toWeb3Dialect(
 
 async function getEncryptionProps(
   encrypted: boolean,
-  wallet: Web3Wallet | Web3EncryptedMessagingWallet,
-) {
-  return (
-    (encrypted &&
-      'diffieHellman' in wallet &&
-      !!wallet.diffieHellman && {
-        diffieHellmanKeyPair: await wallet.diffieHellman(
-          wallet.publicKey.toBytes(),
-        ),
-        ed25519PublicKey: wallet.publicKey.toBytes(),
-      }) ||
-    undefined
-  );
+  walletAdapter: DialectWalletAdapterDecorator,
+): Promise<EncryptionProps | undefined> {
+  if (encrypted && walletAdapter.canEncrypt()) {
+    return {
+      diffieHellmanKeyPair: await walletAdapter.diffieHellman(),
+      ed25519PublicKey: walletAdapter.publicKey.toBytes(),
+    };
+  }
 }

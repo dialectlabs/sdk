@@ -1,9 +1,11 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Idl, Program, Provider } from '@project-serum/anchor';
 import { idl, programs } from '@dialectlabs/web3';
-import type { Web3Wallet } from '../../wallet-interfaces';
+import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
-export function createDialectProgram(wallet: Web3Wallet): Program {
+export function createDialectProgram(
+  walletAdapter: DialectWalletAdapterDecorator,
+): Program {
   const RPC_URL = process.env.RPC_URL || 'http://localhost:8899';
   console.log('RPC url', RPC_URL);
   const dialectConnection = new Connection(RPC_URL, {
@@ -11,7 +13,7 @@ export function createDialectProgram(wallet: Web3Wallet): Program {
   });
   const dialectProvider = new Provider(
     dialectConnection,
-    wallet,
+    walletAdapter,
     Provider.defaultOptions(),
   );
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

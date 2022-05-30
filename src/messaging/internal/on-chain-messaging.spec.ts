@@ -1,38 +1,41 @@
 import type { CreateDialectCommand, Messaging } from './messaging.interface';
 import { DialectMemberScope } from './messaging.interface';
-import { EmbeddedDialectWalletAdapter } from '../../wallet';
-import type { Program } from '@project-serum/anchor';
+import { EmbeddedDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { createDialectProgram } from './dialect-connection';
 import { OnChainMessaging } from './on-chain-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
 describe('On chain messaging (e2e)', () => {
-  let wallet1: EmbeddedDialectWalletAdapter;
+  let walletAdapter1: DialectWalletAdapterDecorator;
   let wallet1Messaging: Messaging;
-  let wallet1Program: Program;
 
-  let wallet2: EmbeddedDialectWalletAdapter;
+  let walletAdapter2: DialectWalletAdapterDecorator;
   let wallet2Messaging: Messaging;
-  let wallet2Program: Program;
 
   beforeEach(async () => {
-    wallet1 = EmbeddedDialectWalletAdapter.create();
-    wallet1Program = await createDialectProgram(wallet1);
+    walletAdapter1 = new DialectWalletAdapterDecorator(
+      EmbeddedDialectWalletAdapter.create(),
+    );
+    const wallet1Program = await createDialectProgram(walletAdapter1);
     const airDropRequest1 =
       await wallet1Program.provider.connection.requestAirdrop(
-        wallet1.publicKey,
+        walletAdapter1.publicKey,
         LAMPORTS_PER_SOL * 100,
       );
     await wallet1Program.provider.connection.confirmTransaction(
       airDropRequest1,
     );
-    wallet1Messaging = new OnChainMessaging(wallet1, wallet1Program);
-    wallet2 = EmbeddedDialectWalletAdapter.create();
-    wallet2Program = await createDialectProgram(wallet2);
-    wallet2Messaging = new OnChainMessaging(wallet2, wallet2Program);
+    wallet1Messaging = new OnChainMessaging(walletAdapter1, wallet1Program);
+    walletAdapter2 = new DialectWalletAdapterDecorator(
+      EmbeddedDialectWalletAdapter.create(),
+    );
+    const wallet2Decorator = new DialectWalletAdapterDecorator(walletAdapter2);
+    const wallet2Program = await createDialectProgram(wallet2Decorator);
+    wallet2Messaging = new OnChainMessaging(wallet2Decorator, wallet2Program);
     const airDropRequest2 =
       await wallet2Program.provider.connection.requestAirdrop(
-        wallet2.publicKey,
+        walletAdapter2.publicKey,
         LAMPORTS_PER_SOL * 100,
       );
     await wallet2Program.provider.connection.confirmTransaction(
@@ -58,7 +61,7 @@ describe('On chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -75,7 +78,7 @@ describe('On chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -95,7 +98,7 @@ describe('On chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -114,7 +117,7 @@ describe('On chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -144,7 +147,7 @@ describe('On chain messaging (e2e)', () => {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };
@@ -164,14 +167,14 @@ describe('On chain messaging (e2e)', () => {
   test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
     // given
     // @ts-ignore
-    wallet2.diffieHellman = undefined;
+    walletAdapter2.diffieHellman = undefined;
     const command: CreateDialectCommand = {
       encrypted: true,
       me: {
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
       otherMember: {
-        publicKey: wallet2.publicKey,
+        publicKey: walletAdapter2.publicKey,
         scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
       },
     };

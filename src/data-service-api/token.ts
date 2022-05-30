@@ -2,7 +2,7 @@ import nacl from 'tweetnacl';
 import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapter } from '../wallet-interfaces';
+import type { DialectWalletAdapter } from '../dialect-wallet-adapter';
 import { UnsupportedOperationError } from '../errors';
 
 export interface Token {

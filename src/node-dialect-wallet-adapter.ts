@@ -1,5 +1,5 @@
 import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import type { DialectWalletAdapter } from './wallet-interfaces';
+import type { DialectWalletAdapter } from './dialect-wallet-adapter';
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
 

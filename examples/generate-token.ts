@@ -1,5 +1,5 @@
 import { DialectWalletEd25519TokenSigner, Token } from '../src';
-import { EmbeddedDialectWalletAdapter } from '../src/wallet';
+import { EmbeddedDialectWalletAdapter } from '../src/node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 
 const walletAdapter = EmbeddedDialectWalletAdapter.create();

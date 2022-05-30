@@ -7,7 +7,7 @@ import type {
   Messaging,
   SendMessageCommand,
 } from './messaging.interface';
-import { DialectMemberScope } from './messaging.interface';
+import { DialectMemberScope, getEncryptionProps } from './messaging.interface';
 import { PublicKey } from '@solana/web3.js';
 import type {
   ApiClientError,
@@ -18,15 +18,13 @@ import {
   DialectDto,
   MemberScopeDto,
 } from '../../data-service-api/data-service-api';
-import type {
-  Web2EncryptedMessagingWallet,
-  Web2Wallet,
-} from '../../wallet-interfaces';
+
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
+import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
 export class OffChainMessaging implements Messaging {
   constructor(
-    private readonly wallet: Web2EncryptedMessagingWallet | Web2Wallet,
+    private readonly walletAdapter: DialectWalletAdapterDecorator,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
   ) {}
 
@@ -35,7 +33,7 @@ export class OffChainMessaging implements Messaging {
       encrypted: command.encrypted,
       members: [
         {
-          publicKey: this.wallet.publicKey.toBase58(),
+          publicKey: this.walletAdapter.publicKey.toBase58(),
           scopes: command.me.scopes.map((it) => MemberScopeDto[it]),
         },
         {
@@ -50,10 +48,10 @@ export class OffChainMessaging implements Messaging {
   private async toWeb2Dialect(dialectAccountDto: DialectAccountDto) {
     const { publicKey, dialect } = dialectAccountDto;
     const meMember = dialect.members.find(
-      (it) => it.publicKey === this.wallet.publicKey.toBase58(),
+      (it) => it.publicKey === this.walletAdapter.publicKey.toBase58(),
     );
     const otherMember = dialect.members.find(
-      (it) => it.publicKey !== this.wallet.publicKey.toBase58(),
+      (it) => it.publicKey !== this.walletAdapter.publicKey.toBase58(),
     );
     if (!meMember || !otherMember) {
       throw new Error('Should not happen');
@@ -75,23 +73,17 @@ export class OffChainMessaging implements Messaging {
     );
   }
 
-  // TODO: accurate handling of dh absence: extract adapter interface + handle sollet
   private async textSerde(dialect: DialectDto) {
-    const walletSupportsEncryption =
-      'diffieHellman' in this.wallet && !!this.wallet.diffieHellman;
+    const encryptionProps = await getEncryptionProps(
+      this.walletAdapter.canEncrypt(),
+      this.walletAdapter,
+    );
     return TextSerdeFactory.create(
       {
-        encrypted: walletSupportsEncryption,
+        encrypted: this.walletAdapter.canEncrypt(),
         memberPubKeys: dialect.members.map((it) => new PublicKey(it.publicKey)),
       },
-      ('diffieHellman' in this.wallet &&
-        !!this.wallet.diffieHellman && {
-          diffieHellmanKeyPair: await this.wallet.diffieHellman(
-            this.wallet.publicKey.toBytes(),
-          ),
-          ed25519PublicKey: this.wallet.publicKey.toBytes(),
-        }) ||
-        undefined,
+      encryptionProps,
     );
   }
 
