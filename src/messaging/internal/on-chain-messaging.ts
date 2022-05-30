@@ -67,12 +67,18 @@ export class OnChainMessaging implements Messaging {
 
   async find(query: FindDialectQuery): Promise<Dialect | null> {
     const encryptionProps = await getEncryptionProps(true, this.wallet);
-    const dialectAccount = await getDialect(
-      this.program,
-      this.wallet.publicKey,
-      encryptionProps,
-    );
-    return toWeb3Dialect(dialectAccount, this.wallet, this.program);
+    try {
+      const dialectAccount = await getDialect(
+        this.program,
+        query.publicKey,
+        encryptionProps,
+      );
+      return toWeb3Dialect(dialectAccount, this.wallet, this.program);
+    } catch (e) {
+      const err = e as Error;
+      if (err?.message.includes('Account does not exist')) return null;
+      throw e;
+    }
   }
 
   async findAll(): Promise<Dialect[]> {
@@ -104,7 +110,7 @@ export class Web3Dialect implements Dialect {
     const encryptionProps = await getEncryptionProps(true, this.wallet);
     this.dialectAccount = await getDialect(
       this.program,
-      this.wallet.publicKey,
+      this.dialectAccount.publicKey,
       encryptionProps,
     );
     return this.dialectAccount.dialect.messages.map((it) => ({
