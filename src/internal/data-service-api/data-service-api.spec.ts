@@ -1,7 +1,3 @@
-import {
-  DialectWalletEd25519TokenSigner,
-  NodeDialectWalletAdapter,
-} from '../../index';
 import type { DataServiceDialectsApi } from './data-service-api';
 import {
   CreateDialectCommand,
@@ -12,6 +8,8 @@ import {
 } from './data-service-api';
 import { TokenProvider } from './token-provider';
 import { Keypair } from '@solana/web3.js';
+import { DialectWalletEd25519TokenSigner } from '../auth/token-utils';
+import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

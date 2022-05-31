@@ -1,8 +1,9 @@
-import type { DialectWalletAdapter } from './wallet-adapter.interface';
+import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from './messaging.interface';
 import { DialectSdkFactory } from './internal/sdk-factory';
 import type { TokenStore } from './internal/data-service-api/token-store';
+import type { AuthTokenUtils } from './token.interface';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -11,17 +12,19 @@ export abstract class Dialect {
 }
 
 export interface DialectSdk {
-  readonly dialects: Messaging;
+  readonly threads: Messaging;
+  readonly authTokens: AuthTokenUtils;
 }
+
+export type Environment = 'production' | 'development' | 'local-development';
 
 export interface Config {
   environment?: Environment;
   wallet: DialectWalletAdapter;
   solana?: SolanaConfig;
   dialectCloud?: DialectCloudConfig;
+  messagingBackendPreference?: MessagingBackendPreference;
 }
-
-export type Environment = 'production' | 'development' | 'local-development';
 
 export interface SolanaConfig {
   network?: SolanaNetwork;
@@ -29,9 +32,20 @@ export interface SolanaConfig {
   rpcUrl?: string;
 }
 
-export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
-
 export interface DialectCloudConfig {
+  environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStore;
+}
+
+export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
+
+export type DialectCloudEnvironment =
+  | 'production'
+  | 'development'
+  | 'local-development';
+
+export enum MessagingBackendPreference {
+  SOLANA = 'SOLANA',
+  DATA_SERVICE = 'DATA_SERVICE',
 }

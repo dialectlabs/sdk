@@ -1,11 +1,11 @@
 import type {
   CreateDialectCommand,
-  Dialect,
   DialectMember,
   FindDialectQuery,
   Message,
   Messaging,
   SendMessageCommand,
+  Thread,
 } from '../../messaging.interface';
 import type { DataServiceMessaging } from './data-service-messaging';
 import type { SolanaMessaging } from './solana-messaging';
@@ -18,26 +18,26 @@ export class MessagingFacade implements Messaging {
     private readonly solanaMessaging: SolanaMessaging,
   ) {}
 
-  create(command: CreateDialectCommand): Promise<Dialect> {
+  create(command: CreateDialectCommand): Promise<Thread> {
     throw new UnsupportedOperationError('Not implemented');
   }
 
-  find(query: FindDialectQuery): Promise<Dialect | null> {
+  find(query: FindDialectQuery): Promise<Thread | null> {
     throw new UnsupportedOperationError('Not implemented');
   }
 
-  findAll(): Promise<Dialect[]> {
+  findAll(): Promise<Thread[]> {
     throw new UnsupportedOperationError('Not implemented');
   }
 }
 
-export class DialectFacade implements Dialect {
+export class ThreadFacade implements Thread {
   constructor(
     readonly me: DialectMember,
     readonly otherMember: DialectMember,
     readonly encrypted: boolean,
     readonly publicKey: PublicKey,
-    private readonly delegates: Dialect[],
+    private readonly delegates: Thread[],
   ) {}
 
   delete(): Promise<void> {

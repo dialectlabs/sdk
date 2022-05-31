@@ -1,6 +1,11 @@
-import { Token, Ed25519TokenSigner } from '../wallet-adapter/token';
 import { InMemoryTokenStore, TokenStore } from './token-store';
 import { Duration } from 'luxon';
+import type {
+  Ed25519TokenSigner,
+  Token,
+  AuthTokenUtils,
+} from '../../token.interface';
+import { AuthTokenUtilsImpl } from '../auth/token-utils';
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;
@@ -10,8 +15,17 @@ export abstract class TokenProvider {
     ttl: Duration = Duration.fromObject({ hours: 1 }),
     tokenStore: TokenStore = new InMemoryTokenStore(),
   ): TokenProvider {
-    const defaultTokenProvider = new DefaultTokenProvider(signer, ttl);
-    return new CachedTokenProvider(defaultTokenProvider, tokenStore);
+    const tokenUtils = new AuthTokenUtilsImpl();
+    const defaultTokenProvider = new DefaultTokenProvider(
+      signer,
+      ttl,
+      tokenUtils,
+    );
+    return new CachedTokenProvider(
+      defaultTokenProvider,
+      tokenStore,
+      tokenUtils,
+    );
   }
 }
 
@@ -19,12 +33,13 @@ class DefaultTokenProvider extends TokenProvider {
   constructor(
     private readonly signer: Ed25519TokenSigner,
     private readonly ttl: Duration,
+    private readonly tokenUtils: AuthTokenUtils,
   ) {
     super();
   }
 
   get(): Promise<Token> {
-    return Token.generate(this.signer, this.ttl);
+    return this.tokenUtils.generate(this.signer, this.ttl);
   }
 }
 
@@ -32,13 +47,17 @@ class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
+    private readonly tokenUtils: AuthTokenUtils,
   ) {
     super();
   }
 
   async get(): Promise<Token> {
     const existingToken = this.tokenStore.get();
-    if (!existingToken || (existingToken && Token.isExpired(existingToken))) {
+    if (
+      !existingToken ||
+      (existingToken && this.tokenUtils.isExpired(existingToken))
+    ) {
       const newToken = await this.delegate.get();
       return Promise.resolve(this.tokenStore.save(newToken));
     }

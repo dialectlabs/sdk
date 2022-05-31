@@ -1,11 +1,11 @@
 import type {
   CreateDialectCommand,
-  Dialect,
   DialectMember,
   FindDialectQuery,
   Message,
   Messaging,
   SendMessageCommand,
+  Thread,
 } from '../../messaging.interface';
 import { DialectMemberScope } from '../../messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
@@ -28,7 +28,7 @@ export class SolanaMessaging implements Messaging {
     private readonly program: Program,
   ) {}
 
-  async create(command: CreateDialectCommand): Promise<Dialect> {
+  async create(command: CreateDialectCommand): Promise<Thread> {
     const encrypted = command.encrypted;
     const encryptionProps = await getEncryptionProps(
       command.encrypted,
@@ -64,7 +64,7 @@ export class SolanaMessaging implements Messaging {
     return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
   }
 
-  async find(query: FindDialectQuery): Promise<Dialect | null> {
+  async find(query: FindDialectQuery): Promise<Thread | null> {
     const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
     try {
       const dialectAccount = await getDialect(
@@ -80,7 +80,7 @@ export class SolanaMessaging implements Messaging {
     }
   }
 
-  async findAll(): Promise<Dialect[]> {
+  async findAll(): Promise<Thread[]> {
     // TODO: rn we have different behavior for web3 and web2 versions: this one always returns empty msgs
     // TODO: why we don't pass encryptionProps here in protocol?
     const dialects = await findDialects(this.program, {
@@ -92,7 +92,7 @@ export class SolanaMessaging implements Messaging {
   }
 }
 
-export class SolanaDialect implements Dialect {
+export class SolanaThread implements Thread {
   constructor(
     readonly walletAdapter: InternalDialectWalletAdapter,
     readonly program: Program,
@@ -151,7 +151,7 @@ function toWeb3Dialect(
   if (!meMember || !otherMember) {
     throw new Error('Should not happen');
   }
-  return new SolanaDialect(
+  return new SolanaThread(
     walletAdapter,
     program,
     publicKey,

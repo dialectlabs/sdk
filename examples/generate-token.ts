@@ -1,11 +1,11 @@
-import { DialectWalletEd25519TokenSigner, Token } from '../src';
-import { NodeDialectWalletAdapter } from '../src/internal/wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletEd25519TokenSigner, AuthTokenUtils } from '../src';
+import { NodeDialectWalletAdapter } from '../src/node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 
 const walletAdapter = NodeDialectWalletAdapter.create();
 
 (async () => {
-  const token = await Token.generate(
+  const token = await AuthTokenUtils.generate(
     new DialectWalletEd25519TokenSigner(walletAdapter),
     Duration.fromObject({ minutes: 120 }),
   );

@@ -3,7 +3,7 @@ import type {
   Messaging,
 } from '../../messaging.interface';
 import { DialectMemberScope } from '../../messaging.interface';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { SolanaMessaging } from './solana-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';

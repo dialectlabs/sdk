@@ -2,41 +2,21 @@ import nacl from 'tweetnacl';
 import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapter } from '../../wallet-adapter.interface';
+import type { DialectWalletAdapter } from '../../dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../errors';
-
-export interface Token {
-  rawValue: string;
-  header: TokenHeader;
-  body: TokenBody;
-  signature: Uint8Array;
-  base64Header: string;
-  base64Body: string;
-  base64Signature: string;
-}
-
-export interface TokenHeader {
-  alg?: string;
-  typ?: string;
-}
-
-export interface TokenBody {
-  sub: string;
-  iat?: number;
-  exp: number;
-}
-
-export interface Ed25519TokenSigner {
-  signer: PublicKey;
-
-  sign(payload: Uint8Array): Promise<Uint8Array>;
-}
+import type {
+  Ed25519TokenSigner,
+  Token,
+  TokenBody,
+  TokenHeader,
+  AuthTokenUtils,
+} from '../../token.interface';
 
 export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
-  readonly signer: PublicKey;
+  readonly subject: PublicKey;
 
   constructor(readonly dialectWalletAdapter: DialectWalletAdapter) {
-    this.signer = dialectWalletAdapter.publicKey;
+    this.subject = dialectWalletAdapter.publicKey;
   }
 
   sign(payload: Uint8Array): Promise<Uint8Array> {
@@ -50,11 +30,8 @@ export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
   }
 }
 
-export class Token {
-  static async generate(
-    signer: Ed25519TokenSigner,
-    ttl: Duration,
-  ): Promise<Token> {
+export class AuthTokenUtilsImpl implements AuthTokenUtils {
+  async generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token> {
     const header: TokenHeader = {
       alg: 'ed25519',
       typ: 'JWT',
@@ -62,12 +39,12 @@ export class Token {
     const base64Header = btoa(JSON.stringify(header));
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
-      sub: signer.signer.toBase58(),
+      sub: signer.subject.toBase58(),
       iat: Math.round(nowUtcSeconds),
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };
     const base64Body = btoa(JSON.stringify(body));
-    const signingPayload = this.getSigningPayload(
+    const signingPayload = AuthTokenUtilsImpl.getSigningPayload(
       base64Header + '.' + base64Body,
     );
     const signature = await signer.sign(signingPayload);
@@ -84,7 +61,7 @@ export class Token {
     };
   }
 
-  static parse(rawToken: string): Token {
+  parse(rawToken: string): Token {
     const parts = rawToken.split('.');
     if (parts.length !== 3) {
       throw new TokenParsingError();
@@ -115,16 +92,16 @@ export class Token {
     }
   }
 
-  static isValid(token: Token) {
-    if (!Token.isSignatureValid(token)) {
+  isValid(token: Token) {
+    if (!this.isSignatureValid(token)) {
       return false;
     }
-    return !Token.isExpired(token);
+    return !this.isExpired(token);
   }
 
-  static isSignatureValid(token: Token) {
+  isSignatureValid(token: Token) {
     const signedPayload = token.base64Header + '.' + token.base64Body;
-    const signingPayload = this.getSigningPayload(signedPayload);
+    const signingPayload = AuthTokenUtilsImpl.getSigningPayload(signedPayload);
     return nacl.sign.detached.verify(
       signingPayload,
       token.signature,
@@ -132,7 +109,7 @@ export class Token {
     );
   }
 
-  static isExpired(token: Token) {
+  isExpired(token: Token) {
     const nowUtcSeconds = new Date().getTime() / 1000;
     return nowUtcSeconds > token.body.exp;
   }

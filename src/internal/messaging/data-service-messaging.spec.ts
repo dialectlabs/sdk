@@ -4,10 +4,10 @@ import type {
 } from '../../messaging.interface';
 import { DialectMemberScope } from '../../messaging.interface';
 import { DataServiceMessaging } from './data-service-messaging';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { DataServiceApi } from '../data-service-api/data-service-api';
 import { TokenProvider } from '../data-service-api/token-provider';
-import { DialectWalletEd25519TokenSigner } from '../wallet-adapter/token';
+import { DialectWalletEd25519TokenSigner } from '../auth/token-utils';
 import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
 
 describe('Data service messaging (e2e)', () => {

@@ -1,11 +1,11 @@
 import type { PublicKey } from '@solana/web3.js';
 
 export interface Messaging {
-  findAll(): Promise<Dialect[]>;
+  findAll(): Promise<Thread[]>;
 
-  create(command: CreateDialectCommand): Promise<Dialect>;
+  create(command: CreateDialectCommand): Promise<Thread>;
 
-  find(query: FindDialectQuery): Promise<Dialect | null>;
+  find(query: FindDialectQuery): Promise<Thread | null>;
 }
 
 export interface SendMessageCommand {
@@ -28,7 +28,7 @@ export interface FindDialectQuery {
   publicKey: PublicKey;
 }
 
-export interface Dialect {
+export interface Thread {
   publicKey: PublicKey;
   me: DialectMember;
   otherMember: DialectMember;

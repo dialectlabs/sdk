@@ -2,11 +2,14 @@
 // https://api.devnet.solana.com
 // https://localhost:8899
 
-import { Keypair } from '@solana/web3.js';
-import { DialectMemberScope } from '../src/messaging.interface';
-import { DialectSdk } from '../src/sdk';
-import { SessionStorageTokenStore } from '../src/internal/data-service-api/token-store';
-import { DialectWalletAdapter, NodeDialectWalletAdapter } from '../src';
+import {Keypair} from '@solana/web3.js';
+import {DialectMemberScope} from '../src/messaging.interface';
+import {SessionStorageTokenStore} from '../src/internal/data-service-api/token-store';
+import {
+  Dialect,
+  DialectWalletAdapter,
+  NodeDialectWalletAdapter,
+} from '../src';
 
 const wallet: DialectWalletAdapter = NodeDialectWalletAdapter.create();
 
@@ -14,15 +17,15 @@ const wallet: DialectWalletAdapter = NodeDialectWalletAdapter.create();
  * Case 1: Decentralized inbox
  * */
 async function decentalizedInbox() {
-  const sdk = DialectSdk.create({
+  const sdk = Dialect.sdk({
     environment: 'production',
     wallet,
     dialectCloud: {
       tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
     },
   });
-  const dialects = sdk.dialects.findAll();
-  const dialect = await sdk.dialects.create({
+  const threads = sdk.threads.findAll();
+  const dialect = await sdk.threads.create({
     me: {
       scopes: [DialectMemberScope.WRITE],
     },
@@ -44,14 +47,14 @@ async function decentalizedInbox() {
 async function notificaitonCenter() {
   const wallet: NodeDialectWalletAdapter = NodeDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
-  const sdk = DialectSdk.create({
+  const sdk = Dialect.sdk({
     environment: 'production',
     wallet,
     dialectCloud: {
       tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
     },
   });
-  const dialect = await sdk.dialects.create({
+  const dialect = await sdk.threads.create({
     me: {
       scopes: [],
     },
@@ -61,12 +64,12 @@ async function notificaitonCenter() {
     },
     encrypted: false,
   });
-  const allDialects = await sdk.dialects.findAll();
-  const foundByMember = await sdk.dialects.find({ otherMember: dAppPublicKey });
+  const allDialects = await sdk.threads.findAll();
+  const foundByMember = await sdk.threads.find({otherMember: dAppPublicKey});
   if (foundByMember) {
     await foundByMember.delete();
   }
-  const foundByAddress = await sdk.dialects.find({
+  const foundByAddress = await sdk.threads.find({
     publicKey: dialect.publicKey,
   });
   if (foundByAddress) {
@@ -83,12 +86,12 @@ async function monitoringServiceDialectThreadSink() {
 
   const subscriber = Keypair.generate().publicKey;
 
-  const sdk = DialectSdk.create({
+  const sdk = Dialect.sdk({
     environment: 'development',
     wallet,
   });
 
-  const dialect = await sdk.dialects.find({ otherMember: subscriber });
+  const dialect = await sdk.threads.find({otherMember: subscriber});
   if (dialect) {
     await dialect.send({
       text: 'Notification',
@@ -102,26 +105,26 @@ async function monitoringServiceDialectThreadSink() {
 async function monitoringServiceAndCli() {
   const wallet: NodeDialectWalletAdapter = NodeDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
-  const sdk = DialectSdk.create({
+  const sdk = Dialect.sdk({
     environment: 'production',
     wallet,
     dialectCloud: {
       tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
     },
   });
-  const dapp = await sdk.dapps.find({ publicKey: dAppPublicKey });
+  const dapp = await sdk.dapps.find({publicKey: dAppPublicKey});
   const subscribers = await dapp?.subscribers.list(); // Provides access to dApp subscribers
   dapp &&
-    (await dapp.notify({
-      // Under the hood the notification will be sent to both web2 and web3 sources
-      title: 'title',
-      message: 'hello worlkd',
-    }));
+  (await dapp.notify({
+    // Under the hood the notification will be sent to both web2 and web3 sources
+    title: 'title',
+    message: 'hello worlkd',
+  }));
 
   dapp &&
-    (await dapp.notify({
-      title: 'title',
-      message: 'hello worlkd',
-      wallets: [Keypair.generate().publicKey, Keypair.generate().publicKey],
+  (await dapp.notify({
+    title: 'title',
+    message: 'hello worlkd',
+    wallets: [Keypair.generate().publicKey, Keypair.generate().publicKey],
     }));
 }

@@ -1,6 +1,6 @@
 import type {
   CreateDialectCommand,
-  Dialect,
+  Thread,
   DialectMember,
   FindDialectQuery,
   Message,
@@ -29,7 +29,7 @@ export class DataServiceMessaging implements Messaging {
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
   ) {}
 
-  async create(command: CreateDialectCommand): Promise<Dialect> {
+  async create(command: CreateDialectCommand): Promise<Thread> {
     const dialectAccountDto = await this.dataServiceDialectsApi.create({
       encrypted: command.encrypted,
       members: [
@@ -58,7 +58,7 @@ export class DataServiceMessaging implements Messaging {
       throw new Error('Should not happen');
     }
     const textSerDe = await this.textSerde(dialect);
-    return new DataServiceDialect(
+    return new DataServiceThread(
       this.dataServiceDialectsApi,
       textSerDe,
       new PublicKey(publicKey),
@@ -88,7 +88,7 @@ export class DataServiceMessaging implements Messaging {
     );
   }
 
-  async find(query: FindDialectQuery): Promise<Dialect | null> {
+  async find(query: FindDialectQuery): Promise<Thread | null> {
     try {
       const dialectAccountDto = await this.dataServiceDialectsApi.find(
         query.publicKey.toBase58(),
@@ -103,13 +103,13 @@ export class DataServiceMessaging implements Messaging {
     }
   }
 
-  async findAll(): Promise<Dialect[]> {
+  async findAll(): Promise<Thread[]> {
     const dialectAccountDtos = await this.dataServiceDialectsApi.findAll();
     return Promise.all(dialectAccountDtos.map((it) => this.toWeb2Dialect(it)));
   }
 }
 
-export class DataServiceDialect implements Dialect {
+export class DataServiceThread implements Thread {
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerDe: TextSerde,

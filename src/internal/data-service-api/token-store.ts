@@ -1,4 +1,4 @@
-import type { Token } from '../wallet-adapter/token';
+import type { Token } from '../../token.interface';
 
 export abstract class TokenStore {
   abstract get(): Token | null;
