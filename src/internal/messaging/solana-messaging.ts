@@ -6,8 +6,8 @@ import type {
   Message,
   Messaging,
   SendMessageCommand,
-} from './messaging.interface';
-import { DialectMemberScope } from './messaging.interface';
+} from '../../messaging.interface';
+import { DialectMemberScope } from '../../messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
   createDialect,
@@ -18,12 +18,14 @@ import {
   getDialect,
   sendMessage,
 } from '@dialectlabs/web3';
-import type { Program } from '@project-serum/anchor';
-import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
 
-export class OnChainMessaging implements Messaging {
+import type { Program } from '@project-serum/anchor';
+import type { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+import { getEncryptionProps } from './messaging-common';
+
+export class SolanaMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: DialectWalletAdapterDecorator,
+    private readonly walletAdapter: InternalDialectWalletAdapter,
     private readonly program: Program,
   ) {}
 
@@ -93,7 +95,7 @@ export class OnChainMessaging implements Messaging {
 
 export class Web3Dialect implements Dialect {
   constructor(
-    readonly walletAdapter: DialectWalletAdapterDecorator,
+    readonly walletAdapter: InternalDialectWalletAdapter,
     readonly program: Program,
     readonly publicKey: PublicKey,
     readonly me: DialectMember,
@@ -137,7 +139,7 @@ export class Web3Dialect implements Dialect {
 
 function toWeb3Dialect(
   dialectAccount: DialectAccount,
-  walletAdapter: DialectWalletAdapterDecorator,
+  walletAdapter: InternalDialectWalletAdapter,
   program: Program,
 ) {
   const { dialect, publicKey } = dialectAccount;
@@ -171,16 +173,4 @@ function toWeb3Dialect(
     dialect.encrypted,
     dialectAccount,
   );
-}
-
-async function getEncryptionProps(
-  encrypted: boolean,
-  walletAdapter: DialectWalletAdapterDecorator,
-): Promise<EncryptionProps | undefined> {
-  if (encrypted && walletAdapter.canEncrypt()) {
-    return {
-      diffieHellmanKeyPair: await walletAdapter.diffieHellman(),
-      ed25519PublicKey: walletAdapter.publicKey.toBytes(),
-    };
-  }
 }

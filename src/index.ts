@@ -1,3 +1,3 @@
-export * from './data-service-api/token';
-export * from './node-dialect-wallet-adapter';
-export * from './dialect-wallet-adapter';
+export * from './internal/wallet-adapter/token';
+export * from './internal/wallet-adapter/node-dialect-wallet-adapter';
+export * from './wallet-adapter.interface';

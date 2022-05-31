@@ -1,4 +1,4 @@
-import { Token, Ed25519TokenSigner } from './token';
+import { Token, Ed25519TokenSigner } from '../wallet-adapter/token';
 import { InMemoryTokenStore, TokenStore } from './token-store';
 import { Duration } from 'luxon';
 

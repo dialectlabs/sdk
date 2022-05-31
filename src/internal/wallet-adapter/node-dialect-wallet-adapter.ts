@@ -1,17 +1,23 @@
 import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import type { DialectWalletAdapter } from './dialect-wallet-adapter';
+import type { DialectWalletAdapter } from '../../wallet-adapter.interface';
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
 
-export class EmbeddedDialectWalletAdapter implements DialectWalletAdapter {
+export class NodeDialectWalletAdapter implements DialectWalletAdapter {
+  constructor(private readonly keypair: Keypair) {}
+
+  get publicKey(): PublicKey {
+    return this.keypair.publicKey;
+  }
+
   static create(keypair?: Keypair) {
     if (keypair) {
       console.log(
         `Initializing ${
-          EmbeddedDialectWalletAdapter.name
+          NodeDialectWalletAdapter.name
         } using provided ${keypair.publicKey.toBase58()} key.`,
       );
-      return new EmbeddedDialectWalletAdapter(keypair);
+      return new NodeDialectWalletAdapter(keypair);
     }
     if (process.env.PRIVATE_KEY) {
       const privateKey = process.env.PRIVATE_KEY;
@@ -20,21 +26,19 @@ export class EmbeddedDialectWalletAdapter implements DialectWalletAdapter {
       );
       console.log(
         `Initializing ${
-          EmbeddedDialectWalletAdapter.name
+          NodeDialectWalletAdapter.name
         } using env-provided ${keypair.publicKey.toBase58()} key.`,
       );
-      return new EmbeddedDialectWalletAdapter(keypair);
+      return new NodeDialectWalletAdapter(keypair);
     }
     const generated = Keypair.generate();
     console.log(
       `Initializing ${
-        EmbeddedDialectWalletAdapter.name
+        NodeDialectWalletAdapter.name
       } using generated ${generated.publicKey.toBase58()} key.`,
     );
-    return new EmbeddedDialectWalletAdapter(generated);
+    return new NodeDialectWalletAdapter(generated);
   }
-
-  constructor(private readonly keypair: Keypair) {}
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
     tx.partialSign(this.keypair);
@@ -46,10 +50,6 @@ export class EmbeddedDialectWalletAdapter implements DialectWalletAdapter {
       t.partialSign(this.keypair);
       return t;
     });
-  }
-
-  get publicKey(): PublicKey {
-    return this.keypair.publicKey;
   }
 
   signMessage(message: Uint8Array): Promise<Uint8Array> {

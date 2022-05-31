@@ -2,8 +2,8 @@ import nacl from 'tweetnacl';
 import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapter } from '../dialect-wallet-adapter';
-import { UnsupportedOperationError } from '../errors';
+import type { DialectWalletAdapter } from '../../wallet-adapter.interface';
+import { UnsupportedOperationError } from '../../errors';
 
 export interface Token {
   rawValue: string;
@@ -43,7 +43,7 @@ export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
     if (!this.dialectWalletAdapter.signMessage) {
       throw new UnsupportedOperationError(
         'Wallet operation not supported',
-        'Wallet does not support signing, please use wallet that has supports signMessage() operation.',
+        'Wallet does not support signing, please use wallet-adapter that has supports signMessage() operation.',
       );
     }
     return this.dialectWalletAdapter.signMessage(payload);

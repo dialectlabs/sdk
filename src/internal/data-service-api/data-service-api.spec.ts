@@ -1,7 +1,7 @@
 import {
   DialectWalletEd25519TokenSigner,
-  EmbeddedDialectWalletAdapter,
-} from '../index';
+  NodeDialectWalletAdapter,
+} from '../../index';
 import type { DataServiceDialectsApi } from './data-service-api';
 import {
   CreateDialectCommand,
@@ -20,14 +20,14 @@ describe('Data service api (e2e)', () => {
   // Use    expect.arrayContaining([
   //       expect.objectContaining(
   describe('Dialects', () => {
-    let wallet1: EmbeddedDialectWalletAdapter;
+    let wallet1: NodeDialectWalletAdapter;
     let wallet1Api: DataServiceDialectsApi;
-    let wallet2: EmbeddedDialectWalletAdapter;
+    let wallet2: NodeDialectWalletAdapter;
     let wallet2Api: DataServiceDialectsApi;
 
     beforeEach(() => {
-      wallet1 = EmbeddedDialectWalletAdapter.create();
-      wallet2 = EmbeddedDialectWalletAdapter.create();
+      wallet1 = NodeDialectWalletAdapter.create();
+      wallet2 = NodeDialectWalletAdapter.create();
       wallet1Api = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(new DialectWalletEd25519TokenSigner(wallet1)),
@@ -45,7 +45,7 @@ describe('Data service api (e2e)', () => {
       expect(dialects).toMatchObject([]);
     });
 
-    test('wallet cannot crate dialect not being a member ', async () => {
+    test('wallet-adapter cannot crate dialect not being a member ', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,
@@ -63,7 +63,7 @@ describe('Data service api (e2e)', () => {
       ).rejects.toBeTruthy();
     });
 
-    test('wallet canon create dialect with less than 2 members', async () => {
+    test('wallet-adapter canon create dialect with less than 2 members', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,
@@ -77,7 +77,7 @@ describe('Data service api (e2e)', () => {
       ).rejects.toBeTruthy();
     });
 
-    test('wallet cannot create dialect with more than 2 members', async () => {
+    test('wallet-adapter cannot create dialect with more than 2 members', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,
@@ -99,25 +99,25 @@ describe('Data service api (e2e)', () => {
       ).rejects.toBeTruthy();
     });
 
-    test('wallet cannot create dialect with duplicate member', async () => {
+    test('wallet-adapter cannot create dialect with duplicate member', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,
           members: [
-            {
-              publicKey: wallet1.publicKey.toBase58(),
-              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
-            },
             {
               publicKey: wallet1.publicKey.toBase58(),
               scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
             },
+            {
+              publicKey: wallet1.publicKey.toBase58(),
+              scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
+            },
           ],
         }),
       ).rejects.toBeTruthy();
     });
 
-    test('wallet cannot create dialect when member public key is invalid', async () => {
+    test('wallet-adapter cannot create dialect when member public key is invalid', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,
@@ -135,7 +135,7 @@ describe('Data service api (e2e)', () => {
       ).rejects.toBeTruthy();
     });
 
-    test('wallet cannot create second dialect with same members', async () => {
+    test('wallet-adapter cannot create second dialect with same members', async () => {
       const createDialectCommand: CreateDialectCommand = {
         encrypted: false,
         members: [
@@ -157,7 +157,7 @@ describe('Data service api (e2e)', () => {
       ).rejects.toBeTruthy();
     });
 
-    test('wallet cannot create dialect not being an admin', async () => {
+    test('wallet-adapter cannot create dialect not being an admin', async () => {
       await expect(
         wallet1Api.create({
           encrypted: false,

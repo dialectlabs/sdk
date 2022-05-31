@@ -1,8 +1,8 @@
-import type { DialectWalletAdapter } from '../dialect-wallet-adapter';
-import { UnsupportedOperationError } from '../errors';
+import type { DialectWalletAdapter } from '../../wallet-adapter.interface';
+import { UnsupportedOperationError } from '../../errors';
 import type { Transaction } from '@solana/web3.js';
 
-export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
+export class InternalDialectWalletAdapter implements DialectWalletAdapter {
   constructor(private readonly delegate: DialectWalletAdapter) {}
 
   get publicKey() {
@@ -13,7 +13,7 @@ export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
     if (!this.delegate.signTransaction) {
       throw new UnsupportedOperationError(
         'Signing not supported',
-        'Wallet does not support signing, please use wallet that has supports signTransaction() operation.',
+        'Wallet does not support signing, please use wallet-adapter that supports signTransaction() operation.',
       );
     }
     return this.delegate.signTransaction(transaction);
@@ -23,7 +23,7 @@ export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
     if (!this.delegate.signAllTransactions) {
       throw new UnsupportedOperationError(
         'Signing not supported',
-        'Wallet does not support signing, please use wallet that has supports signAllTransactions() operation.',
+        'Wallet does not support signing, please use wallet-adapter that supports signAllTransactions() operation.',
       );
     }
     return this.delegate.signAllTransactions(transaction);
@@ -33,7 +33,7 @@ export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
     if (!this.delegate.signMessage) {
       throw new UnsupportedOperationError(
         'Message signing not supported',
-        'Wallet does not support message signing, please use wallet that has supports signMessage() operation.',
+        'Wallet does not support message signing, please use wallet-adapter that supports signMessage() operation.',
       );
     }
     return this.delegate.signMessage(message);
@@ -43,7 +43,7 @@ export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
     if (!this.delegate.diffieHellman) {
       throw new UnsupportedOperationError(
         'Encryption not supported',
-        'Wallet does not support encryption, please use wallet that has supports diffieHellman() operation.',
+        'Wallet does not support encryption, please use wallet-adapter that supports diffieHellman() operation.',
       );
     }
     return this.delegate.diffieHellman(this.publicKey.toBytes());
@@ -65,6 +65,6 @@ export class DialectWalletAdapterDecorator implements DialectWalletAdapter {
 
   static create(adapter: DialectWalletAdapter): DialectWalletAdapter {
     // TODO: here we can put adapter lookup logic
-    return new DialectWalletAdapterDecorator(adapter);
+    return new InternalDialectWalletAdapter(adapter);
   }
 }

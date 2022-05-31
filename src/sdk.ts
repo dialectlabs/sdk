@@ -1,32 +1,18 @@
-import type { MessagingFacade } from './messaging/messaging-facade';
-import type { Dapps, Wallets } from './dapp/dapps';
-import type { DialectWalletAdapter } from './dialect-wallet-adapter';
+import type { Dapps, Wallets } from './internal/dapp/dapps';
+import type { DialectWalletAdapter } from './wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
-import type { TokenStore } from './data-service-api/token';
+import type { TokenStore } from './internal/wallet-adapter/token';
+import type { Messaging } from './messaging.interface';
 
-export interface SupportedApi {
-  encryption: boolean;
-  offChainMessaging: boolean;
-  onChainMessaging: boolean;
-}
-
-export class DialectSDK {
+export class DialectSdk {
   constructor(
     readonly config: Config,
-    readonly dialects: MessagingFacade,
+    readonly dialects: Messaging,
     readonly wallet: Wallets,
     readonly dapps: Dapps,
   ) {}
 
-  supportedApi(): SupportedApi {
-    return {
-      encryption: true,
-      offChainMessaging: true,
-      onChainMessaging: false,
-    };
-  }
-
-  static create(config: Config): DialectSDK {
+  static create(config: Config): DialectSdk {
     throw new Error('Not implemented');
   }
 }
@@ -36,24 +22,19 @@ export type Environment = 'production' | 'development' | 'local-development';
 export interface Config {
   environment?: Environment;
   wallet: DialectWalletAdapter;
-  web3?: Web3Config;
-  web2?: Web2Config;
+  solana?: SolanaConfig;
+  dialectCloud?: DialectCloudConfig;
 }
 
-export interface Web3Config {
-  network?: Web3Network;
-  programId?: PublicKey;
+export interface SolanaConfig {
+  network?: SolanaNetwork;
+  dialectProgramId?: PublicKey;
   rpcUrl?: string;
 }
 
-export interface Web3Config {
-  network?: Web3Network;
-  programId?: PublicKey;
-}
+export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
 
-export type Web3Network = 'mainnet-beta' | 'devnet' | 'localnet';
-
-export interface Web2Config {
-  dialectCloudUrl?: string;
+export interface DialectCloudConfig {
+  url?: string;
   tokenStore?: TokenStore;
 }

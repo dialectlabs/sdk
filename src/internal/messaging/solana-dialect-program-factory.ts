@@ -1,10 +1,10 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Idl, Program, Provider } from '@project-serum/anchor';
 import { idl, programs } from '@dialectlabs/web3';
-import type { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
+import type { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
 
 export function createDialectProgram(
-  walletAdapter: DialectWalletAdapterDecorator,
+  walletAdapter: InternalDialectWalletAdapter,
 ): Program {
   const RPC_URL = process.env.RPC_URL || 'http://localhost:8899';
   console.log('RPC url', RPC_URL);

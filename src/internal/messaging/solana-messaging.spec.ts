@@ -1,21 +1,24 @@
-import type { CreateDialectCommand, Messaging } from './messaging.interface';
-import { DialectMemberScope } from './messaging.interface';
-import { EmbeddedDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
-import { createDialectProgram } from './dialect-connection';
-import { OnChainMessaging } from './on-chain-messaging';
+import type {
+  CreateDialectCommand,
+  Messaging,
+} from '../../messaging.interface';
+import { DialectMemberScope } from '../../messaging.interface';
+import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { createDialectProgram } from './solana-dialect-program-factory';
+import { SolanaMessaging } from './solana-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
+import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
 
-describe('On chain messaging (e2e)', () => {
-  let walletAdapter1: DialectWalletAdapterDecorator;
+describe('Solana messaging (e2e)', () => {
+  let walletAdapter1: InternalDialectWalletAdapter;
   let wallet1Messaging: Messaging;
 
-  let walletAdapter2: DialectWalletAdapterDecorator;
+  let walletAdapter2: InternalDialectWalletAdapter;
   let wallet2Messaging: Messaging;
 
   beforeEach(async () => {
-    walletAdapter1 = new DialectWalletAdapterDecorator(
-      EmbeddedDialectWalletAdapter.create(),
+    walletAdapter1 = new InternalDialectWalletAdapter(
+      NodeDialectWalletAdapter.create(),
     );
     const wallet1Program = await createDialectProgram(walletAdapter1);
     const airDropRequest1 =
@@ -26,13 +29,13 @@ describe('On chain messaging (e2e)', () => {
     await wallet1Program.provider.connection.confirmTransaction(
       airDropRequest1,
     );
-    wallet1Messaging = new OnChainMessaging(walletAdapter1, wallet1Program);
-    walletAdapter2 = new DialectWalletAdapterDecorator(
-      EmbeddedDialectWalletAdapter.create(),
+    wallet1Messaging = new SolanaMessaging(walletAdapter1, wallet1Program);
+    walletAdapter2 = new InternalDialectWalletAdapter(
+      NodeDialectWalletAdapter.create(),
     );
-    const wallet2Decorator = new DialectWalletAdapterDecorator(walletAdapter2);
+    const wallet2Decorator = new InternalDialectWalletAdapter(walletAdapter2);
     const wallet2Program = await createDialectProgram(wallet2Decorator);
-    wallet2Messaging = new OnChainMessaging(wallet2Decorator, wallet2Program);
+    wallet2Messaging = new SolanaMessaging(wallet2Decorator, wallet2Program);
     const airDropRequest2 =
       await wallet2Program.provider.connection.requestAirdrop(
         walletAdapter2.publicKey,
@@ -139,7 +142,7 @@ describe('On chain messaging (e2e)', () => {
     expect(new Set(wallet1Messages)).toMatchObject(new Set(wallet2Messages));
   });
 
-  test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
+  test('can send/read message with encrypted dialect when wallet-adapter supports encryption', async () => {
     // given
     const command: CreateDialectCommand = {
       encrypted: true,
@@ -164,7 +167,7 @@ describe('On chain messaging (e2e)', () => {
     expect(new Set(wallet1Messages)).toMatchObject(new Set(wallet2Messages));
   });
 
-  test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
+  test('can send/read message with encrypted dialect when wallet-adapter supports encryption', async () => {
     // given
     // @ts-ignore
     walletAdapter2.diffieHellman = undefined;

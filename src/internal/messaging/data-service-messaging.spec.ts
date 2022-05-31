@@ -1,25 +1,28 @@
-import type { CreateDialectCommand, Messaging } from './messaging.interface';
-import { DialectMemberScope } from './messaging.interface';
-import { OffChainMessaging } from './off-chain-messaging';
-import { EmbeddedDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
-import { DataServiceApi } from '../../data-service-api/data-service-api';
-import { TokenProvider } from '../../data-service-api/token-provider';
-import { DialectWalletEd25519TokenSigner } from '../../data-service-api/token';
-import { DialectWalletAdapterDecorator } from '../../internal/dialect-wallet-adapter';
+import type {
+  CreateDialectCommand,
+  Messaging,
+} from '../../messaging.interface';
+import { DialectMemberScope } from '../../messaging.interface';
+import { DataServiceMessaging } from './data-service-messaging';
+import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { DataServiceApi } from '../data-service-api/data-service-api';
+import { TokenProvider } from '../data-service-api/token-provider';
+import { DialectWalletEd25519TokenSigner } from '../wallet-adapter/token';
+import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
 
-describe('Off chain messaging (e2e)', () => {
+describe('Data service messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let walletAdapter1: DialectWalletAdapterDecorator;
+  let walletAdapter1: InternalDialectWalletAdapter;
   let wallet1Messaging: Messaging;
-  let walletAdapter2: DialectWalletAdapterDecorator;
+  let walletAdapter2: InternalDialectWalletAdapter;
   let wallet2Messaging: Messaging;
 
   beforeEach(() => {
-    walletAdapter1 = new DialectWalletAdapterDecorator(
-      EmbeddedDialectWalletAdapter.create(),
+    walletAdapter1 = new InternalDialectWalletAdapter(
+      NodeDialectWalletAdapter.create(),
     );
-    wallet1Messaging = new OffChainMessaging(
+    wallet1Messaging = new DataServiceMessaging(
       walletAdapter1,
       DataServiceApi.create(
         baseUrl,
@@ -28,10 +31,10 @@ describe('Off chain messaging (e2e)', () => {
         ),
       ).dialects,
     );
-    walletAdapter2 = new DialectWalletAdapterDecorator(
-      EmbeddedDialectWalletAdapter.create(),
+    walletAdapter2 = new InternalDialectWalletAdapter(
+      NodeDialectWalletAdapter.create(),
     );
-    wallet2Messaging = new OffChainMessaging(
+    wallet2Messaging = new DataServiceMessaging(
       walletAdapter2,
       DataServiceApi.create(
         baseUrl,
@@ -138,7 +141,7 @@ describe('Off chain messaging (e2e)', () => {
     expect(new Set(wallet1Messages)).toMatchObject(new Set(wallet2Messages));
   });
 
-  test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
+  test('can send/read message with encrypted dialect when wallet-adapter supports encryption', async () => {
     // given
     const command: CreateDialectCommand = {
       encrypted: true,
@@ -163,7 +166,7 @@ describe('Off chain messaging (e2e)', () => {
     expect(new Set(wallet1Messages)).toMatchObject(new Set(wallet2Messages));
   });
 
-  test('can send/read message with encrypted dialect when wallet supports encryption', async () => {
+  test('can send/read message with encrypted dialect when wallet-adapter supports encryption', async () => {
     // given
     // @ts-ignore
     walletAdapter2.diffieHellman = undefined;

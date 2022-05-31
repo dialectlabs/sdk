@@ -1,4 +1,4 @@
-import { EmbeddedDialectWalletAdapter } from '../node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from './node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 import {
   DialectWalletEd25519TokenSigner,
@@ -9,10 +9,10 @@ import {
 import { Keypair } from '@solana/web3.js';
 
 describe('token tests', () => {
-  let wallet: EmbeddedDialectWalletAdapter;
+  let wallet: NodeDialectWalletAdapter;
   let signer: Ed25519TokenSigner;
   beforeEach(() => {
-    wallet = EmbeddedDialectWalletAdapter.create();
+    wallet = NodeDialectWalletAdapter.create();
     signer = new DialectWalletEd25519TokenSigner(wallet);
   });
 

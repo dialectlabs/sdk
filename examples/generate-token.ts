@@ -1,8 +1,8 @@
 import { DialectWalletEd25519TokenSigner, Token } from '../src';
-import { EmbeddedDialectWalletAdapter } from '../src/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../src/internal/wallet-adapter/node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 
-const walletAdapter = EmbeddedDialectWalletAdapter.create();
+const walletAdapter = NodeDialectWalletAdapter.create();
 
 (async () => {
   const token = await Token.generate(

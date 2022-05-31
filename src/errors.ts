@@ -21,12 +21,12 @@ export class IllegalArgumentError extends DialectSdkError {
 
 export class IllegalStateError extends DialectSdkError {
   constructor(title: string, msg?: string, details?: any) {
-    super(IllegalStateError.name, title, msg);
+    super(IllegalStateError.name, title, msg, details);
   }
 }
 
 export class UnsupportedOperationError extends DialectSdkError {
   constructor(title: string, msg?: string, details?: any) {
-    super(UnsupportedOperationError.name, title, msg);
+    super(UnsupportedOperationError.name, title, msg, details);
   }
 }
