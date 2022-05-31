@@ -1,19 +1,17 @@
-import type { Dapps, Wallets } from './internal/dapp/dapps';
 import type { DialectWalletAdapter } from './wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { TokenStore } from './internal/wallet-adapter/token';
 import type { Messaging } from './messaging.interface';
+import { DialectSdkFactory } from './internal/sdk-factory';
 
 export class DialectSdk {
   constructor(
-    readonly config: Config,
-    readonly dialects: Messaging,
-    readonly wallet: Wallets,
-    readonly dapps: Dapps,
+    readonly dialects: Messaging, // readonly wallet: Wallets, // readonly dapps: Dapps,
   ) {}
 
   static create(config: Config): DialectSdk {
-    throw new Error('Not implemented');
+    const factory = new DialectSdkFactory(config);
+    return factory.create();
   }
 }
 
@@ -24,6 +22,7 @@ export interface Config {
   wallet: DialectWalletAdapter;
   solana?: SolanaConfig;
   dialectCloud?: DialectCloudConfig;
+  messagingBackendPreference?: MessagingBackendPreference;
 }
 
 export interface SolanaConfig {
@@ -32,9 +31,20 @@ export interface SolanaConfig {
   rpcUrl?: string;
 }
 
-export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
-
 export interface DialectCloudConfig {
+  environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStore;
+}
+
+export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
+
+export type DialectCloudEnvironment =
+  | 'production'
+  | 'development'
+  | 'local-development';
+
+export enum MessagingBackendPreference {
+  SOLANA = 'SOLANA',
+  DATA_SERVICE = 'DATA_SERVICE',
 }

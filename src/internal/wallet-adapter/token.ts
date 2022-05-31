@@ -152,5 +152,3 @@ export class Token {
 export class TokenParsingError extends Error {}
 
 export class TokenStructureValidationError extends Error {}
-
-export class TokenStore {}

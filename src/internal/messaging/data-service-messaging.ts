@@ -58,7 +58,7 @@ export class DataServiceMessaging implements Messaging {
       throw new Error('Should not happen');
     }
     const textSerDe = await this.textSerde(dialect);
-    return new Web2Dialect(
+    return new DataServiceDialect(
       this.dataServiceDialectsApi,
       textSerDe,
       new PublicKey(publicKey),
@@ -109,7 +109,7 @@ export class DataServiceMessaging implements Messaging {
   }
 }
 
-export class Web2Dialect implements Dialect {
+export class DataServiceDialect implements Dialect {
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerDe: TextSerde,

@@ -1,0 +1,193 @@
+import type { DialectSdk } from '../sdk.interface';
+import {
+  Config,
+  DialectCloudEnvironment,
+  Environment,
+  MessagingBackendPreference,
+  SolanaNetwork,
+} from '../sdk';
+import { InMemoryTokenStore, TokenStore } from './data-service-api/token-store';
+import { programs } from '@dialectlabs/web3';
+import { PublicKey } from '@solana/web3.js';
+import { DialectWalletEd25519TokenSigner } from './wallet-adapter/token';
+import { InternalDialectWalletAdapter } from './wallet-adapter/internal-dialect-wallet-adapter';
+import { MessagingFacade } from './messaging/messaging-facade';
+import { DataServiceMessaging } from './messaging/data-service-messaging';
+import { DataServiceDialectsApiClient } from './data-service-api/data-service-api';
+import { TokenProvider } from './data-service-api/token-provider';
+import { Duration } from 'luxon';
+import { SolanaMessaging } from './messaging/solana-messaging';
+import { createDialectProgram } from './messaging/solana-dialect-program-factory';
+import type { Messaging } from '../messaging.interface';
+
+interface InternalConfig {
+  environment: Environment;
+  wallet: InternalDialectWalletAdapter;
+  solana: InternalSolanaConfig;
+  dialectCloud: InternalDialectCloudConfig;
+  messagingBackendPreference: MessagingBackendPreference;
+}
+
+interface InternalSolanaConfig {
+  network: SolanaNetwork;
+  dialectProgramId: PublicKey;
+  rpcUrl: string;
+}
+
+interface InternalDialectCloudConfig {
+  environment: DialectCloudEnvironment;
+  url: string;
+  tokenStore: TokenStore;
+}
+
+export class InternalDialectSdk implements DialectSdk {
+  constructor(readonly dialects: Messaging) {}
+}
+
+export class DialectSdkFactory {
+  constructor(private readonly config: Config) {}
+
+  create(): DialectSdk {
+    const config: InternalConfig = this.initializeConfig();
+    console.log(
+      `Initializing dialect sdk using config\n: ${JSON.stringify(config)}`,
+    );
+
+    const dataServiceMessaging = new DataServiceMessaging(
+      config.wallet,
+      new DataServiceDialectsApiClient(
+        config.dialectCloud.url,
+        TokenProvider.create(
+          new DialectWalletEd25519TokenSigner(config.wallet),
+          Duration.fromObject({ minutes: 60 }),
+          config.dialectCloud.tokenStore,
+        ),
+      ),
+    );
+    const solanaMessaging = new SolanaMessaging(
+      config.wallet,
+      createDialectProgram(config.wallet),
+    );
+    const messagingFacade = new MessagingFacade(
+      dataServiceMessaging,
+      solanaMessaging,
+    );
+    return new InternalDialectSdk(messagingFacade);
+  }
+
+  private initializeConfig(): InternalConfig {
+    const environment = this.config.environment ?? 'production';
+    const wallet = InternalDialectWalletAdapter.create(this.config.wallet);
+    return {
+      environment,
+      wallet,
+      dialectCloud: this.initializeDialectCloudConfig(),
+      solana: this.initializeSolanaConfig(),
+      messagingBackendPreference: MessagingBackendPreference.DATA_SERVICE,
+    };
+  }
+
+  private initializeDialectCloudConfig(): InternalDialectCloudConfig {
+    let internalConfig: InternalDialectCloudConfig = {
+      environment: 'production',
+      url: 'https://dialectapi.to',
+      tokenStore: new InMemoryTokenStore(),
+    };
+    const environment = this.config.environment;
+    if (environment) {
+      internalConfig.environment = environment;
+    }
+    if (environment === 'production' || environment === 'development') {
+      internalConfig.url = 'https://dialectapi.to';
+    }
+    if (environment === 'local-development') {
+      internalConfig.url = 'http://localhost:8080';
+    }
+    const dialectCloudEnvironment = this.config.dialectCloud?.environment;
+    if (dialectCloudEnvironment) {
+      internalConfig.environment = dialectCloudEnvironment;
+    }
+    if (
+      dialectCloudEnvironment === 'production' ||
+      dialectCloudEnvironment === 'development'
+    ) {
+      internalConfig.url = 'https://dialectapi.to';
+    }
+    if (dialectCloudEnvironment === 'local-development') {
+      internalConfig.url = 'http://localhost:8080';
+    }
+    if (this.config.dialectCloud?.url) {
+      internalConfig.url = this.config.dialectCloud.url;
+    }
+    if (this.config.dialectCloud?.tokenStore) {
+      internalConfig.tokenStore = this.config.dialectCloud.tokenStore;
+    }
+    return internalConfig;
+  }
+
+  private initializeSolanaConfig(): InternalSolanaConfig {
+    let internalConfig: InternalSolanaConfig = {
+      network: 'mainnet-beta',
+      dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+      rpcUrl: programs.mainnet.programAddress,
+    };
+    const environment = this.config.environment;
+    if (environment === 'production') {
+      const network = 'mainnet-beta';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+        rpcUrl: programs.mainnet.clusterAddress,
+      };
+    }
+    if (environment === 'development') {
+      const network = 'devnet';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs[network].programAddress),
+        rpcUrl: programs[network].clusterAddress,
+      };
+    }
+    if (environment === 'local-development') {
+      const network = 'localnet';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs[network].programAddress),
+        rpcUrl: programs[network].clusterAddress,
+      };
+    }
+    const solanaNetwork = this.config.solana?.network;
+    if (solanaNetwork === 'mainnet-beta') {
+      const network = 'mainnet-beta';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+        rpcUrl: programs.mainnet.clusterAddress,
+      };
+    }
+    if (solanaNetwork === 'devnet') {
+      const network = 'devnet';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs[network].programAddress),
+        rpcUrl: programs[network].clusterAddress,
+      };
+    }
+    if (solanaNetwork === 'localnet') {
+      const network = 'localnet';
+      internalConfig = {
+        network,
+        dialectProgramId: new PublicKey(programs[network].programAddress),
+        rpcUrl: programs[network].clusterAddress,
+      };
+    }
+
+    if (this.config.solana?.dialectProgramId) {
+      internalConfig.dialectProgramId = this.config.solana.dialectProgramId;
+    }
+    if (this.config.solana?.rpcUrl) {
+      internalConfig.rpcUrl = this.config.solana.rpcUrl;
+    }
+    return internalConfig;
+  }
+}

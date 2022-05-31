@@ -13,7 +13,6 @@ import {
   createDialect,
   deleteDialect,
   DialectAccount,
-  EncryptionProps,
   findDialects,
   getDialect,
   sendMessage,
@@ -93,7 +92,7 @@ export class SolanaMessaging implements Messaging {
   }
 }
 
-export class Web3Dialect implements Dialect {
+export class SolanaDialect implements Dialect {
   constructor(
     readonly walletAdapter: InternalDialectWalletAdapter,
     readonly program: Program,
@@ -152,7 +151,7 @@ function toWeb3Dialect(
   if (!meMember || !otherMember) {
     throw new Error('Should not happen');
   }
-  return new Web3Dialect(
+  return new SolanaDialect(
     walletAdapter,
     program,
     publicKey,

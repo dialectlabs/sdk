@@ -63,7 +63,7 @@ export class InternalDialectWalletAdapter implements DialectWalletAdapter {
     return !!this.delegate.diffieHellman;
   }
 
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapter {
+  static create(adapter: DialectWalletAdapter): InternalDialectWalletAdapter {
     // TODO: here we can put adapter lookup logic
     return new InternalDialectWalletAdapter(adapter);
   }
