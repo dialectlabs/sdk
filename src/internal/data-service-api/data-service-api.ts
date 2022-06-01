@@ -7,18 +7,19 @@ export interface ApiClientError {
   statusCode: number | string;
 }
 
-async function withReThrowingDataServiceError<T>(restCall: Promise<T>) {
+async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
   try {
-    return await restCall;
+    return await fn;
   } catch (e) {
     const err = e as AxiosError;
     const errorData = err.response?.data as ApiClientError;
-    const rethrown: ApiClientError = errorData ?? {
-      error: err.name,
-      message: err.message,
-      statusCode: err.status,
-    };
-    throw rethrown;
+    throw (
+      errorData ?? {
+        error: err.name,
+        message: err.message,
+        statusCode: err.status,
+      }
+    );
   }
 }
 

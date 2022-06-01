@@ -1,123 +1,102 @@
-export const ParsedErrorType = {
-  InsufficientFunds: 'INSUFFICIENT_FUNDS',
-  DisconnectedFromChain: 'DISCONNECTED_FROM_CHAIN',
-  CannotDecrypt: 'CANNOT_DECRYPT',
-  UnknownError: 'UNKNOWN_ERROR',
-  NoAccount: 'NO_ACCOUNT',
-  IncorrectEmail: 'INCORRECT_EMAIL',
-  IncorrectSMSNumber: 'INCORRECT_SMS',
-  NotSigned: 'NOT_SIGNED',
-  ThreadExists: 'THREAD_EXISTS',
-} as const;
-type ParsedErrorTypeKeys = keyof typeof ParsedErrorType;
+import { DialectSdkError, UnknownError } from '@sdk/errors';
+import type { AnchorError } from '@project-serum/anchor';
 
-export interface ParsedErrorData {
-  type: typeof ParsedErrorType[ParsedErrorTypeKeys];
-  title: string;
-  message: string;
-  matchers?: Array<string | RegExp>;
-}
+export abstract class SolanaError extends DialectSdkError {}
 
-// TODO: Implement Error instances?
-export const insufficientFunds: ParsedErrorData = {
-  type: ParsedErrorType.InsufficientFunds,
-  title: 'Insufficient Funds',
-  message:
-    'You do not have enough funds to complete this transaction. Please deposit more funds and try again.',
-  matchers: [
+export class InsufficientFundsError extends SolanaError {
+  static matchers = [
     'Attempt to debit an account but found no record of a prior credit.',
     /(0x1)$/gm,
-  ],
-};
+  ];
 
-export const disconnectedFromChain: ParsedErrorData = {
-  type: ParsedErrorType.DisconnectedFromChain,
-  title: 'Lost connection to Solana blockchain',
-  message:
-    'Having problems reaching Solana blockchain. Please try again later.',
-  matchers: ['Network request failed'],
-};
+  constructor(details?: any[]) {
+    super(
+      InsufficientFundsError.name,
+      'Insufficient Funds',
+      'You do not have enough funds to complete this transaction. Please deposit more funds and try again.',
+      details,
+    );
+  }
+}
 
-export const cannotDecryptDialect: ParsedErrorData = {
-  type: ParsedErrorType.CannotDecrypt,
-  title: 'Cannot decrypt messages',
-  message:
-    "This dialect's messages are encrypted and because you do not have access to the private key in this context.",
-  matchers: ['Authentication failed during decryption attempt'],
-};
+export class DisconnectedFromChainError extends SolanaError {
+  static matchers = ['Network request failed'];
 
-export const noAccount: ParsedErrorData = {
-  type: ParsedErrorType.NoAccount,
-  title: 'Error',
-  message: 'Account does not exist',
-  matchers: ['Account does not exist'],
-};
+  constructor(details?: any[]) {
+    super(
+      DisconnectedFromChainError.name,
+      'Lost connection to Solana blockchain',
+      'Having problems reaching Solana blockchain. Please try again later.',
+      details,
+    );
+  }
+}
 
-// TODO: move web2 errors, no need to parse them as web3
-export const incorrectEmail: ParsedErrorData = {
-  type: ParsedErrorType.IncorrectEmail,
-  title: 'Error',
-  message: 'Please enter a valid email',
-  matchers: ['Incorrect email'],
-};
+export class AccountNotFoundError extends SolanaError {
+  static matchers = ['Account does not exist'];
 
-export const incorrectSmsNumber: ParsedErrorData = {
-  type: ParsedErrorType.IncorrectSMSNumber,
-  title: 'Error',
-  message: 'Please enter a valid SMS number',
-  matchers: ['Incorrect SMS number'],
-};
+  constructor(details?: any[]) {
+    super(
+      AccountNotFoundError.name,
+      'Error',
+      'Account does not exist',
+      details,
+    );
+  }
+}
 
-export const notSigned: ParsedErrorData = {
-  type: ParsedErrorType.NotSigned,
-  title: 'Error',
-  message: 'You must sign the message to complete this action',
-  matchers: ['User rejected the request'],
-};
+export class AccountAlreadyExistsError extends SolanaError {
+  static matchers = ['already in use'];
 
-export const threadAlreadyExists: ParsedErrorData = {
-  type: ParsedErrorType.ThreadExists,
-  title: 'Error',
-  message: 'You already have chat with this address',
-  matchers: ['A raw constraint was violated'],
-};
+  constructor(details?: any[]) {
+    super(
+      AccountAlreadyExistsError.name,
+      'Error',
+      'Account already exists',
+      details,
+    );
+  }
+}
 
-export const unknownError: ParsedErrorData = {
-  type: ParsedErrorType.UnknownError,
-  title: 'Error',
-  message: 'Something went wrong. Please try again later.',
-};
+export class NotSignedError extends SolanaError {
+  static matchers = ['User rejected the request'];
 
-const errors: ParsedErrorData[] = [
-  insufficientFunds,
-  disconnectedFromChain,
-  cannotDecryptDialect,
-  incorrectEmail,
-  notSigned,
-  noAccount,
-  threadAlreadyExists,
-];
+  constructor(details?: any[]) {
+    super(
+      NotSignedError.name,
+      'Error',
+      'You must sign the message to complete this action',
+      details,
+    );
+  }
+}
 
-const parseError = (error: Error) => {
-  return (
-    errors.find((err) =>
-      err.matchers?.find((matcher) => error.message.match(matcher)),
-    ) || unknownError
-  );
-};
+export async function withErrorParsing<T>(promise: Promise<T>): Promise<T> {
+  try {
+    return await promise;
+  } catch (e) {
+    const err = e as Error;
+    throw parseError(err);
+  }
+}
 
-export const withErrorParsing =
-  <F extends (...args: any[]) => Promise<any>>(
-    fn: F,
-  ): ((...args: Parameters<F>) => ReturnType<F>) =>
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore Intentional ignore, due to issues with ReturnType and async functions
-  async (...args: Parameters<F>) => {
-    try {
-      const result: ReturnType<F> = await fn(...args);
-      return result;
-    } catch (e) {
-      const parsedError = parseError(e as Error); // TODO: it's unlikely that something else is going to be passed here, but we should think about that later on
-      throw parsedError;
-    }
-  };
+function parseError(error: Error | AnchorError) {
+  const message = error.message;
+  const logs = (('logs' in error && error.logs) || []).join('');
+  if (InsufficientFundsError.matchers.some((it) => message.match(it))) {
+    throw new InsufficientFundsError([error]);
+  }
+  if (DisconnectedFromChainError.matchers.some((it) => message.match(it))) {
+    throw new DisconnectedFromChainError([error]);
+  }
+  if (AccountAlreadyExistsError.matchers.some((it) => logs.match(it))) {
+    throw new AccountAlreadyExistsError([error]);
+  }
+  if (AccountNotFoundError.matchers.some((it) => message.match(it))) {
+    throw new AccountNotFoundError([error]);
+  }
+  if (NotSignedError.matchers.some((it) => message.match(it))) {
+    throw new NotSignedError([error]);
+  }
+  throw new UnknownError([error]);
+}

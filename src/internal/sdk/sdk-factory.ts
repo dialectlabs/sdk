@@ -8,7 +8,7 @@ import {
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@data-service-api/token-store';
 import { programs } from '@dialectlabs/web3';
-import { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@data-service-api/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
@@ -22,7 +22,7 @@ import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-uti
 
 interface InternalConfig {
   environment: Environment;
-  wallet: InternalDialectWalletAdapter;
+  wallet: DialectWalletAdapterImpl;
   solana: InternalSolanaConfig;
   dialectCloud: InternalDialectCloudConfig;
   messagingBackendPreference: MessagingBackendPreference;
@@ -77,7 +77,7 @@ export class DialectSdkFactory {
 
   private initializeConfig(): InternalConfig {
     const environment = this.config.environment ?? 'production';
-    const wallet = InternalDialectWalletAdapter.create(this.config.wallet);
+    const wallet = DialectWalletAdapterImpl.create(this.config.wallet);
     return {
       environment,
       wallet,

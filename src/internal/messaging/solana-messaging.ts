@@ -12,7 +12,9 @@ import type { PublicKey } from '@solana/web3.js';
 import {
   createDialect,
   deleteDialect,
+  Dialect,
   DialectAccount,
+  EncryptionProps,
   findDialects,
   getDialect,
   sendMessage,
@@ -20,11 +22,22 @@ import {
 
 import type { Program } from '@project-serum/anchor';
 import { getEncryptionProps } from './messaging-common';
-import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
+import {
+  AccountAlreadyExistsError,
+  AccountNotFoundError,
+  SolanaError,
+  withErrorParsing,
+} from '@messaging/internal/solana-messaging-errors';
+import {
+  ThreadAlreadyExistsError,
+  ThreadNotFoundError,
+} from '@messaging/internal/messaging-errors';
+import { IllegalStateError } from '@sdk/errors';
 
 export class SolanaMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: InternalDialectWalletAdapter,
+    private readonly walletAdapter: DialectWalletAdapterImpl,
     private readonly program: Program,
   ) {}
 
@@ -35,47 +48,73 @@ export class SolanaMessaging implements Messaging {
       this.walletAdapter,
     );
     // TODO: same as for web2! accurate handling of dh absence: extract adapter interface + handle sollet
-    const dialectAccount = await createDialect(
-      this.program,
-      this.walletAdapter,
-      [
-        {
-          publicKey: this.walletAdapter.publicKey,
-          scopes: [
-            command.me.scopes.some((it) => it === DialectMemberScope.ADMIN),
-            command.me.scopes.some((it) => it === DialectMemberScope.WRITE),
-          ],
-        },
-        {
-          publicKey: command.otherMember.publicKey,
-          scopes: [
-            command.otherMember.scopes.some(
-              (it) => it === DialectMemberScope.ADMIN,
-            ),
-            command.otherMember.scopes.some(
-              (it) => it === DialectMemberScope.WRITE,
-            ),
-          ],
-        },
-      ],
+    const dialectAccount = await this.createInternal(
+      command,
       encrypted,
       encryptionProps,
     );
     return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
   }
 
+  private async createInternal(
+    command: CreateDialectCommand,
+    encrypted: boolean,
+    encryptionProps?: EncryptionProps,
+  ) {
+    try {
+      return await withErrorParsing(
+        createDialect(
+          this.program,
+          this.walletAdapter,
+          [
+            {
+              publicKey: this.walletAdapter.publicKey,
+              scopes: this.toProtocolScopes(command.me.scopes),
+            },
+            {
+              publicKey: command.otherMember.publicKey,
+              scopes: this.toProtocolScopes(command.otherMember.scopes),
+            },
+          ],
+          encrypted,
+          encryptionProps,
+        ),
+      );
+    } catch (e) {
+      const err = e as SolanaError;
+      if (err.type === AccountAlreadyExistsError.name) {
+        throw new ThreadAlreadyExistsError();
+      }
+      throw e;
+    }
+  }
+
+  private toProtocolScopes(scopes: DialectMemberScope[]): [boolean, boolean] {
+    return [
+      scopes.some((it) => it === DialectMemberScope.ADMIN),
+      scopes.some((it) => it === DialectMemberScope.WRITE),
+    ];
+  }
+
   async find(query: FindDialectQuery): Promise<Thread | null> {
     const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
+    const dialectAccount = await this.findInternal(query, encryptionProps);
+    return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
+  }
+
+  private async findInternal(
+    query: FindDialectQuery,
+    encryptionProps?: EncryptionProps,
+  ) {
     try {
-      const dialectAccount = await getDialect(
-        this.program,
-        query.publicKey,
-        encryptionProps,
+      return await withErrorParsing(
+        getDialect(this.program, query.publicKey, encryptionProps),
       );
-      return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
     } catch (e) {
-      const err = e as Error;
-      if (err?.message.includes('Account does not exist')) return null;
+      const err = e as SolanaError;
+      if (err.type === AccountNotFoundError.name) {
+        throw new ThreadNotFoundError();
+      }
       throw e;
     }
   }
@@ -94,7 +133,7 @@ export class SolanaMessaging implements Messaging {
 
 export class SolanaThread implements Thread {
   constructor(
-    readonly walletAdapter: InternalDialectWalletAdapter,
+    readonly walletAdapter: DialectWalletAdapterImpl,
     readonly program: Program,
     readonly publicKey: PublicKey,
     readonly me: DialectMember,
@@ -136,20 +175,35 @@ export class SolanaThread implements Thread {
   }
 }
 
+function fromProtocolScopes(scopes: [boolean, boolean]) {
+  return [
+    ...(scopes[0] ? [DialectMemberScope.ADMIN] : []),
+    ...(scopes[1] ? [DialectMemberScope.WRITE] : []),
+  ];
+}
+
+function findMember(memberPk: PublicKey, dialect: Dialect) {
+  return dialect.members.find((it) => it.publicKey.equals(memberPk));
+}
+
+function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
+  return dialect.members.find((it) => !it.publicKey.equals(memberPk));
+}
+
 function toWeb3Dialect(
   dialectAccount: DialectAccount,
-  walletAdapter: InternalDialectWalletAdapter,
+  walletAdapter: DialectWalletAdapterImpl,
   program: Program,
 ) {
   const { dialect, publicKey } = dialectAccount;
-  const meMember = dialect.members.find((it) =>
-    it.publicKey.equals(walletAdapter.publicKey),
-  );
-  const otherMember = dialect.members.find(
-    (it) => !it.publicKey.equals(walletAdapter.publicKey),
-  );
+  const meMember = findMember(walletAdapter.publicKey, dialect);
+  const otherMember = findOtherMember(walletAdapter.publicKey, dialect);
   if (!meMember || !otherMember) {
-    throw new Error('Should not happen');
+    throw new IllegalStateError(
+      `Cannot resolve members from given list: ${dialect.members.map((it) =>
+        it.publicKey.toBase58(),
+      )} and wallet public key ${walletAdapter.publicKey.toBase58()}`,
+    );
   }
   return new SolanaThread(
     walletAdapter,
@@ -157,17 +211,11 @@ function toWeb3Dialect(
     publicKey,
     {
       publicKey: meMember.publicKey,
-      scopes: [
-        ...(meMember.scopes[0] ? [DialectMemberScope.ADMIN] : []),
-        ...(meMember.scopes[1] ? [DialectMemberScope.WRITE] : []),
-      ],
+      scopes: fromProtocolScopes(meMember.scopes),
     },
     {
       publicKey: otherMember.publicKey,
-      scopes: [
-        ...(otherMember.scopes[0] ? [DialectMemberScope.ADMIN] : []),
-        ...(otherMember.scopes[1] ? [DialectMemberScope.WRITE] : []),
-      ],
+      scopes: fromProtocolScopes(otherMember.scopes),
     },
     dialect.encrypted,
     dialectAccount,

@@ -21,11 +21,11 @@ import {
 
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
 import { getEncryptionProps } from './messaging-common';
-import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: InternalDialectWalletAdapter,
+    private readonly walletAdapter: DialectWalletAdapterImpl,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
   ) {}
 

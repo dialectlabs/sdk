@@ -7,17 +7,17 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { SolanaMessaging } from './solana-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 
 describe('Solana messaging (e2e)', () => {
-  let walletAdapter1: InternalDialectWalletAdapter;
+  let walletAdapter1: DialectWalletAdapterImpl;
   let wallet1Messaging: Messaging;
 
-  let walletAdapter2: InternalDialectWalletAdapter;
+  let walletAdapter2: DialectWalletAdapterImpl;
   let wallet2Messaging: Messaging;
 
   beforeEach(async () => {
-    walletAdapter1 = new InternalDialectWalletAdapter(
+    walletAdapter1 = new DialectWalletAdapterImpl(
       NodeDialectWalletAdapter.create(),
     );
     const wallet1Program = await createDialectProgram(walletAdapter1);
@@ -30,10 +30,10 @@ describe('Solana messaging (e2e)', () => {
       airDropRequest1,
     );
     wallet1Messaging = new SolanaMessaging(walletAdapter1, wallet1Program);
-    walletAdapter2 = new InternalDialectWalletAdapter(
+    walletAdapter2 = new DialectWalletAdapterImpl(
       NodeDialectWalletAdapter.create(),
     );
-    const wallet2Decorator = new InternalDialectWalletAdapter(walletAdapter2);
+    const wallet2Decorator = new DialectWalletAdapterImpl(walletAdapter2);
     const wallet2Program = await createDialectProgram(wallet2Decorator);
     wallet2Messaging = new SolanaMessaging(wallet2Decorator, wallet2Program);
     const airDropRequest2 =
@@ -69,6 +69,7 @@ describe('Solana messaging (e2e)', () => {
       },
     };
     const dialect = await wallet1Messaging.create(command);
+    const dialect2 = await wallet1Messaging.create(command);
     // then
     expect(dialect).not.toBeNull();
   });

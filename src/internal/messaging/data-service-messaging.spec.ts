@@ -7,19 +7,19 @@ import type {
   Messaging,
 } from '@messaging/messaging.interface';
 import { DialectMemberScope } from '@messaging/messaging.interface';
-import { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-utils';
 
 describe('Data service messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let walletAdapter1: InternalDialectWalletAdapter;
+  let walletAdapter1: DialectWalletAdapterImpl;
   let wallet1Messaging: Messaging;
-  let walletAdapter2: InternalDialectWalletAdapter;
+  let walletAdapter2: DialectWalletAdapterImpl;
   let wallet2Messaging: Messaging;
 
   beforeEach(() => {
-    walletAdapter1 = new InternalDialectWalletAdapter(
+    walletAdapter1 = new DialectWalletAdapterImpl(
       NodeDialectWalletAdapter.create(),
     );
     wallet1Messaging = new DataServiceMessaging(
@@ -31,7 +31,7 @@ describe('Data service messaging (e2e)', () => {
         ),
       ).dialects,
     );
-    walletAdapter2 = new InternalDialectWalletAdapter(
+    walletAdapter2 = new DialectWalletAdapterImpl(
       NodeDialectWalletAdapter.create(),
     );
     wallet2Messaging = new DataServiceMessaging(

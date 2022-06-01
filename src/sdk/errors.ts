@@ -30,3 +30,14 @@ export class UnsupportedOperationError extends DialectSdkError {
     super(UnsupportedOperationError.name, title, msg, details);
   }
 }
+
+export class UnknownError extends DialectSdkError {
+  constructor(details?: any) {
+    super(
+      UnknownError.name,
+      'Error',
+      'Something went wrong. Please try again later.',
+      details,
+    );
+  }
+}

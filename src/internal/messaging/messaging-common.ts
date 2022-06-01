@@ -1,9 +1,9 @@
 import type { EncryptionProps } from '@dialectlabs/web3';
-import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
+import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 
 export async function getEncryptionProps(
   encrypted: boolean,
-  walletAdapter: InternalDialectWalletAdapter,
+  walletAdapter: DialectWalletAdapterImpl,
 ): Promise<EncryptionProps | undefined> {
   if (encrypted && walletAdapter.canEncrypt()) {
     return {
