@@ -1,16 +1,25 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
+import { AuthTokensImpl } from './internal/auth/token-utils';
 
-export interface AuthTokenUtils {
-  generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token>;
+export class Auth {
+  private constructor() {}
 
-  parse(rawToken: string): Token;
+  static tokens(): AuthTokens {
+    return new AuthTokensImpl();
+  }
+}
 
-  isValid(token: Token): boolean;
+export abstract class AuthTokens {
+  abstract generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token>;
 
-  isSignatureValid(token: Token): boolean;
+  abstract parse(rawToken: string): Token;
 
-  isExpired(token: Token): boolean;
+  abstract isValid(token: Token): boolean;
+
+  abstract isSignatureValid(token: Token): boolean;
+
+  abstract isExpired(token: Token): boolean;
 }
 
 export interface Token {

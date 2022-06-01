@@ -9,10 +9,12 @@ import type {
   Token,
   TokenBody,
   TokenHeader,
-  AuthTokenUtils,
-} from '../../token.interface';
+  AuthTokens,
+} from '../../auth.interface';
 
-export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
+export class DialectWalletAdapterEd25519TokenSigner
+  implements Ed25519TokenSigner
+{
   readonly subject: PublicKey;
 
   constructor(readonly dialectWalletAdapter: DialectWalletAdapter) {
@@ -30,7 +32,7 @@ export class DialectWalletEd25519TokenSigner implements Ed25519TokenSigner {
   }
 }
 
-export class AuthTokenUtilsImpl implements AuthTokenUtils {
+export class AuthTokensImpl implements AuthTokens {
   async generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token> {
     const header: TokenHeader = {
       alg: 'ed25519',
@@ -44,7 +46,7 @@ export class AuthTokenUtilsImpl implements AuthTokenUtils {
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };
     const base64Body = btoa(JSON.stringify(body));
-    const signingPayload = AuthTokenUtilsImpl.getSigningPayload(
+    const signingPayload = AuthTokensImpl.getSigningPayload(
       base64Header + '.' + base64Body,
     );
     const signature = await signer.sign(signingPayload);
@@ -101,7 +103,7 @@ export class AuthTokenUtilsImpl implements AuthTokenUtils {
 
   isSignatureValid(token: Token) {
     const signedPayload = token.base64Header + '.' + token.base64Body;
-    const signingPayload = AuthTokenUtilsImpl.getSigningPayload(signedPayload);
+    const signingPayload = AuthTokensImpl.getSigningPayload(signedPayload);
     return nacl.sign.detached.verify(
       signingPayload,
       token.signature,

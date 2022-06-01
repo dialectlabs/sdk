@@ -1,4 +1,4 @@
-import type { Token } from '../../token.interface';
+import type { Token } from '../../auth.interface';
 
 export abstract class TokenStore {
   abstract get(): Token | null;

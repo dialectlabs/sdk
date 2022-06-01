@@ -1,24 +1,24 @@
 import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
 import {
-  DialectWalletEd25519TokenSigner,
-  AuthTokenUtilsImpl,
+  DialectWalletAdapterEd25519TokenSigner,
+  AuthTokensImpl,
 } from './token-utils';
 import { Keypair } from '@solana/web3.js';
 import type {
   Ed25519TokenSigner,
   TokenBody,
-  AuthTokenUtils,
-} from '../../token.interface';
+  AuthTokens,
+} from '../../auth.interface';
 
 describe('token tests', () => {
   let wallet: NodeDialectWalletAdapter;
   let signer: Ed25519TokenSigner;
-  let tokenUtils: AuthTokenUtils;
+  let tokenUtils: AuthTokens;
   beforeEach(() => {
     wallet = NodeDialectWalletAdapter.create();
-    signer = new DialectWalletEd25519TokenSigner(wallet);
-    tokenUtils = new AuthTokenUtilsImpl();
+    signer = new DialectWalletAdapterEd25519TokenSigner(wallet);
+    tokenUtils = new AuthTokensImpl();
   });
 
   test('when not expired validation returns true', async () => {

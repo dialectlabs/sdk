@@ -10,8 +10,8 @@ import { InMemoryTokenStore, TokenStore } from './data-service-api/token-store';
 import { programs } from '@dialectlabs/web3';
 import { PublicKey } from '@solana/web3.js';
 import {
-  DialectWalletEd25519TokenSigner,
-  AuthTokenUtilsImpl,
+  DialectWalletAdapterEd25519TokenSigner,
+  AuthTokensImpl,
 } from './auth/token-utils';
 import { InternalDialectWalletAdapter } from './wallet-adapter/internal-dialect-wallet-adapter';
 import { MessagingFacade } from './messaging/messaging-facade';
@@ -22,7 +22,7 @@ import { Duration } from 'luxon';
 import { SolanaMessaging } from './messaging/solana-messaging';
 import { createDialectProgram } from './messaging/solana-dialect-program-factory';
 import type { Messaging } from '../messaging.interface';
-import type { AuthTokenUtils } from '../token.interface';
+import type { AuthTokens } from '../auth.interface';
 
 interface InternalConfig {
   environment: Environment;
@@ -45,10 +45,7 @@ interface InternalDialectCloudConfig {
 }
 
 export class InternalDialectSdk implements DialectSdk {
-  constructor(
-    readonly threads: Messaging,
-    readonly authTokens: AuthTokenUtils,
-  ) {}
+  constructor(readonly threads: Messaging) {}
 }
 
 export class DialectSdkFactory {
@@ -65,7 +62,7 @@ export class DialectSdkFactory {
       new DataServiceDialectsApiClient(
         config.dialectCloud.url,
         TokenProvider.create(
-          new DialectWalletEd25519TokenSigner(config.wallet),
+          new DialectWalletAdapterEd25519TokenSigner(config.wallet),
           Duration.fromObject({ minutes: 60 }),
           config.dialectCloud.tokenStore,
         ),
@@ -79,7 +76,7 @@ export class DialectSdkFactory {
       dataServiceMessaging,
       solanaMessaging,
     );
-    return new InternalDialectSdk(messagingFacade, new AuthTokenUtilsImpl());
+    return new InternalDialectSdk(messagingFacade);
   }
 
   private initializeConfig(): InternalConfig {

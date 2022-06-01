@@ -3,7 +3,6 @@ import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from './messaging.interface';
 import { DialectSdkFactory } from './internal/sdk-factory';
 import type { TokenStore } from './internal/data-service-api/token-store';
-import type { AuthTokenUtils } from './token.interface';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -13,7 +12,6 @@ export abstract class Dialect {
 
 export interface DialectSdk {
   readonly threads: Messaging;
-  readonly authTokens: AuthTokenUtils;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';

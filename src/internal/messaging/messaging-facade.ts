@@ -12,6 +12,7 @@ import type { SolanaMessaging } from './solana-messaging';
 import type { PublicKey } from '@solana/web3.js';
 import { UnsupportedOperationError } from '../../errors';
 
+// TODO: implement after ux/ui decision made
 export class MessagingFacade implements Messaging {
   constructor(
     private readonly dataServiceMessaging: DataServiceMessaging,

@@ -2,9 +2,9 @@
 // https://api.devnet.solana.com
 // https://localhost:8899
 
-import {Keypair} from '@solana/web3.js';
-import {DialectMemberScope} from '../src/messaging.interface';
-import {SessionStorageTokenStore} from '../src/internal/data-service-api/token-store';
+import { Keypair } from '@solana/web3.js';
+import { DialectMemberScope } from '../src/messaging.interface';
+import { SessionStorageTokenStore } from '../src/internal/data-service-api/token-store';
 import {
   Dialect,
   DialectWalletAdapter,
@@ -47,25 +47,10 @@ async function decentalizedInbox() {
 async function notificaitonCenter() {
   const wallet: NodeDialectWalletAdapter = NodeDialectWalletAdapter.create();
   const dAppPublicKey = new Keypair().publicKey;
-  const sdk = Dialect.sdk({
-    environment: 'production',
-    wallet,
-    dialectCloud: {
-      tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
-    },
-  });
-  const dialect = await sdk.threads.create({
-    me: {
-      scopes: [],
-    },
-    otherMember: {
-      publicKey: dAppPublicKey,
-      scopes: [DialectMemberScope.WRITE],
-    },
-    encrypted: false,
-  });
+  const sdk = Dialect.sdk({ wallet });
+
   const allDialects = await sdk.threads.findAll();
-  const foundByMember = await sdk.threads.find({otherMember: dAppPublicKey});
+  const foundByMember = await sdk.threads.find({ otherMember: dAppPublicKey });
   if (foundByMember) {
     await foundByMember.delete();
   }
@@ -91,7 +76,7 @@ async function monitoringServiceDialectThreadSink() {
     wallet,
   });
 
-  const dialect = await sdk.threads.find({otherMember: subscriber});
+  const dialect = await sdk.threads.find({ otherMember: subscriber });
   if (dialect) {
     await dialect.send({
       text: 'Notification',
@@ -112,19 +97,19 @@ async function monitoringServiceAndCli() {
       tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
     },
   });
-  const dapp = await sdk.dapps.find({publicKey: dAppPublicKey});
+  const dapp = await sdk.dapps.find({ publicKey: dAppPublicKey });
   const subscribers = await dapp?.subscribers.list(); // Provides access to dApp subscribers
   dapp &&
-  (await dapp.notify({
-    // Under the hood the notification will be sent to both web2 and web3 sources
-    title: 'title',
-    message: 'hello worlkd',
-  }));
+    (await dapp.notify({
+      // Under the hood the notification will be sent to both web2 and web3 sources
+      title: 'title',
+      message: 'hello worlkd',
+    }));
 
   dapp &&
-  (await dapp.notify({
-    title: 'title',
-    message: 'hello worlkd',
-    wallets: [Keypair.generate().publicKey, Keypair.generate().publicKey],
+    (await dapp.notify({
+      title: 'title',
+      message: 'hello worlkd',
+      wallets: [Keypair.generate().publicKey, Keypair.generate().publicKey],
     }));
 }

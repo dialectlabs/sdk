@@ -8,7 +8,7 @@ import {
 } from './data-service-api';
 import { TokenProvider } from './token-provider';
 import { Keypair } from '@solana/web3.js';
-import { DialectWalletEd25519TokenSigner } from '../auth/token-utils';
+import { DialectWalletAdapterEd25519TokenSigner } from '../auth/token-utils';
 import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 
 describe('Data service api (e2e)', () => {
@@ -28,11 +28,15 @@ describe('Data service api (e2e)', () => {
       wallet2 = NodeDialectWalletAdapter.create();
       wallet1Api = DataServiceApi.create(
         baseUrl,
-        TokenProvider.create(new DialectWalletEd25519TokenSigner(wallet1)),
+        TokenProvider.create(
+          new DialectWalletAdapterEd25519TokenSigner(wallet1),
+        ),
       ).dialects;
       wallet2Api = DataServiceApi.create(
         baseUrl,
-        TokenProvider.create(new DialectWalletEd25519TokenSigner(wallet2)),
+        TokenProvider.create(
+          new DialectWalletAdapterEd25519TokenSigner(wallet2),
+        ),
       ).dialects;
     });
 

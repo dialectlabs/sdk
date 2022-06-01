@@ -7,7 +7,7 @@ import { DataServiceMessaging } from './data-service-messaging';
 import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
 import { DataServiceApi } from '../data-service-api/data-service-api';
 import { TokenProvider } from '../data-service-api/token-provider';
-import { DialectWalletEd25519TokenSigner } from '../auth/token-utils';
+import { DialectWalletAdapterEd25519TokenSigner } from '../auth/token-utils';
 import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
 
 describe('Data service messaging (e2e)', () => {
@@ -27,7 +27,7 @@ describe('Data service messaging (e2e)', () => {
       DataServiceApi.create(
         baseUrl,
         TokenProvider.create(
-          new DialectWalletEd25519TokenSigner(walletAdapter1),
+          new DialectWalletAdapterEd25519TokenSigner(walletAdapter1),
         ),
       ).dialects,
     );
@@ -39,7 +39,7 @@ describe('Data service messaging (e2e)', () => {
       DataServiceApi.create(
         baseUrl,
         TokenProvider.create(
-          new DialectWalletEd25519TokenSigner(walletAdapter2),
+          new DialectWalletAdapterEd25519TokenSigner(walletAdapter2),
         ),
       ).dialects,
     );
