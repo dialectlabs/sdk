@@ -6,21 +6,21 @@ import type {
   Message,
   Messaging,
   SendMessageCommand,
-} from '../../messaging.interface';
-import { DialectMemberScope } from '../../messaging.interface';
+} from '@messaging/messaging.interface';
+import { DialectMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
 import type {
   ApiClientError,
   DataServiceDialectsApi,
-} from '../data-service-api/data-service-api';
+} from '@data-service-api/data-service-api';
 import {
   DialectAccountDto,
   DialectDto,
   MemberScopeDto,
-} from '../data-service-api/data-service-api';
+} from '@data-service-api/data-service-api';
 
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
-import type { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 import { getEncryptionProps } from './messaging-common';
 
 export class DataServiceMessaging implements Messaging {

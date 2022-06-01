@@ -6,8 +6,8 @@ import type {
   Messaging,
   SendMessageCommand,
   Thread,
-} from '../../messaging.interface';
-import { DialectMemberScope } from '../../messaging.interface';
+} from '@messaging/messaging.interface';
+import { DialectMemberScope } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
   createDialect,
@@ -19,7 +19,7 @@ import {
 } from '@dialectlabs/web3';
 
 import type { Program } from '@project-serum/anchor';
-import type { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 import { getEncryptionProps } from './messaging-common';
 
 export class SolanaMessaging implements Messaging {

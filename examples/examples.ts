@@ -3,7 +3,7 @@
 // https://localhost:8899
 
 import { Keypair } from '@solana/web3.js';
-import { DialectMemberScope } from '../src/messaging.interface';
+import { DialectMemberScope } from '../src';
 import { SessionStorageTokenStore } from '../src/internal/data-service-api/token-store';
 import {
   Dialect,

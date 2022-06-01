@@ -1,5 +1,5 @@
-import type { DialectWalletAdapter } from '../../dialect-wallet-adapter.interface';
-import { UnsupportedOperationError } from '../../errors';
+import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import { UnsupportedOperationError } from '@sdk/errors';
 import type { Transaction } from '@solana/web3.js';
 
 export class InternalDialectWalletAdapter implements DialectWalletAdapter {

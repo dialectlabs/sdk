@@ -4,8 +4,8 @@ import type {
   Ed25519TokenSigner,
   Token,
   AuthTokens,
-} from '../../auth.interface';
-import { AuthTokensImpl } from '../auth/token-utils';
+} from '@auth/auth.interface';
+import { AuthTokensImpl } from '@auth/token-utils';
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;

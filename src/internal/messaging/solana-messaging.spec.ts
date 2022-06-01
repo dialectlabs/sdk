@@ -1,13 +1,13 @@
 import type {
   CreateDialectCommand,
   Messaging,
-} from '../../messaging.interface';
-import { DialectMemberScope } from '../../messaging.interface';
-import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
+} from '@messaging/messaging.interface';
+import { DialectMemberScope } from '@messaging/messaging.interface';
+import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { SolanaMessaging } from './solana-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+import { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 
 describe('Solana messaging (e2e)', () => {
   let walletAdapter1: InternalDialectWalletAdapter;

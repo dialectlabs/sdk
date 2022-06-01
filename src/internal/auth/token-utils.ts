@@ -2,15 +2,15 @@ import nacl from 'tweetnacl';
 import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapter } from '../../dialect-wallet-adapter.interface';
-import { UnsupportedOperationError } from '../../errors';
+import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import { UnsupportedOperationError } from '@sdk/errors';
 import type {
+  AuthTokens,
   Ed25519TokenSigner,
   Token,
   TokenBody,
   TokenHeader,
-  AuthTokens,
-} from '../../auth.interface';
+} from '@auth/auth.interface';
 
 export class DialectWalletAdapterEd25519TokenSigner
   implements Ed25519TokenSigner

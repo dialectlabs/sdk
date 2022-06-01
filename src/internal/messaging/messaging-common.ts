@@ -1,4 +1,4 @@
-import type { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 import type { EncryptionProps } from '@dialectlabs/web3';
 
 export async function getEncryptionProps(

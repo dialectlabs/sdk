@@ -1,5 +1,8 @@
 {
-  "exclude": ["node_modules", "lib"],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ],
   "compilerOptions": {
     // target
     "target": "ES2019",
@@ -15,8 +18,8 @@
     "isolatedModules": true,
     // linting
     "strict": true,
-//    "noUnusedLocals": true,
-//    "noUnusedParameters": true,
+    //    "noUnusedLocals": true,
+    //    "noUnusedParameters": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
@@ -27,8 +30,37 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@auth/*": [
+        "./auth/*",
+        "./internal/auth/*"
+      ],
+      "@dapp/*": [
+        "./dapp/*",
+        "./internal/dapp/*"
+      ],
+      "@messaging/*": [
+        "./messaging/*",
+        "./internal/messaging/*"
+      ],
+      "@wallet-adapter/*": [
+        "./wallet-adapter/*",
+        "./internal/wallet-adapter/*"
+      ],
+      "@sdk/*": [
+        "./sdk/*",
+        "./internal/sdk/*"
+      ],
+      "@data-service-api/*": [
+        "./internal/data-service-api/*"
+      ]
+    }
   },
   "rootDir": "./src",
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ]
 }

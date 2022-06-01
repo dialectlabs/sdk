@@ -1,5 +1,5 @@
 import { Auth } from '../src';
-import { NodeDialectWalletAdapter } from '../src/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../src';
 import { Duration } from 'luxon';
 import { DialectWalletAdapterEd25519TokenSigner } from '../src/internal/auth/token-utils';
 

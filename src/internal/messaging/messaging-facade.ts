@@ -6,11 +6,11 @@ import type {
   Messaging,
   SendMessageCommand,
   Thread,
-} from '../../messaging.interface';
+} from '@messaging/messaging.interface';
 import type { DataServiceMessaging } from './data-service-messaging';
 import type { SolanaMessaging } from './solana-messaging';
 import type { PublicKey } from '@solana/web3.js';
-import { UnsupportedOperationError } from '../../errors';
+import { UnsupportedOperationError } from '@sdk/errors';
 
 // TODO: implement after ux/ui decision made
 export class MessagingFacade implements Messaging {

@@ -8,8 +8,8 @@ import {
 } from './data-service-api';
 import { TokenProvider } from './token-provider';
 import { Keypair } from '@solana/web3.js';
-import { DialectWalletAdapterEd25519TokenSigner } from '../auth/token-utils';
-import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/token-utils';
+import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

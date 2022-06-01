@@ -1,6 +1,6 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
-import { AuthTokensImpl } from './internal/auth/token-utils';
+import { AuthTokensImpl } from '@auth/token-utils';
 
 export class Auth {
   private constructor() {}

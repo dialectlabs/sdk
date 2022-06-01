@@ -1,14 +1,14 @@
+import { DataServiceMessaging } from './data-service-messaging';
+import { DataServiceApi } from '@data-service-api/data-service-api';
+import { TokenProvider } from '@data-service-api/token-provider';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/token-utils';
+import { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import type {
   CreateDialectCommand,
   Messaging,
-} from '../../messaging.interface';
-import { DialectMemberScope } from '../../messaging.interface';
-import { DataServiceMessaging } from './data-service-messaging';
-import { NodeDialectWalletAdapter } from '../../node-dialect-wallet-adapter';
-import { DataServiceApi } from '../data-service-api/data-service-api';
-import { TokenProvider } from '../data-service-api/token-provider';
-import { DialectWalletAdapterEd25519TokenSigner } from '../auth/token-utils';
-import { InternalDialectWalletAdapter } from '../wallet-adapter/internal-dialect-wallet-adapter';
+} from '@messaging/messaging.interface';
+import { DialectMemberScope } from '@messaging/messaging.interface';
 
 describe('Data service messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
