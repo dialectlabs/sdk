@@ -5,7 +5,7 @@ import type {
   Token,
   AuthTokens,
 } from '@auth/auth.interface';
-import { AuthTokensImpl } from '@auth/token-utils';
+import { AuthTokensImpl } from '@auth/internal/token-utils';
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;

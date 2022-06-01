@@ -8,17 +8,17 @@ import {
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@data-service-api/token-store';
 import { programs } from '@dialectlabs/web3';
-import { PublicKey } from '@solana/web3.js';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/token-utils';
-import { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
-import { MessagingFacade } from '@messaging/messaging-facade';
-import { DataServiceMessaging } from '@messaging/data-service-messaging';
+import { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@data-service-api/token-provider';
-import { Duration } from 'luxon';
-import { SolanaMessaging } from '@messaging/solana-messaging';
-import { createDialectProgram } from '@messaging/solana-dialect-program-factory';
+import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
+import { MessagingFacade } from '@messaging/internal/messaging-facade';
+import { PublicKey } from '@solana/web3.js';
+import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import type { Messaging } from '@messaging/messaging.interface';
+import { Duration } from 'luxon';
+import { SolanaMessaging } from '@messaging/internal/solana-messaging';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-utils';
 
 interface InternalConfig {
   environment: Environment;

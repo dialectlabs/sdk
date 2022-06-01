@@ -2,7 +2,7 @@ import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapte
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
 import type { TokenStore } from '@data-service-api/token-store';
-import { DialectSdkFactory } from '@sdk/sdk-factory';
+import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {

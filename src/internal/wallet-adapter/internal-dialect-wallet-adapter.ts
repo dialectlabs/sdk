@@ -64,7 +64,6 @@ export class InternalDialectWalletAdapter implements DialectWalletAdapter {
   }
 
   static create(adapter: DialectWalletAdapter): InternalDialectWalletAdapter {
-    // TODO: here we can put adapter lookup logic
     return new InternalDialectWalletAdapter(adapter);
   }
 }

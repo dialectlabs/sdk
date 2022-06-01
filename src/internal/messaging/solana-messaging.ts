@@ -19,8 +19,8 @@ import {
 } from '@dialectlabs/web3';
 
 import type { Program } from '@project-serum/anchor';
-import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 import { getEncryptionProps } from './messaging-common';
+import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
 
 export class SolanaMessaging implements Messaging {
   constructor(

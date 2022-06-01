@@ -20,8 +20,8 @@ import {
 } from '@data-service-api/data-service-api';
 
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
-import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
 import { getEncryptionProps } from './messaging-common';
+import type { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
 
 export class DataServiceMessaging implements Messaging {
   constructor(

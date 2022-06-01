@@ -34,28 +34,38 @@
     "baseUrl": "./src",
     "paths": {
       "@auth/*": [
-        "./auth/*",
+        "./auth/*"
+      ],
+      "@auth/internal/*": [
         "./internal/auth/*"
       ],
       "@dapp/*": [
-        "./dapp/*",
+        "./dapp/*"
+      ],
+      "@dapp/internal/*": [
         "./internal/dapp/*"
-      ],
-      "@messaging/*": [
-        "./messaging/*",
-        "./internal/messaging/*"
-      ],
-      "@wallet-adapter/*": [
-        "./wallet-adapter/*",
-        "./internal/wallet-adapter/*"
-      ],
-      "@sdk/*": [
-        "./sdk/*",
-        "./internal/sdk/*"
       ],
       "@data-service-api/*": [
         "./internal/data-service-api/*"
-      ]
+      ],
+      "@messaging/*": [
+        "./messaging/*"
+      ],
+      "@messaging/internal/*": [
+        "./internal/messaging/*"
+      ],
+      "@sdk/*": [
+        "./sdk/*"
+      ],
+      "@sdk/internal/*": [
+        "./internal/sdk/*"
+      ],
+      "@wallet-adapter/*": [
+        "./wallet-adapter/*"
+      ],
+      "@wallet-adapter/internal/*": [
+        "./internal/wallet-adapter/*"
+      ],
     }
   },
   "rootDir": "./src",

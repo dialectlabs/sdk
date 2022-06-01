@@ -7,7 +7,7 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { SolanaMessaging } from './solana-messaging';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { InternalDialectWalletAdapter } from '@wallet-adapter/internal-dialect-wallet-adapter';
+import { InternalDialectWalletAdapter } from '@wallet-adapter/internal/internal-dialect-wallet-adapter';
 
 describe('Solana messaging (e2e)', () => {
   let walletAdapter1: InternalDialectWalletAdapter;
