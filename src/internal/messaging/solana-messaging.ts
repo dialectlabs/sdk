@@ -102,7 +102,10 @@ export class SolanaMessaging implements Messaging {
   async find(query: FindDialectQuery): Promise<Thread | null> {
     const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
     const dialectAccount = await this.findInternal(query, encryptionProps);
-    return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
+    return (
+      dialectAccount &&
+      toWeb3Dialect(dialectAccount, this.walletAdapter, this.program)
+    );
   }
 
   private async findInternal(
@@ -111,13 +114,13 @@ export class SolanaMessaging implements Messaging {
   ) {
     try {
       if ('publicKey' in query) {
-        return this.findByAddress(query, encryptionProps);
+        return await this.findByAddress(query, encryptionProps);
       }
-      return this.findByOtherMember(query, encryptionProps);
+      return await this.findByOtherMember(query, encryptionProps);
     } catch (e) {
       const err = e as SolanaError;
       if (err.type === AccountNotFoundError.name) {
-        throw new ThreadNotFoundError();
+        return null;
       }
       throw e;
     }

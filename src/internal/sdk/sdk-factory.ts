@@ -30,7 +30,7 @@ interface InternalConfig {
 
 interface InternalSolanaConfig {
   network: SolanaNetwork;
-  dialectProgramId: PublicKey;
+  dialectProgramAddress: PublicKey;
   rpcUrl: string;
 }
 
@@ -66,7 +66,11 @@ export class DialectSdkFactory {
     );
     const solanaMessaging = new SolanaMessaging(
       config.wallet,
-      createDialectProgram(config.wallet),
+      createDialectProgram(
+        config.wallet,
+        config.solana.dialectProgramAddress,
+        config.solana.rpcUrl,
+      ),
     );
     const messagingFacade = new MessagingFacade(
       dataServiceMessaging,
@@ -128,7 +132,7 @@ export class DialectSdkFactory {
   private initializeSolanaConfig(): InternalSolanaConfig {
     let internalConfig: InternalSolanaConfig = {
       network: 'mainnet-beta',
-      dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+      dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
       rpcUrl: programs.mainnet.programAddress,
     };
     const environment = this.config.environment;
@@ -136,7 +140,7 @@ export class DialectSdkFactory {
       const network = 'mainnet-beta';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
         rpcUrl: programs.mainnet.clusterAddress,
       };
     }
@@ -144,7 +148,7 @@ export class DialectSdkFactory {
       const network = 'devnet';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs[network].programAddress),
+        dialectProgramAddress: new PublicKey(programs[network].programAddress),
         rpcUrl: programs[network].clusterAddress,
       };
     }
@@ -152,7 +156,7 @@ export class DialectSdkFactory {
       const network = 'localnet';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs[network].programAddress),
+        dialectProgramAddress: new PublicKey(programs[network].programAddress),
         rpcUrl: programs[network].clusterAddress,
       };
     }
@@ -161,7 +165,7 @@ export class DialectSdkFactory {
       const network = 'mainnet-beta';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs.mainnet.programAddress),
+        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
         rpcUrl: programs.mainnet.clusterAddress,
       };
     }
@@ -169,7 +173,7 @@ export class DialectSdkFactory {
       const network = 'devnet';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs[network].programAddress),
+        dialectProgramAddress: new PublicKey(programs[network].programAddress),
         rpcUrl: programs[network].clusterAddress,
       };
     }
@@ -177,13 +181,14 @@ export class DialectSdkFactory {
       const network = 'localnet';
       internalConfig = {
         network,
-        dialectProgramId: new PublicKey(programs[network].programAddress),
+        dialectProgramAddress: new PublicKey(programs[network].programAddress),
         rpcUrl: programs[network].clusterAddress,
       };
     }
 
     if (this.config.solana?.dialectProgramId) {
-      internalConfig.dialectProgramId = this.config.solana.dialectProgramId;
+      internalConfig.dialectProgramAddress =
+        this.config.solana.dialectProgramId;
     }
     if (this.config.solana?.rpcUrl) {
       internalConfig.rpcUrl = this.config.solana.rpcUrl;

@@ -6,7 +6,8 @@ import { DialectMemberScope } from '@messaging/messaging.interface';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { SolanaMessaging } from './solana-messaging';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 
 describe('Solana messaging (e2e)', () => {
@@ -20,7 +21,11 @@ describe('Solana messaging (e2e)', () => {
     walletAdapter1 = new DialectWalletAdapterImpl(
       NodeDialectWalletAdapter.create(),
     );
-    const wallet1Program = await createDialectProgram(walletAdapter1);
+    const wallet1Program = await createDialectProgram(
+      walletAdapter1,
+      new PublicKey(programs['localnet'].programAddress),
+      programs['localnet'].clusterAddress,
+    );
     const airDropRequest1 =
       await wallet1Program.provider.connection.requestAirdrop(
         walletAdapter1.publicKey,
@@ -34,7 +39,11 @@ describe('Solana messaging (e2e)', () => {
       NodeDialectWalletAdapter.create(),
     );
     const wallet2Decorator = new DialectWalletAdapterImpl(walletAdapter2);
-    const wallet2Program = await createDialectProgram(wallet2Decorator);
+    const wallet2Program = await createDialectProgram(
+      wallet2Decorator,
+      new PublicKey(programs['localnet'].programAddress),
+      programs['localnet'].clusterAddress,
+    );
     wallet2Messaging = new SolanaMessaging(wallet2Decorator, wallet2Program);
     const airDropRequest2 =
       await wallet2Program.provider.connection.requestAirdrop(
@@ -69,7 +78,6 @@ describe('Solana messaging (e2e)', () => {
       },
     };
     const dialect = await wallet1Messaging.create(command);
-    const dialect2 = await wallet1Messaging.create(command);
     // then
     expect(dialect).not.toBeNull();
   });
