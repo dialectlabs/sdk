@@ -3,7 +3,7 @@ import type { DiffeHellmanKeys } from './encryption-keys-provider';
 export abstract class EncryptionKeysStore {
   abstract get(): DiffeHellmanKeys | null;
 
-  abstract save(token: DiffeHellmanKeys): DiffeHellmanKeys;
+  abstract save(keys: DiffeHellmanKeys): DiffeHellmanKeys;
 
   static createInMemory(): EncryptionKeysStore {
     return new InmemoryEncryptionKeysStore();
