@@ -92,6 +92,13 @@ export class DataServiceMessaging implements Messaging {
   }
 
   async find(query: FindDialectQuery): Promise<Thread | null> {
+    const dialectAccountDto = await this.findInternal(query);
+    return dialectAccountDto && this.toWeb2Dialect(dialectAccountDto);
+  }
+
+  private findInternal(
+    query: FindDialectByAddressQuery | FindDialectByOtherMemberQuery,
+  ) {
     if ('publicKey' in query) {
       return this.findByAddress(query);
     }
@@ -100,10 +107,7 @@ export class DataServiceMessaging implements Messaging {
 
   private async findByAddress(query: FindDialectByAddressQuery) {
     try {
-      const dialectAccountDto = await this.dataServiceDialectsApi.find(
-        query.publicKey.toBase58(),
-      );
-      return this.toWeb2Dialect(dialectAccountDto);
+      return await this.dataServiceDialectsApi.find(query.publicKey.toBase58());
     } catch (e) {
       const err = e as DataServiceApiClientError;
       if (err.statusCode === 404) {
@@ -121,7 +125,7 @@ export class DataServiceMessaging implements Messaging {
       throw new IllegalStateError('Found multiple dialects with same members');
     }
     const dialectAccountDto = dialectAccountDtos[0] ?? null;
-    return dialectAccountDto && this.toWeb2Dialect(dialectAccountDto);
+    return dialectAccountDto;
   }
 
   async findAll(): Promise<Thread[]> {
