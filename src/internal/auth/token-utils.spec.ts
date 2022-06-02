@@ -1,15 +1,13 @@
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
-import {
-  AuthTokensImpl,
-  DialectWalletAdapterEd25519TokenSigner,
-} from './token-utils';
+import { AuthTokensImpl } from './token-utils';
 import { Keypair } from '@solana/web3.js';
 import type {
   AuthTokens,
   Ed25519TokenSigner,
   TokenBody,
 } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 
 describe('token tests', () => {
   let wallet: NodeDialectWalletAdapter;

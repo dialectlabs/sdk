@@ -18,7 +18,7 @@ import { createDialectProgram } from '@messaging/internal/solana-dialect-program
 import type { Messaging } from '@messaging/messaging.interface';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-utils';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 
 interface InternalConfig {
   environment: Environment;
