@@ -9,7 +9,7 @@ import {
 import { TokenProvider } from './token-provider';
 import { Keypair } from '@solana/web3.js';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-utils';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -316,7 +316,7 @@ describe('Data service api (e2e)', () => {
       expect(actualDialects).toMatchObject(expectedDialects);
     });
 
-    test('can get dialect by key after creating', async () => {
+    test('can get dialect by address key after creating', async () => {
       // given
       const before = await wallet1Api.findAll();
       expect(before).toMatchObject([]);
@@ -338,6 +338,44 @@ describe('Data service api (e2e)', () => {
       const dialectAccountDto = await wallet1Api.find(publicKey);
       // then
       expect(dialectAccountDto).not.toBeNull();
+      const actualDialectPublicKey = dialectAccountDto?.publicKey!;
+      const actualDialect = dialectAccountDto?.dialect!;
+      expect(actualDialectPublicKey).toBe(publicKey);
+      expect(actualDialect).toMatchObject({
+        messages: [],
+        members: createDialectCommand.members,
+        encrypted: createDialectCommand.encrypted,
+        lastMessageTimestamp: 0,
+        nextMessageIdx: 0,
+      });
+    });
+
+    test('can get dialect by member key after creating', async () => {
+      // given
+      const before = await wallet1Api.findAll();
+      expect(before).toMatchObject([]);
+      const createDialectCommand: CreateDialectCommand = {
+        encrypted: false,
+        members: [
+          {
+            publicKey: wallet1.publicKey.toBase58(),
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+          {
+            publicKey: wallet2.publicKey.toBase58(),
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+        ],
+      };
+      // when
+      const { publicKey } = await wallet1Api.create(createDialectCommand);
+      const dialectAccountDtos = await wallet1Api.findAll({
+        memberPublicKey: wallet2.publicKey.toBase58(),
+      });
+      // then
+      expect(dialectAccountDtos.length).toBe(1);
+      const dialectAccountDto = dialectAccountDtos[0];
+      expect(dialectAccountDto).not.toBeUndefined();
       const actualDialectPublicKey = dialectAccountDto?.publicKey!;
       const actualDialect = dialectAccountDto?.dialect!;
       expect(actualDialectPublicKey).toBe(publicKey);

@@ -8,7 +8,7 @@ import type {
 } from '@messaging/messaging.interface';
 import { DialectMemberScope } from '@messaging/messaging.interface';
 import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/internal/token-utils';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 
 describe('Data service messaging (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

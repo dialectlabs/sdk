@@ -1,7 +1,7 @@
 import type { TokenProvider } from './token-provider';
 import axios, { AxiosError } from 'axios';
 
-export interface ApiClientError {
+export interface DataServiceApiClientError {
   message: string;
   error: string;
   statusCode: number | string;
@@ -12,7 +12,7 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
     return await fn;
   } catch (e) {
     const err = e as AxiosError;
-    const errorData = err.response?.data as ApiClientError;
+    const errorData = err.response?.data as DataServiceApiClientError;
     throw (
       errorData ?? {
         error: err.name,
@@ -38,7 +38,7 @@ export class DataServiceApi {
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
-  findAll(): Promise<DialectAccountDto[]>;
+  findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]>;
 
   find(publicKey: string): Promise<DialectAccountDto>;
 
@@ -67,12 +67,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  async findAll(): Promise<DialectAccountDto[]> {
+  async findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
           headers: { Authorization: `Bearer ${token.rawValue}` },
+          ...(query && { params: query }),
         })
         .then((it) => it.data),
     );
@@ -161,4 +162,8 @@ export class MessageDto {
 
 export class SendMessageCommand {
   readonly text!: number[];
+}
+
+export class FindDialectQuery {
+  readonly memberPublicKey?: string;
 }

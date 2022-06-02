@@ -1,16 +1,18 @@
 import type {
   CreateDialectCommand,
-  Thread,
   DialectMember,
+  FindDialectByAddressQuery,
+  FindDialectByOtherMemberQuery,
   FindDialectQuery,
   Message,
   Messaging,
   SendMessageCommand,
+  Thread,
 } from '@messaging/messaging.interface';
 import { DialectMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
 import type {
-  ApiClientError,
+  DataServiceApiClientError,
   DataServiceDialectsApi,
 } from '@data-service-api/data-service-api';
 import {
@@ -22,6 +24,7 @@ import {
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
 import { getEncryptionProps } from './messaging-common';
 import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
+import { IllegalStateError } from '@sdk/errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -89,18 +92,36 @@ export class DataServiceMessaging implements Messaging {
   }
 
   async find(query: FindDialectQuery): Promise<Thread | null> {
+    if ('publicKey' in query) {
+      return this.findByAddress(query);
+    }
+    return this.findByOtherMember(query);
+  }
+
+  private async findByAddress(query: FindDialectByAddressQuery) {
     try {
       const dialectAccountDto = await this.dataServiceDialectsApi.find(
         query.publicKey.toBase58(),
       );
       return this.toWeb2Dialect(dialectAccountDto);
     } catch (e) {
-      const err = e as ApiClientError;
+      const err = e as DataServiceApiClientError;
       if (err.statusCode === 404) {
         return null;
       }
       throw e;
     }
+  }
+
+  private async findByOtherMember(query: FindDialectByOtherMemberQuery) {
+    const dialectAccountDtos = await this.dataServiceDialectsApi.findAll({
+      memberPublicKey: query.otherMember.toBase58(),
+    });
+    if (dialectAccountDtos.length > 1) {
+      throw new IllegalStateError('Found multiple dialects with same members');
+    }
+    const dialectAccountDto = dialectAccountDtos[0] ?? null;
+    return dialectAccountDto && this.toWeb2Dialect(dialectAccountDto);
   }
 
   async findAll(): Promise<Thread[]> {

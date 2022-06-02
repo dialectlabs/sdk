@@ -1,6 +1,8 @@
 import type {
   CreateDialectCommand,
   DialectMember,
+  FindDialectByAddressQuery,
+  FindDialectByOtherMemberQuery,
   FindDialectQuery,
   Message,
   Messaging,
@@ -17,6 +19,7 @@ import {
   EncryptionProps,
   findDialects,
   getDialect,
+  getDialectForMembers,
   sendMessage,
 } from '@dialectlabs/web3';
 
@@ -107,9 +110,10 @@ export class SolanaMessaging implements Messaging {
     encryptionProps?: EncryptionProps,
   ) {
     try {
-      return await withErrorParsing(
-        getDialect(this.program, query.publicKey, encryptionProps),
-      );
+      if ('publicKey' in query) {
+        return this.findByAddress(query, encryptionProps);
+      }
+      return this.findByOtherMember(query, encryptionProps);
     } catch (e) {
       const err = e as SolanaError;
       if (err.type === AccountNotFoundError.name) {
@@ -118,6 +122,27 @@ export class SolanaMessaging implements Messaging {
       throw e;
     }
   }
+
+  private async findByAddress(
+    query: FindDialectByAddressQuery,
+    encryptionProps?: EncryptionProps,
+  ) {
+    return withErrorParsing(
+      getDialect(this.program, query.publicKey, encryptionProps),
+    );
+  }
+
+  private findByOtherMember = (
+    query: FindDialectByOtherMemberQuery,
+    encryptionProps?: EncryptionProps,
+  ) =>
+    withErrorParsing(
+      getDialectForMembers(
+        this.program,
+        [this.walletAdapter.publicKey, query.otherMember],
+        encryptionProps,
+      ),
+    );
 
   async findAll(): Promise<Thread[]> {
     // TODO: rn we have different behavior for web3 and web2 versions: this one always returns empty msgs

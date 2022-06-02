@@ -24,8 +24,16 @@ export interface CreateDialectCommand {
   encrypted: boolean;
 }
 
-export interface FindDialectQuery {
+export type FindDialectQuery =
+  | FindDialectByAddressQuery
+  | FindDialectByOtherMemberQuery;
+
+export interface FindDialectByAddressQuery {
   publicKey: PublicKey;
+}
+
+export interface FindDialectByOtherMemberQuery {
+  otherMember: PublicKey;
 }
 
 export interface Thread {
