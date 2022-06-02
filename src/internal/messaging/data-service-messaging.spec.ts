@@ -1,6 +1,6 @@
 import { DataServiceMessaging } from './data-service-messaging';
 import { DataServiceApi } from '@data-service-api/data-service-api';
-import { TokenProvider } from '@data-service-api/token-provider';
+import { TokenProvider } from '@auth/internal/token-provider';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import type {
   CreateDialectCommand,

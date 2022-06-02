@@ -6,11 +6,11 @@ import {
   MessagingBackendPreference,
   SolanaNetwork,
 } from '@sdk/sdk.interface';
-import { InMemoryTokenStore, TokenStore } from '@data-service-api/token-store';
+import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-api';
-import { TokenProvider } from '@data-service-api/token-provider';
+import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import { MessagingFacade } from '@messaging/internal/messaging-facade';
 import { PublicKey } from '@solana/web3.js';

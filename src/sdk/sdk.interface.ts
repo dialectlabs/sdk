@@ -1,7 +1,7 @@
 import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
-import type { TokenStore } from '@data-service-api/token-store';
+import type { TokenStore } from '@auth/internal/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 
 export abstract class Dialect {

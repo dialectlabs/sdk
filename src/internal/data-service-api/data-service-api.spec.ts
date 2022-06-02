@@ -6,7 +6,7 @@ import {
   MemberScopeDto,
   SendMessageCommand,
 } from './data-service-api';
-import { TokenProvider } from './token-provider';
+import { TokenProvider } from '@auth/internal/token-provider';
 import { Keypair } from '@solana/web3.js';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';

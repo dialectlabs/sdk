@@ -1,4 +1,4 @@
-import type { TokenProvider } from './token-provider';
+import type { TokenProvider } from '@auth/internal/token-provider';
 import axios, { AxiosError } from 'axios';
 
 export interface DataServiceApiClientError {
