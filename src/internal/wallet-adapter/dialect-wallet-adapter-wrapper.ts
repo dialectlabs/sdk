@@ -2,7 +2,7 @@ import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapte
 import { UnsupportedOperationError } from '@sdk/errors';
 import type { Transaction } from '@solana/web3.js';
 
-export class DialectWalletAdapterImpl implements DialectWalletAdapter {
+export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
   constructor(private readonly delegate: DialectWalletAdapter) {}
 
   get publicKey() {
@@ -63,7 +63,7 @@ export class DialectWalletAdapterImpl implements DialectWalletAdapter {
     return !!this.delegate.diffieHellman;
   }
 
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapterImpl {
-    return new DialectWalletAdapterImpl(adapter);
+  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
+    return new DialectWalletAdapterWrapper(adapter);
   }
 }

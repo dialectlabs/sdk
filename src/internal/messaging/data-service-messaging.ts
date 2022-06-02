@@ -23,12 +23,12 @@ import {
 
 import { TextSerde, TextSerdeFactory } from '@dialectlabs/web3';
 import { getEncryptionProps } from './messaging-common';
-import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 import { IllegalStateError } from '@sdk/errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: DialectWalletAdapterImpl,
+    private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
   ) {}
 
@@ -124,8 +124,7 @@ export class DataServiceMessaging implements Messaging {
     if (dialectAccountDtos.length > 1) {
       throw new IllegalStateError('Found multiple dialects with same members');
     }
-    const dialectAccountDto = dialectAccountDtos[0] ?? null;
-    return dialectAccountDto;
+    return dialectAccountDtos[0] ?? null;
   }
 
   async findAll(): Promise<Thread[]> {

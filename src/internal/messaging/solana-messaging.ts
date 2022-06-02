@@ -25,22 +25,19 @@ import {
 
 import type { Program } from '@project-serum/anchor';
 import { getEncryptionProps } from './messaging-common';
-import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 import {
   AccountAlreadyExistsError,
   AccountNotFoundError,
   SolanaError,
   withErrorParsing,
 } from '@messaging/internal/solana-messaging-errors';
-import {
-  ThreadAlreadyExistsError,
-  ThreadNotFoundError,
-} from '@messaging/internal/messaging-errors';
+import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 import { IllegalStateError } from '@sdk/errors';
 
 export class SolanaMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: DialectWalletAdapterImpl,
+    private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly program: Program,
   ) {}
 
@@ -161,7 +158,7 @@ export class SolanaMessaging implements Messaging {
 
 export class SolanaThread implements Thread {
   constructor(
-    readonly walletAdapter: DialectWalletAdapterImpl,
+    readonly walletAdapter: DialectWalletAdapterWrapper,
     readonly program: Program,
     readonly publicKey: PublicKey,
     readonly me: DialectMember,
@@ -220,7 +217,7 @@ function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
 
 function toWeb3Dialect(
   dialectAccount: DialectAccount,
-  walletAdapter: DialectWalletAdapterImpl,
+  walletAdapter: DialectWalletAdapterWrapper,
   program: Program,
 ) {
   const { dialect, publicKey } = dialectAccount;

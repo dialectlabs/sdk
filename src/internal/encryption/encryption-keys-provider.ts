@@ -1,4 +1,4 @@
-import type { DialectWalletAdapterImpl } from '@wallet-adapter/internal/dialect-wallet-adapter-impl';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 import {
   EncryptionKeysStore,
   InmemoryEncryptionKeysStore,
@@ -15,7 +15,7 @@ export abstract class EncryptionKeysProvider {
   abstract get(): Promise<DiffeHellmanKeys>;
 
   static create(
-    dialectWalletAdapter: DialectWalletAdapterImpl,
+    dialectWalletAdapter: DialectWalletAdapterWrapper,
     encryptionKeysStore: EncryptionKeysStore = new InmemoryEncryptionKeysStore(),
   ): EncryptionKeysProvider {
     const provider = new DialectWalletAdapterEncryptionKeysProvider(
@@ -26,7 +26,9 @@ export abstract class EncryptionKeysProvider {
 }
 
 class DialectWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
-  constructor(private readonly dialectWalletAdapter: DialectWalletAdapterImpl) {
+  constructor(
+    private readonly dialectWalletAdapter: DialectWalletAdapterWrapper,
+  ) {
     super();
   }
 
