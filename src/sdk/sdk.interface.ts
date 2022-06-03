@@ -3,6 +3,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
 import type { TokenStore } from '@auth/internal/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
+import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -21,6 +22,7 @@ export interface Config {
   wallet: DialectWalletAdapter;
   solana?: SolanaConfig;
   dialectCloud?: DialectCloudConfig;
+  encryptionKeysStore?: EncryptionKeysStore;
   messagingBackendPreference?: MessagingBackendPreference;
 }
 

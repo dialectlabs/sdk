@@ -20,12 +20,15 @@ import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
+import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
+import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 
 interface InternalConfig {
   environment: Environment;
   wallet: DialectWalletAdapterWrapper;
   solana: InternalSolanaConfig;
   dialectCloud: InternalDialectCloudConfig;
+  encryptionKeysStore: EncryptionKeysStore;
   messagingBackendPreference: MessagingBackendPreference;
 }
 
@@ -92,6 +95,8 @@ export class DialectSdkFactory {
       wallet,
       dialectCloud: this.initializeDialectCloudConfig(),
       solana: this.initializeSolanaConfig(),
+      encryptionKeysStore:
+        this.config.encryptionKeysStore ?? new InmemoryEncryptionKeysStore(),
       messagingBackendPreference: MessagingBackendPreference.DATA_SERVICE,
     };
   }
