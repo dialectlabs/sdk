@@ -19,6 +19,7 @@ import type { Messaging } from '@messaging/messaging.interface';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 
 interface InternalConfig {
   environment: Environment;
@@ -52,9 +53,11 @@ export class DialectSdkFactory {
     console.log(
       `Initializing dialect sdk using config\n: ${JSON.stringify(config)}`,
     );
+    const encryptionKeysProvider =
+      new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
 
     const dataServiceMessaging = new DataServiceMessaging(
-      config.wallet,
+      config.wallet.publicKey,
       new DataServiceDialectsApiClient(
         config.dialectCloud.url,
         TokenProvider.create(
@@ -63,6 +66,7 @@ export class DialectSdkFactory {
           config.dialectCloud.tokenStore,
         ),
       ),
+      encryptionKeysProvider,
     );
     const solanaMessaging = new SolanaMessaging(
       config.wallet,
@@ -71,6 +75,7 @@ export class DialectSdkFactory {
         config.solana.dialectProgramAddress,
         config.solana.rpcUrl,
       ),
+      encryptionKeysProvider,
     );
     const messagingFacade = new MessagingFacade(
       dataServiceMessaging,

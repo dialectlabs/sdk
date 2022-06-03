@@ -36,8 +36,9 @@ export class ThreadFacade implements Thread {
   constructor(
     readonly me: DialectMember,
     readonly otherMember: DialectMember,
-    readonly encrypted: boolean,
-    readonly publicKey: PublicKey,
+    readonly encryptionEnabled: boolean,
+    readonly canBeDecrypted: boolean,
+    readonly address: PublicKey,
     private readonly delegates: Thread[],
   ) {}
 

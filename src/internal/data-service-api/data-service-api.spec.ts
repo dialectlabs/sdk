@@ -10,6 +10,7 @@ import { TokenProvider } from '@auth/internal/token-provider';
 import { Keypair } from '@solana/web3.js';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -18,14 +19,18 @@ describe('Data service api (e2e)', () => {
   // Use    expect.arrayContaining([
   //       expect.objectContaining(
   describe('Dialects', () => {
-    let wallet1: NodeDialectWalletAdapter;
+    let wallet1: DialectWalletAdapterWrapper;
     let wallet1Api: DataServiceDialectsApi;
-    let wallet2: NodeDialectWalletAdapter;
+    let wallet2: DialectWalletAdapterWrapper;
     let wallet2Api: DataServiceDialectsApi;
 
     beforeEach(() => {
-      wallet1 = NodeDialectWalletAdapter.create();
-      wallet2 = NodeDialectWalletAdapter.create();
+      wallet1 = new DialectWalletAdapterWrapper(
+        NodeDialectWalletAdapter.create(),
+      );
+      wallet2 = new DialectWalletAdapterWrapper(
+        NodeDialectWalletAdapter.create(),
+      );
       wallet1Api = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(

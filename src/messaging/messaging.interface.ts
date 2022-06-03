@@ -29,7 +29,7 @@ export type FindDialectQuery =
   | FindDialectByOtherMemberQuery;
 
 export interface FindDialectByAddressQuery {
-  publicKey: PublicKey;
+  address: PublicKey;
 }
 
 export interface FindDialectByOtherMemberQuery {
@@ -37,10 +37,11 @@ export interface FindDialectByOtherMemberQuery {
 }
 
 export interface Thread {
-  publicKey: PublicKey;
+  address: PublicKey;
   me: DialectMember;
   otherMember: DialectMember;
-  encrypted: boolean;
+  encryptionEnabled: boolean;
+  canBeDecrypted: boolean;
 
   messages(): Promise<Message[]>;
 

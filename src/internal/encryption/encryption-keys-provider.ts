@@ -9,10 +9,10 @@ export interface DiffeHellmanKeys {
   secretKey: Uint8Array;
 }
 
-export interface EncryptionKeysProvider {}
-
 export abstract class EncryptionKeysProvider {
-  abstract get(): Promise<DiffeHellmanKeys>;
+  abstract getFailSafe(): Promise<DiffeHellmanKeys | null>;
+
+  abstract getFailFast(): Promise<DiffeHellmanKeys>;
 
   static create(
     dialectWalletAdapter: DialectWalletAdapterWrapper,
@@ -25,14 +25,20 @@ export abstract class EncryptionKeysProvider {
   }
 }
 
-class DialectWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
+export class DialectWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
   constructor(
     private readonly dialectWalletAdapter: DialectWalletAdapterWrapper,
   ) {
     super();
   }
 
-  get(): Promise<DiffeHellmanKeys> {
+  getFailSafe(): Promise<DiffeHellmanKeys | null> {
+    return this.dialectWalletAdapter.canEncrypt()
+      ? this.dialectWalletAdapter.diffieHellman()
+      : Promise.resolve(null);
+  }
+
+  getFailFast(): Promise<DiffeHellmanKeys> {
     return this.dialectWalletAdapter.diffieHellman();
   }
 }
@@ -45,10 +51,21 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     super();
   }
 
-  async get(): Promise<DiffeHellmanKeys> {
+  async getFailSafe(): Promise<DiffeHellmanKeys | null> {
     const existingKeys = this.encryptionKeysStore.get();
     if (!existingKeys) {
-      const newKeys = await this.delegate.get();
+      const newKeys = await this.delegate.getFailSafe();
+      if (newKeys) {
+        return Promise.resolve(this.encryptionKeysStore.save(newKeys));
+      }
+    }
+    return existingKeys;
+  }
+
+  async getFailFast(): Promise<DiffeHellmanKeys> {
+    const existingKeys = this.encryptionKeysStore.get();
+    if (!existingKeys) {
+      const newKeys = await this.delegate.getFailFast();
       return Promise.resolve(this.encryptionKeysStore.save(newKeys));
     }
     return existingKeys;

@@ -24,7 +24,6 @@ import {
 } from '@dialectlabs/web3';
 
 import type { Program } from '@project-serum/anchor';
-import { getEncryptionProps } from './messaging-common';
 import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 import {
   AccountAlreadyExistsError,
@@ -34,33 +33,43 @@ import {
 } from '@messaging/internal/solana-messaging-errors';
 import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 import { IllegalStateError } from '@sdk/errors';
+import type {
+  DiffeHellmanKeys,
+  EncryptionKeysProvider,
+} from '@encryption/encryption-keys-provider';
+import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 
 export class SolanaMessaging implements Messaging {
+  static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
+    const encryptionKeysProvider =
+      new DialectWalletAdapterEncryptionKeysProvider(walletAdapter);
+    return new SolanaMessaging(walletAdapter, program, encryptionKeysProvider);
+  }
+
   constructor(
     private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly program: Program,
+    private readonly encryptionKeysProvider: EncryptionKeysProvider,
   ) {}
 
   async create(command: CreateDialectCommand): Promise<Thread> {
-    const encrypted = command.encrypted;
-    const encryptionProps = await getEncryptionProps(
-      command.encrypted,
+    const dialectAccount = await this.createInternal(command);
+    return toSolanaThread(
+      dialectAccount,
       this.walletAdapter,
+      this.encryptionKeysProvider,
+      this.program,
     );
-    // TODO: same as for web2! accurate handling of dh absence: extract adapter interface + handle sollet
-    const dialectAccount = await this.createInternal(
-      command,
-      encrypted,
-      encryptionProps,
-    );
-    return toWeb3Dialect(dialectAccount, this.walletAdapter, this.program);
   }
 
-  private async createInternal(
-    command: CreateDialectCommand,
-    encrypted: boolean,
-    encryptionProps?: EncryptionProps,
-  ) {
+  private async createInternal(command: CreateDialectCommand) {
+    const encryptionKeys = command.encrypted
+      ? await this.encryptionKeysProvider.getFailFast()
+      : null;
+    const encryptionProps = getEncryptionProps(
+      this.walletAdapter.publicKey,
+      encryptionKeys,
+    );
     try {
       return await withErrorParsing(
         createDialect(
@@ -76,7 +85,7 @@ export class SolanaMessaging implements Messaging {
               scopes: toProtocolScopes(command.otherMember.scopes),
             },
           ],
-          encrypted,
+          command.encrypted,
           encryptionProps,
         ),
       );
@@ -90,20 +99,26 @@ export class SolanaMessaging implements Messaging {
   }
 
   async find(query: FindDialectQuery): Promise<Thread | null> {
-    const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
-    const dialectAccount = await this.findInternal(query, encryptionProps);
+    const dialectAccount = await this.findInternal(query);
     return (
       dialectAccount &&
-      toWeb3Dialect(dialectAccount, this.walletAdapter, this.program)
+      toSolanaThread(
+        dialectAccount,
+        this.walletAdapter,
+        this.encryptionKeysProvider,
+        this.program,
+      )
     );
   }
 
-  private async findInternal(
-    query: FindDialectQuery,
-    encryptionProps?: EncryptionProps,
-  ) {
+  private async findInternal(query: FindDialectQuery) {
+    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
+    const encryptionProps = getEncryptionProps(
+      this.walletAdapter.publicKey,
+      encryptionKeys,
+    );
     try {
-      if ('publicKey' in query) {
+      if ('address' in query) {
         return await this.findByAddress(query, encryptionProps);
       }
       return await this.findByOtherMember(query, encryptionProps);
@@ -118,45 +133,53 @@ export class SolanaMessaging implements Messaging {
 
   private async findByAddress(
     query: FindDialectByAddressQuery,
-    encryptionProps?: EncryptionProps,
+    encryptionProps: EncryptionProps | null,
   ) {
     return withErrorParsing(
-      getDialect(this.program, query.publicKey, encryptionProps),
+      getDialect(this.program, query.address, encryptionProps),
     );
   }
 
-  private findByOtherMember = (
+  private async findByOtherMember(
     query: FindDialectByOtherMemberQuery,
-    encryptionProps?: EncryptionProps,
-  ) =>
-    withErrorParsing(
+    encryptionProps: EncryptionProps | null,
+  ) {
+    return withErrorParsing(
       getDialectForMembers(
         this.program,
         [this.walletAdapter.publicKey, query.otherMember],
         encryptionProps,
       ),
     );
+  }
 
   async findAll(): Promise<Thread[]> {
-    // TODO: rn we have different behavior for web3 and web2 versions: this one always returns empty msgs
-    // TODO: why we don't pass encryptionProps here in protocol?
     const dialects = await findDialects(this.program, {
       userPk: this.walletAdapter.publicKey,
     });
-    return dialects.map((it) =>
-      toWeb3Dialect(it, this.walletAdapter, this.program),
+    return Promise.all(
+      dialects.map(async (it) =>
+        toSolanaThread(
+          it,
+          this.walletAdapter,
+          this.encryptionKeysProvider,
+          this.program,
+        ),
+      ),
     );
   }
 }
 
 export class SolanaThread implements Thread {
   constructor(
-    readonly walletAdapter: DialectWalletAdapterWrapper,
-    readonly program: Program,
-    readonly publicKey: PublicKey,
+    readonly address: PublicKey,
     readonly me: DialectMember,
     readonly otherMember: DialectMember,
-    readonly encrypted: boolean,
+    readonly encryptionEnabled: boolean,
+    readonly canBeDecrypted: boolean,
+    private readonly program: Program,
+    private readonly walletAdapter: DialectWalletAdapterWrapper,
+    private readonly encryptionKeysProvider: EncryptionKeysProvider,
     private dialectAccount: DialectAccount,
   ) {}
 
@@ -165,7 +188,11 @@ export class SolanaThread implements Thread {
   }
 
   async messages(): Promise<Message[]> {
-    const encryptionProps = await getEncryptionProps(true, this.walletAdapter);
+    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
+    const encryptionProps = getEncryptionProps(
+      this.me.publicKey,
+      encryptionKeys,
+    );
     this.dialectAccount = await getDialect(
       this.program,
       this.dialectAccount.publicKey,
@@ -179,9 +206,10 @@ export class SolanaThread implements Thread {
   }
 
   async send(command: SendMessageCommand): Promise<void> {
-    const encryptionProps = await getEncryptionProps(
-      this.encrypted,
-      this.walletAdapter,
+    const encryptionKeys = await this.encryptionKeysProvider.getFailFast();
+    const encryptionProps = getEncryptionProps(
+      this.me.publicKey,
+      encryptionKeys,
     );
     await sendMessage(
       this.program,
@@ -208,16 +236,29 @@ function toProtocolScopes(scopes: DialectMemberScope[]): [boolean, boolean] {
 }
 
 function findMember(memberPk: PublicKey, dialect: Dialect) {
-  return dialect.members.find((it) => it.publicKey.equals(memberPk));
+  return dialect.members.find((it) => it.publicKey.equals(memberPk)) ?? null;
 }
 
 function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
-  return dialect.members.find((it) => !it.publicKey.equals(memberPk));
+  return dialect.members.find((it) => !it.publicKey.equals(memberPk)) ?? null;
 }
 
-function toWeb3Dialect(
+function getEncryptionProps(
+  me: PublicKey,
+  encryptionKeys: DiffeHellmanKeys | null,
+) {
+  return (
+    encryptionKeys && {
+      ed25519PublicKey: me.toBytes(),
+      diffieHellmanKeyPair: encryptionKeys,
+    }
+  );
+}
+
+async function toSolanaThread(
   dialectAccount: DialectAccount,
   walletAdapter: DialectWalletAdapterWrapper,
+  encryptionKeysProvider: EncryptionKeysProvider,
   program: Program,
 ) {
   const { dialect, publicKey } = dialectAccount;
@@ -230,9 +271,10 @@ function toWeb3Dialect(
       )} and wallet public key ${walletAdapter.publicKey.toBase58()}`,
     );
   }
+  const canBeDecrypted = dialect.encrypted
+    ? (await encryptionKeysProvider.getFailSafe()) !== null
+    : true;
   return new SolanaThread(
-    walletAdapter,
-    program,
     publicKey,
     {
       publicKey: meMember.publicKey,
@@ -243,6 +285,10 @@ function toWeb3Dialect(
       scopes: fromProtocolScopes(otherMember.scopes),
     },
     dialect.encrypted,
+    canBeDecrypted,
+    program,
+    walletAdapter,
+    encryptionKeysProvider,
     dialectAccount,
   );
 }

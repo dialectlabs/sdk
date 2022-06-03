@@ -1,8 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
-import { UnsupportedOperationError } from '@sdk/errors';
-import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 
 export class Auth {
   private constructor() {}
@@ -54,17 +53,11 @@ export class DialectWalletAdapterEd25519TokenSigner
 {
   readonly subject: PublicKey;
 
-  constructor(readonly dialectWalletAdapter: DialectWalletAdapter) {
+  constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
     this.subject = dialectWalletAdapter.publicKey;
   }
 
   sign(payload: Uint8Array): Promise<Uint8Array> {
-    if (!this.dialectWalletAdapter.signMessage) {
-      throw new UnsupportedOperationError(
-        'Wallet operation not supported',
-        'Wallet does not support signing, please use wallet-adapter that has supports signMessage() operation.',
-      );
-    }
     return this.dialectWalletAdapter.signMessage(payload);
   }
 }

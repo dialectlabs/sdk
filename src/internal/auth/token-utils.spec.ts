@@ -8,13 +8,14 @@ import type {
   TokenBody,
 } from '@auth/auth.interface';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
 
 describe('token tests', () => {
-  let wallet: NodeDialectWalletAdapter;
+  let wallet: DialectWalletAdapterWrapper;
   let signer: Ed25519TokenSigner;
   let tokenUtils: AuthTokens;
   beforeEach(() => {
-    wallet = NodeDialectWalletAdapter.create();
+    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
     signer = new DialectWalletAdapterEd25519TokenSigner(wallet);
     tokenUtils = new AuthTokensImpl();
   });

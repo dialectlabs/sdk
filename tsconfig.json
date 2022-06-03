@@ -48,6 +48,9 @@
       "@data-service-api/*": [
         "./internal/data-service-api/*"
       ],
+      "@encryption/*": [
+        "./internal/encryption/*"
+      ],
       "@messaging/*": [
         "./messaging/*"
       ],
