@@ -4,7 +4,7 @@
 
 import { Keypair } from '@solana/web3.js';
 import { DialectMemberScope } from '../src';
-import { SessionStorageTokenStore } from '../src/internal/data-service-api/token-store';
+import { SessionStorageTokenStore } from '../src/internal/auth/token-store';
 import {
   Dialect,
   DialectWalletAdapter,
@@ -18,14 +18,14 @@ const wallet: DialectWalletAdapter = NodeDialectWalletAdapter.create();
  * */
 async function decentalizedInbox() {
   const sdk = Dialect.sdk({
-    environment: 'production',
+    // environment: 'production',
     wallet,
     dialectCloud: {
       tokenStore: new SessionStorageTokenStore(), // Optionally use session storage to store token
     },
   });
   const threads = sdk.threads.findAll();
-  const dialect = await sdk.threads.create({
+  const thread = await sdk.threads.create({
     me: {
       scopes: [DialectMemberScope.WRITE],
     },
@@ -35,10 +35,11 @@ async function decentalizedInbox() {
     },
     encrypted: false,
   });
-  await dialect.send({
+  const promise = await thread.messages();
+  await thread.send({
     text: 'Hello world!',
   });
-  await dialect.delete();
+  await thread.delete();
 }
 
 /*

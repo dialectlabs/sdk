@@ -69,11 +69,11 @@ export class SolanaMessaging implements Messaging {
           [
             {
               publicKey: this.walletAdapter.publicKey,
-              scopes: this.toProtocolScopes(command.me.scopes),
+              scopes: toProtocolScopes(command.me.scopes),
             },
             {
               publicKey: command.otherMember.publicKey,
-              scopes: this.toProtocolScopes(command.otherMember.scopes),
+              scopes: toProtocolScopes(command.otherMember.scopes),
             },
           ],
           encrypted,
@@ -87,13 +87,6 @@ export class SolanaMessaging implements Messaging {
       }
       throw e;
     }
-  }
-
-  private toProtocolScopes(scopes: DialectMemberScope[]): [boolean, boolean] {
-    return [
-      scopes.some((it) => it === DialectMemberScope.ADMIN),
-      scopes.some((it) => it === DialectMemberScope.WRITE),
-    ];
   }
 
   async find(query: FindDialectQuery): Promise<Thread | null> {
@@ -204,6 +197,13 @@ function fromProtocolScopes(scopes: [boolean, boolean]) {
   return [
     ...(scopes[0] ? [DialectMemberScope.ADMIN] : []),
     ...(scopes[1] ? [DialectMemberScope.WRITE] : []),
+  ];
+}
+
+function toProtocolScopes(scopes: DialectMemberScope[]): [boolean, boolean] {
+  return [
+    scopes.some((it) => it === DialectMemberScope.ADMIN),
+    scopes.some((it) => it === DialectMemberScope.WRITE),
   ];
 }
 
