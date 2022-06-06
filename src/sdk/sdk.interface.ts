@@ -23,7 +23,7 @@ export interface Config {
   solana?: SolanaConfig;
   dialectCloud?: DialectCloudConfig;
   encryptionKeysStore?: EncryptionKeysStore;
-  messagingBackendPreference?: MessagingBackendPreference;
+  preferableMessagingBackend?: MessagingBackend;
 }
 
 export interface SolanaConfig {
@@ -45,7 +45,7 @@ export type DialectCloudEnvironment =
   | 'development'
   | 'local-development';
 
-export enum MessagingBackendPreference {
-  SOLANA = 'SOLANA',
-  DATA_SERVICE = 'DATA_SERVICE',
+export enum MessagingBackend {
+  Solana = 'SOLANA',
+  DialectCloud = 'DIALECT_CLOUD',
 }

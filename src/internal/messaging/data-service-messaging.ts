@@ -28,6 +28,7 @@ import {
 } from '@data-service-api/data-service-api';
 import { IllegalStateError } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
+import { MessagingBackend } from '@sdk/sdk.interface';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -84,6 +85,7 @@ export class DataServiceMessaging implements Messaging {
       },
       dialect.encrypted,
       decrypted,
+      new Date(dialect.lastMessageTimestamp),
     );
   }
 
@@ -163,6 +165,8 @@ export class DataServiceMessaging implements Messaging {
 }
 
 export class DataServiceThread implements Thread {
+  readonly backend: MessagingBackend = MessagingBackend.DialectCloud;
+
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerde: TextSerde,
@@ -171,6 +175,7 @@ export class DataServiceThread implements Thread {
     readonly otherMember: DialectMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
+    public updatedAt: Date,
   ) {}
 
   async delete(): Promise<void> {
@@ -181,6 +186,7 @@ export class DataServiceThread implements Thread {
     const { dialect } = await this.dataServiceDialectsApi.find(
       this.address.toBase58(),
     );
+    this.updatedAt = new Date(dialect.lastMessageTimestamp);
     if (this.encryptionEnabled && !this.canBeDecrypted) {
       return [];
     }

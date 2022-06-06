@@ -38,6 +38,7 @@ import type {
   EncryptionKeysProvider,
 } from '@encryption/encryption-keys-provider';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
+import { MessagingBackend } from '@sdk/sdk.interface';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
@@ -171,6 +172,8 @@ export class SolanaMessaging implements Messaging {
 }
 
 export class SolanaThread implements Thread {
+  readonly backend: MessagingBackend = MessagingBackend.Solana;
+
   constructor(
     readonly address: PublicKey,
     readonly me: DialectMember,
@@ -218,6 +221,10 @@ export class SolanaThread implements Thread {
       command.text,
       encryptionProps,
     );
+  }
+
+  get updatedAt() {
+    return new Date(this.dialectAccount.dialect.lastMessageTimestamp);
   }
 }
 

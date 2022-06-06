@@ -3,7 +3,7 @@ import {
   DialectCloudEnvironment,
   DialectSdk,
   Environment,
-  MessagingBackendPreference,
+  MessagingBackend,
   SolanaNetwork,
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
@@ -29,7 +29,7 @@ interface InternalConfig {
   solana: InternalSolanaConfig;
   dialectCloud: InternalDialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;
-  messagingBackendPreference: MessagingBackendPreference;
+  preferableMessagingBackend: MessagingBackend;
 }
 
 interface InternalSolanaConfig {
@@ -83,6 +83,7 @@ export class DialectSdkFactory {
     const messagingFacade = new MessagingFacade(
       dataServiceMessaging,
       solanaMessaging,
+      config.preferableMessagingBackend,
     );
     return new InternalDialectSdk(messagingFacade);
   }
@@ -97,7 +98,8 @@ export class DialectSdkFactory {
       solana: this.initializeSolanaConfig(),
       encryptionKeysStore:
         this.config.encryptionKeysStore ?? new InmemoryEncryptionKeysStore(),
-      messagingBackendPreference: MessagingBackendPreference.DATA_SERVICE,
+      preferableMessagingBackend:
+        this.config.preferableMessagingBackend ?? MessagingBackend.DialectCloud,
     };
   }
 

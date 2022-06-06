@@ -1,56 +1,67 @@
 import type {
   CreateDialectCommand,
-  DialectMember,
   FindDialectQuery,
-  Message,
   Messaging,
-  SendMessageCommand,
   Thread,
 } from '@messaging/messaging.interface';
-import type { DataServiceMessaging } from './data-service-messaging';
-import type { SolanaMessaging } from './solana-messaging';
-import type { PublicKey } from '@solana/web3.js';
-import { UnsupportedOperationError } from '@sdk/errors';
+import { IllegalArgumentError } from '@sdk/errors';
+import { MessagingBackend } from '@sdk/sdk.interface';
 
-// TODO: implement after ux/ui decision made
 export class MessagingFacade implements Messaging {
   constructor(
-    private readonly dataServiceMessaging: DataServiceMessaging,
-    private readonly solanaMessaging: SolanaMessaging,
+    private readonly dataServiceMessaging: Messaging,
+    private readonly solanaMessaging: Messaging,
+    private readonly preferableMessagingBackend: MessagingBackend,
   ) {}
 
   create(command: CreateDialectCommand): Promise<Thread> {
-    throw new UnsupportedOperationError('Not implemented');
+    if (this.preferableMessagingBackend === MessagingBackend.Solana) {
+      return this.solanaMessaging.create(command);
+    }
+    if (this.preferableMessagingBackend === MessagingBackend.DialectCloud) {
+      return this.dataServiceMessaging.create(command);
+    }
+    throw new IllegalArgumentError(
+      `Unsupported messaging backend ${this.preferableMessagingBackend}`,
+    );
   }
 
-  find(query: FindDialectQuery): Promise<Thread | null> {
-    throw new UnsupportedOperationError('Not implemented');
+  async find(query: FindDialectQuery): Promise<Thread | null> {
+    if (this.preferableMessagingBackend === MessagingBackend.Solana) {
+      return (
+        (await this.solanaMessaging.find(query)) ||
+        (await this.dataServiceMessaging.find(query))
+      );
+    }
+    if (this.preferableMessagingBackend === MessagingBackend.DialectCloud) {
+      return (
+        (await this.dataServiceMessaging.find(query)) ||
+        (await this.solanaMessaging.find(query))
+      );
+    }
+    throw new IllegalArgumentError(
+      `Unsupported messaging backend ${this.preferableMessagingBackend}`,
+    );
   }
 
-  findAll(): Promise<Thread[]> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-}
-
-export class ThreadFacade implements Thread {
-  constructor(
-    readonly me: DialectMember,
-    readonly otherMember: DialectMember,
-    readonly encryptionEnabled: boolean,
-    readonly canBeDecrypted: boolean,
-    readonly address: PublicKey,
-    private readonly delegates: Thread[],
-  ) {}
-
-  delete(): Promise<void> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-
-  messages(): Promise<Message[]> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-
-  send(command: SendMessageCommand): Promise<void> {
-    throw new UnsupportedOperationError('Not implemented');
+  async findAll(): Promise<Thread[]> {
+    const allSettled = await Promise.allSettled([
+      this.solanaMessaging.findAll(),
+      this.dataServiceMessaging.findAll(),
+    ]);
+    const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
+    const rejected = allSettled.filter((it) => it.status === 'rejected');
+    if (rejected.length > 0) {
+      console.error(
+        `Error during finding dialects: ${rejected
+          .map((it) => it as PromiseRejectedResult)
+          .map((it) => it.reason)}`,
+      );
+    }
+    return fulfilled
+      .map((it) => it as PromiseFulfilledResult<Thread[]>)
+      .map((it) => it.value)
+      .flat()
+      .sort((t1, t2) => t2.updatedAt.getTime() - t1.updatedAt.getTime());
   }
 }
