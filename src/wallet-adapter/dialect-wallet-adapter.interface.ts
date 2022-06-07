@@ -4,6 +4,12 @@ import type {
 } from '@solana/wallet-adapter-base/lib/types/signer';
 import type { PublicKey } from '@solana/web3.js';
 
+export interface FailSafeDialectWalletAdapterProps {
+  canSignTransactions(): boolean;
+  canSign(): boolean;
+  canEncrypt(): boolean;
+}
+
 export interface DialectWalletAdapter {
   publicKey: PublicKey;
   signTransaction?: SignerWalletAdapterProps['signTransaction'];

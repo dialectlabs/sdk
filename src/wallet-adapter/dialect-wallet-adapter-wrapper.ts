@@ -1,8 +1,13 @@
-import type { DialectWalletAdapter } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import type {
+  DialectWalletAdapter,
+  FailSafeDialectWalletAdapterProps,
+} from '@wallet-adapter/dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@sdk/errors';
 import type { Transaction } from '@solana/web3.js';
 
-export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
+export class DialectWalletAdapterWrapper
+  implements DialectWalletAdapter, FailSafeDialectWalletAdapterProps
+{
   constructor(private readonly delegate: DialectWalletAdapter) {}
 
   get publicKey() {
