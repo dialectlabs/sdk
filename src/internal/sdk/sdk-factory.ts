@@ -22,7 +22,7 @@ import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
-import type { FailSafeDialectWalletAdapterProps } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import type { CompatibilityProps } from '@wallet-adapter/dialect-wallet-adapter.interface';
 
 interface InternalConfig {
   environment: Environment;
@@ -48,7 +48,7 @@ interface InternalDialectCloudConfig {
 export class InternalDialectSdk implements DialectSdk {
   constructor(
     readonly threads: Messaging,
-    readonly wallet: FailSafeDialectWalletAdapterProps,
+    readonly compatibility: CompatibilityProps,
   ) {}
 }
 

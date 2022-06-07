@@ -1,12 +1,12 @@
 import type {
   DialectWalletAdapter,
-  FailSafeDialectWalletAdapterProps,
+  CompatibilityProps,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@sdk/errors';
 import type { Transaction } from '@solana/web3.js';
 
 export class DialectWalletAdapterWrapper
-  implements DialectWalletAdapter, FailSafeDialectWalletAdapterProps
+  implements DialectWalletAdapter, CompatibilityProps
 {
   constructor(private readonly delegate: DialectWalletAdapter) {}
 
@@ -54,13 +54,13 @@ export class DialectWalletAdapterWrapper
     return this.delegate.diffieHellman(this.publicKey.toBytes());
   }
 
-  canSignTransactions() {
+  canUseSolana() {
     return (
       !!this.delegate.signTransaction && !!this.delegate.signAllTransactions
     );
   }
 
-  canSign() {
+  canUseDialectCloud() {
     return !!this.delegate.signMessage;
   }
 

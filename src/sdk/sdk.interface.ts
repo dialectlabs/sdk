@@ -1,6 +1,6 @@
 import type {
   DialectWalletAdapter,
-  FailSafeDialectWalletAdapterProps,
+  CompatibilityProps,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
@@ -15,7 +15,7 @@ export abstract class Dialect {
 }
 
 export interface DialectSdk {
-  readonly wallet: FailSafeDialectWalletAdapterProps;
+  readonly compatibility: CompatibilityProps;
   readonly threads: Messaging;
 }
 
