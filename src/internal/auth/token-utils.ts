@@ -1,5 +1,4 @@
 import nacl from 'tweetnacl';
-import util from 'tweetnacl-util';
 import type { Duration } from 'luxon';
 import { PublicKey } from '@solana/web3.js';
 import type {
@@ -9,6 +8,7 @@ import type {
   TokenBody,
   TokenHeader,
 } from '@auth/auth.interface';
+import { decodeURLSafe, encodeURLSafe } from '@stablelib/base64';
 
 export class AuthTokensImpl implements AuthTokens {
   async generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token> {
@@ -16,19 +16,19 @@ export class AuthTokensImpl implements AuthTokens {
       alg: 'ed25519',
       typ: 'JWT',
     };
-    const base64Header = btoa(JSON.stringify(header));
+    const base64Header = toBase64(header);
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
       sub: signer.subject.toBase58(),
       iat: Math.round(nowUtcSeconds),
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };
-    const base64Body = btoa(JSON.stringify(body));
-    const signingPayload = AuthTokensImpl.getSigningPayload(
-      base64Header + '.' + base64Body,
+    const base64Body = toBase64(body);
+    const { signature, base64Signature } = await sign(
+      base64Header,
+      base64Body,
+      signer,
     );
-    const signature = await signer.sign(signingPayload);
-    const base64Signature = util.encodeBase64(signature);
     const rawValue = `${base64Header}.${base64Body}.${base64Signature}`;
     return {
       rawValue,
@@ -51,12 +51,12 @@ export class AuthTokensImpl implements AuthTokens {
       throw new TokenParsingError();
     }
     try {
-      const body = JSON.parse(atob(base64Body)) as TokenBody;
+      const body: TokenBody = fromBase64(base64Body);
       if (!body.sub || !body.exp) {
         throw new TokenStructureValidationError();
       }
-      const header = JSON.parse(atob(base64Header)) as TokenHeader;
-      const signature = util.decodeBase64(base64Signature);
+      const header: TokenHeader = fromBase64(base64Header);
+      const signature = decodeURLSafe(base64Signature);
       return {
         base64Header,
         base64Body,
@@ -67,7 +67,7 @@ export class AuthTokensImpl implements AuthTokens {
         body,
       };
     } catch (e) {
-      console.log(e);
+      console.error(e);
       throw new TokenParsingError();
     }
   }
@@ -81,7 +81,7 @@ export class AuthTokensImpl implements AuthTokens {
 
   isSignatureValid(token: Token) {
     const signedPayload = token.base64Header + '.' + token.base64Body;
-    const signingPayload = AuthTokensImpl.getSigningPayload(signedPayload);
+    const signingPayload = new TextEncoder().encode(signedPayload);
     return nacl.sign.detached.verify(
       signingPayload,
       token.signature,
@@ -93,16 +93,35 @@ export class AuthTokensImpl implements AuthTokens {
     const nowUtcSeconds = new Date().getTime() / 1000;
     return nowUtcSeconds > token.body.exp;
   }
+}
 
-  private static getSigningPayload(signedPayload: string) {
-    return Uint8Array.from(
-      btoa(signedPayload)
-        .split('')
-        .map(function (c) {
-          return c.charCodeAt(0);
-        }),
-    );
-  }
+async function sign(
+  base64Header: string,
+  base64Body: string,
+  signer: Ed25519TokenSigner,
+) {
+  const signingPayload = new TextEncoder().encode(
+    base64Header + '.' + base64Body,
+  );
+  const signature = await signer.sign(signingPayload);
+  const base64Signature = bytesToBase64(signature);
+  return { signature, base64Signature };
+}
+
+export function toBase64<T>(t: T): string {
+  const json = JSON.stringify(t);
+  const byteArray = new TextEncoder().encode(json);
+  return bytesToBase64(byteArray);
+}
+
+function bytesToBase64(signature: Uint8Array) {
+  return encodeURLSafe(signature).replace(/=/g, '');
+}
+
+export function fromBase64<T>(serialized: string): T {
+  const byteArray = decodeURLSafe(serialized);
+  const json = new TextDecoder().decode(byteArray);
+  return JSON.parse(json) as T;
 }
 
 // TODO: use base sdk error as a parent

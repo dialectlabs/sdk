@@ -1,6 +1,6 @@
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { Duration } from 'luxon';
-import { AuthTokensImpl } from './token-utils';
+import { AuthTokensImpl, fromBase64, toBase64 } from './token-utils';
 import { Keypair } from '@solana/web3.js';
 import type {
   AuthTokens,

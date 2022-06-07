@@ -1,9 +1,14 @@
-import { Auth } from '../src';
-import { NodeDialectWalletAdapter } from '../src';
+import {
+  Auth,
+  DialectWalletAdapterEd25519TokenSigner,
+  NodeDialectWalletAdapter,
+} from '../src';
 import { Duration } from 'luxon';
-import { DialectWalletAdapterEd25519TokenSigner } from '../src';
+import { DialectWalletAdapterWrapper } from '../src/internal/wallet-adapter/dialect-wallet-adapter-wrapper';
 
-const walletAdapter = NodeDialectWalletAdapter.create();
+const walletAdapter = new DialectWalletAdapterWrapper(
+  NodeDialectWalletAdapter.create(),
+);
 
 (async () => {
   const token = await Auth.tokens.generate(
