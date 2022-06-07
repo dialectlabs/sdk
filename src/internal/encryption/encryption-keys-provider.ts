@@ -1,4 +1,4 @@
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import {
   EncryptionKeysStore,
   InmemoryEncryptionKeysStore,

@@ -1,4 +1,4 @@
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
   CreateDialectCommand,
   Messaging,

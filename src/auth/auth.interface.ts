@@ -1,7 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 export class Auth {
   private constructor() {}

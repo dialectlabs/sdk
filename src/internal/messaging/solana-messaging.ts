@@ -24,7 +24,7 @@ import {
 } from '@dialectlabs/web3';
 
 import type { Program } from '@project-serum/anchor';
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import {
   AccountAlreadyExistsError,
   AccountNotFoundError,

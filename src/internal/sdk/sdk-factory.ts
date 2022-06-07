@@ -8,7 +8,7 @@ import {
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
 import { programs } from '@dialectlabs/web3';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';

@@ -8,7 +8,7 @@ import type {
   TokenBody,
 } from '@auth/auth.interface';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/internal/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 describe('token tests', () => {
   let wallet: DialectWalletAdapterWrapper;
