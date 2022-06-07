@@ -1,6 +1,6 @@
 import type {
-  CreateDialectCommand,
-  FindDialectQuery,
+  CreateThreadCommand,
+  FindThreadQuery,
   Messaging,
   Thread,
 } from '@messaging/messaging.interface';
@@ -14,7 +14,7 @@ export class MessagingFacade implements Messaging {
     private readonly preferableMessagingBackend: MessagingBackend,
   ) {}
 
-  create(command: CreateDialectCommand): Promise<Thread> {
+  create(command: CreateThreadCommand): Promise<Thread> {
     if (this.preferableMessagingBackend === MessagingBackend.Solana) {
       return this.solanaMessaging.create(command);
     }
@@ -26,7 +26,7 @@ export class MessagingFacade implements Messaging {
     );
   }
 
-  async find(query: FindDialectQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Thread | null> {
     if (this.preferableMessagingBackend === MessagingBackend.Solana) {
       return (
         (await this.solanaMessaging.find(query)) ||

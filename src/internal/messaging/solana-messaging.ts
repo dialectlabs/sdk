@@ -1,15 +1,15 @@
 import type {
-  CreateDialectCommand,
-  DialectMember,
-  FindDialectByAddressQuery,
-  FindDialectByOtherMemberQuery,
-  FindDialectQuery,
+  CreateThreadCommand,
+  ThreadMember,
+  FindThreadByAddressQuery,
+  FindThreadByOtherMemberQuery,
+  FindThreadQuery,
   Message,
   Messaging,
   SendMessageCommand,
   Thread,
 } from '@messaging/messaging.interface';
-import { DialectMemberScope } from '@messaging/messaging.interface';
+import { ThreadMemberScope } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
   createDialect,
@@ -53,7 +53,7 @@ export class SolanaMessaging implements Messaging {
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
   ) {}
 
-  async create(command: CreateDialectCommand): Promise<Thread> {
+  async create(command: CreateThreadCommand): Promise<Thread> {
     const dialectAccount = await this.createInternal(command);
     return toSolanaThread(
       dialectAccount,
@@ -63,7 +63,7 @@ export class SolanaMessaging implements Messaging {
     );
   }
 
-  private async createInternal(command: CreateDialectCommand) {
+  private async createInternal(command: CreateThreadCommand) {
     const encryptionKeys = command.encrypted
       ? await this.encryptionKeysProvider.getFailFast()
       : null;
@@ -99,7 +99,7 @@ export class SolanaMessaging implements Messaging {
     }
   }
 
-  async find(query: FindDialectQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Thread | null> {
     const dialectAccount = await this.findInternal(query);
     return (
       dialectAccount &&
@@ -112,7 +112,7 @@ export class SolanaMessaging implements Messaging {
     );
   }
 
-  private async findInternal(query: FindDialectQuery) {
+  private async findInternal(query: FindThreadQuery) {
     const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
     const encryptionProps = getEncryptionProps(
       this.walletAdapter.publicKey,
@@ -133,7 +133,7 @@ export class SolanaMessaging implements Messaging {
   }
 
   private async findByAddress(
-    query: FindDialectByAddressQuery,
+    query: FindThreadByAddressQuery,
     encryptionProps: EncryptionProps | null,
   ) {
     return withErrorParsing(
@@ -142,7 +142,7 @@ export class SolanaMessaging implements Messaging {
   }
 
   private async findByOtherMember(
-    query: FindDialectByOtherMemberQuery,
+    query: FindThreadByOtherMemberQuery,
     encryptionProps: EncryptionProps | null,
   ) {
     return withErrorParsing(
@@ -176,8 +176,8 @@ export class SolanaThread implements Thread {
 
   constructor(
     readonly address: PublicKey,
-    readonly me: DialectMember,
-    readonly otherMember: DialectMember,
+    readonly me: ThreadMember,
+    readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     private readonly program: Program,
@@ -230,15 +230,15 @@ export class SolanaThread implements Thread {
 
 function fromProtocolScopes(scopes: [boolean, boolean]) {
   return [
-    ...(scopes[0] ? [DialectMemberScope.ADMIN] : []),
-    ...(scopes[1] ? [DialectMemberScope.WRITE] : []),
+    ...(scopes[0] ? [ThreadMemberScope.ADMIN] : []),
+    ...(scopes[1] ? [ThreadMemberScope.WRITE] : []),
   ];
 }
 
-function toProtocolScopes(scopes: DialectMemberScope[]): [boolean, boolean] {
+function toProtocolScopes(scopes: ThreadMemberScope[]): [boolean, boolean] {
   return [
-    scopes.some((it) => it === DialectMemberScope.ADMIN),
-    scopes.some((it) => it === DialectMemberScope.WRITE),
+    scopes.some((it) => it === ThreadMemberScope.ADMIN),
+    scopes.some((it) => it === ThreadMemberScope.WRITE),
   ];
 }
 

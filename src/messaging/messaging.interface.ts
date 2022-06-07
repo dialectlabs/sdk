@@ -4,9 +4,9 @@ import type { MessagingBackend } from '@sdk/sdk.interface';
 export interface Messaging {
   findAll(): Promise<Thread[]>;
 
-  create(command: CreateDialectCommand): Promise<Thread>;
+  create(command: CreateThreadCommand): Promise<Thread>;
 
-  find(query: FindDialectQuery): Promise<Thread | null>;
+  find(query: FindThreadQuery): Promise<Thread | null>;
 }
 
 export interface SendMessageCommand {
@@ -16,31 +16,31 @@ export interface SendMessageCommand {
 export interface Message {
   text: string;
   timestamp: Date;
-  author: DialectMember;
+  author: ThreadMember;
 }
 
-export interface CreateDialectCommand {
-  me: Omit<DialectMember, 'publicKey'>;
-  otherMember: DialectMember;
+export interface CreateThreadCommand {
+  me: Omit<ThreadMember, 'publicKey'>;
+  otherMember: ThreadMember;
   encrypted: boolean;
 }
 
-export type FindDialectQuery =
-  | FindDialectByAddressQuery
-  | FindDialectByOtherMemberQuery;
+export type FindThreadQuery =
+  | FindThreadByAddressQuery
+  | FindThreadByOtherMemberQuery;
 
-export interface FindDialectByAddressQuery {
+export interface FindThreadByAddressQuery {
   address: PublicKey;
 }
 
-export interface FindDialectByOtherMemberQuery {
+export interface FindThreadByOtherMemberQuery {
   otherMember: PublicKey;
 }
 
 export interface Thread {
   address: PublicKey;
-  me: DialectMember;
-  otherMember: DialectMember;
+  me: ThreadMember;
+  otherMember: ThreadMember;
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
   backend: MessagingBackend;
@@ -53,12 +53,12 @@ export interface Thread {
   delete(): Promise<void>;
 }
 
-export interface DialectMember {
+export interface ThreadMember {
   publicKey: PublicKey;
-  scopes: DialectMemberScope[];
+  scopes: ThreadMemberScope[];
 }
 
-export enum DialectMemberScope {
+export enum ThreadMemberScope {
   WRITE = 'WRITE',
   ADMIN = 'ADMIN',
 }

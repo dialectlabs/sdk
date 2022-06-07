@@ -1,15 +1,15 @@
 import type {
-  CreateDialectCommand,
-  DialectMember,
-  FindDialectByAddressQuery,
-  FindDialectByOtherMemberQuery,
-  FindDialectQuery,
+  CreateThreadCommand,
+  ThreadMember,
+  FindThreadByAddressQuery,
+  FindThreadByOtherMemberQuery,
+  FindThreadQuery,
   Message,
   Messaging,
   SendMessageCommand,
   Thread,
 } from '@messaging/messaging.interface';
-import { DialectMemberScope } from '@messaging/messaging.interface';
+import { ThreadMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
 import {
   EncryptedTextSerde,
@@ -37,7 +37,7 @@ export class DataServiceMessaging implements Messaging {
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
   ) {}
 
-  async create(command: CreateDialectCommand): Promise<Thread> {
+  async create(command: CreateThreadCommand): Promise<Thread> {
     command.encrypted && (await this.checkEncryptionSupported());
     const dialectAccountDto = await this.dataServiceDialectsApi.create({
       encrypted: command.encrypted,
@@ -120,13 +120,13 @@ export class DataServiceMessaging implements Messaging {
     };
   }
 
-  async find(query: FindDialectQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Thread | null> {
     const dialectAccountDto = await this.findInternal(query);
     return dialectAccountDto && this.toDataServiceThread(dialectAccountDto);
   }
 
   private findInternal(
-    query: FindDialectByAddressQuery | FindDialectByOtherMemberQuery,
+    query: FindThreadByAddressQuery | FindThreadByOtherMemberQuery,
   ) {
     if ('address' in query) {
       return this.findByAddress(query);
@@ -134,7 +134,7 @@ export class DataServiceMessaging implements Messaging {
     return this.findByOtherMember(query);
   }
 
-  private async findByAddress(query: FindDialectByAddressQuery) {
+  private async findByAddress(query: FindThreadByAddressQuery) {
     try {
       return await this.dataServiceDialectsApi.find(query.address.toBase58());
     } catch (e) {
@@ -146,7 +146,7 @@ export class DataServiceMessaging implements Messaging {
     }
   }
 
-  private async findByOtherMember(query: FindDialectByOtherMemberQuery) {
+  private async findByOtherMember(query: FindThreadByOtherMemberQuery) {
     const dialectAccountDtos = await this.dataServiceDialectsApi.findAll({
       memberPublicKey: query.otherMember.toBase58(),
     });
@@ -171,8 +171,8 @@ export class DataServiceThread implements Thread {
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerde: TextSerde,
     readonly address: PublicKey,
-    readonly me: DialectMember,
-    readonly otherMember: DialectMember,
+    readonly me: ThreadMember,
+    readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
@@ -206,10 +206,10 @@ export class DataServiceThread implements Thread {
 }
 
 function fromDataServiceScopes(scopes: MemberScopeDto[]) {
-  return scopes.map((it) => DialectMemberScope[it]);
+  return scopes.map((it) => ThreadMemberScope[it]);
 }
 
-function toDataServiceScopes(scopes: DialectMemberScope[]) {
+function toDataServiceScopes(scopes: ThreadMemberScope[]) {
   return scopes.map((it) => MemberScopeDto[it]);
 }
 

@@ -1,10 +1,10 @@
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
-  CreateDialectCommand,
+  CreateThreadCommand,
   Messaging,
   SendMessageCommand,
 } from '@messaging/messaging.interface';
-import { DialectMemberScope } from '@messaging/messaging.interface';
+import { ThreadMemberScope } from '@messaging/messaging.interface';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import { DataServiceApi } from '@data-service-api/data-service-api';
@@ -60,14 +60,14 @@ describe('Data service messaging (e2e)', () => {
       const before = await wallet1Messaging.findAll();
       expect(before).toMatchObject([]);
       // when
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: false,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       const dialect = await wallet1Messaging.create(command);
@@ -87,14 +87,14 @@ describe('Data service messaging (e2e)', () => {
       const before = await wallet1Messaging.findAll();
       expect(before).toMatchObject([]);
       // when
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: true,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       // @ts-ignore
@@ -112,14 +112,14 @@ describe('Data service messaging (e2e)', () => {
         wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: false,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       const dialect = await wallet1Messaging.create(command);
@@ -140,14 +140,14 @@ describe('Data service messaging (e2e)', () => {
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       // when
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: false,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       await wallet1Messaging.create(command);
@@ -167,14 +167,14 @@ describe('Data service messaging (e2e)', () => {
         wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: false,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       // when
@@ -204,14 +204,14 @@ describe('Data service messaging (e2e)', () => {
         wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: true,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       // when
@@ -241,14 +241,14 @@ describe('Data service messaging (e2e)', () => {
       } = await messagingFactory();
       // @ts-ignore
       wallet2Adapter.delegate.diffieHellman = undefined;
-      const command: CreateDialectCommand = {
+      const command: CreateThreadCommand = {
         encrypted: true,
         me: {
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         otherMember: {
           publicKey: wallet2Adapter.publicKey,
-          scopes: [DialectMemberScope.ADMIN, DialectMemberScope.WRITE],
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       };
       // when
