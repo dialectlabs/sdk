@@ -6,6 +6,7 @@ import type {
 } from '@messaging/messaging.interface';
 import { IllegalArgumentError } from '@sdk/errors';
 import { MessagingBackend } from '@sdk/sdk.interface';
+import { requireSingleMember } from '@messaging/internal/commons';
 
 export class MessagingFacade implements Messaging {
   constructor(

@@ -36,13 +36,13 @@ describe('Data service api (e2e)', () => {
         TokenProvider.create(
           new DialectWalletAdapterEd25519TokenSigner(wallet1),
         ),
-      ).dialects;
+      ).threads;
       wallet2Api = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(
           new DialectWalletAdapterEd25519TokenSigner(wallet2),
         ),
-      ).dialects;
+      ).threads;
     });
 
     test('can list all dialects', async () => {

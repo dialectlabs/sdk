@@ -35,7 +35,7 @@ describe('Data service messaging (e2e)', () => {
   ];
 
   it.each(messaging)(
-    '%p can list all dialects',
+    '%p can list all threads',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -43,14 +43,14 @@ describe('Data service messaging (e2e)', () => {
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       // when
-      const dialects = await wallet1Messaging.findAll();
+      const threads = await wallet1Messaging.findAll();
       // then
-      expect(dialects).toMatchObject([]);
+      expect(threads).toMatchObject([]);
     },
   );
 
   it.each(messaging)(
-    '%p can create dialect',
+    '%p can create thread',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -65,19 +65,21 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
-      const dialect = await wallet1Messaging.create(command);
+      const thread = await wallet1Messaging.create(command);
       // then
-      expect(dialect).not.toBeNull();
+      expect(thread).not.toBeNull();
     },
   );
 
   it.each(messaging)(
-    '%p cannot create encrypted dialect if encryption not supported',
+    '%p cannot create encrypted thread if encryption not supported',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -92,10 +94,12 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
       // @ts-ignore
       wallet1Adapter.delegate.diffieHellman = undefined;
@@ -105,7 +109,7 @@ describe('Data service messaging (e2e)', () => {
   );
 
   it.each(messaging)(
-    '%p admin can delete dialect',
+    '%p admin can delete thread',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -117,22 +121,24 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
-      const dialect = await wallet1Messaging.create(command);
-      const actual = await wallet2Messaging.find(dialect);
+      const thread = await wallet1Messaging.create(command);
+      const actual = await wallet2Messaging.find(thread);
       expect(actual).not.toBe(null);
-      await dialect.delete();
-      const afterDeletion = await wallet2Messaging.find(dialect);
+      await thread.delete();
+      const afterDeletion = await wallet2Messaging.find(thread);
       expect(afterDeletion).toBe(null);
     },
   );
 
   it.each(messaging)(
-    '%p can find all dialects after creating',
+    '%p can find all threads after creating',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -145,10 +151,12 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
       await wallet1Messaging.create(command);
       const wallet1Dialects = await wallet1Messaging.findAll();
@@ -160,7 +168,7 @@ describe('Data service messaging (e2e)', () => {
   );
 
   it.each(messaging)(
-    '%p can send/receive message when dialect is unencrypted',
+    '%p can send/receive message when thread is unencrypted',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -172,10 +180,12 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
       // when
       const wallet1Dialect = await wallet1Messaging.create(command);
@@ -197,7 +207,7 @@ describe('Data service messaging (e2e)', () => {
   );
 
   it.each(messaging)(
-    '%p can send/receive message when dialect is encrypted',
+    '%p can send/receive message when thread is encrypted',
     async (messagingType, messagingFactory) => {
       // given
       const {
@@ -209,10 +219,12 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
       // when
       const wallet1Dialect = await wallet1Messaging.create(command);
@@ -246,10 +258,12 @@ describe('Data service messaging (e2e)', () => {
         me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        otherMember: {
-          publicKey: wallet2Adapter.publicKey,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
       };
       // when
       const wallet1Dialect = await wallet1Messaging.create(command);
@@ -318,7 +332,7 @@ async function createDataServiceMessaging() {
       TokenProvider.create(
         new DialectWalletAdapterEd25519TokenSigner(user1WalletAdapter),
       ),
-    ).dialects,
+    ).threads,
     new DialectWalletAdapterEncryptionKeysProvider(user1WalletAdapter),
   );
   const user2DataServiceMessaging = new DataServiceMessaging(
@@ -328,7 +342,7 @@ async function createDataServiceMessaging() {
       TokenProvider.create(
         new DialectWalletAdapterEd25519TokenSigner(user2WalletAdapter),
       ),
-    ).dialects,
+    ).threads,
     new DialectWalletAdapterEncryptionKeysProvider(user2WalletAdapter),
   );
   const dataServiceMessagingState: MessagingState = {

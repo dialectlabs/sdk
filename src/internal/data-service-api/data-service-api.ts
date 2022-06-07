@@ -24,7 +24,7 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
 }
 
 export class DataServiceApi {
-  private constructor(readonly dialects: DataServiceDialectsApi) {}
+  private constructor(readonly threads: DataServiceDialectsApi) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
     const dialectsApi = new DataServiceDialectsApiClient(

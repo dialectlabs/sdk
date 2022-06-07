@@ -21,7 +21,7 @@ export interface Message {
 
 export interface CreateThreadCommand {
   me: Omit<ThreadMember, 'publicKey'>;
-  otherMember: ThreadMember;
+  otherMembers: ThreadMember[];
   encrypted: boolean;
 }
 
@@ -34,13 +34,13 @@ export interface FindThreadByAddressQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
-  otherMember: PublicKey;
+  otherMembers: PublicKey[];
 }
 
 export interface Thread {
   address: PublicKey;
   me: ThreadMember;
-  otherMember: ThreadMember;
+  otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
   backend: MessagingBackend;

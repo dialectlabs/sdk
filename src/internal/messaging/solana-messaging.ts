@@ -1,6 +1,5 @@
 import type {
   CreateThreadCommand,
-  ThreadMember,
   FindThreadByAddressQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
@@ -8,6 +7,7 @@ import type {
   Messaging,
   SendMessageCommand,
   Thread,
+  ThreadMember,
 } from '@messaging/messaging.interface';
 import { ThreadMemberScope } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
@@ -39,6 +39,7 @@ import type {
 } from '@encryption/encryption-keys-provider';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { MessagingBackend } from '@sdk/sdk.interface';
+import { requireSingleMember } from '@messaging/internal/commons';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
@@ -64,13 +65,7 @@ export class SolanaMessaging implements Messaging {
   }
 
   private async createInternal(command: CreateThreadCommand) {
-    const encryptionKeys = command.encrypted
-      ? await this.encryptionKeysProvider.getFailFast()
-      : null;
-    const encryptionProps = getEncryptionProps(
-      this.walletAdapter.publicKey,
-      encryptionKeys,
-    );
+    const otherMember = requireSingleMember(command.otherMembers);
     try {
       return await withErrorParsing(
         createDialect(
@@ -82,12 +77,12 @@ export class SolanaMessaging implements Messaging {
               scopes: toProtocolScopes(command.me.scopes),
             },
             {
-              publicKey: command.otherMember.publicKey,
-              scopes: toProtocolScopes(command.otherMember.scopes),
+              publicKey: otherMember.publicKey,
+              scopes: toProtocolScopes(otherMember.scopes),
             },
           ],
           command.encrypted,
-          encryptionProps,
+          await this.getEncryptionProps(command),
         ),
       );
     } catch (e) {
@@ -97,6 +92,13 @@ export class SolanaMessaging implements Messaging {
       }
       throw e;
     }
+  }
+
+  private async getEncryptionProps(command: CreateThreadCommand) {
+    const encryptionKeys = command.encrypted
+      ? await this.encryptionKeysProvider.getFailFast()
+      : null;
+    return getEncryptionProps(this.walletAdapter.publicKey, encryptionKeys);
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
@@ -145,10 +147,11 @@ export class SolanaMessaging implements Messaging {
     query: FindThreadByOtherMemberQuery,
     encryptionProps: EncryptionProps | null,
   ) {
+    const otherMember = requireSingleMember(query.otherMembers);
     return withErrorParsing(
       getDialectForMembers(
         this.program,
-        [this.walletAdapter.publicKey, query.otherMember],
+        [this.walletAdapter.publicKey, otherMember],
         encryptionProps,
       ),
     );
@@ -177,6 +180,7 @@ export class SolanaThread implements Thread {
   constructor(
     readonly address: PublicKey,
     readonly me: ThreadMember,
+    readonly otherMembers: ThreadMember[],
     readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
@@ -267,7 +271,7 @@ async function toSolanaThread(
   walletAdapter: DialectWalletAdapterWrapper,
   encryptionKeysProvider: EncryptionKeysProvider,
   program: Program,
-) {
+): Promise<SolanaThread> {
   const { dialect, publicKey } = dialectAccount;
   const meMember = findMember(walletAdapter.publicKey, dialect);
   const otherMember = findOtherMember(walletAdapter.publicKey, dialect);
@@ -281,16 +285,18 @@ async function toSolanaThread(
   const canBeDecrypted = dialect.encrypted
     ? (await encryptionKeysProvider.getFailSafe()) !== null
     : true;
+  const otherThreadMember = {
+    publicKey: otherMember.publicKey,
+    scopes: fromProtocolScopes(otherMember.scopes),
+  };
   return new SolanaThread(
     publicKey,
     {
       publicKey: meMember.publicKey,
       scopes: fromProtocolScopes(meMember.scopes),
     },
-    {
-      publicKey: otherMember.publicKey,
-      scopes: fromProtocolScopes(otherMember.scopes),
-    },
+    [otherThreadMember],
+    otherThreadMember,
     dialect.encrypted,
     canBeDecrypted,
     program,

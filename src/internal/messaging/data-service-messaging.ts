@@ -26,9 +26,14 @@ import {
   DialectDto,
   MemberScopeDto,
 } from '@data-service-api/data-service-api';
-import { IllegalStateError } from '@sdk/errors';
+import {
+  IllegalArgumentError,
+  IllegalStateError,
+  UnsupportedOperationError,
+} from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { MessagingBackend } from '@sdk/sdk.interface';
+import { requireSingleMember } from '@messaging/internal/commons';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -39,6 +44,7 @@ export class DataServiceMessaging implements Messaging {
 
   async create(command: CreateThreadCommand): Promise<Thread> {
     command.encrypted && (await this.checkEncryptionSupported());
+    const otherMember = requireSingleMember(command.otherMembers);
     const dialectAccountDto = await this.dataServiceDialectsApi.create({
       encrypted: command.encrypted,
       members: [
@@ -47,8 +53,8 @@ export class DataServiceMessaging implements Messaging {
           scopes: toDataServiceScopes(command.me.scopes),
         },
         {
-          publicKey: command.otherMember.publicKey.toBase58(),
-          scopes: toDataServiceScopes(command.otherMember.scopes),
+          publicKey: otherMember.publicKey.toBase58(),
+          scopes: toDataServiceScopes(otherMember.scopes),
         },
       ],
     });
@@ -71,6 +77,10 @@ export class DataServiceMessaging implements Messaging {
       );
     }
     const { serde, decrypted } = await this.createTextSerde(dialect);
+    const otherThreadMember: ThreadMember = {
+      publicKey: new PublicKey(otherMember.publicKey),
+      scopes: fromDataServiceScopes(otherMember.scopes),
+    };
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
@@ -79,10 +89,8 @@ export class DataServiceMessaging implements Messaging {
         publicKey: new PublicKey(meMember.publicKey),
         scopes: fromDataServiceScopes(meMember.scopes),
       },
-      {
-        publicKey: new PublicKey(otherMember.publicKey),
-        scopes: fromDataServiceScopes(otherMember.scopes),
-      },
+      [otherThreadMember],
+      otherThreadMember,
       dialect.encrypted,
       decrypted,
       new Date(dialect.lastMessageTimestamp),
@@ -147,8 +155,9 @@ export class DataServiceMessaging implements Messaging {
   }
 
   private async findByOtherMember(query: FindThreadByOtherMemberQuery) {
+    const otherMember = requireSingleMember(query.otherMembers);
     const dialectAccountDtos = await this.dataServiceDialectsApi.findAll({
-      memberPublicKey: query.otherMember.toBase58(),
+      memberPublicKey: otherMember.toBase58(),
     });
     if (dialectAccountDtos.length > 1) {
       throw new IllegalStateError('Found multiple dialects with same members');
@@ -172,6 +181,7 @@ export class DataServiceThread implements Thread {
     private readonly textSerde: TextSerde,
     readonly address: PublicKey,
     readonly me: ThreadMember,
+    readonly otherMembers: ThreadMember[],
     readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
