@@ -24,14 +24,21 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
 }
 
 export class DataServiceApi {
-  private constructor(readonly threads: DataServiceDialectsApi) {}
+  private constructor(
+    readonly threads: DataServiceDialectsApi,
+    readonly dapps: DataServiceDappsApi,
+  ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
     const dialectsApi = new DataServiceDialectsApiClient(
       baseUrl,
       tokenProvider,
     );
-    return new DataServiceApi(dialectsApi);
+    const dappAddressesApi = new DataServiceDappsApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    return new DataServiceApi(dialectsApi, dappAddressesApi);
   }
 }
 
@@ -166,4 +173,74 @@ export class SendMessageCommand {
 
 export class FindDialectQuery {
   readonly memberPublicKey?: string;
+}
+
+export interface DataServiceDappsApi {
+  create(command: CreateDappCommandDto): Promise<DappDto>;
+  findAllDappAddresses(): Promise<DappAddressDto[]>;
+}
+
+export class DataServiceDappsApiClient implements DataServiceDappsApi {
+  constructor(
+    private readonly baseUrl: string,
+    private readonly tokenProvider: TokenProvider,
+  ) {}
+
+  async create(command: CreateDappCommandDto): Promise<DappDto> {
+    const token = await this.tokenProvider.get();
+
+    return withReThrowingDataServiceError(
+      axios
+        .post<DappDto>(`${this.baseUrl}/v0/dapps`, command, {
+          headers: { Authorization: `Bearer ${token.rawValue}` },
+        })
+        .then((it) => it.data),
+    );
+  }
+
+  async findAllDappAddresses(): Promise<DappAddressDto[]> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<DappAddressDto[]>(
+          `${this.baseUrl}/v0/dapps/${token.body.sub}/dappAddresses`,
+          {
+            headers: { Authorization: `Bearer ${token.rawValue}` },
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
+}
+
+export class DappDto {
+  readonly id!: string;
+  readonly publicKey!: string;
+}
+
+export class CreateDappCommandDto {
+  readonly publicKey!: string;
+}
+
+export class DappAddressDto {
+  readonly id!: string;
+  readonly enabled!: boolean;
+  readonly telegramChatId?: string;
+  readonly address!: AddressDto;
+}
+
+export class AddressDto {
+  readonly id!: string;
+  readonly type!: AddressTypeDto;
+  readonly verified!: boolean;
+  readonly value!: string;
+  readonly walletId!: string;
+  readonly walletPublicKey!: string;
+}
+
+export enum AddressTypeDto {
+  Email = 'EMAIL',
+  Sms = 'SMS',
+  Telegram = 'TELEGRAM',
+  Wallet = 'WALLET',
 }

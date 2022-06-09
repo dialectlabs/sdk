@@ -1,4 +1,7 @@
-import type { DataServiceDialectsApi } from './data-service-api';
+import type {
+  DataServiceDappsApi,
+  DataServiceDialectsApi,
+} from './data-service-api';
 import {
   CreateDialectCommand,
   DataServiceApi,
@@ -16,8 +19,6 @@ describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   // TODO: cleanup created resources after tests
-  // Use    expect.arrayContaining([
-  //       expect.objectContaining(
   describe('Dialects', () => {
     let wallet1: DialectWalletAdapterWrapper;
     let wallet1Api: DataServiceDialectsApi;
@@ -449,5 +450,32 @@ describe('Data service api (e2e)', () => {
     });
   });
 
-  // TODO: non-writer cannot write test
+  describe('Dapps', () => {
+    let dappWallet: DialectWalletAdapterWrapper;
+    let dappsApi: DataServiceDappsApi;
+
+    beforeEach(() => {
+      dappWallet = new DialectWalletAdapterWrapper(
+        NodeDialectWalletAdapter.create(),
+      );
+      dappsApi = DataServiceApi.create(
+        baseUrl,
+        TokenProvider.create(
+          new DialectWalletAdapterEd25519TokenSigner(dappWallet),
+        ),
+      ).dapps;
+    });
+
+    test('can create dapp and find all dappAddresses', async () => {
+      // when
+      const dappPublicKey = dappWallet.publicKey.toBase58();
+      const dappDto = await dappsApi.create({
+        publicKey: dappPublicKey,
+      });
+      console.log(dappDto);
+      const addresses = await dappsApi.findAllDappAddresses();
+      // then
+      expect(addresses).toMatchObject([]);
+    });
+  });
 });

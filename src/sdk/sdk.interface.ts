@@ -7,6 +7,7 @@ import type { Messaging } from '@messaging/messaging.interface';
 import type { TokenStore } from '@auth/internal/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
+import type { Dapps } from '@dapp/dapp.interface';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -17,6 +18,7 @@ export abstract class Dialect {
 export interface DialectSdk {
   readonly info: DialectSdkInfo;
   readonly threads: Messaging;
+  readonly dapps: Dapps;
 }
 
 export interface DialectSdkInfo {
