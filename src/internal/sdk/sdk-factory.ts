@@ -16,6 +16,7 @@ import {
   DataServiceApi,
   DataServiceDappsApi,
   DataServiceDialectsApi,
+  DataServiceDialectsApiClient,
 } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
@@ -143,13 +144,24 @@ Solana settings:
         case Backend.Solana:
           return new SolanaMessaging(
             config.wallet,
-            program,
+            createDialectProgram(
+              config.wallet,
+              config.solana.dialectProgramAddress,
+              config.solana.rpcUrl,
+            ),
             encryptionKeysProvider,
           );
         case Backend.DialectCloud:
           return new DataServiceMessaging(
             config.wallet.publicKey,
-            dataServiceDialectsApi,
+            new DataServiceDialectsApiClient(
+              config.dialectCloud.url,
+              TokenProvider.create(
+                new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+                Duration.fromObject({ minutes: 60 }),
+                config.dialectCloud.tokenStore,
+              ),
+            ),
             encryptionKeysProvider,
           );
         default:
