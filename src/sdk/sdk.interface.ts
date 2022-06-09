@@ -1,6 +1,6 @@
 import type {
-  DialectWalletAdapter,
   CompatibilityProps,
+  DialectWalletAdapter,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
@@ -27,7 +27,7 @@ export interface Config {
   solana?: SolanaConfig;
   dialectCloud?: DialectCloudConfig;
   encryptionKeysStore?: EncryptionKeysStore;
-  preferableMessagingBackend?: MessagingBackend;
+  backends?: Backend[];
 }
 
 export interface SolanaConfig {
@@ -49,7 +49,7 @@ export type DialectCloudEnvironment =
   | 'development'
   | 'local-development';
 
-export enum MessagingBackend {
+export enum Backend {
   Solana = 'SOLANA',
   DialectCloud = 'DIALECT_CLOUD',
 }

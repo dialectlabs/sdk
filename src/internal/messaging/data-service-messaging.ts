@@ -1,6 +1,5 @@
 import type {
   CreateThreadCommand,
-  ThreadMember,
   FindThreadByAddressQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
@@ -8,6 +7,7 @@ import type {
   Messaging,
   SendMessageCommand,
   Thread,
+  ThreadMember,
 } from '@messaging/messaging.interface';
 import { ThreadMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -26,13 +26,9 @@ import {
   DialectDto,
   MemberScopeDto,
 } from '@data-service-api/data-service-api';
-import {
-  IllegalArgumentError,
-  IllegalStateError,
-  UnsupportedOperationError,
-} from '@sdk/errors';
+import { IllegalStateError } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
-import { MessagingBackend } from '@sdk/sdk.interface';
+import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
 
 export class DataServiceMessaging implements Messaging {
@@ -174,7 +170,7 @@ export class DataServiceMessaging implements Messaging {
 }
 
 export class DataServiceThread implements Thread {
-  readonly backend: MessagingBackend = MessagingBackend.DialectCloud;
+  readonly backend: Backend = Backend.DialectCloud;
 
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,

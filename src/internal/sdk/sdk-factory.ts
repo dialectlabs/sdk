@@ -1,9 +1,9 @@
 import {
+  Backend,
   Config,
   DialectCloudEnvironment,
   DialectSdk,
   Environment,
-  MessagingBackend,
   SolanaNetwork,
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
@@ -23,6 +23,7 @@ import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encrypti
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { CompatibilityProps } from '@wallet-adapter/dialect-wallet-adapter.interface';
+import { IllegalArgumentError } from '@sdk/errors';
 
 interface InternalConfig {
   environment: Environment;
@@ -30,7 +31,7 @@ interface InternalConfig {
   solana: InternalSolanaConfig;
   dialectCloud: InternalDialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;
-  preferableMessagingBackend: MessagingBackend;
+  backends: Backend[];
 }
 
 interface InternalSolanaConfig {
@@ -53,6 +54,8 @@ export class InternalDialectSdk implements DialectSdk {
 }
 
 export class DialectSdkFactory {
+  private static DEFAULT_BACKENDS = [Backend.DialectCloud, Backend.Solana];
+
   constructor(private readonly config: Config) {}
 
   create(): DialectSdk {
@@ -62,49 +65,71 @@ export class DialectSdkFactory {
     );
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
+    const messaging = this.createMessaging(config, encryptionKeysProvider);
+    return new InternalDialectSdk(messaging, config.wallet);
+  }
 
-    const dataServiceMessaging = new DataServiceMessaging(
-      config.wallet.publicKey,
-      new DataServiceDialectsApiClient(
-        config.dialectCloud.url,
-        TokenProvider.create(
-          new DialectWalletAdapterEd25519TokenSigner(config.wallet),
-          Duration.fromObject({ minutes: 60 }),
-          config.dialectCloud.tokenStore,
-        ),
-      ),
-      encryptionKeysProvider,
-    );
-    const solanaMessaging = new SolanaMessaging(
-      config.wallet,
-      createDialectProgram(
-        config.wallet,
-        config.solana.dialectProgramAddress,
-        config.solana.rpcUrl,
-      ),
-      encryptionKeysProvider,
-    );
-    const messagingFacade = new MessagingFacade(
-      dataServiceMessaging,
-      solanaMessaging,
-      config.preferableMessagingBackend,
-    );
-    return new InternalDialectSdk(messagingFacade, config.wallet);
+  private createMessaging(
+    config: InternalConfig,
+    encryptionKeysProvider: DialectWalletAdapterEncryptionKeysProvider,
+  ) {
+    const messagingOptions: Messaging[] = config.backends.map((backend) => {
+      switch (backend) {
+        case Backend.Solana:
+          return new SolanaMessaging(
+            config.wallet,
+            createDialectProgram(
+              config.wallet,
+              config.solana.dialectProgramAddress,
+              config.solana.rpcUrl,
+            ),
+            encryptionKeysProvider,
+          );
+        case Backend.DialectCloud:
+          return new DataServiceMessaging(
+            config.wallet.publicKey,
+            new DataServiceDialectsApiClient(
+              config.dialectCloud.url,
+              TokenProvider.create(
+                new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+                Duration.fromObject({ minutes: 60 }),
+                config.dialectCloud.tokenStore,
+              ),
+            ),
+            encryptionKeysProvider,
+          );
+        default:
+          throw new IllegalArgumentError(`Unknown backend ${backend}`);
+      }
+    });
+    return new MessagingFacade(messagingOptions);
   }
 
   private initializeConfig(): InternalConfig {
     const environment = this.config.environment ?? 'production';
     const wallet = DialectWalletAdapterWrapper.create(this.config.wallet);
+    const backends = this.initializeBackends();
+    const encryptionKeysStore =
+      this.config.encryptionKeysStore ?? new InmemoryEncryptionKeysStore();
     return {
       environment,
       wallet,
       dialectCloud: this.initializeDialectCloudConfig(),
       solana: this.initializeSolanaConfig(),
-      encryptionKeysStore:
-        this.config.encryptionKeysStore ?? new InmemoryEncryptionKeysStore(),
-      preferableMessagingBackend:
-        this.config.preferableMessagingBackend ?? MessagingBackend.DialectCloud,
+      encryptionKeysStore,
+      backends,
     };
+  }
+
+  private initializeBackends() {
+    const backends = this.config.backends;
+    if (!backends) {
+      return DialectSdkFactory.DEFAULT_BACKENDS;
+    }
+    if (backends.length < 1) {
+      throw new IllegalArgumentError('Please specify at least one backend.');
+    }
+    return backends;
   }
 
   private initializeDialectCloudConfig(): InternalDialectCloudConfig {

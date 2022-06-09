@@ -38,7 +38,7 @@ import type {
   EncryptionKeysProvider,
 } from '@encryption/encryption-keys-provider';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
-import { MessagingBackend } from '@sdk/sdk.interface';
+import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
 
 export class SolanaMessaging implements Messaging {
@@ -175,7 +175,7 @@ export class SolanaMessaging implements Messaging {
 }
 
 export class SolanaThread implements Thread {
-  readonly backend: MessagingBackend = MessagingBackend.Solana;
+  readonly backend: Backend = Backend.Solana;
 
   constructor(
     readonly address: PublicKey,
