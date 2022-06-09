@@ -1,18 +1,21 @@
 import type { DappAddress, DappAddresses } from '@dapp/dapp.interface';
 import { AddressType } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
+import { IllegalArgumentError } from '@sdk/errors';
 
 export class DappAddressesFacade implements DappAddresses {
-  constructor(
-    private readonly solanaDappAddresses: DappAddresses,
-    private readonly dataServiceDappAddresses: DappAddresses,
-  ) {}
+  constructor(private readonly dappAddressesBackends: DappAddresses[]) {
+    if (dappAddressesBackends.length < 1) {
+      throw new IllegalArgumentError(
+        'Expected to have at least one dapp addresses backend.',
+      );
+    }
+  }
 
   async findAll(): Promise<DappAddress[]> {
-    const allSettled = await Promise.allSettled([
-      this.solanaDappAddresses.findAll(),
-      this.dataServiceDappAddresses.findAll(),
-    ]);
+    const allSettled = await Promise.allSettled(
+      this.dappAddressesBackends.map((it) => it.findAll()),
+    );
     const rejected = allSettled.filter((it) => it.status === 'rejected');
     if (rejected.length > 0) {
       console.error(
@@ -61,8 +64,9 @@ export class DappAddressesFacade implements DappAddresses {
   }
 }
 
-const groupBy = <T, K extends keyof any>(arr: T[], key: (i: T) => K) =>
-  arr.reduce((groups, item) => {
+function groupBy<T, K extends keyof any>(arr: T[], key: (i: T) => K) {
+  return arr.reduce((groups, item) => {
     (groups[key(item)] ||= []).push(item);
     return groups;
   }, {} as Record<K, T[]>);
+}
