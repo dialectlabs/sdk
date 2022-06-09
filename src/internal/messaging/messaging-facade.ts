@@ -4,52 +4,44 @@ import type {
   Messaging,
   Thread,
 } from '@messaging/messaging.interface';
-import { IllegalArgumentError } from '@sdk/errors';
-import { MessagingBackend } from '@sdk/sdk.interface';
-import { requireSingleMember } from '@messaging/internal/commons';
+import { IllegalArgumentError, IllegalStateError } from '@sdk/errors';
 
 export class MessagingFacade implements Messaging {
-  constructor(
-    private readonly dataServiceMessaging: Messaging,
-    private readonly solanaMessaging: Messaging,
-    private readonly preferableMessagingBackend: MessagingBackend,
-  ) {}
+  constructor(private readonly messagingBackends: Messaging[]) {
+    if (messagingBackends.length < 1) {
+      throw new IllegalArgumentError(
+        'Expected to have at least on messaging backend.',
+      );
+    }
+  }
 
   create(command: CreateThreadCommand): Promise<Thread> {
-    if (this.preferableMessagingBackend === MessagingBackend.Solana) {
-      return this.solanaMessaging.create(command);
+    const messaging = this.getPreferableMessaging();
+    return messaging.create(command);
+  }
+
+  private getPreferableMessaging() {
+    const messaging = this.messagingBackends[0];
+    if (!messaging) {
+      throw new IllegalStateError('Should not happen.');
     }
-    if (this.preferableMessagingBackend === MessagingBackend.DialectCloud) {
-      return this.dataServiceMessaging.create(command);
-    }
-    throw new IllegalArgumentError(
-      `Unsupported messaging backend ${this.preferableMessagingBackend}`,
-    );
+    return messaging;
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
-    if (this.preferableMessagingBackend === MessagingBackend.Solana) {
-      return (
-        (await this.solanaMessaging.find(query)) ||
-        (await this.dataServiceMessaging.find(query))
-      );
+    for (const messaging of this.messagingBackends) {
+      const thread = await messaging.find(query);
+      if (thread) {
+        return thread;
+      }
     }
-    if (this.preferableMessagingBackend === MessagingBackend.DialectCloud) {
-      return (
-        (await this.dataServiceMessaging.find(query)) ||
-        (await this.solanaMessaging.find(query))
-      );
-    }
-    throw new IllegalArgumentError(
-      `Unsupported messaging backend ${this.preferableMessagingBackend}`,
-    );
+    return null;
   }
 
   async findAll(): Promise<Thread[]> {
-    const allSettled = await Promise.allSettled([
-      this.solanaMessaging.findAll(),
-      this.dataServiceMessaging.findAll(),
-    ]);
+    const allSettled = await Promise.allSettled(
+      this.messagingBackends.map((it) => it.findAll()),
+    );
     const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
     const rejected = allSettled.filter((it) => it.status === 'rejected');
     if (rejected.length > 0) {

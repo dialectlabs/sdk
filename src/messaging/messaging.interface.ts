@@ -1,5 +1,5 @@
 import type { PublicKey } from '@solana/web3.js';
-import type { MessagingBackend } from '@sdk/sdk.interface';
+import type { Backend } from '@sdk/sdk.interface';
 
 export interface Messaging {
   findAll(): Promise<Thread[]>;
@@ -43,7 +43,7 @@ export interface Thread {
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
-  backend: MessagingBackend;
+  backend: Backend;
   updatedAt: Date;
 
   messages(): Promise<Message[]>;
