@@ -1,9 +1,17 @@
-import type { Token } from './token';
+import type { Token } from '@auth/auth.interface';
 
 export abstract class TokenStore {
   abstract get(): Token | null;
 
   abstract save(token: Token): Token;
+
+  static createInMemory(): TokenStore {
+    return new InMemoryTokenStore();
+  }
+
+  static createSession(): TokenStore {
+    return new SessionStorageTokenStore();
+  }
 }
 
 export class InMemoryTokenStore extends TokenStore {
@@ -19,7 +27,7 @@ export class InMemoryTokenStore extends TokenStore {
   }
 }
 
-const sessionStorageTokenKey = 'dialect-web2-token';
+const sessionStorageTokenKey = 'dialect-auth-token';
 
 export class SessionStorageTokenStore implements TokenStore {
   get(): Token | null {

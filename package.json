@@ -13,29 +13,33 @@
   },
   "scripts": {
     "clean": "rm -rf lib",
-    "build": "npm run clean && npm run build:cjs || npm run build:esm",
-    "build:cjs": "tsc --project tsconfig.cjs.json",
-    "build:esm": "tsc --project tsconfig.esm.json"
+    "build": "npm run clean && npm run build:cjs; npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.cjs.json && tsc-alias --project tsconfig.cjs.json --verbose",
+    "build:esm": "tsc --project tsconfig.esm.json  && tsc-alias --project tsconfig.esm.json --verbose",
+    "token:generate": "ts-node -r tsconfig-paths/register examples/generate-token.ts"
   },
   "devDependencies": {
     "@types/ed2curve": "^0.2.2",
     "@types/jest": "^27.5.1",
     "@types/luxon": "^2.3.2",
     "jest": "^28.1.0",
+    "jest-jasmine2": "^28.1.0",
     "prettier": "^2.6.2",
     "ts-jest": "^28.0.3",
     "ts-node": "^10.8.0",
+    "tsc-alias": "^1.6.7",
+    "tsconfig-paths": "^4.0.0",
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@dialectlabs/web3": "^0.3.1",
+    "@dialectlabs/web3": "^0.3.2",
     "@project-serum/anchor": "0.23.0",
     "@solana/wallet-adapter-base": "^0.9.5",
     "@solana/web3.js": "^1.22.0",
+    "@stablelib/base64": "^1.0.1",
     "axios": "^0.27.2",
     "ed2curve": "^0.3.0",
     "luxon": "^2.4.0",
-    "tweetnacl": "^1.0.3",
-    "tweetnacl-util": "^0.15.1"
+    "tweetnacl": "^1.0.3"
   }
 }

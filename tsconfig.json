@@ -1,5 +1,8 @@
 {
-  "exclude": ["node_modules", "lib"],
+  "exclude": [
+    "node_modules",
+    "lib"
+  ],
   "compilerOptions": {
     // target
     "target": "ES2019",
@@ -15,8 +18,8 @@
     "isolatedModules": true,
     // linting
     "strict": true,
-//    "noUnusedLocals": true,
-//    "noUnusedParameters": true,
+    //    "noUnusedLocals": true,
+    //    "noUnusedParameters": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
@@ -27,8 +30,50 @@
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-    "inlineSources": true
+    "inlineSources": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@auth/*": [
+        "./auth/*"
+      ],
+      "@auth/internal/*": [
+        "./internal/auth/*"
+      ],
+      "@dapp/*": [
+        "./dapp/*"
+      ],
+      "@dapp/internal/*": [
+        "./internal/dapp/*"
+      ],
+      "@data-service-api/*": [
+        "./internal/data-service-api/*"
+      ],
+      "@encryption/*": [
+        "./internal/encryption/*"
+      ],
+      "@messaging/*": [
+        "./messaging/*"
+      ],
+      "@messaging/internal/*": [
+        "./internal/messaging/*"
+      ],
+      "@sdk/*": [
+        "./sdk/*"
+      ],
+      "@sdk/internal/*": [
+        "./internal/sdk/*"
+      ],
+      "@wallet-adapter/*": [
+        "./wallet-adapter/*"
+      ],
+      "@wallet-adapter/internal/*": [
+        "./internal/wallet-adapter/*"
+      ],
+    }
   },
   "rootDir": "./src",
-  "include": ["src/**/*.ts", "tests/**/*.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts"
+  ]
 }
