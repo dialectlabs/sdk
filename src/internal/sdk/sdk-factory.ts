@@ -67,14 +67,25 @@ export class InternalDialectSdk implements DialectSdk {
 }
 
 export class DialectSdkFactory {
-  private static DEFAULT_BACKENDS = [Backend.DialectCloud, Backend.Solana];
-
   constructor(private readonly config: Config) {}
 
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
     console.log(
-      `Initializing dialect sdk using config\n: ${JSON.stringify(config)}`,
+      `Initializing Dialect SDK using configuration:
+Wallet: 
+  Public key: ${config.wallet.publicKey}
+  Supports solana: ${config.wallet.canUseSolana()}
+  Supports dialect cloud: ${config.wallet.canUseDialectCloud()}
+  Supports encryption: ${config.wallet.canEncrypt()}
+Available backends:
+  Dialect cloud:
+    URL: ${config.dialectCloud.url}
+  Solana:
+    Dialect program: ${config.solana.dialectProgramAddress}
+    RPC URL: ${config.solana.rpcUrl}
+Enabled backends: ${JSON.stringify(config.backends)}
+`,
     );
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
@@ -179,7 +190,7 @@ export class DialectSdkFactory {
   private initializeBackends() {
     const backends = this.config.backends;
     if (!backends) {
-      return DialectSdkFactory.DEFAULT_BACKENDS;
+      return [Backend.DialectCloud, Backend.Solana];
     }
     if (backends.length < 1) {
       throw new IllegalArgumentError('Please specify at least one backend.');
