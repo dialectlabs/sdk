@@ -21,7 +21,7 @@ export class DappAddressesFacade implements DappAddresses {
       console.error(
         `Error during finding dapp addresses: ${rejected
           .map((it) => it as PromiseRejectedResult)
-          .map((it) => it.reason)}`,
+          .map((it) => JSON.stringify(it.reason))}`,
       );
     }
     const allDappAddresses = allSettled

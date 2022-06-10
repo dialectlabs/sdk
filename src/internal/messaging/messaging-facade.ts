@@ -48,7 +48,7 @@ export class MessagingFacade implements Messaging {
       console.error(
         `Error during finding dialects: ${rejected
           .map((it) => it as PromiseRejectedResult)
-          .map((it) => it.reason)}`,
+          .map((it) => JSON.stringify(it.reason))}`,
       );
     }
     return fulfilled
