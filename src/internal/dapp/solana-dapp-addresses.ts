@@ -11,7 +11,7 @@ export class SolanaDappAddresses implements DappAddresses {
     const dialectAccounts = await findDialects(this.program, {
       userPk: this.program.provider.wallet.publicKey,
     });
-    const dappAddresses: DappAddress[] = dialectAccounts.map((it) => {
+    return dialectAccounts.map((it) => {
       const dialectMember = this.extractDialectMember(it);
       const dapp: DappAddress = {
         enabled: true,
@@ -26,7 +26,6 @@ export class SolanaDappAddresses implements DappAddresses {
       };
       return dapp;
     });
-    return Promise.resolve(dappAddresses);
   }
 
   private extractDialectMember(account: DialectAccount) {

@@ -2,6 +2,7 @@ import type { DappAddress, DappAddresses } from '@dapp/dapp.interface';
 import { AddressType } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '@sdk/errors';
+import { groupBy } from '@utils/internal/collection-utils';
 
 export class DappAddressesFacade implements DappAddresses {
   constructor(private readonly dappAddressesBackends: DappAddresses[]) {
@@ -64,11 +65,4 @@ export class DappAddressesFacade implements DappAddresses {
     );
     return deduplicatedWalletAddresses;
   }
-}
-
-function groupBy<T, K extends keyof any>(arr: T[], key: (i: T) => K) {
-  return arr.reduce((groups, item) => {
-    (groups[key(item)] ||= []).push(item);
-    return groups;
-  }, {} as Record<K, T[]>);
 }
