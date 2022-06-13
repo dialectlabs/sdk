@@ -1,9 +1,12 @@
 import {
   Backend,
   Config,
+  DialectCloudConfig,
   DialectCloudEnvironment,
   DialectSdk,
+  DialectSdkInfo,
   Environment,
+  SolanaConfig,
   SolanaNetwork,
 } from '@sdk/sdk.interface';
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
@@ -22,10 +25,9 @@ import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
-import type { CompatibilityProps } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import { IllegalArgumentError } from '@sdk/errors';
 
-interface InternalConfig {
+interface InternalConfig extends Config {
   environment: Environment;
   wallet: DialectWalletAdapterWrapper;
   solana: InternalSolanaConfig;
@@ -34,23 +36,20 @@ interface InternalConfig {
   backends: Backend[];
 }
 
-interface InternalSolanaConfig {
+interface InternalSolanaConfig extends SolanaConfig {
   network: SolanaNetwork;
   dialectProgramAddress: PublicKey;
   rpcUrl: string;
 }
 
-interface InternalDialectCloudConfig {
+interface InternalDialectCloudConfig extends DialectCloudConfig {
   environment: DialectCloudEnvironment;
   url: string;
   tokenStore: TokenStore;
 }
 
 export class InternalDialectSdk implements DialectSdk {
-  constructor(
-    readonly threads: Messaging,
-    readonly compatibility: CompatibilityProps,
-  ) {}
+  constructor(readonly info: DialectSdkInfo, readonly threads: Messaging) {}
 }
 
 export class DialectSdkFactory {
@@ -66,7 +65,14 @@ export class DialectSdkFactory {
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
     const messaging = this.createMessaging(config, encryptionKeysProvider);
-    return new InternalDialectSdk(messaging, config.wallet);
+    return new InternalDialectSdk(
+      {
+        apiAvailability: config.wallet,
+        config,
+        wallet: config.wallet,
+      },
+      messaging,
+    );
   }
 
   private createMessaging(
@@ -227,9 +233,9 @@ export class DialectSdkFactory {
       };
     }
 
-    if (this.config.solana?.dialectProgramId) {
+    if (this.config.solana?.dialectProgramAddress) {
       internalConfig.dialectProgramAddress =
-        this.config.solana.dialectProgramId;
+        this.config.solana.dialectProgramAddress;
     }
     if (this.config.solana?.rpcUrl) {
       internalConfig.rpcUrl = this.config.solana.rpcUrl;
