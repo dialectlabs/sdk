@@ -62,19 +62,19 @@ export class DialectWalletAdapterWrapper
   }
 
   private canUseSolana() {
-    return (
-      !!this.publicKey &&
-      !!this.delegate.signTransaction &&
-      !!this.delegate.signAllTransactions
+    return Boolean(
+      this.publicKey &&
+        this.delegate.signTransaction &&
+        this.delegate.signAllTransactions,
     );
   }
 
   private canUseDialectCloud() {
-    return !!this.publicKey && !!this.delegate.signMessage;
+    return Boolean(this.publicKey && this.delegate.signMessage);
   }
 
   get canEncrypt() {
-    return !!this.publicKey && !!this.delegate.diffieHellman;
+    return Boolean(this.publicKey && this.delegate.diffieHellman);
   }
 
   get supportedBackends(): Backend[] {
