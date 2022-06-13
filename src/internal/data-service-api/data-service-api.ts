@@ -177,6 +177,7 @@ export class FindDialectQuery {
 
 export interface DataServiceDappsApi {
   create(command: CreateDappCommandDto): Promise<DappDto>;
+
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 }
 
@@ -234,8 +235,12 @@ export class AddressDto {
   readonly type!: AddressTypeDto;
   readonly verified!: boolean;
   readonly value!: string;
-  readonly walletId!: string;
-  readonly walletPublicKey!: string;
+  readonly wallet!: WalletDto;
+}
+
+export class WalletDto {
+  readonly id!: string;
+  readonly publicKey!: string;
 }
 
 export enum AddressTypeDto {

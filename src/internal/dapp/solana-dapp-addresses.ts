@@ -19,7 +19,9 @@ export class SolanaDappAddresses implements DappAddresses {
           type: AddressType.Wallet,
           value: dialectMember.publicKey.toBase58(),
           verified: true,
-          walletPublicKey: dialectMember.publicKey,
+          wallet: {
+            publicKey: dialectMember.publicKey,
+          },
         },
       };
       return dapp;

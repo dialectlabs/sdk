@@ -28,7 +28,11 @@ export interface Address {
   type: AddressType;
   verified: boolean;
   value: string;
-  walletPublicKey: PublicKey;
+  wallet: Wallet;
+}
+
+export interface Wallet {
+  publicKey: PublicKey;
 }
 
 export enum AddressType {

@@ -19,7 +19,9 @@ export class DataServiceDappAddresses implements DappAddresses {
           type: DataServiceDappAddresses.toAddressType(it.address.type),
           value: it.address.value,
           verified: it.address.verified,
-          walletPublicKey: new PublicKey(it.address.walletPublicKey),
+          wallet: {
+            publicKey: new PublicKey(it.address.wallet.publicKey),
+          },
         },
       };
       return dapp;
