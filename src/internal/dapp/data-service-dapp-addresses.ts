@@ -26,7 +26,7 @@ export class DataServiceDappAddresses implements DappAddresses {
       };
       return dapp;
     });
-    return Promise.resolve(dappAddresses);
+    return dappAddresses;
   }
 
   private static toAddressType(addressTypeDto: AddressTypeDto): AddressType {
