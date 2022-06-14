@@ -8,6 +8,7 @@ import type { TokenStore } from '@auth/internal/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { Dapps } from '@dapp/dapp.interface';
+import type { Program } from '@project-serum/anchor';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -25,6 +26,11 @@ export interface DialectSdkInfo {
   readonly apiAvailability: ApiAvailability;
   readonly config: Config;
   readonly wallet: DialectWalletAdapter;
+  readonly solana: SolanaInfo;
+}
+
+export interface SolanaInfo {
+  dialectProgram: Program;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';

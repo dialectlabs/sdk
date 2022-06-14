@@ -75,7 +75,7 @@ export class DialectSdkFactory {
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
 
-    const program: Program = createDialectProgram(
+    const dialectProgram: Program = createDialectProgram(
       config.wallet,
       config.solana.dialectProgramAddress,
       config.solana.rpcUrl,
@@ -88,20 +88,26 @@ export class DialectSdkFactory {
         config.dialectCloud.tokenStore,
       ),
     );
-
     const messaging = this.createMessaging(
       config,
       encryptionKeysProvider,
-      program,
+      dialectProgram,
       dataServiceApi.threads,
     );
 
-    const dapps = this.createDapps(config, program, dataServiceApi.dapps);
+    const dapps = this.createDapps(
+      config,
+      dialectProgram,
+      dataServiceApi.dapps,
+    );
     return new InternalDialectSdk(
       {
         apiAvailability: config.wallet,
         config,
         wallet: config.wallet,
+        solana: {
+          dialectProgram,
+        },
       },
       messaging,
       dapps,
@@ -114,16 +120,13 @@ export class DialectSdkFactory {
         `Initializing Dialect SDK using configuration:
 Wallet: 
   Public key: ${config.wallet.publicKey}
-  Supports solana: ${config.wallet.canUseSolana()}
-  Supports dialect cloud: ${config.wallet.canUseDialectCloud()}
-  Supports encryption: ${config.wallet.canEncrypt()}
-Available backends:
-  Dialect cloud:
-    URL: ${config.dialectCloud.url}
-  Solana:
-    Dialect program: ${config.solana.dialectProgramAddress}
-    RPC URL: ${config.solana.rpcUrl}
+  Supports encryption: ${config.wallet.canEncrypt}
 Enabled backends: ${JSON.stringify(config.backends)}
+Dialect cloud settings:
+  URL: ${config.dialectCloud.url}
+Solana settings:
+  Dialect program: ${config.solana.dialectProgramAddress}
+  RPC URL: ${config.solana.rpcUrl}
 `,
       );
     }
