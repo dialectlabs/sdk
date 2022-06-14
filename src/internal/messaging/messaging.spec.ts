@@ -15,6 +15,7 @@ import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
+import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
@@ -104,7 +105,9 @@ describe('Data service messaging (e2e)', () => {
       const thread = await wallet1Messaging.create(command);
       // then
       expect(thread).not.toBeNull();
-      await expect(wallet1Messaging.create(command)).rejects.toBeTruthy();
+      await expect(wallet1Messaging.create(command)).rejects.toEqual(
+        new ThreadAlreadyExistsError(),
+      );
     },
   );
 
