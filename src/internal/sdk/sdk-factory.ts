@@ -71,22 +71,7 @@ export class DialectSdkFactory {
 
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
-    console.log(
-      `Initializing Dialect SDK using configuration:
-Wallet: 
-  Public key: ${config.wallet.publicKey}
-  Supports solana: ${config.wallet.canUseSolana()}
-  Supports dialect cloud: ${config.wallet.canUseDialectCloud()}
-  Supports encryption: ${config.wallet.canEncrypt()}
-Available backends:
-  Dialect cloud:
-    URL: ${config.dialectCloud.url}
-  Solana:
-    Dialect program: ${config.solana.dialectProgramAddress}
-    RPC URL: ${config.solana.rpcUrl}
-Enabled backends: ${JSON.stringify(config.backends)}
-`,
-    );
+    DialectSdkFactory.logConfiguration(config);
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
 
@@ -121,6 +106,27 @@ Enabled backends: ${JSON.stringify(config.backends)}
       messaging,
       dapps,
     );
+  }
+
+  private static logConfiguration(config: InternalConfig) {
+    if (config.environment !== 'production') {
+      console.log(
+        `Initializing Dialect SDK using configuration:
+Wallet: 
+  Public key: ${config.wallet.publicKey}
+  Supports solana: ${config.wallet.canUseSolana()}
+  Supports dialect cloud: ${config.wallet.canUseDialectCloud()}
+  Supports encryption: ${config.wallet.canEncrypt()}
+Available backends:
+  Dialect cloud:
+    URL: ${config.dialectCloud.url}
+  Solana:
+    Dialect program: ${config.solana.dialectProgramAddress}
+    RPC URL: ${config.solana.rpcUrl}
+Enabled backends: ${JSON.stringify(config.backends)}
+`,
+      );
+    }
   }
 
   private createMessaging(
