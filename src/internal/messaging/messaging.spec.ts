@@ -75,7 +75,6 @@ describe('Data service messaging (e2e)', () => {
       const thread = await wallet1Messaging.create(command);
       // then
       expect(thread).not.toBeNull();
-      const thread2 = await wallet1Messaging.create(command);
     },
   );
 

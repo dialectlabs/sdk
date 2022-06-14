@@ -8,7 +8,7 @@ const config: Config.InitialOptions = {
   moduleNameMapper: {
     '^@auth/internal(.*)$': '<rootDir>/src/internal/auth$1',
     '^@auth(.*)$': '<rootDir>/src/auth$1',
-    '^@dapp/internal/(.*)$': '<rootDir>/src/dapp$1',
+    '^@dapp/internal(.*)$': '<rootDir>/src/internal/dapp$1',
     '^@dapp(.*)$': '<rootDir>/src/dapp$1',
     '^@data-service-api(.*)$': '<rootDir>/src/internal/data-service-api$1',
     '^@encryption(.*)$': '<rootDir>/src/internal/encryption$1',

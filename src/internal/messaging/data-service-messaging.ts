@@ -20,17 +20,16 @@ import {
 import {
   DataServiceApiClientError,
   DataServiceDialectsApi,
-} from '@data-service-api/data-service-api';
-import {
   DialectAccountDto,
   DialectDto,
   MemberScopeDto,
 } from '@data-service-api/data-service-api';
-import { IllegalStateError } from '@sdk/errors';
+import { IllegalStateError, ResourceNotFoundError } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
-import { DialectCloudUnreachableError } from '@messaging/internal/data-service-messaging-errors';
+import { withErrorParsing } from '@messaging/internal/data-service-messaging-errors';
+import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -42,8 +41,8 @@ export class DataServiceMessaging implements Messaging {
   async create(command: CreateThreadCommand): Promise<Thread> {
     command.encrypted && (await this.checkEncryptionSupported());
     const otherMember = requireSingleMember(command.otherMembers);
-    try {
-      const dialectAccountDto = await this.dataServiceDialectsApi.create({
+    const dialectAccountDto = await withErrorParsing(
+      this.dataServiceDialectsApi.create({
         encrypted: command.encrypted,
         members: [
           {
@@ -55,14 +54,24 @@ export class DataServiceMessaging implements Messaging {
             scopes: toDataServiceScopes(otherMember.scopes),
           },
         ],
-      });
-      return this.toDataServiceThread(dialectAccountDto);
-    } catch (e) {
-      if (e instanceof DataServiceApiClientError) {
-        console.log('fsdafsdfsd');
-      }
-      throw e;
-    }
+      }),
+      () => new ThreadAlreadyExistsError(),
+    );
+    return this.toDataServiceThread(dialectAccountDto);
+  }
+
+  async find(query: FindThreadQuery): Promise<Thread | null> {
+    const dialectAccountDto = await this.findInternal(query);
+    return dialectAccountDto && this.toDataServiceThread(dialectAccountDto);
+  }
+
+  async findAll(): Promise<Thread[]> {
+    const dialectAccountDtos = await withErrorParsing(
+      this.dataServiceDialectsApi.findAll(),
+    );
+    return Promise.all(
+      dialectAccountDtos.map((it) => this.toDataServiceThread(it)),
+    );
   }
 
   private checkEncryptionSupported() {
@@ -132,11 +141,6 @@ export class DataServiceMessaging implements Messaging {
     };
   }
 
-  async find(query: FindThreadQuery): Promise<Thread | null> {
-    const dialectAccountDto = await this.findInternal(query);
-    return dialectAccountDto && this.toDataServiceThread(dialectAccountDto);
-  }
-
   private findInternal(
     query: FindThreadByAddressQuery | FindThreadByOtherMemberQuery,
   ) {
@@ -148,32 +152,27 @@ export class DataServiceMessaging implements Messaging {
 
   private async findByAddress(query: FindThreadByAddressQuery) {
     try {
-      return await this.dataServiceDialectsApi.find(query.address.toBase58());
+      return await withErrorParsing(
+        this.dataServiceDialectsApi.find(query.address.toBase58()),
+      );
     } catch (e) {
       const err = e as DataServiceApiClientError;
-      if (err.statusCode === 404) {
-        return null;
-      }
+      if (err instanceof ResourceNotFoundError) return null;
       throw e;
     }
   }
 
   private async findByOtherMember(query: FindThreadByOtherMemberQuery) {
     const otherMember = requireSingleMember(query.otherMembers);
-    const dialectAccountDtos = await this.dataServiceDialectsApi.findAll({
-      memberPublicKey: otherMember.toBase58(),
-    });
+    const dialectAccountDtos = await withErrorParsing(
+      this.dataServiceDialectsApi.findAll({
+        memberPublicKey: otherMember.toBase58(),
+      }),
+    );
     if (dialectAccountDtos.length > 1) {
       throw new IllegalStateError('Found multiple dialects with same members');
     }
     return dialectAccountDtos[0] ?? null;
-  }
-
-  async findAll(): Promise<Thread[]> {
-    const dialectAccountDtos = await this.dataServiceDialectsApi.findAll();
-    return Promise.all(
-      dialectAccountDtos.map((it) => this.toDataServiceThread(it)),
-    );
   }
 }
 
@@ -193,12 +192,14 @@ export class DataServiceThread implements Thread {
   ) {}
 
   async delete(): Promise<void> {
-    await this.dataServiceDialectsApi.delete(this.address.toBase58());
+    await withErrorParsing(
+      this.dataServiceDialectsApi.delete(this.address.toBase58()),
+    );
   }
 
   async messages(): Promise<Message[]> {
-    const { dialect } = await this.dataServiceDialectsApi.find(
-      this.address.toBase58(),
+    const { dialect } = await withErrorParsing(
+      this.dataServiceDialectsApi.find(this.address.toBase58()),
     );
     this.updatedAt = new Date(dialect.lastMessageTimestamp);
     if (this.encryptionEnabled && !this.canBeDecrypted) {
@@ -213,9 +214,11 @@ export class DataServiceThread implements Thread {
   }
 
   async send(command: SendMessageCommand): Promise<void> {
-    await this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
-      text: Array.from(this.textSerde.serialize(command.text)),
-    });
+    await withErrorParsing(
+      this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
+        text: Array.from(this.textSerde.serialize(command.text)),
+      }),
+    );
   }
 }
 
