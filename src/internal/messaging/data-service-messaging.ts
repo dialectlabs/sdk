@@ -28,7 +28,7 @@ import { IllegalStateError, ResourceNotFoundError } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
-import { withErrorParsing } from '@messaging/internal/data-service-messaging-errors';
+import { withErrorParsing } from '@data-service-api/data-service-errors';
 import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 
 export class DataServiceMessaging implements Messaging {

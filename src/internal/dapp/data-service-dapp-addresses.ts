@@ -4,13 +4,15 @@ import { PublicKey } from '@solana/web3.js';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-api';
 import { AddressTypeDto } from '@data-service-api/data-service-api';
 import { IllegalStateError } from '@sdk/errors';
+import { withErrorParsing } from '@data-service-api/data-service-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
   constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}
 
   async findAll(): Promise<DappAddress[]> {
-    const dappAddressesDtos =
-      await this.dataServiceDappsApi.findAllDappAddresses();
+    const dappAddressesDtos = await withErrorParsing(
+      this.dataServiceDappsApi.findAllDappAddresses(),
+    );
     return dappAddressesDtos.map((it) => {
       const dapp: DappAddress = {
         enabled: it.enabled,
