@@ -17,7 +17,7 @@ import {
   TextSerde,
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
-import type {
+import {
   DataServiceApiClientError,
   DataServiceDialectsApi,
 } from '@data-service-api/data-service-api';
@@ -30,6 +30,7 @@ import { IllegalStateError } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
+import { DialectCloudUnreachableError } from '@messaging/internal/data-service-messaging-errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -41,20 +42,27 @@ export class DataServiceMessaging implements Messaging {
   async create(command: CreateThreadCommand): Promise<Thread> {
     command.encrypted && (await this.checkEncryptionSupported());
     const otherMember = requireSingleMember(command.otherMembers);
-    const dialectAccountDto = await this.dataServiceDialectsApi.create({
-      encrypted: command.encrypted,
-      members: [
-        {
-          publicKey: this.me.toBase58(),
-          scopes: toDataServiceScopes(command.me.scopes),
-        },
-        {
-          publicKey: otherMember.publicKey.toBase58(),
-          scopes: toDataServiceScopes(otherMember.scopes),
-        },
-      ],
-    });
-    return this.toDataServiceThread(dialectAccountDto);
+    try {
+      const dialectAccountDto = await this.dataServiceDialectsApi.create({
+        encrypted: command.encrypted,
+        members: [
+          {
+            publicKey: this.me.toBase58(),
+            scopes: toDataServiceScopes(command.me.scopes),
+          },
+          {
+            publicKey: otherMember.publicKey.toBase58(),
+            scopes: toDataServiceScopes(otherMember.scopes),
+          },
+        ],
+      });
+      return this.toDataServiceThread(dialectAccountDto);
+    } catch (e) {
+      if (e instanceof DataServiceApiClientError) {
+        console.log('fsdafsdfsd');
+      }
+      throw e;
+    }
   }
 
   private checkEncryptionSupported() {

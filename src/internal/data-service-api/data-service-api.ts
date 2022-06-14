@@ -1,10 +1,15 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
 import axios, { AxiosError } from 'axios';
+import { DialectCloudUnreachableError } from '@messaging/internal/data-service-messaging-errors';
 
-export interface DataServiceApiClientError {
-  message: string;
-  error: string;
-  statusCode: number | string;
+export class DataServiceApiClientError extends Error {
+  constructor(
+    message: string,
+    readonly error: string,
+    readonly statusCode?: number | string,
+  ) {
+    super(message);
+  }
 }
 
 async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
@@ -12,13 +17,14 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
     return await fn;
   } catch (e) {
     const err = e as AxiosError;
-    const errorData = err.response?.data as DataServiceApiClientError;
-    throw (
-      errorData ?? {
-        error: err.name,
-        message: err.message,
-        statusCode: err.status,
-      }
+    if (!err.response) {
+      throw new DialectCloudUnreachableError();
+    }
+    const data = err.response.data as DataServiceApiClientError;
+    throw new DataServiceApiClientError(
+      data.message,
+      data.error,
+      data.statusCode,
     );
   }
 }
