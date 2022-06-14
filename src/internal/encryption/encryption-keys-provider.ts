@@ -33,7 +33,7 @@ export class DialectWalletAdapterEncryptionKeysProvider extends EncryptionKeysPr
   }
 
   getFailSafe(): Promise<DiffeHellmanKeys | null> {
-    return this.dialectWalletAdapter.canEncrypt()
+    return this.dialectWalletAdapter.canEncrypt
       ? this.dialectWalletAdapter.diffieHellman()
       : Promise.resolve(null);
   }

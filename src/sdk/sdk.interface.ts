@@ -1,5 +1,5 @@
 import type {
-  CompatibilityProps,
+  ApiAvailability,
   DialectWalletAdapter,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
@@ -15,8 +15,14 @@ export abstract class Dialect {
 }
 
 export interface DialectSdk {
-  readonly compatibility: CompatibilityProps;
+  readonly info: DialectSdkInfo;
   readonly threads: Messaging;
+}
+
+export interface DialectSdkInfo {
+  readonly apiAvailability: ApiAvailability;
+  readonly config: Config;
+  readonly wallet: DialectWalletAdapter;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';
@@ -32,7 +38,7 @@ export interface Config {
 
 export interface SolanaConfig {
   network?: SolanaNetwork;
-  dialectProgramId?: PublicKey;
+  dialectProgramAddress?: PublicKey;
   rpcUrl?: string;
 }
 

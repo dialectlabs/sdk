@@ -3,15 +3,15 @@ import type {
   SignerWalletAdapterProps,
 } from '@solana/wallet-adapter-base/lib/types/signer';
 import type { PublicKey } from '@solana/web3.js';
+import type { Backend } from '@sdk/sdk.interface';
 
-export interface CompatibilityProps {
-  canUseSolana(): boolean;
-  canUseDialectCloud(): boolean;
-  canEncrypt(): boolean;
+export interface ApiAvailability {
+  supportedBackends: Backend[];
+  canEncrypt: boolean;
 }
 
 export interface DialectWalletAdapter {
-  publicKey: PublicKey;
+  publicKey?: PublicKey;
   signTransaction?: SignerWalletAdapterProps['signTransaction'];
   signAllTransactions?: SignerWalletAdapterProps['signAllTransactions'];
   signMessage?: MessageSignerWalletAdapterProps['signMessage'];

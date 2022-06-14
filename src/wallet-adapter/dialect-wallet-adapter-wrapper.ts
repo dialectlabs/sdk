@@ -1,16 +1,23 @@
 import type {
+  ApiAvailability,
   DialectWalletAdapter,
-  CompatibilityProps,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@sdk/errors';
-import type { Transaction } from '@solana/web3.js';
+import type { PublicKey, Transaction } from '@solana/web3.js';
+import { Backend } from '@sdk/sdk.interface';
 
 export class DialectWalletAdapterWrapper
-  implements DialectWalletAdapter, CompatibilityProps
+  implements DialectWalletAdapter, ApiAvailability
 {
   constructor(private readonly delegate: DialectWalletAdapter) {}
 
-  get publicKey() {
+  get publicKey(): PublicKey {
+    if (!this.delegate.publicKey) {
+      throw new UnsupportedOperationError(
+        'Public key not available',
+        'Wallet does not have public key, please provide a valid public key.',
+      );
+    }
     return this.delegate.publicKey;
   }
 
@@ -54,18 +61,27 @@ export class DialectWalletAdapterWrapper
     return this.delegate.diffieHellman(this.publicKey.toBytes());
   }
 
-  canUseSolana() {
-    return (
-      !!this.delegate.signTransaction && !!this.delegate.signAllTransactions
+  private canUseSolana() {
+    return Boolean(
+      this.publicKey &&
+        this.delegate.signTransaction &&
+        this.delegate.signAllTransactions,
     );
   }
 
-  canUseDialectCloud() {
-    return !!this.delegate.signMessage;
+  private canUseDialectCloud() {
+    return Boolean(this.publicKey && this.delegate.signMessage);
   }
 
-  canEncrypt() {
-    return !!this.delegate.diffieHellman;
+  get canEncrypt() {
+    return Boolean(this.publicKey && this.delegate.diffieHellman);
+  }
+
+  get supportedBackends(): Backend[] {
+    return [
+      ...(this.canUseSolana() ? [Backend.Solana] : []),
+      ...(this.canUseDialectCloud() ? [Backend.DialectCloud] : []),
+    ];
   }
 
   static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
