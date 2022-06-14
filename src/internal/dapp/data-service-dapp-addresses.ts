@@ -11,7 +11,7 @@ export class DataServiceDappAddresses implements DappAddresses {
   async findAll(): Promise<DappAddress[]> {
     const dappAddressesDtos =
       await this.dataServiceDappsApi.findAllDappAddresses();
-    const dappAddresses: DappAddress[] = dappAddressesDtos.map((it) => {
+    return dappAddressesDtos.map((it) => {
       const dapp: DappAddress = {
         enabled: it.enabled,
         telegramChatId: it.telegramChatId,
@@ -26,7 +26,6 @@ export class DataServiceDappAddresses implements DappAddresses {
       };
       return dapp;
     });
-    return dappAddresses;
   }
 
   private static toAddressType(addressTypeDto: AddressTypeDto): AddressType {
