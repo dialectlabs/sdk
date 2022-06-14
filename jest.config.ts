@@ -16,6 +16,7 @@ const config: Config.InitialOptions = {
     '^@messaging(.*)$': '<rootDir>/src/messaging$1',
     '^@sdk/internal(.*)$': '<rootDir>/src/internal/sdk$1',
     '^@sdk(.*)$': '<rootDir>/src/sdk$1',
+    '^@utils/internal(.*)$': '<rootDir>/src/internal/utils$1',
     '^@wallet-adapter/internal(.*)$': '<rootDir>/src/internal/wallet-adapter$1',
     '^@wallet-adapter(.*)$': '<rootDir>/src/wallet-adapter$1',
   },

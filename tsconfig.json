@@ -63,6 +63,9 @@
       "@sdk/internal/*": [
         "./internal/sdk/*"
       ],
+      "@utils/internal/*": [
+        "./internal/utils/*"
+      ],
       "@wallet-adapter/*": [
         "./wallet-adapter/*"
       ],

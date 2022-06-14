@@ -12,7 +12,11 @@ import {
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import { DataServiceDialectsApiClient } from '@data-service-api/data-service-api';
+import {
+  DataServiceApi,
+  DataServiceDappsApi,
+  DataServiceDialectsApi,
+} from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import { MessagingFacade } from '@messaging/internal/messaging-facade';
@@ -26,6 +30,12 @@ import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encrypti
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { IllegalArgumentError } from '@sdk/errors';
+import type { DappAddresses, Dapps } from '@dapp/dapp.interface';
+import type { Program } from '@project-serum/anchor';
+import { DappsImpl } from '@dapp/internal/dapp';
+import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
+import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
+import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
 
 interface InternalConfig extends Config {
   environment: Environment;
@@ -49,66 +59,125 @@ interface InternalDialectCloudConfig extends DialectCloudConfig {
 }
 
 export class InternalDialectSdk implements DialectSdk {
-  constructor(readonly info: DialectSdkInfo, readonly threads: Messaging) {}
+  constructor(
+    readonly info: DialectSdkInfo,
+    readonly threads: Messaging,
+    readonly dapps: Dapps,
+  ) {}
 }
 
 export class DialectSdkFactory {
-  private static DEFAULT_BACKENDS = [Backend.DialectCloud, Backend.Solana];
-
   constructor(private readonly config: Config) {}
 
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
-    console.log(
-      `Initializing dialect sdk using config\n: ${JSON.stringify(config)}`,
-    );
+    DialectSdkFactory.logConfiguration(config);
     const encryptionKeysProvider =
       new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
-    const messaging = this.createMessaging(config, encryptionKeysProvider);
+
+    const dialectProgram: Program = createDialectProgram(
+      config.wallet,
+      config.solana.dialectProgramAddress,
+      config.solana.rpcUrl,
+    );
+    const dataServiceApi: DataServiceApi = DataServiceApi.create(
+      config.dialectCloud.url,
+      TokenProvider.create(
+        new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+        Duration.fromObject({ minutes: 60 }),
+        config.dialectCloud.tokenStore,
+      ),
+    );
+    const messaging = this.createMessaging(
+      config,
+      encryptionKeysProvider,
+      dialectProgram,
+      dataServiceApi.threads,
+    );
+
+    const dapps = this.createDapps(
+      config,
+      dialectProgram,
+      dataServiceApi.dapps,
+    );
     return new InternalDialectSdk(
       {
         apiAvailability: config.wallet,
         config,
         wallet: config.wallet,
+        solana: {
+          dialectProgram,
+        },
       },
       messaging,
+      dapps,
     );
+  }
+
+  private static logConfiguration(config: InternalConfig) {
+    if (config.environment !== 'production') {
+      console.log(
+        `Initializing Dialect SDK using configuration:
+Wallet: 
+  Public key: ${config.wallet.publicKey}
+  Supports encryption: ${config.wallet.canEncrypt}
+Enabled backends: ${JSON.stringify(config.backends)}
+Dialect cloud settings:
+  URL: ${config.dialectCloud.url}
+Solana settings:
+  Dialect program: ${config.solana.dialectProgramAddress}
+  RPC URL: ${config.solana.rpcUrl}
+`,
+      );
+    }
   }
 
   private createMessaging(
     config: InternalConfig,
     encryptionKeysProvider: DialectWalletAdapterEncryptionKeysProvider,
+    program: Program,
+    dataServiceDialectsApi: DataServiceDialectsApi,
   ) {
-    const messagingOptions: Messaging[] = config.backends.map((backend) => {
+    const messagingBackends: Messaging[] = config.backends.map((backend) => {
       switch (backend) {
         case Backend.Solana:
           return new SolanaMessaging(
             config.wallet,
-            createDialectProgram(
-              config.wallet,
-              config.solana.dialectProgramAddress,
-              config.solana.rpcUrl,
-            ),
+            program,
             encryptionKeysProvider,
           );
         case Backend.DialectCloud:
           return new DataServiceMessaging(
             config.wallet.publicKey,
-            new DataServiceDialectsApiClient(
-              config.dialectCloud.url,
-              TokenProvider.create(
-                new DialectWalletAdapterEd25519TokenSigner(config.wallet),
-                Duration.fromObject({ minutes: 60 }),
-                config.dialectCloud.tokenStore,
-              ),
-            ),
+            dataServiceDialectsApi,
             encryptionKeysProvider,
           );
         default:
           throw new IllegalArgumentError(`Unknown backend ${backend}`);
       }
     });
-    return new MessagingFacade(messagingOptions);
+    return new MessagingFacade(messagingBackends);
+  }
+
+  private createDapps(
+    config: InternalConfig,
+    program: Program,
+    dataServiceDappsApi: DataServiceDappsApi,
+  ) {
+    const dappAddressesBackends: DappAddresses[] = config.backends.map(
+      (backend) => {
+        switch (backend) {
+          case Backend.Solana:
+            return new SolanaDappAddresses(program);
+          case Backend.DialectCloud:
+            return new DataServiceDappAddresses(dataServiceDappsApi);
+          default:
+            throw new IllegalArgumentError(`Unknown backend ${backend}`);
+        }
+      },
+    );
+    const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
+    return new DappsImpl(config.wallet.publicKey, dappAddressesFacade);
   }
 
   private initializeConfig(): InternalConfig {
@@ -130,7 +199,7 @@ export class DialectSdkFactory {
   private initializeBackends() {
     const backends = this.config.backends;
     if (!backends) {
-      return DialectSdkFactory.DEFAULT_BACKENDS;
+      return [Backend.DialectCloud, Backend.Solana];
     }
     if (backends.length < 1) {
       throw new IllegalArgumentError('Please specify at least one backend.');
