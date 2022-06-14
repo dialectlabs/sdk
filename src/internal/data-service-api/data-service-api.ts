@@ -1,10 +1,20 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
 import axios, { AxiosError } from 'axios';
 
-export interface DataServiceApiClientError {
+interface RawDataServiceApiError {
   message: string;
-  error: string;
-  statusCode: number | string;
+}
+
+export type DataServiceApiClientError = NetworkError | DataServiceApiError;
+
+export class NetworkError {}
+
+export class DataServiceApiError {
+  constructor(
+    readonly message: string,
+    readonly error: string,
+    readonly statusCode: number,
+  ) {}
 }
 
 async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
@@ -12,13 +22,14 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
     return await fn;
   } catch (e) {
     const err = e as AxiosError;
-    const errorData = err.response?.data as DataServiceApiClientError;
-    throw (
-      errorData ?? {
-        error: err.name,
-        message: err.message,
-        statusCode: err.status,
-      }
+    if (!err.response) {
+      throw new NetworkError();
+    }
+    const data = err.response.data as RawDataServiceApiError;
+    throw new DataServiceApiError(
+      data.message,
+      err.response.statusText,
+      Number(err.response.status),
     );
   }
 }
@@ -26,7 +37,7 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
 export class DataServiceApi {
   private constructor(
     readonly threads: DataServiceDialectsApi,
-    readonly dapps: DataServiceDappsApi,
+    readonly dapps: DataServiceDappsApiClient,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {

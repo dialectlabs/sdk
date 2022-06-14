@@ -41,3 +41,33 @@ export class UnknownError extends DialectSdkError {
     );
   }
 }
+
+export class BusinessConstraintViolationError extends DialectSdkError {
+  constructor(msg?: string) {
+    super(BusinessConstraintViolationError.name, 'Error', msg);
+  }
+}
+
+export class ResourceAlreadyExistsError extends DialectSdkError {
+  constructor(msg?: string) {
+    super(ResourceAlreadyExistsError.name, 'Error', msg);
+  }
+}
+
+export class AuthenticationError extends DialectSdkError {
+  constructor(msg?: string) {
+    super(AuthenticationError.name, 'Error', msg);
+  }
+}
+
+export class AuthorizationError extends DialectSdkError {
+  constructor(msg?: string) {
+    super(AuthorizationError.name, 'Error', msg);
+  }
+}
+
+export class ResourceNotFoundError extends DialectSdkError {
+  constructor(msg?: string) {
+    super(ResourceNotFoundError.name, 'Error', msg);
+  }
+}

@@ -15,6 +15,7 @@ import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
+import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
@@ -75,6 +76,38 @@ describe('Data service messaging (e2e)', () => {
       const thread = await wallet1Messaging.create(command);
       // then
       expect(thread).not.toBeNull();
+    },
+  );
+
+  it.each(messaging)(
+    '%p cannot create 2nd thread with same members',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+      } = await messagingFactory();
+      const before = await wallet1Messaging.findAll();
+      expect(before).toMatchObject([]);
+      // when
+      const command: CreateThreadCommand = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      };
+      const thread = await wallet1Messaging.create(command);
+      // then
+      expect(thread).not.toBeNull();
+      await expect(wallet1Messaging.create(command)).rejects.toEqual(
+        new ThreadAlreadyExistsError(),
+      );
     },
   );
 
