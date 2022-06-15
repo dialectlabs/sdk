@@ -160,9 +160,11 @@ export class SolanaMessaging implements Messaging {
   }
 
   async findAll(): Promise<Thread[]> {
-    const dialects = await findDialects(this.program, {
-      userPk: this.walletAdapter.publicKey,
-    });
+    const dialects = await withErrorParsing(
+      findDialects(this.program, {
+        userPk: this.walletAdapter.publicKey,
+      }),
+    );
     return Promise.all(
       dialects.map(async (it) =>
         toSolanaThread(
@@ -193,7 +195,9 @@ export class SolanaThread implements Thread {
   ) {}
 
   async delete(): Promise<void> {
-    await deleteDialect(this.program, this.dialectAccount, this.walletAdapter);
+    await withErrorParsing(
+      deleteDialect(this.program, this.dialectAccount, this.walletAdapter),
+    );
   }
 
   async messages(): Promise<Message[]> {
@@ -202,10 +206,8 @@ export class SolanaThread implements Thread {
       this.me.publicKey,
       encryptionKeys,
     );
-    this.dialectAccount = await getDialect(
-      this.program,
-      this.dialectAccount.publicKey,
-      encryptionProps,
+    this.dialectAccount = await withErrorParsing(
+      getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
     return this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
@@ -220,12 +222,14 @@ export class SolanaThread implements Thread {
       this.me.publicKey,
       encryptionKeys,
     );
-    await sendMessage(
-      this.program,
-      this.dialectAccount,
-      this.walletAdapter,
-      command.text,
-      encryptionProps,
+    await withErrorParsing(
+      sendMessage(
+        this.program,
+        this.dialectAccount,
+        this.walletAdapter,
+        command.text,
+        encryptionProps,
+      ),
     );
   }
 
