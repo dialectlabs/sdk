@@ -2,14 +2,22 @@ import type { TokenProvider } from '@auth/internal/token-provider';
 import type { AxiosError } from 'axios';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-dialects-api';
-import { DataServiceDappsApiClient } from '@data-service-api/data-service-dapps-api';
-import { nanoid } from 'nanoid';
+import {
+  DataServiceDappsApi,
+  DataServiceDappsApiClient,
+} from '@data-service-api/data-service-dapps-api';
 import type { Token } from '@auth/auth.interface';
+import {
+  DataServiceWalletsApiClientV0,
+  DataServiceWalletsApiV0,
+} from '@data-service-api/data-service-wallets-api';
+import { nanoid } from 'nanoid';
 
 export class DataServiceApi {
   private constructor(
     readonly threads: DataServiceDialectsApi,
-    readonly dapps: DataServiceDappsApiClient,
+    readonly dapps: DataServiceDappsApi,
+    readonly walletsV0: DataServiceWalletsApiV0,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -21,7 +29,11 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
-    return new DataServiceApi(dialectsApi, dappAddressesApi);
+    const walletsApiV0 = new DataServiceWalletsApiClientV0(
+      baseUrl,
+      tokenProvider,
+    );
+    return new DataServiceApi(dialectsApi, dappAddressesApi, walletsApiV0);
   }
 }
 

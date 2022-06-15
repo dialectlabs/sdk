@@ -12,6 +12,11 @@ import {
   SendMessageCommand,
 } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import type {
+  CreateAddressCommandV0,
+  DappAddressDtoV0,
+  DataServiceWalletsApiV0,
+} from '@data-service-api/data-service-wallets-api';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -475,5 +480,59 @@ describe('Data service api (e2e)', () => {
       // then
       expect(addresses).toMatchObject([]);
     });
+  });
+
+  describe('Wallet dapp addresses', () => {
+    let wallet: DialectWalletAdapterWrapper;
+    let wallets: DataServiceWalletsApiV0;
+    let dapps: DataServiceDappsApi;
+
+    beforeEach(() => {
+      wallet = new DialectWalletAdapterWrapper(
+        NodeDialectWalletAdapter.create(),
+      );
+      const dataServiceApi = DataServiceApi.create(
+        baseUrl,
+        TokenProvider.create(
+          new DialectWalletAdapterEd25519TokenSigner(wallet),
+        ),
+      );
+      wallets = dataServiceApi.walletsV0;
+      dapps = dataServiceApi.dapps;
+    });
+
+    test('can create dapp address', async () => {
+      // given
+      const dapp = await dapps.create({
+        publicKey: wallet.publicKey.toBase58(),
+      });
+      // when
+      const createDappAddressCommand: CreateAddressCommandV0 = {
+        type: 'wallet',
+        enabled: true,
+        value: wallet.publicKey.toBase58(),
+      };
+      const dappAddressDtoV0 = await wallets.createDappAddress(
+        createDappAddressCommand,
+        dapp.publicKey,
+      );
+      const expected: Omit<DappAddressDtoV0, 'addressId' | 'id'> = {
+        ...dappAddressDtoV0,
+        dapp: dapp.publicKey,
+      };
+      expect(dappAddressDtoV0).toMatchObject(expected);
+    });
+
+    // test('can create dapp and find all dappAddresses', async () => {
+    //   // when
+    //   const dappPublicKey = wallet.publicKey.toBase58();
+    //   const dappDto = await wallets.create({
+    //     publicKey: dappPublicKey,
+    //   });
+    //   console.log(dappDto);
+    //   const addresses = await wallets.findAllDappAddresses();
+    //   // then
+    //   expect(addresses).toMatchObject([]);
+    // });
   });
 });
