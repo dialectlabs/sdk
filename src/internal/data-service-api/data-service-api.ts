@@ -1,7 +1,7 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
 import axios, { AxiosError } from 'axios';
 import type { Token } from '@auth/auth.interface';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 interface RawDataServiceApiError {
   message: string;
@@ -205,7 +205,7 @@ export interface DataServiceDappsApi {
 function createHeaders(token: Token) {
   return {
     Authorization: `Bearer ${token.rawValue}`,
-    [XRequestIdHeader]: uuidv4(),
+    [XRequestIdHeader]: nanoid(),
   };
 }
 
