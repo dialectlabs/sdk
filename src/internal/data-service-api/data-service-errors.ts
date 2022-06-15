@@ -2,6 +2,7 @@ import {
   AuthenticationError,
   AuthorizationError,
   BusinessConstraintViolationError,
+  DialectCloudUnreachableError,
   DialectSdkError,
   ResourceAlreadyExistsError,
   ResourceNotFoundError,
@@ -11,23 +12,6 @@ import {
   DataServiceApiError,
   NetworkError,
 } from '@data-service-api/data-service-api';
-
-export abstract class DataServiceError extends DialectSdkError {}
-
-export class DialectCloudUnreachableError extends DataServiceError {
-  constructor(details?: any[]) {
-    super(
-      DialectCloudUnreachableError.name,
-      'Lost connection to Dialect Cloud',
-      'Having problems reaching Dialect Cloud. Please try again later.',
-      details,
-    );
-  }
-}
-
-function createMessage(e: DataServiceApiError) {
-  return `${e.message}. ${e.requestId ? `Request ID: ${e.requestId}` : ''}`;
-}
 
 export async function withErrorParsing<T>(
   promise: Promise<T>,
@@ -60,4 +44,8 @@ export async function withErrorParsing<T>(
     }
     throw new UnknownError([e]);
   }
+}
+
+function createMessage(e: DataServiceApiError) {
+  return `${e.message}. ${e.requestId ? `Request ID: ${e.requestId}` : ''}`;
 }

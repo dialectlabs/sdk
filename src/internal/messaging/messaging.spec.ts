@@ -15,7 +15,7 @@ import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
-import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
+import { ThreadAlreadyExistsError } from '@sdk/errors';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
