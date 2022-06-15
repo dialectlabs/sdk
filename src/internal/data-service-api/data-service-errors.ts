@@ -26,7 +26,7 @@ export class DialectCloudUnreachableError extends DataServiceError {
 }
 
 function createMessage(e: DataServiceApiError) {
-  return `${e.message}.${e.requestId ? `Request ID: ${e.requestId}` : ''}`;
+  return `${e.message}. ${e.requestId ? `Request ID: ${e.requestId}` : ''}`;
 }
 
 export async function withErrorParsing<T>(
