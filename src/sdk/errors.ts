@@ -32,11 +32,11 @@ export class UnsupportedOperationError extends DialectSdkError {
 }
 
 export class UnknownError extends DialectSdkError {
-  constructor(details?: any) {
+  constructor(details?: any, msg?: string) {
     super(
       UnknownError.name,
       'Error',
-      'Something went wrong. Please try again later.',
+      msg ?? 'Something went wrong. Please try again later.',
       details,
     );
   }
