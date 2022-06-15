@@ -22,6 +22,7 @@
     "@types/ed2curve": "^0.2.2",
     "@types/jest": "^27.5.1",
     "@types/luxon": "^2.3.2",
+    "@types/uuid": "^8.3.4",
     "jest": "^28.1.0",
     "jest-jasmine2": "^28.1.0",
     "prettier": "^2.6.2",
@@ -40,6 +41,7 @@
     "axios": "^0.27.2",
     "ed2curve": "^0.3.0",
     "luxon": "^2.4.0",
-    "tweetnacl": "^1.0.3"
+    "tweetnacl": "^1.0.3",
+    "uuid": "^8.3.2"
   }
 }
