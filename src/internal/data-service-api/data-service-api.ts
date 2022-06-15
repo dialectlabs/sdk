@@ -1,5 +1,7 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
 import axios, { AxiosError } from 'axios';
+import type { Token } from '@auth/auth.interface';
+import { nanoid } from 'nanoid';
 
 interface RawDataServiceApiError {
   message: string;
@@ -14,8 +16,11 @@ export class DataServiceApiError {
     readonly message: string,
     readonly error: string,
     readonly statusCode: number,
+    readonly requestId?: string | null,
   ) {}
 }
+
+const XRequestIdHeader = 'x-request-id';
 
 async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
   try {
@@ -26,10 +31,15 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
       throw new NetworkError();
     }
     const data = err.response.data as RawDataServiceApiError;
+    const requestId =
+      (err.config.headers &&
+        (err.config.headers[XRequestIdHeader] as string)) ??
+      null;
     throw new DataServiceApiError(
       data.message,
       err.response.statusText,
       Number(err.response.status),
+      requestId,
     );
   }
 }
@@ -79,7 +89,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -90,7 +100,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
           ...(query && { params: query }),
         })
         .then((it) => it.data),
@@ -102,7 +112,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -113,7 +123,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -130,7 +140,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
           `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
           command,
           {
-            headers: { Authorization: `Bearer ${token.rawValue}` },
+            headers: createHeaders(token),
           },
         )
         .then((it) => it.data),
@@ -192,6 +202,13 @@ export interface DataServiceDappsApi {
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 }
 
+function createHeaders(token: Token) {
+  return {
+    Authorization: `Bearer ${token.rawValue}`,
+    [XRequestIdHeader]: nanoid(),
+  };
+}
+
 export class DataServiceDappsApiClient implements DataServiceDappsApi {
   constructor(
     private readonly baseUrl: string,
@@ -204,7 +221,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     return withReThrowingDataServiceError(
       axios
         .post<DappDto>(`${this.baseUrl}/v0/dapps`, command, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -217,7 +234,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .get<DappAddressDto[]>(
           `${this.baseUrl}/v0/dapps/${token.body.sub}/dappAddresses`,
           {
-            headers: { Authorization: `Bearer ${token.rawValue}` },
+            headers: createHeaders(token),
           },
         )
         .then((it) => it.data),
