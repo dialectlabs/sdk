@@ -516,23 +516,62 @@ describe('Data service api (e2e)', () => {
         createDappAddressCommand,
         dapp.publicKey,
       );
+      // then
       const expected: Omit<DappAddressDtoV0, 'addressId' | 'id'> = {
-        ...dappAddressDtoV0,
+        type: 'wallet',
+        enabled: true,
         dapp: dapp.publicKey,
+        verified: true,
       };
       expect(dappAddressDtoV0).toMatchObject(expected);
     });
 
-    // test('can create dapp and find all dappAddresses', async () => {
-    //   // when
-    //   const dappPublicKey = wallet.publicKey.toBase58();
-    //   const dappDto = await wallets.create({
-    //     publicKey: dappPublicKey,
-    //   });
-    //   console.log(dappDto);
-    //   const addresses = await wallets.findAllDappAddresses();
-    //   // then
-    //   expect(addresses).toMatchObject([]);
-    // });
+    test('can find dapp address', async () => {
+      // given
+      const dapp = await dapps.create({
+        publicKey: wallet.publicKey.toBase58(),
+      });
+      const createDappAddressCommand: CreateAddressCommandV0 = {
+        type: 'wallet',
+        enabled: true,
+        value: wallet.publicKey.toBase58(),
+      };
+      await wallets.createDappAddress(createDappAddressCommand, dapp.publicKey);
+      // when
+      const dappAddressDtoV0s = await wallets.findAllDappAddresses(
+        dapp.publicKey,
+      );
+      // then
+      const expected: Omit<DappAddressDtoV0, 'addressId' | 'id'> = {
+        type: 'wallet',
+        enabled: true,
+        dapp: dapp.publicKey,
+        verified: true,
+      };
+      expect(dappAddressDtoV0s).toMatchObject([expected]);
+    });
+
+    test('can delete dapp address', async () => {
+      // given
+      const dapp = await dapps.create({
+        publicKey: wallet.publicKey.toBase58(),
+      });
+      const createDappAddressCommand: CreateAddressCommandV0 = {
+        type: 'wallet',
+        enabled: true,
+        value: wallet.publicKey.toBase58(),
+      };
+      const addressDtoV0 = await wallets.createDappAddress(
+        createDappAddressCommand,
+        dapp.publicKey,
+      );
+      // when
+      await wallets.deleteDappAddress({ id: addressDtoV0.addressId });
+      const dappAddressDtoV0s = await wallets.findAllDappAddresses(
+        dapp.publicKey,
+      );
+      // then
+      expect(dappAddressDtoV0s).toMatchObject([]);
+    });
   });
 });

@@ -4,6 +4,7 @@ import {
   BusinessConstraintViolationError,
   DialectCloudUnreachableError,
   DialectSdkError,
+  IllegalArgumentError,
   ResourceAlreadyExistsError,
   ResourceNotFoundError,
   UnknownError,
@@ -25,6 +26,9 @@ export async function withErrorParsing<T>(
       throw new DialectCloudUnreachableError([e]);
     }
     if (e instanceof DataServiceApiError) {
+      if (e.statusCode === 400) {
+        throw new IllegalArgumentError(createMessage(e));
+      }
       if (e.statusCode === 401) {
         throw new AuthenticationError(createMessage(e));
       }

@@ -46,13 +46,14 @@ export class DataServiceWalletsApiClientV0 implements DataServiceWalletsApiV0 {
     dapp: string,
   ): Promise<DappAddressDtoV0> {
     const token = await this.tokenProvider.get();
+    const headers = createHeaders(token);
     return withReThrowingDataServiceError(
       axios
         .post<DappAddressDtoV0>(
           `${this.baseUrl}/v0/wallets/${token.body.sub}/dapps/${dapp}/addresses`,
           command,
           {
-            headers: createHeaders(token),
+            headers: headers,
           },
         )
         .then((it) => it.data),
@@ -63,9 +64,8 @@ export class DataServiceWalletsApiClientV0 implements DataServiceWalletsApiV0 {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .post<void>(
+        .delete(
           `${this.baseUrl}/v0/wallets/${token.body.sub}/addresses/${command.id}`,
-          command,
           {
             headers: createHeaders(token),
           },
@@ -78,7 +78,7 @@ export class DataServiceWalletsApiClientV0 implements DataServiceWalletsApiV0 {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .post<DappAddressDtoV0[]>(
+        .get<DappAddressDtoV0[]>(
           `${this.baseUrl}/v0/wallets/${token.body.sub}/dapps/${dapp}/addresses`,
           {
             headers: createHeaders(token),
