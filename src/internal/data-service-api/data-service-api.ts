@@ -3,6 +3,8 @@ import type { AxiosError } from 'axios';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import { DataServiceDialectsApiClient } from '@data-service-api/data-service-dialects-api';
 import { DataServiceDappsApiClient } from '@data-service-api/data-service-dapps-api';
+import { nanoid } from 'nanoid';
+import type { Token } from '@auth/auth.interface';
 
 export class DataServiceApi {
   private constructor(
@@ -41,6 +43,13 @@ export class DataServiceApiError {
 }
 
 const XRequestIdHeader = 'x-request-id';
+
+export function createHeaders(token: Token) {
+  return {
+    Authorization: `Bearer ${token.rawValue}`,
+    [XRequestIdHeader]: nanoid(),
+  };
+}
 
 export async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
   try {

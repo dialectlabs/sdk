@@ -1,6 +1,9 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
 import axios from 'axios';
-import { withReThrowingDataServiceError } from '@data-service-api/data-service-api';
+import {
+  createHeaders,
+  withReThrowingDataServiceError,
+} from '@data-service-api/data-service-api';
 
 export interface DataServiceDappsApi {
   create(command: CreateDappCommandDto): Promise<DappDto>;
@@ -20,7 +23,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     return withReThrowingDataServiceError(
       axios
         .post<DappDto>(`${this.baseUrl}/v0/dapps`, command, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -33,7 +36,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .get<DappAddressDto[]>(
           `${this.baseUrl}/v0/dapps/${token.body.sub}/dappAddresses`,
           {
-            headers: { Authorization: `Bearer ${token.rawValue}` },
+            headers: createHeaders(token),
           },
         )
         .then((it) => it.data),

@@ -1,6 +1,9 @@
 import axios from 'axios';
 import type { TokenProvider } from '@auth/internal/token-provider';
-import { withReThrowingDataServiceError } from '@data-service-api/data-service-api';
+import {
+  createHeaders,
+  withReThrowingDataServiceError,
+} from '@data-service-api/data-service-api';
 
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
@@ -28,7 +31,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -39,7 +42,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
           ...(query && { params: query }),
         })
         .then((it) => it.data),
@@ -51,7 +54,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -62,7 +65,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: { Authorization: `Bearer ${token.rawValue}` },
+          headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
@@ -79,7 +82,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
           `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
           command,
           {
-            headers: { Authorization: `Bearer ${token.rawValue}` },
+            headers: createHeaders(token),
           },
         )
         .then((it) => it.data),
