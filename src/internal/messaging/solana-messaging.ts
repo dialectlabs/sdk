@@ -28,11 +28,13 @@ import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet
 import {
   AccountAlreadyExistsError,
   AccountNotFoundError,
-  SolanaError,
   withErrorParsing,
 } from '@messaging/internal/solana-messaging-errors';
-import { ThreadAlreadyExistsError } from '@messaging/internal/messaging-errors';
-import { IllegalStateError } from '@sdk/errors';
+import {
+  SolanaError,
+  ThreadAlreadyExistsError,
+  IllegalStateError,
+} from '@sdk/errors';
 import type {
   DiffeHellmanKeys,
   EncryptionKeysProvider,
