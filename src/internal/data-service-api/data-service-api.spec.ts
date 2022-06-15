@@ -1,19 +1,17 @@
-import type {
-  DataServiceDappsApi,
-  DataServiceDialectsApi,
-} from './data-service-api';
-import {
-  CreateDialectCommand,
-  DataServiceApi,
-  DialectDto,
-  MemberScopeDto,
-  SendMessageCommand,
-} from './data-service-api';
+import { DataServiceApi } from './data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { Keypair } from '@solana/web3.js';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+import {
+  CreateDialectCommand,
+  DialectDto,
+  MemberScopeDto,
+  SendMessageCommand,
+} from '@data-service-api/data-service-dialects-api';
+import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

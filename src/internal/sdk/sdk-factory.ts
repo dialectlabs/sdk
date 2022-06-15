@@ -12,11 +12,7 @@ import {
 import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import {
-  DataServiceApi,
-  DataServiceDappsApi,
-  DataServiceDialectsApi,
-} from '@data-service-api/data-service-api';
+import { DataServiceApi } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import {
@@ -39,6 +35,8 @@ import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
 import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
 import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
 import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
+import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 
 interface InternalConfig extends Config {
   environment: Environment;
@@ -99,7 +97,6 @@ export class DialectSdkFactory {
       dialectProgram,
       dataServiceApi.threads,
     );
-
     const dapps = this.createDapps(
       config,
       dialectProgram,
