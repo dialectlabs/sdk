@@ -25,9 +25,9 @@ import {
   MemberScopeDto,
 } from '@data-service-api/data-service-api';
 import {
-  ThreadAlreadyExistsError,
   IllegalStateError,
   ResourceNotFoundError,
+  ThreadAlreadyExistsError,
 } from '@sdk/errors';
 import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
@@ -92,7 +92,7 @@ export class DataServiceMessaging implements Messaging {
         )} and wallet public key ${this.me.toBase58()}`,
       );
     }
-    const { serde, decrypted } = await this.createTextSerde(dialect);
+    const { serde, canBeDecrypted } = await this.createTextSerde(dialect);
     const otherThreadMember: ThreadMember = {
       publicKey: new PublicKey(otherMember.publicKey),
       scopes: fromDataServiceScopes(otherMember.scopes),
@@ -100,6 +100,7 @@ export class DataServiceMessaging implements Messaging {
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
+      this.encryptionKeysProvider,
       new PublicKey(publicKey),
       {
         publicKey: new PublicKey(meMember.publicKey),
@@ -108,19 +109,19 @@ export class DataServiceMessaging implements Messaging {
       [otherThreadMember],
       otherThreadMember,
       dialect.encrypted,
-      decrypted,
+      canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
     );
   }
 
   private async createTextSerde(dialect: DialectDto): Promise<{
     serde: TextSerde;
-    decrypted: boolean;
+    canBeDecrypted: boolean;
   }> {
     if (!dialect.encrypted) {
       return {
         serde: new UnencryptedTextSerde(),
-        decrypted: true,
+        canBeDecrypted: true,
       };
     }
     const diffieHellmanKeyPair =
@@ -132,7 +133,7 @@ export class DataServiceMessaging implements Messaging {
     if (!encryptionProps) {
       return {
         serde: new UnencryptedTextSerde(),
-        decrypted: false,
+        canBeDecrypted: false,
       };
     }
     return {
@@ -140,7 +141,7 @@ export class DataServiceMessaging implements Messaging {
         encryptionProps,
         dialect.members.map((it) => new PublicKey(it.publicKey)),
       ),
-      decrypted: true,
+      canBeDecrypted: true,
     };
   }
 
@@ -185,6 +186,7 @@ export class DataServiceThread implements Thread {
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerde: TextSerde,
+    private readonly encryptionKeysProvider: EncryptionKeysProvider,
     readonly address: PublicKey,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
@@ -205,7 +207,7 @@ export class DataServiceThread implements Thread {
       this.dataServiceDialectsApi.find(this.address.toBase58()),
     );
     this.updatedAt = new Date(dialect.lastMessageTimestamp);
-    if (this.encryptionEnabled && !this.canBeDecrypted) {
+    if (this.encryptionEnabledButCannotBeUsed()) {
       return [];
     }
     return dialect.messages.map((it) => ({
@@ -216,7 +218,14 @@ export class DataServiceThread implements Thread {
     }));
   }
 
+  private encryptionEnabledButCannotBeUsed() {
+    return this.encryptionEnabled && !this.canBeDecrypted;
+  }
+
   async send(command: SendMessageCommand): Promise<void> {
+    if (this.encryptionEnabledButCannotBeUsed()) {
+      await this.encryptionKeysProvider.getFailFast();
+    }
     await withErrorParsing(
       this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
         text: Array.from(this.textSerde.serialize(command.text)),

@@ -31,9 +31,9 @@ import {
   withErrorParsing,
 } from '@messaging/internal/solana-messaging-errors';
 import {
+  IllegalStateError,
   SolanaError,
   ThreadAlreadyExistsError,
-  IllegalStateError,
 } from '@sdk/errors';
 import type {
   DiffeHellmanKeys,
@@ -84,7 +84,11 @@ export class SolanaMessaging implements Messaging {
             },
           ],
           command.encrypted,
-          await this.getEncryptionProps(command),
+          await getEncryptionPropsForMutation(
+            command.encrypted,
+            this.encryptionKeysProvider,
+            this.walletAdapter,
+          ),
         ),
       );
     } catch (e) {
@@ -94,13 +98,6 @@ export class SolanaMessaging implements Messaging {
       }
       throw e;
     }
-  }
-
-  private async getEncryptionProps(command: CreateThreadCommand) {
-    const encryptionKeys = command.encrypted
-      ? await this.encryptionKeysProvider.getFailFast()
-      : null;
-    return getEncryptionProps(this.walletAdapter.publicKey, encryptionKeys);
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
@@ -217,10 +214,10 @@ export class SolanaThread implements Thread {
   }
 
   async send(command: SendMessageCommand): Promise<void> {
-    const encryptionKeys = await this.encryptionKeysProvider.getFailFast();
-    const encryptionProps = getEncryptionProps(
-      this.me.publicKey,
-      encryptionKeys,
+    const encryptionProps = await getEncryptionPropsForMutation(
+      this.encryptionEnabled,
+      this.encryptionKeysProvider,
+      this.walletAdapter,
     );
     await withErrorParsing(
       sendMessage(
@@ -260,18 +257,6 @@ function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
   return dialect.members.find((it) => !it.publicKey.equals(memberPk)) ?? null;
 }
 
-function getEncryptionProps(
-  me: PublicKey,
-  encryptionKeys: DiffeHellmanKeys | null,
-) {
-  return (
-    encryptionKeys && {
-      ed25519PublicKey: me.toBytes(),
-      diffieHellmanKeyPair: encryptionKeys,
-    }
-  );
-}
-
 async function toSolanaThread(
   dialectAccount: DialectAccount,
   walletAdapter: DialectWalletAdapterWrapper,
@@ -309,5 +294,28 @@ async function toSolanaThread(
     walletAdapter,
     encryptionKeysProvider,
     dialectAccount,
+  );
+}
+
+async function getEncryptionPropsForMutation(
+  isThreadEncrypted: boolean,
+  encryptionKeysProvider: EncryptionKeysProvider,
+  walletAdapter: DialectWalletAdapterWrapper,
+) {
+  const encryptionKeys = isThreadEncrypted
+    ? await encryptionKeysProvider.getFailFast()
+    : null;
+  return getEncryptionProps(walletAdapter.publicKey, encryptionKeys);
+}
+
+function getEncryptionProps(
+  me: PublicKey,
+  encryptionKeys: DiffeHellmanKeys | null,
+) {
+  return (
+    encryptionKeys && {
+      ed25519PublicKey: me.toBytes(),
+      diffieHellmanKeyPair: encryptionKeys,
+    }
   );
 }
