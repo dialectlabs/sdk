@@ -6,7 +6,7 @@ import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adap
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import { DataServiceApi } from '@data-service-api/data-service-api';
 import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
-import type { Wallet } from '@wallet/wallet.interface';
+import type { Wallets } from '@wallet/wallet.interface';
 import { AddressType } from '@address/addresses.interface';
 
 describe('Data service wallet api (e2e)', () => {
@@ -14,7 +14,7 @@ describe('Data service wallet api (e2e)', () => {
 
   describe('Addresses', () => {
     let walletAdapter: DialectWalletAdapterWrapper;
-    let wallet: Wallet;
+    let wallet: Wallets;
     let dapps: DataServiceDappsApi;
     let dappPublicKey: PublicKey;
 

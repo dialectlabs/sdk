@@ -2,7 +2,7 @@ import type {
   CreateAddressCommand,
   DeleteAddressCommand,
   FindWalletDappAddressQuery,
-  Wallet,
+  Wallets,
   WalletAddresses,
 } from '@wallet/wallet.interface';
 import type { PublicKey } from '@solana/web3.js';
@@ -16,7 +16,7 @@ import type {
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import { IllegalArgumentError } from '@sdk/errors';
 
-export class DataServiceWallet implements Wallet {
+export class DataServiceWallet implements Wallets {
   addresses: WalletAddresses;
 
   constructor(

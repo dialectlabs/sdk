@@ -5,7 +5,7 @@ import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
 import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
-import type { Wallet } from '@wallet/wallet.interface';
+import type { Wallets } from '@wallet/wallet.interface';
 import { AddressType } from '@address/addresses.interface';
 import { DappsImpl } from '@dapp/internal/dapp';
 import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
@@ -16,7 +16,7 @@ describe('Data service dapps api (e2e)', () => {
 
   describe('Addresses', () => {
     let walletAdapter: DialectWalletAdapterWrapper;
-    let wallet: Wallet;
+    let wallet: Wallets;
     let dapps: Dapps;
     let dappPublicKey: PublicKey;
 

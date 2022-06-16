@@ -2,7 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
 import type { AddressType } from '@address/addresses.interface';
 
-export interface Wallet {
+export interface Wallets {
   publicKey: PublicKey;
   addresses: WalletAddresses;
 }

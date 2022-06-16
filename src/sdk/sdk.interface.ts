@@ -9,7 +9,7 @@ import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
-import type { Wallet } from '@wallet/wallet.interface';
+import type { Wallets } from '@wallet/wallet.interface';
 
 export abstract class Dialect {
   static sdk(config: Config): DialectSdk {
@@ -21,7 +21,7 @@ export interface DialectSdk {
   readonly info: DialectSdkInfo;
   readonly threads: Messaging;
   readonly dapps: Dapps;
-  readonly wallet: Wallet;
+  readonly wallet: Wallets;
 }
 
 export interface DialectSdkInfo {

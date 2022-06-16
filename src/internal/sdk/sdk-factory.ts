@@ -37,7 +37,7 @@ import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addre
 import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import type { Wallet } from '@wallet/wallet.interface';
+import type { Wallets } from '@wallet/wallet.interface';
 import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
 
 interface InternalConfig extends Config {
@@ -66,7 +66,7 @@ export class InternalDialectSdk implements DialectSdk {
     readonly info: DialectSdkInfo,
     readonly threads: Messaging,
     readonly dapps: Dapps,
-    readonly wallet: Wallet,
+    readonly wallet: Wallets,
   ) {}
 }
 
