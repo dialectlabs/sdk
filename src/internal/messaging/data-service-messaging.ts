@@ -197,7 +197,7 @@ export class DataServiceThread implements Thread {
     readonly address: PublicKey,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
-    readonly otherMember: ThreadMember,
+    private readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,

@@ -7,12 +7,14 @@ import type {
 } from '@wallet/wallet.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
-import { toAddressType } from '@address/addresses.interface';
+import { AddressType, toAddressType } from '@address/addresses.interface';
 import type {
+  AddressTypeV0,
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from '@data-service-api/data-service-wallets-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
+import { IllegalArgumentError } from '@sdk/errors';
 
 export class DataServiceWallet implements Wallet {
   addresses: WalletAddresses;
@@ -39,6 +41,7 @@ export class DataServiceWalletAddresses implements WalletAddresses {
       this.dataServiceWalletsApi.createDappAddress(
         {
           ...command,
+          type: DataServiceWalletAddresses.toAddressType(command.type),
         },
         command.dappPublicKey.toBase58(),
       ),
@@ -78,5 +81,19 @@ export class DataServiceWalletAddresses implements WalletAddresses {
       ),
     );
     return dappAddressDtos.map((it) => this.toDappAddress(it));
+  }
+
+  private static toAddressType(type: AddressType): AddressTypeV0 {
+    switch (type) {
+      case AddressType.Email:
+        return 'email';
+      case AddressType.PhoneNumber:
+        return 'sms';
+      case AddressType.Telegram:
+        return 'telegram';
+      case AddressType.Wallet:
+        return 'wallet';
+    }
+    throw new IllegalArgumentError(`Unknown address type ${type}`);
   }
 }

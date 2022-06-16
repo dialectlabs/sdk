@@ -1,5 +1,6 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
+import type { AddressType } from '@address/addresses.interface';
 
 export interface Wallet {
   publicKey: PublicKey;
@@ -8,12 +9,14 @@ export interface Wallet {
 
 export interface WalletAddresses {
   create(command: CreateAddressCommand): Promise<DappAddress>;
+
   delete(command: DeleteAddressCommand): Promise<void>;
+
   findAll(command: FindWalletDappAddressQuery): Promise<DappAddress[]>;
 }
 
 export interface CreateAddressCommand {
-  type: string;
+  type: AddressType;
   value: string;
   enabled: boolean;
   dappPublicKey: PublicKey;

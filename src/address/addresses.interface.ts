@@ -1,6 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
 import { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
-import { IllegalStateError } from '@sdk/errors';
+import { IllegalArgumentError } from '@sdk/errors';
+import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api';
 
 export interface Address {
   id: string;
@@ -29,7 +30,7 @@ export interface DappAddress {
 }
 
 export function toAddressType(
-  addressTypeDto: AddressTypeDto | string,
+  addressTypeDto: AddressTypeDto | AddressTypeV0,
 ): AddressType {
   if (addressTypeDto === 'email' || addressTypeDto === AddressTypeDto.Email) {
     return AddressType.Email;
@@ -46,5 +47,5 @@ export function toAddressType(
   ) {
     return AddressType.Telegram;
   }
-  throw new IllegalStateError(`Unknown address type ${addressTypeDto}`);
+  throw new IllegalArgumentError(`Unknown address type ${addressTypeDto}`);
 }

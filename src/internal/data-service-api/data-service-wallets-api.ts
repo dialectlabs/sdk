@@ -5,6 +5,8 @@ import {
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
 
+export type AddressTypeV0 = 'email' | 'sms' | 'telegram' | 'wallet';
+
 export interface CreateAddressCommandV0 {
   type: string;
   value: string;
@@ -17,7 +19,7 @@ export interface DeleteAddressCommandV0 {
 
 export interface DappAddressDtoV0 {
   id: string;
-  type: string;
+  type: AddressTypeV0;
   verified: boolean;
   addressId: string;
   dapp: string;
