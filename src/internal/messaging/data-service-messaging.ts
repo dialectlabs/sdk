@@ -18,13 +18,6 @@ import {
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
 import {
-  DataServiceApiClientError,
-  DataServiceDialectsApi,
-  DialectAccountDto,
-  DialectDto,
-  MemberScopeDto,
-} from '@data-service-api/data-service-api';
-import {
   IllegalStateError,
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
