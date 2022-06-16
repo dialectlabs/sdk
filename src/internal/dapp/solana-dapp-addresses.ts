@@ -4,15 +4,17 @@ import { DialectAccount, findDialects } from '@dialectlabs/web3';
 import type { DappAddress } from '@address/addresses.interface';
 import { AddressType } from '@address/addresses.interface';
 import type { DappAddresses } from '@dapp/dapp.interface';
+import { withErrorParsing } from '@data-service-api/data-service-errors';
 
 export class SolanaDappAddresses implements DappAddresses {
   constructor(private readonly program: Program) {}
 
-  // TODO: wrap errors
   async findAll(): Promise<DappAddress[]> {
-    const dialectAccounts = await findDialects(this.program, {
-      userPk: this.program.provider.wallet.publicKey,
-    });
+    const dialectAccounts = await withErrorParsing(
+      findDialects(this.program, {
+        userPk: this.program.provider.wallet.publicKey,
+      }),
+    );
     return dialectAccounts.map((it) => {
       const dialectMember = this.extractDialectMember(it);
       const dapp: DappAddress = {
