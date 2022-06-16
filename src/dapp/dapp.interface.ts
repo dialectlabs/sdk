@@ -2,9 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
-  // create(command: CreateDappCommand): Promise<Dapp>;
-  //
-  // remove(command: DeleteDappCommand): Promise<void>;
+  create(command: CreateDappCommand): Promise<Dapp>;
   find(query?: FindDappQuery): Promise<Dapp>;
 }
 
@@ -20,6 +18,10 @@ export interface DappAddresses {
 }
 
 export interface FindDappQuery {
+  publicKey: PublicKey;
+}
+
+export interface CreateDappCommand {
   publicKey: PublicKey;
 }
 
@@ -39,13 +41,6 @@ export interface FindDappQuery {
 //
 
 //
-
-//
-// export interface CreateDappCommand {
-//   publicKey: PublicKey;
-//   telegramBotToken?: string;
-//   twilioApiKey?: string;
-// }
 //
 // export interface DeleteDappCommand {
 //   publicKey: PublicKey;

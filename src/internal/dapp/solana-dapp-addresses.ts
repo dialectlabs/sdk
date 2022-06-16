@@ -8,6 +8,7 @@ import type { DappAddresses } from '@dapp/dapp.interface';
 export class SolanaDappAddresses implements DappAddresses {
   constructor(private readonly program: Program) {}
 
+  // TODO: wrap errors
   async findAll(): Promise<DappAddress[]> {
     const dialectAccounts = await findDialects(this.program, {
       userPk: this.program.provider.wallet.publicKey,
