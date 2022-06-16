@@ -261,7 +261,7 @@ Solana settings:
     let internalConfig: InternalSolanaConfig = {
       network: 'mainnet-beta',
       dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-      rpcUrl: programs.mainnet.programAddress,
+      rpcUrl: programs.mainnet.clusterAddress,
     };
     const environment = this.config.environment;
     if (environment === 'production') {
