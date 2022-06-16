@@ -522,6 +522,7 @@ describe('Data service api (e2e)', () => {
         enabled: true,
         dapp: dapp.publicKey,
         verified: true,
+        value: wallet.publicKey.toBase58(),
       };
       expect(dappAddressDtoV0).toMatchObject(expected);
     });
@@ -547,6 +548,7 @@ describe('Data service api (e2e)', () => {
         enabled: true,
         dapp: dapp.publicKey,
         verified: true,
+        value: wallet.publicKey.toBase58(),
       };
       expect(dappAddressDtoV0s).toMatchObject([expected]);
     });

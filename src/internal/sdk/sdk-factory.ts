@@ -37,6 +37,8 @@ import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addre
 import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import type { Wallet } from '@wallet/wallet.interface';
+import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
 
 interface InternalConfig extends Config {
   environment: Environment;
@@ -64,6 +66,7 @@ export class InternalDialectSdk implements DialectSdk {
     readonly info: DialectSdkInfo,
     readonly threads: Messaging,
     readonly dapps: Dapps,
+    readonly wallet: Wallet,
   ) {}
 }
 
@@ -102,6 +105,10 @@ export class DialectSdkFactory {
       dialectProgram,
       dataServiceApi.dapps,
     );
+    const wallet = new DataServiceWallet(
+      config.wallet.publicKey,
+      dataServiceApi.walletsV0,
+    );
     return new InternalDialectSdk(
       {
         apiAvailability: config.wallet,
@@ -113,6 +120,7 @@ export class DialectSdkFactory {
       },
       messaging,
       dapps,
+      wallet,
     );
   }
 

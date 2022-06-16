@@ -1,10 +1,9 @@
-import type { DappAddress, DappAddresses } from '@dapp/dapp.interface';
-import { AddressType } from '@dapp/dapp.interface';
+import type { DappAddresses } from '@dapp/dapp.interface';
+
 import { PublicKey } from '@solana/web3.js';
-import { IllegalStateError } from '@sdk/errors';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
+import { DappAddress, toAddressType } from '@address/addresses.interface';
 
 export class DataServiceDappAddresses implements DappAddresses {
   constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}
@@ -15,10 +14,12 @@ export class DataServiceDappAddresses implements DappAddresses {
     );
     return dappAddressesDtos.map((it) => {
       const dapp: DappAddress = {
+        id: it.id,
         enabled: it.enabled,
         telegramChatId: it.telegramChatId,
         address: {
-          type: DataServiceDappAddresses.toAddressType(it.address.type),
+          id: it.id,
+          type: toAddressType(it.address.type),
           value: it.address.value,
           verified: it.address.verified,
           wallet: {
@@ -28,20 +29,5 @@ export class DataServiceDappAddresses implements DappAddresses {
       };
       return dapp;
     });
-  }
-
-  private static toAddressType(addressTypeDto: AddressTypeDto): AddressType {
-    switch (addressTypeDto) {
-      case AddressTypeDto.Email:
-        return AddressType.Email;
-      case AddressTypeDto.Wallet:
-        return AddressType.Wallet;
-      case AddressTypeDto.Sms:
-        return AddressType.PhoneNumber;
-      case AddressTypeDto.Telegram:
-        return AddressType.Telegram;
-      default:
-        throw new IllegalStateError('Should not happen');
-    }
   }
 }

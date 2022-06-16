@@ -1,8 +1,9 @@
-import type { DappAddress, DappAddresses } from '@dapp/dapp.interface';
-import { AddressType } from '@dapp/dapp.interface';
+import type { DappAddresses } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '@sdk/errors';
 import { groupBy } from '@utils/internal/collection-utils';
+import type { DappAddress } from '@address/addresses.interface';
+import { AddressType } from '@address/addresses.interface';
 
 export class DappAddressesFacade implements DappAddresses {
   constructor(private readonly dappAddressesBackends: DappAddresses[]) {
@@ -52,11 +53,13 @@ export class DappAddressesFacade implements DappAddresses {
       walletPublicKeyToWalletAddresses,
     ).map(([walletPublicKey, walletDappAddresses]) =>
       walletDappAddresses.reduce((prev, curr) => ({
-        enabled: prev.enabled || curr.enabled,
+        id: prev.id,
+        enabled: prev.enabled && curr.enabled,
         address: {
+          id: prev.id,
           value: walletPublicKey,
           verified: true,
-          type: curr.address.type,
+          type: prev.address.type,
           wallet: {
             publicKey: new PublicKey(walletPublicKey),
           },

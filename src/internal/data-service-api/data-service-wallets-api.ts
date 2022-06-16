@@ -22,6 +22,7 @@ export interface DappAddressDtoV0 {
   addressId: string;
   dapp: string;
   enabled: boolean;
+  value: string;
 }
 
 export interface DataServiceWalletsApiV0 {
@@ -32,7 +33,7 @@ export interface DataServiceWalletsApiV0 {
 
   deleteDappAddress(command: DeleteAddressCommandV0): Promise<void>;
 
-  findAllDappAddresses(dapp: string): Promise<DappAddressDtoV0[]>;
+  findAllDappAddresses(dappPublicKey: string): Promise<DappAddressDtoV0[]>;
 }
 
 export class DataServiceWalletsApiClientV0 implements DataServiceWalletsApiV0 {

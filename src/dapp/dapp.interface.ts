@@ -1,4 +1,5 @@
 import type { PublicKey } from '@solana/web3.js';
+import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
   // create(command: CreateDappCommand): Promise<Dapp>;
@@ -16,30 +17,6 @@ export interface Dapp {
 
 export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
-}
-
-export interface DappAddress {
-  enabled: boolean;
-  telegramChatId?: string;
-  address: Address;
-}
-
-export interface Address {
-  type: AddressType;
-  verified: boolean;
-  value: string;
-  wallet: Wallet;
-}
-
-export interface Wallet {
-  publicKey: PublicKey;
-}
-
-export enum AddressType {
-  Email = 'EMAIL',
-  PhoneNumber = 'SMS',
-  Telegram = 'TELEGRAM',
-  Wallet = 'WALLET',
 }
 
 export interface FindDappQuery {
