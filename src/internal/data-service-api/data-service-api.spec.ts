@@ -207,11 +207,10 @@ describe('Data service api (e2e)', () => {
       const { dialect, publicKey } = await wallet1Api.create(command);
       // then
       expect(publicKey).not.toBeNull();
-      const expectedDialect: DialectDto = {
+      const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
         messages: [],
         members: command.members,
         encrypted: command.encrypted,
-        lastMessageTimestamp: 0,
         nextMessageIdx: 0,
       };
       expect(dialect).toMatchObject(expectedDialect);
@@ -304,24 +303,26 @@ describe('Data service api (e2e)', () => {
         dialectAccountDto2.publicKey,
       );
       const actualDialects = new Set(
-        dialectAccountDtos.map((it) => it.dialect),
+        dialectAccountDtos.map((it) => ({
+          ...it.dialect,
+          lastMessageTimestamp: undefined,
+        })),
       );
-      const expectedDialects: Set<DialectDto> = new Set([
-        {
-          messages: [],
-          members: createDialect1Command.members,
-          encrypted: createDialect1Command.encrypted,
-          lastMessageTimestamp: 0,
-          nextMessageIdx: 0,
-        },
-        {
-          messages: [],
-          members: createDialect2Command.members,
-          encrypted: createDialect2Command.encrypted,
-          lastMessageTimestamp: 0,
-          nextMessageIdx: 0,
-        },
-      ]);
+      const expectedDialects: Set<Omit<DialectDto, 'lastMessageTimestamp'>> =
+        new Set([
+          {
+            messages: [],
+            members: createDialect1Command.members,
+            encrypted: createDialect1Command.encrypted,
+            nextMessageIdx: 0,
+          },
+          {
+            messages: [],
+            members: createDialect2Command.members,
+            encrypted: createDialect2Command.encrypted,
+            nextMessageIdx: 0,
+          },
+        ]);
       expect(actualDialects).toMatchObject(expectedDialects);
     });
 
@@ -354,7 +355,6 @@ describe('Data service api (e2e)', () => {
         messages: [],
         members: createDialectCommand.members,
         encrypted: createDialectCommand.encrypted,
-        lastMessageTimestamp: 0,
         nextMessageIdx: 0,
       });
     });
@@ -392,7 +392,6 @@ describe('Data service api (e2e)', () => {
         messages: [],
         members: createDialectCommand.members,
         encrypted: createDialectCommand.encrypted,
-        lastMessageTimestamp: 0,
         nextMessageIdx: 0,
       });
     });
@@ -449,7 +448,6 @@ describe('Data service api (e2e)', () => {
         ]),
       );
       console.log(dialectAccountDto);
-      expect(actualDialect.lastMessageTimestamp).toBe(0);
     });
   });
 
