@@ -16,7 +16,6 @@ import {
   DataServiceApi,
   DataServiceDappsApi,
   DataServiceDialectsApi,
-  DataServiceDialectsApiClient,
 } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
@@ -27,7 +26,6 @@ import type { Messaging } from '@messaging/messaging.interface';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { IllegalArgumentError } from '@sdk/errors';
@@ -37,6 +35,7 @@ import { DappsImpl } from '@dapp/internal/dapp';
 import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
 import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
 import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
+import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 
 interface InternalConfig extends Config {
   environment: Environment;
@@ -73,13 +72,15 @@ export class DialectSdkFactory {
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
     DialectSdkFactory.logConfiguration(config);
-    const encryptionKeysProvider =
-      new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
 
     const dialectProgram: Program = createDialectProgram(
       config.wallet,
       config.solana.dialectProgramAddress,
       config.solana.rpcUrl,
+    );
+    const encryptionKeysProvider = EncryptionKeysProvider.create(
+      config.wallet,
+      config.encryptionKeysStore,
     );
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
       config.dialectCloud.url,
@@ -135,7 +136,7 @@ Solana settings:
 
   private createMessaging(
     config: InternalConfig,
-    encryptionKeysProvider: DialectWalletAdapterEncryptionKeysProvider,
+    encryptionKeysProvider: EncryptionKeysProvider,
     program: Program,
     dataServiceDialectsApi: DataServiceDialectsApi,
   ) {
@@ -144,24 +145,13 @@ Solana settings:
         case Backend.Solana:
           return new SolanaMessaging(
             config.wallet,
-            createDialectProgram(
-              config.wallet,
-              config.solana.dialectProgramAddress,
-              config.solana.rpcUrl,
-            ),
+            program,
             encryptionKeysProvider,
           );
         case Backend.DialectCloud:
           return new DataServiceMessaging(
             config.wallet.publicKey,
-            new DataServiceDialectsApiClient(
-              config.dialectCloud.url,
-              TokenProvider.create(
-                new DialectWalletAdapterEd25519TokenSigner(config.wallet),
-                Duration.fromObject({ minutes: 60 }),
-                config.dialectCloud.tokenStore,
-              ),
-            ),
+            dataServiceDialectsApi,
             encryptionKeysProvider,
           );
         default:
