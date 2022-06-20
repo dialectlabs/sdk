@@ -38,7 +38,7 @@ import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import type { Wallets } from '@wallet/wallet.interface';
-import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
+import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
 
 interface InternalConfig extends Config {
   environment: Environment;
@@ -105,9 +105,10 @@ export class DialectSdkFactory {
       dialectProgram,
       dataServiceApi.dapps,
     );
-    const wallet = new DataServiceWallet(
+    const wallet = new DataServiceWallets(
       config.wallet.publicKey,
-      dataServiceApi.walletsV0,
+      dataServiceApi.walletAddresses,
+      dataServiceApi.walletDappAddresses,
     );
     return new InternalDialectSdk(
       {

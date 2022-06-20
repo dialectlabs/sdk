@@ -19,7 +19,6 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
 
   async create(command: CreateDappCommandDto): Promise<DappDto> {
     const token = await this.tokenProvider.get();
-
     return withReThrowingDataServiceError(
       axios
         .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, command, {

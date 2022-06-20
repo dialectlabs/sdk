@@ -1,7 +1,7 @@
-import type { PublicKey } from '@solana/web3.js';
 import { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
 import { IllegalArgumentError } from '@sdk/errors';
 import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api.v0';
+import type { Wallet } from '@wallet/wallet.interface';
 
 export interface Address {
   id: string;
@@ -11,22 +11,11 @@ export interface Address {
   wallet: Wallet;
 }
 
-export interface Wallet {
-  publicKey: PublicKey;
-}
-
 export enum AddressType {
   Email = 'EMAIL',
   PhoneNumber = 'PHONE_NUMBER',
   Telegram = 'TELEGRAM',
   Wallet = 'WALLET',
-}
-
-export interface DappAddress {
-  id: string;
-  enabled: boolean;
-  telegramChatId?: string | null;
-  address: Address;
 }
 
 export function toAddressType(
@@ -48,4 +37,11 @@ export function toAddressType(
     return AddressType.Telegram;
   }
   throw new IllegalArgumentError(`Unknown address type ${addressTypeDto}`);
+}
+
+export interface DappAddress {
+  id: string;
+  enabled: boolean;
+  telegramChatId?: string | null;
+  address: Address;
 }

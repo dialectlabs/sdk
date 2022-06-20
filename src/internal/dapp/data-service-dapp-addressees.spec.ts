@@ -4,7 +4,7 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
-import { DataServiceWallet } from '@wallet/internal/data-service-wallet';
+import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
 import type { Wallets } from '@wallet/wallet.interface';
 import { AddressType } from '@address/addresses.interface';
 import { DappsImpl } from '@dapp/internal/dapp';
@@ -24,7 +24,7 @@ describe('Data service dapps api (e2e)', () => {
       walletAdapter = new DialectWalletAdapterWrapper(
         NodeDialectWalletAdapter.create(),
       );
-      wallet = new DataServiceWallet(
+      wallet = new DataServiceWallets(
         walletAdapter.publicKey,
         DataServiceApi.create(
           baseUrl,

@@ -12,12 +12,22 @@ import {
   DataServiceWalletsApiV0,
 } from '@data-service-api/data-service-wallets-api.v0';
 import { nanoid } from 'nanoid';
+import {
+  DataServiceWalletAddressesApi,
+  DataServiceWalletAddressesApiClient,
+} from '@data-service-api/data-service-wallet-addresses-api';
+import {
+  DataServiceWalletDappAddressesApi,
+  DataServiceWalletDappAddressesApiClient,
+} from '@data-service-api/data-service-wallet-dapp-addresses-api';
 
 export class DataServiceApi {
   private constructor(
     readonly threads: DataServiceDialectsApi,
     readonly dapps: DataServiceDappsApi,
     readonly walletsV0: DataServiceWalletsApiV0,
+    readonly walletAddresses: DataServiceWalletAddressesApi,
+    readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -33,7 +43,21 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
-    return new DataServiceApi(dialectsApi, dappAddressesApi, walletsApiV0);
+    const walletAddressesApi = new DataServiceWalletAddressesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    const walletDappAddressesApi = new DataServiceWalletDappAddressesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    return new DataServiceApi(
+      dialectsApi,
+      dappAddressesApi,
+      walletsApiV0,
+      walletAddressesApi,
+      walletDappAddressesApi,
+    );
   }
 }
 

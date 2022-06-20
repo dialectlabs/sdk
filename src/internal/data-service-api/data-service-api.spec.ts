@@ -480,7 +480,7 @@ describe('Data service api (e2e)', () => {
     });
   });
 
-  describe('Wallet dapp addresses', () => {
+  describe('Wallet dapp addresses v0', () => {
     let wallet: DialectWalletAdapterWrapper;
     let wallets: DataServiceWalletsApiV0;
     let dapps: DataServiceDappsApi;
