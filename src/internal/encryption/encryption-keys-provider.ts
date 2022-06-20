@@ -3,6 +3,7 @@ import {
   EncryptionKeysStore,
   InmemoryEncryptionKeysStore,
 } from './encryption-keys-store';
+import { UnsupportedOperationError } from '@sdk/errors';
 
 export interface DiffeHellmanKeys {
   publicKey: Uint8Array;
@@ -51,23 +52,31 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     super();
   }
 
+  private delegateGetPromise: Promise<DiffeHellmanKeys | null> | null = null;
+
   async getFailSafe(): Promise<DiffeHellmanKeys | null> {
     const existingKeys = this.encryptionKeysStore.get();
-    if (!existingKeys) {
-      const newKeys = await this.delegate.getFailSafe();
-      if (newKeys) {
-        return Promise.resolve(this.encryptionKeysStore.save(newKeys));
-      }
+    if (existingKeys) {
+      this.delegateGetPromise = null;
+      return existingKeys;
     }
-    return existingKeys;
+    if (!this.delegateGetPromise) {
+      this.delegateGetPromise = this.delegate
+        .getFailSafe()
+        .then((it) => it && this.encryptionKeysStore.save(it));
+    }
+    return this.delegateGetPromise;
   }
 
   async getFailFast(): Promise<DiffeHellmanKeys> {
-    const existingKeys = this.encryptionKeysStore.get();
-    if (!existingKeys) {
-      const newKeys = await this.delegate.getFailFast();
-      return Promise.resolve(this.encryptionKeysStore.save(newKeys));
-    }
-    return existingKeys;
+    return this.getFailSafe().then((keys) => {
+      if (!keys) {
+        throw new UnsupportedOperationError(
+          'Encryption not supported',
+          'Wallet does not support encryption, please use wallet-adapter that supports diffieHellman() operation.',
+        );
+      }
+      return keys;
+    });
   }
 }
