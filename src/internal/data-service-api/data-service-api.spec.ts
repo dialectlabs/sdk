@@ -16,7 +16,7 @@ import type {
   CreateAddressCommandV0,
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
-} from '@data-service-api/data-service-wallets-api';
+} from '@data-service-api/data-service-wallets-api.v0';
 
 describe('Data service api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

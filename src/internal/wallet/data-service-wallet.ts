@@ -12,7 +12,7 @@ import type {
   AddressTypeV0,
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
-} from '@data-service-api/data-service-wallets-api';
+} from '@data-service-api/data-service-wallets-api.v0';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import { IllegalArgumentError } from '@sdk/errors';
 

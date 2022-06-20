@@ -1,7 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
 import { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
 import { IllegalArgumentError } from '@sdk/errors';
-import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api';
+import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api.v0';
 
 export interface Address {
   id: string;

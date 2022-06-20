@@ -10,7 +10,7 @@ import type { Token } from '@auth/auth.interface';
 import {
   DataServiceWalletsApiClientV0,
   DataServiceWalletsApiV0,
-} from '@data-service-api/data-service-wallets-api';
+} from '@data-service-api/data-service-wallets-api.v0';
 import { nanoid } from 'nanoid';
 
 export class DataServiceApi {
