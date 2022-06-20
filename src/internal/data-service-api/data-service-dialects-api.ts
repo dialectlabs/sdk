@@ -30,7 +30,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
+        .post<DialectAccountDto>(`${this.baseUrl}/api/v1/dialects`, command, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
@@ -41,7 +41,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
+        .get<DialectAccountDto[]>(`${this.baseUrl}/api/v1/dialects`, {
           headers: createHeaders(token),
           ...(query && { params: query }),
         })
@@ -53,9 +53,12 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: createHeaders(token),
-        })
+        .get<DialectAccountDto>(
+          `${this.baseUrl}/api/v1/dialects/${publicKey}`,
+          {
+            headers: createHeaders(token),
+          },
+        )
         .then((it) => it.data),
     );
   }
@@ -64,7 +67,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
+        .delete<void>(`${this.baseUrl}/api/v1/dialects/${publicKey}`, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
@@ -79,7 +82,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .post<DialectAccountDto>(
-          `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
+          `${this.baseUrl}/api/v1/dialects/${publicKey}/messages`,
           command,
           {
             headers: createHeaders(token),

@@ -22,7 +22,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
 
     return withReThrowingDataServiceError(
       axios
-        .post<DappDto>(`${this.baseUrl}/v0/dapps`, command, {
+        .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, command, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
@@ -34,7 +34,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DappAddressDto[]>(
-          `${this.baseUrl}/v0/dapps/${token.body.sub}/dappAddresses`,
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/dappAddresses`,
           {
             headers: createHeaders(token),
           },
