@@ -23,6 +23,7 @@ export interface CreateThreadCommand {
   me: Omit<ThreadMember, 'publicKey'>;
   otherMembers: ThreadMember[];
   encrypted: boolean;
+  backend?: Backend;
 }
 
 export type FindThreadQuery =
