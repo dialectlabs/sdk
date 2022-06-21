@@ -19,7 +19,10 @@ import {
 } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
-import { MessagingFacade } from '@messaging/internal/messaging-facade';
+import {
+  MessagingBackend,
+  MessagingFacade,
+} from '@messaging/internal/messaging-facade';
 import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import type { Messaging } from '@messaging/messaging.interface';
@@ -140,24 +143,32 @@ Solana settings:
     program: Program,
     dataServiceDialectsApi: DataServiceDialectsApi,
   ) {
-    const messagingBackends: Messaging[] = config.backends.map((backend) => {
-      switch (backend) {
-        case Backend.Solana:
-          return new SolanaMessaging(
-            config.wallet,
-            program,
-            encryptionKeysProvider,
-          );
-        case Backend.DialectCloud:
-          return new DataServiceMessaging(
-            config.wallet.publicKey,
-            dataServiceDialectsApi,
-            encryptionKeysProvider,
-          );
-        default:
-          throw new IllegalArgumentError(`Unknown backend ${backend}`);
-      }
-    });
+    const messagingBackends: MessagingBackend[] = config.backends.map(
+      (backend) => {
+        switch (backend) {
+          case Backend.Solana:
+            return {
+              backend,
+              messaging: new SolanaMessaging(
+                config.wallet,
+                program,
+                encryptionKeysProvider,
+              ),
+            };
+          case Backend.DialectCloud:
+            return {
+              backend,
+              messaging: new DataServiceMessaging(
+                config.wallet.publicKey,
+                dataServiceDialectsApi,
+                encryptionKeysProvider,
+              ),
+            };
+          default:
+            throw new IllegalArgumentError(`Unknown backend ${backend}`);
+        }
+      },
+    );
     return new MessagingFacade(messagingBackends);
   }
 

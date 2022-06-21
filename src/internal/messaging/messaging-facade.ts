@@ -5,9 +5,15 @@ import type {
   Thread,
 } from '@messaging/messaging.interface';
 import { IllegalArgumentError, IllegalStateError } from '@sdk/errors';
+import type { Backend } from '@sdk/sdk.interface';
+
+export interface MessagingBackend {
+  messaging: Messaging;
+  backend: Backend;
+}
 
 export class MessagingFacade implements Messaging {
-  constructor(private readonly messagingBackends: Messaging[]) {
+  constructor(private readonly messagingBackends: MessagingBackend[]) {
     if (messagingBackends.length < 1) {
       throw new IllegalArgumentError(
         'Expected to have at least on messaging backend.',
@@ -16,11 +22,30 @@ export class MessagingFacade implements Messaging {
   }
 
   create(command: CreateThreadCommand): Promise<Thread> {
-    const messaging = this.getPreferableMessaging();
+    const { messaging } = this.getPreferableMessaging(command.backend);
     return messaging.create(command);
   }
 
-  private getPreferableMessaging() {
+  private getPreferableMessaging(backend?: Backend) {
+    if (backend) {
+      return this.lookUpMessagingBackend(backend);
+    }
+    return this.getFirstAccordingToPriority();
+  }
+
+  private lookUpMessagingBackend(backend: Backend) {
+    const messagingBackend = this.messagingBackends.find(
+      ({ backend: b }) => backend === b,
+    );
+    if (!messagingBackend) {
+      throw new IllegalArgumentError(
+        `Backend ${backend} is not configured in sdk.`,
+      );
+    }
+    return messagingBackend;
+  }
+
+  private getFirstAccordingToPriority() {
     const messaging = this.messagingBackends[0];
     if (!messaging) {
       throw new IllegalStateError('Should not happen.');
@@ -29,7 +54,7 @@ export class MessagingFacade implements Messaging {
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
-    for (const messaging of this.messagingBackends) {
+    for (const { messaging } of this.messagingBackends) {
       const thread = await messaging.find(query);
       if (thread) {
         return thread;
@@ -40,7 +65,7 @@ export class MessagingFacade implements Messaging {
 
   async findAll(): Promise<Thread[]> {
     const allSettled = await Promise.allSettled(
-      this.messagingBackends.map((it) => it.findAll()),
+      this.messagingBackends.map(({ messaging }) => messaging.findAll()),
     );
     const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
     const rejected = allSettled.filter((it) => it.status === 'rejected');
