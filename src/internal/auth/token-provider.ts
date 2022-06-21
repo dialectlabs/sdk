@@ -39,7 +39,6 @@ class DefaultTokenProvider extends TokenProvider {
   }
 
   get(): Promise<Token> {
-    console.log('aaa');
     return this.tokenUtils.generate(this.signer, this.ttl);
   }
 }
