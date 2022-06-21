@@ -1,17 +1,14 @@
-import type {
-  CreateDappCommand,
-  Dapp,
-  DappAddresses,
-  Dapps,
-} from '@dapp/dapp.interface';
+import type { Dapp, DappAddresses, Dapps } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 import { ResourceNotFoundError } from '@sdk/errors';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 export class DappsImpl implements Dapps {
   constructor(
+    private readonly wallet: DialectWalletAdapterWrapper,
     private readonly dappAddresses: DappAddresses,
     private readonly dappsApi: DataServiceDappsApi,
   ) {}
@@ -27,13 +24,9 @@ export class DappsImpl implements Dapps {
     }
   }
 
-  async create(command: CreateDappCommand): Promise<Dapp> {
-    await withErrorParsing(
-      this.dappsApi.create({
-        publicKey: command.publicKey.toBase58(),
-      }),
-    );
-    return new DappImpl(command.publicKey, this.dappAddresses);
+  async create(/*command: CreateDappCommand*/): Promise<Dapp> {
+    await withErrorParsing(this.dappsApi.create());
+    return new DappImpl(this.wallet.publicKey, this.dappAddresses);
   }
 }
 

@@ -3,7 +3,10 @@ import { TokenProvider } from '@auth/internal/token-provider';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import type {
+  DappDto,
+  DataServiceDappsApi,
+} from '@data-service-api/data-service-dapps-api';
 import type {
   CreateAddressCommandV0,
   DappAddressDtoV0,
@@ -30,22 +33,21 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can create dapp and find all dappAddresses', async () => {
     // when
-    const dappPublicKey = dappWallet.publicKey.toBase58();
-    await dappsApi.create({
-      publicKey: dappPublicKey,
-    });
+    const created = await dappsApi.create();
     const addresses = await dappsApi.findAllDappAddresses();
     // then
+    const dappDtoExpected: DappDto = {
+      id: expect.any(String),
+      publicKey: dappWallet.publicKey.toBase58(),
+    };
+    expect(created).toMatchObject(dappDtoExpected);
     expect(addresses).toMatchObject([]);
   });
 
   test('can find dapp', async () => {
     // given
-    const dappPublicKey = dappWallet.publicKey.toBase58();
     await expect(dappsApi.find()).rejects.toBeTruthy();
-    const created = await dappsApi.create({
-      publicKey: dappPublicKey,
-    });
+    const created = await dappsApi.create();
     // when
     const found = await dappsApi.find();
     // then
@@ -73,9 +75,7 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can create dapp address', async () => {
       // given
-      const dapp = await dapps.create({
-        publicKey: wallet.publicKey.toBase58(),
-      });
+      const dapp = await dapps.create();
       // when
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
@@ -99,9 +99,7 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can find dapp address', async () => {
       // given
-      const dapp = await dapps.create({
-        publicKey: wallet.publicKey.toBase58(),
-      });
+      const dapp = await dapps.create();
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
@@ -124,9 +122,7 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can delete dapp address', async () => {
       // given
-      const dapp = await dapps.create({
-        publicKey: wallet.publicKey.toBase58(),
-      });
+      const dapp = await dapps.create();
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,

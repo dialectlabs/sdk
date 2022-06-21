@@ -2,7 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
-  create(command: CreateDappCommand): Promise<Dapp>;
+  create(/*command: CreateDappCommand*/): Promise<Dapp>;
   find(): Promise<Dapp | null>;
 }
 

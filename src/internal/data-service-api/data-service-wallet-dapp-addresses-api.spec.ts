@@ -44,9 +44,7 @@ describe('Data service wallet addresses api (e2e)', () => {
         new DialectWalletAdapterEd25519TokenSigner(dappWallet),
       ),
     ).dapps;
-    dappDto = await dappApi.create({
-      publicKey: dappWallet.publicKey.toBase58(),
-    });
+    dappDto = await dappApi.create();
     walletAddress = await walletDataServiceApi.walletAddresses.create({
       type: AddressTypeDto.Wallet,
       value: wallet.publicKey.toBase58(),

@@ -6,7 +6,7 @@ import {
 } from '@data-service-api/data-service-api';
 
 export interface DataServiceDappsApi {
-  create(command: CreateDappCommandDto): Promise<DappDto>;
+  create(/*command: CreateDappCommandDto*/): Promise<DappDto>;
 
   find(): Promise<DappDto>;
 
@@ -19,8 +19,11 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async create(command: CreateDappCommandDto): Promise<DappDto> {
+  async create(): Promise<DappDto> {
     const token = await this.tokenProvider.get();
+    const command: CreateDappCommandDto = {
+      publicKey: token.body.sub,
+    };
     return withReThrowingDataServiceError(
       axios
         .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, command, {

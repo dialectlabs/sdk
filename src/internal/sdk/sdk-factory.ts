@@ -196,7 +196,11 @@ Solana settings:
       },
     );
     const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
-    return new DappsImpl(dappAddressesFacade, dataServiceDappsApi);
+    return new DappsImpl(
+      config.wallet,
+      dappAddressesFacade,
+      dataServiceDappsApi,
+    );
   }
 
   private initializeConfig(): InternalConfig {
