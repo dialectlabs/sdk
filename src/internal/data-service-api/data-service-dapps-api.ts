@@ -55,7 +55,7 @@ export class CreateDappCommandDto {
 export class DappAddressDto {
   readonly id!: string;
   readonly enabled!: boolean;
-  readonly telegramChatId?: string;
+  readonly channelId?: string;
   readonly address!: AddressDto;
 }
 

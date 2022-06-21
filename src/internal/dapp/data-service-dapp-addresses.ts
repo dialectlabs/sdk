@@ -16,7 +16,7 @@ export class DataServiceDappAddresses implements DappAddresses {
       const dapp: DappAddress = {
         id: it.id,
         enabled: it.enabled,
-        telegramChatId: it.telegramChatId,
+        telegramChatId: it.channelId,
         address: {
           id: it.id,
           type: toAddressType(it.address.type),
