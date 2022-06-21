@@ -101,12 +101,11 @@ describe('Data service dapps api (e2e)', () => {
         dapp.publicKey,
       );
       // then
-      const expected: Omit<DappAddressDtoV0, 'addressId' | 'id'> = {
+      const expected: Omit<DappAddressDtoV0, 'addressId' | 'id' | 'value'> = {
         type: 'wallet',
         enabled: true,
         dapp: dapp.publicKey,
         verified: true,
-        value: wallet.publicKey.toBase58(),
       };
       expect(dappAddressDtoV0s).toMatchObject([expected]);
     });

@@ -2,7 +2,10 @@ import type { DappAddresses } from '@dapp/dapp.interface';
 
 import { PublicKey } from '@solana/web3.js';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import type {
+  DappAddressDto,
+  DataServiceDappsApi,
+} from '@data-service-api/data-service-dapps-api';
 import { DappAddress, toAddressType } from '@address/addresses.interface';
 
 export class DataServiceDappAddresses implements DappAddresses {
@@ -12,22 +15,24 @@ export class DataServiceDappAddresses implements DappAddresses {
     const dappAddressesDtos = await withErrorParsing(
       this.dataServiceDappsApi.findAllDappAddresses(),
     );
-    return dappAddressesDtos.map((it) => {
-      const dapp: DappAddress = {
-        id: it.id,
-        enabled: it.enabled,
-        telegramChatId: it.channelId,
-        address: {
-          id: it.id,
-          type: toAddressType(it.address.type),
-          value: it.address.value,
-          verified: it.address.verified,
-          wallet: {
-            publicKey: new PublicKey(it.address.wallet.publicKey),
-          },
-        },
-      };
-      return dapp;
-    });
+    return dappAddressesDtos.map((it) => toDappAddress(it));
   }
+}
+
+function toDappAddress(dto: DappAddressDto) {
+  const dapp: DappAddress = {
+    id: dto.id,
+    enabled: dto.enabled,
+    telegramChatId: dto.channelId,
+    address: {
+      id: dto.id,
+      type: toAddressType(dto.address.type),
+      value: dto.address.value,
+      verified: dto.address.verified,
+      wallet: {
+        publicKey: new PublicKey(dto.address.wallet.publicKey),
+      },
+    },
+  };
+  return dapp;
 }

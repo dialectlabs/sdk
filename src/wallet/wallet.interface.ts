@@ -6,13 +6,13 @@ import type {
 } from '@address/addresses.interface';
 
 export interface Wallets {
-  publicKey: PublicKey;
-  addresses: WalletAddresses;
-  dappAddresses: WalletDappAddresses;
+  readonly publicKey: PublicKey;
+  readonly addresses: WalletAddresses;
+  readonly dappAddresses: WalletDappAddresses;
 }
 
 export interface Wallet {
-  publicKey: PublicKey;
+  readonly publicKey: PublicKey;
 }
 
 export interface WalletAddresses {
@@ -37,6 +37,7 @@ export interface CreateAddressCommand {
 }
 
 export interface PartialUpdateAddressCommand {
+  readonly addressId: string;
   readonly value?: string;
 }
 
@@ -76,11 +77,12 @@ export interface CreateDappAddressCommand {
 }
 
 export interface PartialUpdateDappAddressCommand {
+  readonly dappAddressId: string;
   readonly enabled?: boolean;
 }
 
 export interface FindDappAddressQuery {
-  dappAddressId: string;
+  readonly dappAddressId: string;
 }
 
 export interface FindDappAddressesQuery {
@@ -89,5 +91,5 @@ export interface FindDappAddressesQuery {
 }
 
 export interface DeleteDappAddressCommand {
-  dappAddressId: string;
+  readonly dappAddressId: string;
 }

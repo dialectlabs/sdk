@@ -6,6 +6,7 @@ import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import type {
   CreateDappAddressCommandDto,
   DataServiceWalletDappAddressesApi,
+  PartialUpdateDappAddressCommandDto,
 } from '@data-service-api/data-service-wallet-dapp-addresses-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import {
@@ -14,7 +15,6 @@ import {
   DappAddressDto,
   DappDto,
 } from '@data-service-api/data-service-dapps-api';
-import type { PartialUpdateDappAddressCommand } from '@wallet/wallet.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -134,7 +134,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       createDappAddressCommand,
     );
     // when
-    const patchCommand: PartialUpdateDappAddressCommand = {
+    const patchCommand: PartialUpdateDappAddressCommandDto = {
       enabled: false,
     };
     const patched = await walletDappAddressesApi.patch(

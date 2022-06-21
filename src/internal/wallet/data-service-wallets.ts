@@ -14,13 +14,18 @@ import type {
   WalletDappAddresses,
   Wallets,
 } from '@wallet/wallet.interface';
-import type { PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import type { Address, DappAddress } from '@address/addresses.interface';
-import { AddressType } from '@address/addresses.interface';
-import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api.v0';
-import { IllegalArgumentError, UnsupportedOperationError } from '@sdk/errors';
+import { toAddressType, toAddressTypeDto } from '@address/addresses.interface';
+import { ResourceNotFoundError } from '@sdk/errors';
 import type { DataServiceWalletAddressesApi } from '@data-service-api/data-service-wallet-addresses-api';
 import type { DataServiceWalletDappAddressesApi } from '@data-service-api/data-service-wallet-dapp-addresses-api';
+import type {
+  AddressDto,
+  DappAddressDto,
+} from '@data-service-api/data-service-dapps-api';
+import { withErrorParsing } from '@data-service-api/data-service-errors';
+import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -43,71 +48,136 @@ export class DataServiceWallets implements Wallets {
 export class DataServiceWalletAddresses implements WalletAddresses {
   constructor(private readonly api: DataServiceWalletAddressesApi) {}
 
-  private static toAddressType(type: AddressType): AddressTypeV0 {
-    switch (type) {
-      case AddressType.Email:
-        return 'email';
-      case AddressType.PhoneNumber:
-        return 'sms';
-      case AddressType.Telegram:
-        return 'telegram';
-      case AddressType.Wallet:
-        return 'wallet';
+  async create(command: CreateAddressCommand): Promise<Address> {
+    const created = await withErrorParsing(
+      this.api.create({
+        value: command.value,
+        type: toAddressTypeDto(command.type),
+      }),
+    );
+    return toAddress(created);
+  }
+
+  async delete(command: DeleteAddressCommand): Promise<void> {
+    return withErrorParsing(this.api.delete(command.addressId));
+  }
+
+  async find(query: FindAddressQuery): Promise<Address | null> {
+    try {
+      const addressDto = await withErrorParsing(this.api.find(query.addressId));
+      return toAddress(addressDto);
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
     }
-    throw new IllegalArgumentError(`Unknown address type ${type}`);
   }
 
-  create(command: CreateAddressCommand): Promise<Address> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-
-  delete(command: DeleteAddressCommand): Promise<void> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-
-  find(query: FindAddressQuery): Promise<Address | null> {
-    throw new UnsupportedOperationError('Not implemented');
-  }
-
-  findAll(): Promise<Address[]> {
-    return Promise.resolve([]);
+  async findAll(): Promise<Address[]> {
+    const addressDtos = await withErrorParsing(this.api.findAll());
+    return addressDtos.map((it) => toAddress(it));
   }
 
   resendVerificationCode(
     command: ResendVerificationCodeCommand,
   ): Promise<void> {
-    throw new UnsupportedOperationError('Not implemented');
+    return withErrorParsing(this.api.resendVerificationCode(command.addressId));
   }
 
-  update(command: PartialUpdateAddressCommand): Promise<Address> {
-    throw new UnsupportedOperationError('Not implemented');
+  async update(command: PartialUpdateAddressCommand): Promise<Address> {
+    const patched = await withErrorParsing(
+      this.api.patch(command.addressId, {
+        value: command.value,
+      }),
+    );
+    return toAddress(patched);
   }
 
-  verify(command: VerifyAddressCommand): Promise<Address> {
-    throw new UnsupportedOperationError('Not implemented');
+  async verify(command: VerifyAddressCommand): Promise<Address> {
+    const verified = await withErrorParsing(
+      this.api.verify(command.addressId, {
+        code: command.code,
+      }),
+    );
+    return toAddress(verified);
   }
 }
 
 export class DataServiceWalletDappAddresses implements WalletDappAddresses {
   constructor(private readonly api: DataServiceWalletDappAddressesApi) {}
 
-  create(command: CreateDappAddressCommand): Promise<DappAddress> {
-    throw new UnsupportedOperationError('Not implemented');
+  async create(command: CreateDappAddressCommand): Promise<DappAddress> {
+    const created = await withErrorParsing(
+      this.api.create({
+        addressId: command.addressId,
+        dappPublicKey: command.dappPublicKey.toBase58(),
+        enabled: command.enabled,
+      }),
+    );
+    return toDappAddress(created);
   }
 
   delete(command: DeleteDappAddressCommand): Promise<void> {
-    throw new UnsupportedOperationError('Not implemented');
+    return withErrorParsing(this.api.delete(command.dappAddressId));
   }
 
-  find(query: FindDappAddressQuery): Promise<DappAddress | null> {
-    throw new UnsupportedOperationError('Not implemented');
+  async find(query: FindDappAddressQuery): Promise<DappAddress | null> {
+    try {
+      const found = await withErrorParsing(this.api.find(query.dappAddressId));
+      return toDappAddress(found);
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
   }
 
-  findAll(query: FindDappAddressesQuery): Promise<DappAddress[]> {
-    throw new UnsupportedOperationError('Not implemented');
+  async findAll(query: FindDappAddressesQuery): Promise<DappAddress[]> {
+    const found = await withErrorParsing(
+      this.api.findAll({
+        addressIds: query.addressIds,
+        dappPublicKey: query.dappPublicKey?.toBase58(),
+      }),
+    );
+    return found.map((it) => toDappAddress(it));
   }
 
-  update(command: PartialUpdateDappAddressCommand): Promise<DappAddress> {
-    throw new UnsupportedOperationError('Not implemented');
+  async update(command: PartialUpdateDappAddressCommand): Promise<DappAddress> {
+    const found = await withErrorParsing(
+      this.api.patch(command.dappAddressId, {
+        enabled: command.enabled,
+      }),
+    );
+    return toDappAddress(found);
   }
+}
+
+function toAddress(addressDto: AddressDto): Address {
+  return {
+    id: addressDto.id,
+    value: addressDto.value,
+    verified: addressDto.verified,
+    type: toAddressType(addressDto.type),
+    wallet: {
+      publicKey: new PublicKey(addressDto.wallet.publicKey),
+    },
+  };
+}
+
+function toDappAddress(dto: DappAddressDto) {
+  const dapp: DappAddress = {
+    id: dto.id,
+    enabled: dto.enabled,
+    telegramChatId: dto.channelId,
+    address: {
+      id: dto.id,
+      type: toAddressType(dto.address.type),
+      value: dto.address.value,
+      verified: dto.address.verified,
+      wallet: {
+        publicKey: new PublicKey(dto.address.wallet.publicKey),
+      },
+    },
+  };
+  return dapp;
 }

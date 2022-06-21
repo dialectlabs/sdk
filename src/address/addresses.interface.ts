@@ -18,6 +18,20 @@ export enum AddressType {
   Wallet = 'WALLET',
 }
 
+export function toAddressTypeDto(type: AddressType): AddressTypeDto {
+  switch (type) {
+    case AddressType.Email:
+      return AddressTypeDto.Email;
+    case AddressType.PhoneNumber:
+      return AddressTypeDto.Sms;
+    case AddressType.Telegram:
+      return AddressTypeDto.Telegram;
+    case AddressType.Wallet:
+      return AddressTypeDto.Wallet;
+  }
+  throw new IllegalArgumentError(`Unknown address type ${type}`);
+}
+
 export function toAddressType(
   addressTypeDto: AddressTypeDto | AddressTypeV0,
 ): AddressType {
