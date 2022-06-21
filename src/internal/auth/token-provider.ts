@@ -52,15 +52,19 @@ class CachedTokenProvider extends TokenProvider {
     super();
   }
 
+  private delegateGetPromise: Promise<Token> | null = null;
+
   async get(): Promise<Token> {
     const existingToken = this.tokenStore.get();
-    if (
-      !existingToken ||
-      (existingToken && this.tokenUtils.isExpired(existingToken))
-    ) {
-      const newToken = await this.delegate.get();
-      return Promise.resolve(this.tokenStore.save(newToken));
+    if (existingToken && !this.tokenUtils.isExpired(existingToken)) {
+      this.delegateGetPromise = null;
+      return existingToken;
     }
-    return existingToken;
+    if (!this.delegateGetPromise) {
+      this.delegateGetPromise = this.delegate
+        .get()
+        .then((it) => this.tokenStore.save(it));
+    }
+    return this.delegateGetPromise;
   }
 }
