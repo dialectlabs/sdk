@@ -168,7 +168,7 @@ function toDappAddress(dto: DappAddressDto) {
   const dapp: DappAddress = {
     id: dto.id,
     enabled: dto.enabled,
-    telegramChatId: dto.channelId,
+    channelId: dto.channelId,
     address: {
       id: dto.id,
       type: toAddressType(dto.address.type),

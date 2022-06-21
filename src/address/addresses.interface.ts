@@ -56,6 +56,6 @@ export function toAddressType(
 export interface DappAddress {
   id: string;
   enabled: boolean;
-  telegramChatId?: string | null;
+  channelId?: string | null;
   address: Address;
 }
