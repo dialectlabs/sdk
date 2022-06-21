@@ -3,19 +3,168 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { DataServiceApi } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import type { DataServiceWalletDappAddressesApi } from '@data-service-api/data-service-wallet-dapp-addresses-api';
+import type {
+  CreateDappAddressCommandDto,
+  DataServiceWalletDappAddressesApi,
+} from '@data-service-api/data-service-wallet-dapp-addresses-api';
+import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import {
+  AddressDto,
+  AddressTypeDto,
+  DappAddressDto,
+  DappDto,
+} from '@data-service-api/data-service-dapps-api';
+import type { PartialUpdateDappAddressCommand } from '@wallet/wallet.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   let wallet: DialectWalletAdapterWrapper;
-  let walletDappAddresses: DataServiceWalletDappAddressesApi;
+  let walletDappAddressesApi: DataServiceWalletDappAddressesApi;
 
-  beforeEach(() => {
+  let dappWallet: DialectWalletAdapterWrapper;
+  let dappApi: DataServiceDappsApi;
+
+  let dappDto: DappDto;
+  let walletAddress: AddressDto;
+
+  beforeEach(async () => {
     wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
-    walletDappAddresses = DataServiceApi.create(
+    const walletDataServiceApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(new DialectWalletAdapterEd25519TokenSigner(wallet)),
-    ).walletDappAddresses;
+    );
+    walletDappAddressesApi = walletDataServiceApi.walletDappAddresses;
+    dappWallet = new DialectWalletAdapterWrapper(
+      NodeDialectWalletAdapter.create(),
+    );
+    dappApi = DataServiceApi.create(
+      baseUrl,
+      TokenProvider.create(
+        new DialectWalletAdapterEd25519TokenSigner(dappWallet),
+      ),
+    ).dapps;
+    dappDto = await dappApi.create({
+      publicKey: dappWallet.publicKey.toBase58(),
+    });
+    walletAddress = await walletDataServiceApi.walletAddresses.create({
+      type: AddressTypeDto.Wallet,
+      value: wallet.publicKey.toBase58(),
+    });
+  });
+
+  test('can create wallet dapp address', async () => {
+    // when
+    const command: CreateDappAddressCommandDto = {
+      addressId: walletAddress.id,
+      dappPublicKey: dappDto.publicKey,
+      enabled: true,
+    };
+    const created: DappAddressDto = await walletDappAddressesApi.create(
+      command,
+    );
+    // then
+    const dappAddressDtoExpected: DappAddressDto = {
+      id: expect.any(String),
+      address: walletAddress,
+      enabled: true,
+    };
+    expect(created).toMatchObject(dappAddressDtoExpected);
+  });
+
+  test('can get wallet dapp address by id after creating', async () => {
+    // given
+    const command: CreateDappAddressCommandDto = {
+      addressId: walletAddress.id,
+      dappPublicKey: dappDto.publicKey,
+      enabled: true,
+    };
+    const created: DappAddressDto = await walletDappAddressesApi.create(
+      command,
+    );
+    // when
+    const foundDappAddress = await walletDappAddressesApi.find(created.id);
+    // then
+    const dappAddressDtoExpected: DappAddressDto = {
+      id: expect.any(String),
+      address: walletAddress,
+      enabled: true,
+    };
+    expect(foundDappAddress).toMatchObject(dappAddressDtoExpected);
+  });
+
+  test('can find wallet dapp address after creating', async () => {
+    // given
+    const command: CreateDappAddressCommandDto = {
+      addressId: walletAddress.id,
+      dappPublicKey: dappDto.publicKey,
+      enabled: true,
+    };
+    await walletDappAddressesApi.create(command);
+    // when
+    const foundDappAddresses = await walletDappAddressesApi.findAll();
+    const foundDappAddressesByDappId = await walletDappAddressesApi.findAll({
+      dappPublicKey: dappDto.publicKey,
+    });
+    const foundDappAddressesByAddressesId =
+      await walletDappAddressesApi.findAll({
+        addressIds: [walletAddress.id],
+      });
+    // then
+    const dappAddressDtoExpected: DappAddressDto = {
+      id: expect.any(String),
+      address: walletAddress,
+      enabled: true,
+    };
+    expect(foundDappAddresses).toMatchObject([dappAddressDtoExpected]);
+    expect(foundDappAddressesByDappId).toMatchObject([dappAddressDtoExpected]);
+    expect(foundDappAddressesByAddressesId).toMatchObject([
+      dappAddressDtoExpected,
+    ]);
+  });
+
+  test('can patch wallet dapp address after creating', async () => {
+    // given
+    const createDappAddressCommand: CreateDappAddressCommandDto = {
+      addressId: walletAddress.id,
+      dappPublicKey: dappDto.publicKey,
+      enabled: true,
+    };
+    const created: DappAddressDto = await walletDappAddressesApi.create(
+      createDappAddressCommand,
+    );
+    // when
+    const patchCommand: PartialUpdateDappAddressCommand = {
+      enabled: false,
+    };
+    const patched = await walletDappAddressesApi.patch(
+      created.id,
+      patchCommand,
+    );
+    const foundAfterPatch = await walletDappAddressesApi.find(patched.id);
+    // then
+    const dappAddressDtoExpected: DappAddressDto = {
+      id: expect.any(String),
+      address: walletAddress,
+      enabled: true,
+    };
+    expect(patched).toMatchObject(dappAddressDtoExpected);
+    expect(foundAfterPatch).toMatchObject(dappAddressDtoExpected);
+  });
+
+  test('can delete wallet dapp address', async () => {
+    // given
+    const createDappAddressCommand: CreateDappAddressCommandDto = {
+      addressId: walletAddress.id,
+      dappPublicKey: dappDto.publicKey,
+      enabled: true,
+    };
+    const created: DappAddressDto = await walletDappAddressesApi.create(
+      createDappAddressCommand,
+    );
+    // when
+    await walletDappAddressesApi.delete(created.id);
+    // then
+    await expect(walletDappAddressesApi.find(created.id)).rejects.toBeTruthy();
   });
 });

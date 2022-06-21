@@ -9,7 +9,7 @@ import axios from 'axios';
 export interface DataServiceWalletDappAddressesApi {
   create(command: CreateDappAddressCommandDto): Promise<DappAddressDto>;
 
-  update(
+  patch(
     dappAddressId: string,
     command: PartialUpdateDappAddressCommandDto,
   ): Promise<DappAddressDto>;
@@ -49,7 +49,7 @@ export class DataServiceWalletDappAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .post<DappAddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/dappAddresses`,
+          `${this.baseUrl}/api/v1/wallets/me/dappAddresses`,
           command,
           {
             headers: createHeaders(token),
@@ -64,12 +64,12 @@ export class DataServiceWalletDappAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .delete<void>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/dappAddresses/${dappAddressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/dappAddresses/${dappAddressId}`,
           {
             headers: createHeaders(token),
           },
         )
-        .then((it) => it.data),
+        .then(),
     );
   }
 
@@ -78,7 +78,7 @@ export class DataServiceWalletDappAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .get<DappAddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/dappAddresses/${dappAddressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/dappAddresses/${dappAddressId}`,
           {
             headers: createHeaders(token),
           },
@@ -92,7 +92,7 @@ export class DataServiceWalletDappAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .get<DappAddressDto[]>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/dappAddresses`,
+          `${this.baseUrl}/api/v1/wallets/me/dappAddresses`,
           {
             headers: createHeaders(token),
             ...(query && { params: query }),
@@ -102,7 +102,7 @@ export class DataServiceWalletDappAddressesApiClient
     );
   }
 
-  async update(
+  async patch(
     dappAddressId: string,
     command: PartialUpdateDappAddressCommandDto,
   ): Promise<DappAddressDto> {
@@ -110,9 +110,9 @@ export class DataServiceWalletDappAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .patch<DappAddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/dappAddresses/${dappAddressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/dappAddresses/${dappAddressId}`,
+          command,
           {
-            command,
             headers: createHeaders(token),
           },
         )

@@ -1,6 +1,5 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
-import type { AddressType } from '@address/addresses.interface';
-import type { AddressDto } from './data-service-dapps-api';
+import type { AddressDto, AddressTypeDto } from './data-service-dapps-api';
 import {
   createHeaders,
   withReThrowingDataServiceError,
@@ -10,9 +9,9 @@ import axios from 'axios';
 export interface DataServiceWalletAddressesApi {
   create(command: CreateAddressCommandDto): Promise<AddressDto>;
 
-  update(
+  patch(
     addressId: string,
-    command: PartialUpdateAddressCommandDto,
+    command: PatchAddressCommandDto,
   ): Promise<AddressDto>;
 
   delete(addressId: string): Promise<void>;
@@ -31,10 +30,10 @@ export interface DataServiceWalletAddressesApi {
 
 export interface CreateAddressCommandDto {
   readonly value: string;
-  readonly type: AddressType;
+  readonly type: AddressTypeDto;
 }
 
-export interface PartialUpdateAddressCommandDto {
+export interface PatchAddressCommandDto {
   readonly value?: string;
 }
 
@@ -55,7 +54,7 @@ export class DataServiceWalletAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .post<AddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses`,
+          `${this.baseUrl}/api/v1/wallets/me/addresses`,
           command,
           {
             headers: createHeaders(token),
@@ -65,15 +64,15 @@ export class DataServiceWalletAddressesApiClient
     );
   }
 
-  async update(
+  async patch(
     addressId: string,
-    command: PartialUpdateAddressCommandDto,
+    command: PatchAddressCommandDto,
   ): Promise<AddressDto> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .patch<AddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses/${addressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}`,
           command,
           {
             headers: createHeaders(token),
@@ -85,15 +84,15 @@ export class DataServiceWalletAddressesApiClient
 
   async delete(addressId: string): Promise<void> {
     const token = await this.tokenProvider.get();
-    await withReThrowingDataServiceError(
+    return withReThrowingDataServiceError(
       axios
         .delete<AddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses/${addressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}`,
           {
             headers: createHeaders(token),
           },
         )
-        .then((it) => it.data),
+        .then(),
     );
   }
 
@@ -102,7 +101,7 @@ export class DataServiceWalletAddressesApiClient
     return withReThrowingDataServiceError(
       axios
         .get<AddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses/${addressId}`,
+          `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}`,
           {
             headers: createHeaders(token),
           },
@@ -115,27 +114,25 @@ export class DataServiceWalletAddressesApiClient
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<AddressDto[]>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses`,
-          {
-            headers: createHeaders(token),
-          },
-        )
+        .get<AddressDto[]>(`${this.baseUrl}/api/v1/wallets/me/addresses`, {
+          headers: createHeaders(token),
+        })
         .then((it) => it.data),
     );
   }
 
   async resendVerificationCode(addressId: string): Promise<void> {
     const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
+    return await withReThrowingDataServiceError(
       axios
-        .get<void>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses/${addressId}/resendVerificationCode`,
+        .post<void>(
+          `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}/resendVerificationCode`,
+          {},
           {
             headers: createHeaders(token),
           },
         )
-        .then((it) => it.data),
+        .then(),
     );
   }
 
@@ -146,8 +143,9 @@ export class DataServiceWalletAddressesApiClient
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<AddressDto>(
-          `${this.baseUrl}/api/v1/wallet/${token.body.sub}/addresses/${addressId}/verify`,
+        .post<AddressDto>(
+          `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}/verify`,
+          {},
           {
             headers: createHeaders(token),
           },
