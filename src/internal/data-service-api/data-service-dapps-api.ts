@@ -8,6 +8,8 @@ import {
 export interface DataServiceDappsApi {
   create(command: CreateDappCommandDto): Promise<DappDto>;
 
+  find(): Promise<DappDto>;
+
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 }
 
@@ -38,6 +40,17 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
             headers: createHeaders(token),
           },
         )
+        .then((it) => it.data),
+    );
+  }
+
+  async find(): Promise<DappDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<DappDto>(`${this.baseUrl}/api/v1/dapps/${token.body.sub}`, {
+          headers: createHeaders(token),
+        })
         .then((it) => it.data),
     );
   }

@@ -31,13 +31,25 @@ describe('Data service dapps api (e2e)', () => {
   test('can create dapp and find all dappAddresses', async () => {
     // when
     const dappPublicKey = dappWallet.publicKey.toBase58();
-    const dappDto = await dappsApi.create({
+    await dappsApi.create({
       publicKey: dappPublicKey,
     });
-    console.log(dappDto);
     const addresses = await dappsApi.findAllDappAddresses();
     // then
     expect(addresses).toMatchObject([]);
+  });
+
+  test('can find dapp', async () => {
+    // given
+    const dappPublicKey = dappWallet.publicKey.toBase58();
+    await expect(dappsApi.find()).rejects.toBeTruthy();
+    const created = await dappsApi.create({
+      publicKey: dappPublicKey,
+    });
+    // when
+    const found = await dappsApi.find();
+    // then
+    expect(found).toMatchObject(created);
   });
 
   describe('Wallet dapp addresses v0', () => {

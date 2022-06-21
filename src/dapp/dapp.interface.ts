@@ -3,7 +3,7 @@ import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
-  find(query?: FindDappQuery): Promise<Dapp>;
+  find(): Promise<Dapp | null>;
 }
 
 export interface Dapp {
