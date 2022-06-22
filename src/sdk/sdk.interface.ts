@@ -12,7 +12,7 @@ import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
 
 export abstract class Dialect {
-  static sdk(config: Config): DialectSdk {
+  static sdk(config: ConfigProps): DialectSdk {
     return new DialectSdkFactory(config).create();
   }
 }
@@ -37,22 +37,22 @@ export interface SolanaInfo {
 
 export type Environment = 'production' | 'development' | 'local-development';
 
-export interface Config {
+export interface ConfigProps {
   environment?: Environment;
   wallet: DialectWalletAdapter;
-  solana?: SolanaConfig;
-  dialectCloud?: DialectCloudConfig;
+  solana?: SolanaConfigProps;
+  dialectCloud?: DialectCloudConfigProps;
   encryptionKeysStore?: EncryptionKeysStore;
   backends?: Backend[];
 }
 
-export interface SolanaConfig {
+export interface SolanaConfigProps {
   network?: SolanaNetwork;
   dialectProgramAddress?: PublicKey;
   rpcUrl?: string;
 }
 
-export interface DialectCloudConfig {
+export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStore;
@@ -68,4 +68,25 @@ export type DialectCloudEnvironment =
 export enum Backend {
   Solana = 'SOLANA',
   DialectCloud = 'DIALECT_CLOUD',
+}
+
+export interface Config extends ConfigProps {
+  environment: Environment;
+  wallet: DialectWalletAdapter;
+  solana: SolanaConfig;
+  dialectCloud: DialectCloudConfig;
+  encryptionKeysStore: EncryptionKeysStore;
+  backends: Backend[];
+}
+
+export interface SolanaConfig extends SolanaConfigProps {
+  network: SolanaNetwork;
+  dialectProgramAddress: PublicKey;
+  rpcUrl: string;
+}
+
+export interface DialectCloudConfig extends DialectCloudConfigProps {
+  environment: DialectCloudEnvironment;
+  url: string;
+  tokenStore: TokenStore;
 }
