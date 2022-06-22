@@ -211,7 +211,7 @@ Solana settings:
   }
 
   private initializeDialectCloudConfig(): DialectCloudConfig {
-    let internalConfig: DialectCloudConfig = {
+    const internalConfig: DialectCloudConfig = {
       environment: 'production',
       url: 'https://dialectapi.to',
       tokenStore: new InMemoryTokenStore(),
