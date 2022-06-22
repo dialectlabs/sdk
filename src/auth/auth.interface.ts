@@ -4,8 +4,6 @@ import { AuthTokensImpl } from '@auth/internal/token-utils';
 import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 export class Auth {
-  private constructor() {}
-
   static tokens = new AuthTokensImpl();
 }
 

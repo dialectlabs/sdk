@@ -145,7 +145,7 @@ export class DataServiceWalletAddressesApiClient
       axios
         .post<AddressDto>(
           `${this.baseUrl}/api/v1/wallets/me/addresses/${addressId}/verify`,
-          {},
+          command,
           {
             headers: createHeaders(token),
           },

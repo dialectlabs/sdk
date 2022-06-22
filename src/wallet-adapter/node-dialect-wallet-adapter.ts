@@ -19,8 +19,8 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
       );
       return new NodeDialectWalletAdapter(keypair);
     }
-    if (process.env.PRIVATE_KEY) {
-      const privateKey = process.env.PRIVATE_KEY;
+    if (process.env.DIALECT_SDK_CREDENTIALS) {
+      const privateKey = process.env.DIALECT_SDK_CREDENTIALS;
       const keypair: Keypair = Keypair.fromSecretKey(
         new Uint8Array(JSON.parse(privateKey as string)),
       );

@@ -1,15 +1,13 @@
 import {
   Backend,
   Config,
+  ConfigProps,
   DialectCloudConfig,
-  DialectCloudEnvironment,
   DialectSdk,
   DialectSdkInfo,
-  Environment,
   SolanaConfig,
-  SolanaNetwork,
 } from '@sdk/sdk.interface';
-import { InMemoryTokenStore, TokenStore } from '@auth/internal/token-store';
+import { InMemoryTokenStore } from '@auth/internal/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
@@ -21,11 +19,9 @@ import {
 } from '@messaging/internal/messaging-facade';
 import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
-import type { Messaging } from '@messaging/messaging.interface';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { IllegalArgumentError } from '@sdk/errors';
 import type { DappAddresses, Dapps } from '@dapp/dapp.interface';
@@ -37,28 +33,12 @@ import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addre
 import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import type { Wallets } from '@wallet/wallet.interface';
 import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
+import type { Messaging } from '@messaging/messaging.interface';
+import type { Wallets } from '@wallet/wallet.interface';
 
 interface InternalConfig extends Config {
-  environment: Environment;
   wallet: DialectWalletAdapterWrapper;
-  solana: InternalSolanaConfig;
-  dialectCloud: InternalDialectCloudConfig;
-  encryptionKeysStore: EncryptionKeysStore;
-  backends: Backend[];
-}
-
-interface InternalSolanaConfig extends SolanaConfig {
-  network: SolanaNetwork;
-  dialectProgramAddress: PublicKey;
-  rpcUrl: string;
-}
-
-interface InternalDialectCloudConfig extends DialectCloudConfig {
-  environment: DialectCloudEnvironment;
-  url: string;
-  tokenStore: TokenStore;
 }
 
 export class InternalDialectSdk implements DialectSdk {
@@ -71,7 +51,7 @@ export class InternalDialectSdk implements DialectSdk {
 }
 
 export class DialectSdkFactory {
-  constructor(private readonly config: Config) {}
+  constructor(private readonly config: ConfigProps) {}
 
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
@@ -230,8 +210,8 @@ Solana settings:
     return backends;
   }
 
-  private initializeDialectCloudConfig(): InternalDialectCloudConfig {
-    let internalConfig: InternalDialectCloudConfig = {
+  private initializeDialectCloudConfig(): DialectCloudConfig {
+    const internalConfig: DialectCloudConfig = {
       environment: 'production',
       url: 'https://dialectapi.to',
       tokenStore: new InMemoryTokenStore(),
@@ -268,8 +248,8 @@ Solana settings:
     return internalConfig;
   }
 
-  private initializeSolanaConfig(): InternalSolanaConfig {
-    let internalConfig: InternalSolanaConfig = {
+  private initializeSolanaConfig(): SolanaConfig {
+    let internalConfig: SolanaConfig = {
       network: 'mainnet-beta',
       dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
       rpcUrl: programs.mainnet.clusterAddress,
