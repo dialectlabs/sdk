@@ -27,19 +27,24 @@ export interface CreateThreadCommand {
 }
 
 export type FindThreadQuery =
-  | FindThreadByAddressQuery
+  | FindThreadByIdQuery
   | FindThreadByOtherMemberQuery;
 
-export interface FindThreadByAddressQuery {
-  address: PublicKey;
+export interface FindThreadByIdQuery {
+  id: ThreadId;
 }
 
 export interface FindThreadByOtherMemberQuery {
   otherMembers: PublicKey[];
 }
 
-export interface Thread {
+export interface ThreadId {
   address: PublicKey;
+  backend?: Backend;
+}
+
+export interface Thread {
+  id: ThreadId;
   me: ThreadMember;
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;

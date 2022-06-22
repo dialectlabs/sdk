@@ -1,12 +1,13 @@
 import type {
   CreateThreadCommand,
-  FindThreadByAddressQuery,
+  FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
   Message,
   Messaging,
   SendMessageCommand,
   Thread,
+  ThreadId,
   ThreadMember,
 } from '@messaging/messaging.interface';
 import { ThreadMemberScope } from '@messaging/messaging.interface';
@@ -120,8 +121,8 @@ export class SolanaMessaging implements Messaging {
       encryptionKeys,
     );
     try {
-      if ('address' in query) {
-        return await this.findByAddress(query, encryptionProps);
+      if ('id' in query) {
+        return await this.findById(query, encryptionProps);
       }
       return await this.findByOtherMember(query, encryptionProps);
     } catch (e) {
@@ -133,12 +134,12 @@ export class SolanaMessaging implements Messaging {
     }
   }
 
-  private async findByAddress(
-    query: FindThreadByAddressQuery,
+  private async findById(
+    query: FindThreadByIdQuery,
     encryptionProps: EncryptionProps | null,
   ) {
     return withErrorParsing(
-      getDialect(this.program, query.address, encryptionProps),
+      getDialect(this.program, query.id.address, encryptionProps),
     );
   }
 
@@ -177,9 +178,10 @@ export class SolanaMessaging implements Messaging {
 
 export class SolanaThread implements Thread {
   readonly backend: Backend = Backend.Solana;
+  readonly id: ThreadId;
 
   constructor(
-    readonly address: PublicKey,
+    address: PublicKey,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
     readonly otherMember: ThreadMember,
@@ -189,7 +191,12 @@ export class SolanaThread implements Thread {
     private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
     private dialectAccount: DialectAccount,
-  ) {}
+  ) {
+    this.id = {
+      backend: this.backend,
+      address,
+    };
+  }
 
   async delete(): Promise<void> {
     await withErrorParsing(

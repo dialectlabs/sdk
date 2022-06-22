@@ -54,10 +54,18 @@ export class MessagingFacade implements Messaging {
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
+    if ('id' in query && query.id.backend) {
+      const { messaging } = this.lookUpMessagingBackend(query.id.backend);
+      return messaging.find(query);
+    }
     for (const { messaging } of this.messagingBackends) {
-      const thread = await messaging.find(query);
-      if (thread) {
-        return thread;
+      try {
+        const thread = await messaging.find(query);
+        if (thread) {
+          return thread;
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
     return null;
