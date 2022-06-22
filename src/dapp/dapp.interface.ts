@@ -1,10 +1,9 @@
 import type { PublicKey } from '@solana/web3.js';
+import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
-  // create(command: CreateDappCommand): Promise<Dapp>;
-  //
-  // remove(command: DeleteDappCommand): Promise<void>;
-  find(query?: FindDappQuery): Promise<Dapp>;
+  create(/*command: CreateDappCommand*/): Promise<Dapp>;
+  find(): Promise<Dapp | null>;
 }
 
 export interface Dapp {
@@ -18,31 +17,11 @@ export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
 }
 
-export interface DappAddress {
-  enabled: boolean;
-  telegramChatId?: string;
-  address: Address;
-}
-
-export interface Address {
-  type: AddressType;
-  verified: boolean;
-  value: string;
-  wallet: Wallet;
-}
-
-export interface Wallet {
+export interface FindDappQuery {
   publicKey: PublicKey;
 }
 
-export enum AddressType {
-  Email = 'EMAIL',
-  PhoneNumber = 'SMS',
-  Telegram = 'TELEGRAM',
-  Wallet = 'WALLET',
-}
-
-export interface FindDappQuery {
+export interface CreateDappCommand {
   publicKey: PublicKey;
 }
 
@@ -62,13 +41,6 @@ export interface FindDappQuery {
 //
 
 //
-
-//
-// export interface CreateDappCommand {
-//   publicKey: PublicKey;
-//   telegramBotToken?: string;
-//   twilioApiKey?: string;
-// }
 //
 // export interface DeleteDappCommand {
 //   publicKey: PublicKey;

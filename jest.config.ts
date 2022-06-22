@@ -6,6 +6,7 @@ const config: Config.InitialOptions = {
     '^.+\\.tsx?$': 'ts-jest',
   },
   moduleNameMapper: {
+    '^@address(.*)$': '<rootDir>/src/address$1',
     '^@auth/internal(.*)$': '<rootDir>/src/internal/auth$1',
     '^@auth(.*)$': '<rootDir>/src/auth$1',
     '^@dapp/internal(.*)$': '<rootDir>/src/internal/dapp$1',
@@ -17,6 +18,8 @@ const config: Config.InitialOptions = {
     '^@sdk/internal(.*)$': '<rootDir>/src/internal/sdk$1',
     '^@sdk(.*)$': '<rootDir>/src/sdk$1',
     '^@utils/internal(.*)$': '<rootDir>/src/internal/utils$1',
+    '^@wallet/internal(.*)$': '<rootDir>/src/internal/wallet$1',
+    '^@wallet(.*)$': '<rootDir>/src/wallet$1',
     '^@wallet-adapter/internal(.*)$': '<rootDir>/src/internal/wallet-adapter$1',
     '^@wallet-adapter(.*)$': '<rootDir>/src/wallet-adapter$1',
   },

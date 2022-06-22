@@ -18,13 +18,6 @@ import {
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
 import {
-  DataServiceApiClientError,
-  DataServiceDialectsApi,
-  DialectAccountDto,
-  DialectDto,
-  MemberScopeDto,
-} from '@data-service-api/data-service-api';
-import {
   IllegalStateError,
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
@@ -33,6 +26,13 @@ import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provide
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
+import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+import {
+  DialectAccountDto,
+  DialectDto,
+  MemberScopeDto,
+} from '@data-service-api/data-service-dialects-api';
+import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -190,7 +190,7 @@ export class DataServiceThread implements Thread {
     readonly address: PublicKey,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
-    readonly otherMember: ThreadMember,
+    private readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,

@@ -1,0 +1,183 @@
+import type {
+  CreateAddressCommand,
+  CreateDappAddressCommand,
+  DeleteAddressCommand,
+  DeleteDappAddressCommand,
+  FindAddressQuery,
+  FindDappAddressesQuery,
+  FindDappAddressQuery,
+  PartialUpdateAddressCommand,
+  PartialUpdateDappAddressCommand,
+  ResendVerificationCodeCommand,
+  VerifyAddressCommand,
+  WalletAddresses,
+  WalletDappAddresses,
+  Wallets,
+} from '@wallet/wallet.interface';
+import { PublicKey } from '@solana/web3.js';
+import type { Address, DappAddress } from '@address/addresses.interface';
+import { toAddressType, toAddressTypeDto } from '@address/addresses.interface';
+import { ResourceNotFoundError } from '@sdk/errors';
+import type { DataServiceWalletAddressesApi } from '@data-service-api/data-service-wallet-addresses-api';
+import type { DataServiceWalletDappAddressesApi } from '@data-service-api/data-service-wallet-dapp-addresses-api';
+import type {
+  AddressDto,
+  DappAddressDto,
+} from '@data-service-api/data-service-dapps-api';
+import { withErrorParsing } from '@data-service-api/data-service-errors';
+import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
+
+export class DataServiceWallets implements Wallets {
+  addresses: WalletAddresses;
+  dappAddresses: WalletDappAddresses;
+
+  constructor(
+    readonly publicKey: PublicKey,
+    private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
+    private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
+  ) {
+    this.addresses = new DataServiceWalletAddresses(
+      dataServiceWalletAddressesApi,
+    );
+    this.dappAddresses = new DataServiceWalletDappAddresses(
+      dataServiceWalletDappAddressesApi,
+    );
+  }
+}
+
+export class DataServiceWalletAddresses implements WalletAddresses {
+  constructor(private readonly api: DataServiceWalletAddressesApi) {}
+
+  async create(command: CreateAddressCommand): Promise<Address> {
+    const created = await withErrorParsing(
+      this.api.create({
+        value: command.value,
+        type: toAddressTypeDto(command.type),
+      }),
+    );
+    return toAddress(created);
+  }
+
+  async delete(command: DeleteAddressCommand): Promise<void> {
+    return withErrorParsing(this.api.delete(command.addressId));
+  }
+
+  async find(query: FindAddressQuery): Promise<Address | null> {
+    try {
+      const addressDto = await withErrorParsing(this.api.find(query.addressId));
+      return toAddress(addressDto);
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
+  }
+
+  async findAll(): Promise<Address[]> {
+    const addressDtos = await withErrorParsing(this.api.findAll());
+    return addressDtos.map((it) => toAddress(it));
+  }
+
+  resendVerificationCode(
+    command: ResendVerificationCodeCommand,
+  ): Promise<void> {
+    return withErrorParsing(this.api.resendVerificationCode(command.addressId));
+  }
+
+  async update(command: PartialUpdateAddressCommand): Promise<Address> {
+    const patched = await withErrorParsing(
+      this.api.patch(command.addressId, {
+        value: command.value,
+      }),
+    );
+    return toAddress(patched);
+  }
+
+  async verify(command: VerifyAddressCommand): Promise<Address> {
+    const verified = await withErrorParsing(
+      this.api.verify(command.addressId, {
+        code: command.code,
+      }),
+    );
+    return toAddress(verified);
+  }
+}
+
+export class DataServiceWalletDappAddresses implements WalletDappAddresses {
+  constructor(private readonly api: DataServiceWalletDappAddressesApi) {}
+
+  async create(command: CreateDappAddressCommand): Promise<DappAddress> {
+    const created = await withErrorParsing(
+      this.api.create({
+        addressId: command.addressId,
+        dappPublicKey: command.dappPublicKey.toBase58(),
+        enabled: command.enabled,
+      }),
+    );
+    return toDappAddress(created);
+  }
+
+  delete(command: DeleteDappAddressCommand): Promise<void> {
+    return withErrorParsing(this.api.delete(command.dappAddressId));
+  }
+
+  async find(query: FindDappAddressQuery): Promise<DappAddress | null> {
+    try {
+      const found = await withErrorParsing(this.api.find(query.dappAddressId));
+      return toDappAddress(found);
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
+  }
+
+  async findAll(query: FindDappAddressesQuery): Promise<DappAddress[]> {
+    const found = await withErrorParsing(
+      this.api.findAll({
+        addressIds: query.addressIds,
+        dappPublicKey: query.dappPublicKey?.toBase58(),
+      }),
+    );
+    return found.map((it) => toDappAddress(it));
+  }
+
+  async update(command: PartialUpdateDappAddressCommand): Promise<DappAddress> {
+    const found = await withErrorParsing(
+      this.api.patch(command.dappAddressId, {
+        enabled: command.enabled,
+      }),
+    );
+    return toDappAddress(found);
+  }
+}
+
+function toAddress(addressDto: AddressDto): Address {
+  return {
+    id: addressDto.id,
+    value: addressDto.value,
+    verified: addressDto.verified,
+    type: toAddressType(addressDto.type),
+    wallet: {
+      publicKey: new PublicKey(addressDto.wallet.publicKey),
+    },
+  };
+}
+
+function toDappAddress(dto: DappAddressDto) {
+  const dapp: DappAddress = {
+    id: dto.id,
+    enabled: dto.enabled,
+    channelId: dto.channelId,
+    address: {
+      id: dto.id,
+      type: toAddressType(dto.address.type),
+      value: dto.address.value,
+      verified: dto.address.verified,
+      wallet: {
+        publicKey: new PublicKey(dto.address.wallet.publicKey),
+      },
+    },
+  };
+  return dapp;
+}

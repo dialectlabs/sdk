@@ -1,7 +1,65 @@
 import type { TokenProvider } from '@auth/internal/token-provider';
-import axios, { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
+import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+import { DataServiceDialectsApiClient } from '@data-service-api/data-service-dialects-api';
+import {
+  DataServiceDappsApi,
+  DataServiceDappsApiClient,
+} from '@data-service-api/data-service-dapps-api';
 import type { Token } from '@auth/auth.interface';
+import {
+  DataServiceWalletsApiClientV0,
+  DataServiceWalletsApiV0,
+} from '@data-service-api/data-service-wallets-api.v0';
 import { nanoid } from 'nanoid';
+import {
+  DataServiceWalletAddressesApi,
+  DataServiceWalletAddressesApiClient,
+} from '@data-service-api/data-service-wallet-addresses-api';
+import {
+  DataServiceWalletDappAddressesApi,
+  DataServiceWalletDappAddressesApiClient,
+} from '@data-service-api/data-service-wallet-dapp-addresses-api';
+
+export class DataServiceApi {
+  private constructor(
+    readonly threads: DataServiceDialectsApi,
+    readonly dapps: DataServiceDappsApi,
+    readonly walletsV0: DataServiceWalletsApiV0,
+    readonly walletAddresses: DataServiceWalletAddressesApi,
+    readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
+  ) {}
+
+  static create(baseUrl: string, tokenProvider: TokenProvider) {
+    const dialectsApi = new DataServiceDialectsApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    const dappAddressesApi = new DataServiceDappsApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    const walletsApiV0 = new DataServiceWalletsApiClientV0(
+      baseUrl,
+      tokenProvider,
+    );
+    const walletAddressesApi = new DataServiceWalletAddressesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    const walletDappAddressesApi = new DataServiceWalletDappAddressesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    return new DataServiceApi(
+      dialectsApi,
+      dappAddressesApi,
+      walletsApiV0,
+      walletAddressesApi,
+      walletDappAddressesApi,
+    );
+  }
+}
 
 interface RawDataServiceApiError {
   message: string;
@@ -22,7 +80,14 @@ export class DataServiceApiError {
 
 const XRequestIdHeader = 'x-request-id';
 
-async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
+export function createHeaders(token: Token) {
+  return {
+    Authorization: `Bearer ${token.rawValue}`,
+    [XRequestIdHeader]: nanoid(),
+  };
+}
+
+export async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
   try {
     return await fn;
   } catch (e) {
@@ -42,238 +107,4 @@ async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
       requestId,
     );
   }
-}
-
-export class DataServiceApi {
-  private constructor(
-    readonly threads: DataServiceDialectsApi,
-    readonly dapps: DataServiceDappsApiClient,
-  ) {}
-
-  static create(baseUrl: string, tokenProvider: TokenProvider) {
-    const dialectsApi = new DataServiceDialectsApiClient(
-      baseUrl,
-      tokenProvider,
-    );
-    const dappAddressesApi = new DataServiceDappsApiClient(
-      baseUrl,
-      tokenProvider,
-    );
-    return new DataServiceApi(dialectsApi, dappAddressesApi);
-  }
-}
-
-export interface DataServiceDialectsApi {
-  create(command: CreateDialectCommand): Promise<DialectAccountDto>;
-
-  findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]>;
-
-  find(publicKey: string): Promise<DialectAccountDto>;
-
-  delete(publicKey: string): Promise<void>;
-
-  sendMessage(
-    publicKey: string,
-    command: SendMessageCommand,
-  ): Promise<DialectAccountDto | null>;
-}
-
-export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
-  constructor(
-    private readonly baseUrl: string,
-    private readonly tokenProvider: TokenProvider,
-  ) {}
-
-  async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .post<DialectAccountDto>(`${this.baseUrl}/v0/dialects`, command, {
-          headers: createHeaders(token),
-        })
-        .then((it) => it.data),
-    );
-  }
-
-  async findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .get<DialectAccountDto[]>(`${this.baseUrl}/v0/dialects`, {
-          headers: createHeaders(token),
-          ...(query && { params: query }),
-        })
-        .then((it) => it.data),
-    );
-  }
-
-  async find(publicKey: string): Promise<DialectAccountDto> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .get<DialectAccountDto>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: createHeaders(token),
-        })
-        .then((it) => it.data),
-    );
-  }
-
-  async delete(publicKey: string): Promise<void> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .delete<void>(`${this.baseUrl}/v0/dialects/${publicKey}`, {
-          headers: createHeaders(token),
-        })
-        .then((it) => it.data),
-    );
-  }
-
-  async sendMessage(
-    publicKey: string,
-    command: SendMessageCommand,
-  ): Promise<DialectAccountDto> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .post<DialectAccountDto>(
-          `${this.baseUrl}/v0/dialects/${publicKey}/messages`,
-          command,
-          {
-            headers: createHeaders(token),
-          },
-        )
-        .then((it) => it.data),
-    );
-  }
-}
-
-export class CreateDialectCommand {
-  readonly members!: PostMemberDto[];
-  readonly encrypted!: boolean;
-}
-
-export class PostMemberDto {
-  readonly publicKey!: string;
-  readonly scopes!: MemberScopeDto[];
-}
-
-export class DialectAccountDto {
-  readonly publicKey!: string;
-  readonly dialect!: DialectDto;
-}
-
-export class DialectDto {
-  readonly members!: MemberDto[];
-  readonly messages!: MessageDto[];
-  // N.b. nextMessageIdx & lastMessageTimestamp are added only so we have schema parity with what's on chain.
-  readonly nextMessageIdx!: number;
-  readonly lastMessageTimestamp!: number;
-  readonly encrypted!: boolean;
-}
-
-export class MemberDto {
-  readonly publicKey!: string;
-  readonly scopes!: MemberScopeDto[];
-}
-
-export enum MemberScopeDto {
-  ADMIN = 'ADMIN',
-  WRITE = 'WRITE',
-}
-
-export class MessageDto {
-  readonly owner!: string;
-  readonly text!: number[];
-  readonly timestamp!: number;
-}
-
-export class SendMessageCommand {
-  readonly text!: number[];
-}
-
-export class FindDialectQuery {
-  readonly memberPublicKey?: string;
-}
-
-export interface DataServiceDappsApi {
-  create(command: CreateDappCommandDto): Promise<DappDto>;
-
-  findAllDappAddresses(): Promise<DappAddressDto[]>;
-}
-
-function createHeaders(token: Token) {
-  return {
-    Authorization: `Bearer ${token.rawValue}`,
-    [XRequestIdHeader]: nanoid(),
-  };
-}
-
-export class DataServiceDappsApiClient implements DataServiceDappsApi {
-  constructor(
-    private readonly baseUrl: string,
-    private readonly tokenProvider: TokenProvider,
-  ) {}
-
-  async create(command: CreateDappCommandDto): Promise<DappDto> {
-    const token = await this.tokenProvider.get();
-
-    return withReThrowingDataServiceError(
-      axios
-        .post<DappDto>(`${this.baseUrl}/v0/dapps`, command, {
-          headers: createHeaders(token),
-        })
-        .then((it) => it.data),
-    );
-  }
-
-  async findAllDappAddresses(): Promise<DappAddressDto[]> {
-    const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
-      axios
-        .get<DappAddressDto[]>(
-          `${this.baseUrl}/v0/dapps/${token.body.sub}/dappAddresses`,
-          {
-            headers: createHeaders(token),
-          },
-        )
-        .then((it) => it.data),
-    );
-  }
-}
-
-export class DappDto {
-  readonly id!: string;
-  readonly publicKey!: string;
-}
-
-export class CreateDappCommandDto {
-  readonly publicKey!: string;
-}
-
-export class DappAddressDto {
-  readonly id!: string;
-  readonly enabled!: boolean;
-  readonly telegramChatId?: string;
-  readonly address!: AddressDto;
-}
-
-export class AddressDto {
-  readonly id!: string;
-  readonly type!: AddressTypeDto;
-  readonly verified!: boolean;
-  readonly value!: string;
-  readonly wallet!: WalletDto;
-}
-
-export class WalletDto {
-  readonly id!: string;
-  readonly publicKey!: string;
-}
-
-export enum AddressTypeDto {
-  Email = 'EMAIL',
-  Sms = 'SMS',
-  Telegram = 'TELEGRAM',
-  Wallet = 'WALLET',
 }

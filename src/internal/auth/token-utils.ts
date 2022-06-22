@@ -91,7 +91,8 @@ export class AuthTokensImpl implements AuthTokens {
 
   isExpired(token: Token) {
     const nowUtcSeconds = new Date().getTime() / 1000;
-    return nowUtcSeconds > token.body.exp;
+    const delta = 10;
+    return nowUtcSeconds + delta > token.body.exp;
   }
 }
 
