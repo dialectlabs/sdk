@@ -1,6 +1,6 @@
 import type {
   CreateThreadCommand,
-  FindThreadByAddressQuery,
+  FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
   Message,
@@ -9,7 +9,7 @@ import type {
   Thread,
   ThreadMember,
 } from '@messaging/messaging.interface';
-import { ThreadMemberScope } from '@messaging/messaging.interface';
+import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
 import {
   EncryptedTextSerde,
@@ -146,18 +146,18 @@ export class DataServiceMessaging implements Messaging {
   }
 
   private findInternal(
-    query: FindThreadByAddressQuery | FindThreadByOtherMemberQuery,
+    query: FindThreadByIdQuery | FindThreadByOtherMemberQuery,
   ) {
-    if ('address' in query) {
-      return this.findByAddress(query);
+    if ('id' in query) {
+      return this.findById(query);
     }
     return this.findByOtherMember(query);
   }
 
-  private async findByAddress(query: FindThreadByAddressQuery) {
+  private async findById(query: FindThreadByIdQuery) {
     try {
       return await withErrorParsing(
-        this.dataServiceDialectsApi.find(query.address.toBase58()),
+        this.dataServiceDialectsApi.find(query.id.address.toBase58()),
       );
     } catch (e) {
       const err = e as DataServiceApiClientError;
@@ -182,19 +182,25 @@ export class DataServiceMessaging implements Messaging {
 
 export class DataServiceThread implements Thread {
   readonly backend: Backend = Backend.DialectCloud;
+  readonly id: ThreadId;
 
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerde: TextSerde,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-    readonly address: PublicKey,
+    private readonly address: PublicKey,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
     private readonly otherMember: ThreadMember,
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
-  ) {}
+  ) {
+    this.id = {
+      backend: this.backend,
+      address,
+    };
+  }
 
   async delete(): Promise<void> {
     await withErrorParsing(
