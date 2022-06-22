@@ -9,8 +9,12 @@ export abstract class TokenStore {
     return new InMemoryTokenStore();
   }
 
-  static createSession(): TokenStore {
+  static createSessionStorage(): TokenStore {
     return new SessionStorageTokenStore();
+  }
+
+  static createLocalStorage(): TokenStore {
+    return new LocalStorageTokenStore();
   }
 }
 
@@ -27,11 +31,11 @@ export class InMemoryTokenStore extends TokenStore {
   }
 }
 
-const sessionStorageTokenKey = 'dialect-auth-token';
+const storageTokenKey = 'dialect-auth-token';
 
 export class SessionStorageTokenStore implements TokenStore {
   get(): Token | null {
-    const token = sessionStorage.getItem(sessionStorageTokenKey);
+    const token = sessionStorage.getItem(storageTokenKey);
     if (!token) {
       return null;
     }
@@ -39,7 +43,22 @@ export class SessionStorageTokenStore implements TokenStore {
   }
 
   save(token: Token): Token {
-    sessionStorage.setItem(sessionStorageTokenKey, JSON.stringify(token));
+    sessionStorage.setItem(storageTokenKey, JSON.stringify(token));
+    return token;
+  }
+}
+
+export class LocalStorageTokenStore implements TokenStore {
+  get(): Token | null {
+    const token = localStorage.getItem(storageTokenKey);
+    if (!token) {
+      return null;
+    }
+    return JSON.parse(token) as Token;
+  }
+
+  save(token: Token): Token {
+    localStorage.setItem(storageTokenKey, JSON.stringify(token));
     return token;
   }
 }
