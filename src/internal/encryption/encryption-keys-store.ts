@@ -9,8 +9,12 @@ export abstract class EncryptionKeysStore {
     return new InmemoryEncryptionKeysStore();
   }
 
-  static createSession(): EncryptionKeysStore {
+  static createSessionStorage(): EncryptionKeysStore {
     return new SessionStorageEncryptionKeysStore();
+  }
+
+  static createLocalStorage(): EncryptionKeysStore {
+    return new LocalStorageEncryptionKeysStore();
   }
 }
 
@@ -27,11 +31,11 @@ export class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
   }
 }
 
-const sessionStorageEncryptionKeysKey = 'dialect-encryption-keys';
+const storageEncryptionKeysKey = 'dialect-encryption-keys';
 
 export class SessionStorageEncryptionKeysStore implements EncryptionKeysStore {
   get(): DiffeHellmanKeys | null {
-    const keys = sessionStorage.getItem(sessionStorageEncryptionKeysKey);
+    const keys = sessionStorage.getItem(storageEncryptionKeysKey);
     if (!keys) {
       return null;
     }
@@ -39,10 +43,22 @@ export class SessionStorageEncryptionKeysStore implements EncryptionKeysStore {
   }
 
   save(keys: DiffeHellmanKeys): DiffeHellmanKeys {
-    sessionStorage.setItem(
-      sessionStorageEncryptionKeysKey,
-      JSON.stringify(keys),
-    );
+    sessionStorage.setItem(storageEncryptionKeysKey, JSON.stringify(keys));
+    return keys;
+  }
+}
+
+export class LocalStorageEncryptionKeysStore implements EncryptionKeysStore {
+  get(): DiffeHellmanKeys | null {
+    const keys = localStorage.getItem(storageEncryptionKeysKey);
+    if (!keys) {
+      return null;
+    }
+    return JSON.parse(keys) as DiffeHellmanKeys;
+  }
+
+  save(keys: DiffeHellmanKeys): DiffeHellmanKeys {
+    localStorage.setItem(storageEncryptionKeysKey, JSON.stringify(keys));
     return keys;
   }
 }
