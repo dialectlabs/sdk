@@ -90,7 +90,7 @@ export class WalletDto {
 
 export enum AddressTypeDto {
   Email = 'EMAIL',
-  Sms = 'SMS',
+  PhoneNumber = 'PHONE_NUMBER',
   Telegram = 'TELEGRAM',
   Wallet = 'WALLET',
 }

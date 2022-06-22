@@ -1,6 +1,5 @@
 import { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
 import { IllegalArgumentError } from '@sdk/errors';
-import type { AddressTypeV0 } from '@data-service-api/data-service-wallets-api.v0';
 import type { Wallet } from '@wallet/wallet.interface';
 
 export interface Address {
@@ -18,39 +17,34 @@ export enum AddressType {
   Wallet = 'WALLET',
 }
 
+const addressTypeToAddressTypeDto: Record<AddressType, AddressTypeDto> = {
+  [AddressType.Email]: AddressTypeDto.Email,
+  [AddressType.PhoneNumber]: AddressTypeDto.PhoneNumber,
+  [AddressType.Telegram]: AddressTypeDto.Telegram,
+  [AddressType.Wallet]: AddressTypeDto.Wallet,
+};
+
 export function toAddressTypeDto(type: AddressType): AddressTypeDto {
-  switch (type) {
-    case AddressType.Email:
-      return AddressTypeDto.Email;
-    case AddressType.PhoneNumber:
-      return AddressTypeDto.Sms;
-    case AddressType.Telegram:
-      return AddressTypeDto.Telegram;
-    case AddressType.Wallet:
-      return AddressTypeDto.Wallet;
+  const addressTypeDto = addressTypeToAddressTypeDto[type];
+  if (!addressTypeDto) {
+    throw new IllegalArgumentError(`Unknown address type ${type}`);
   }
-  throw new IllegalArgumentError(`Unknown address type ${type}`);
+  return addressTypeDto;
 }
 
-export function toAddressType(
-  addressTypeDto: AddressTypeDto | AddressTypeV0,
-): AddressType {
-  if (addressTypeDto === 'email' || addressTypeDto === AddressTypeDto.Email) {
-    return AddressType.Email;
+const addressTypeDtoToAddressType: Record<AddressTypeDto, AddressType> = {
+  [AddressTypeDto.Email]: AddressType.Email,
+  [AddressTypeDto.PhoneNumber]: AddressType.PhoneNumber,
+  [AddressTypeDto.Telegram]: AddressType.Telegram,
+  [AddressTypeDto.Wallet]: AddressType.Wallet,
+};
+
+export function toAddressType(type: AddressTypeDto): AddressType {
+  const addressType = addressTypeDtoToAddressType[type];
+  if (!addressType) {
+    throw new IllegalArgumentError(`Unknown address type ${type}`);
   }
-  if (addressTypeDto === 'wallet' || addressTypeDto === AddressTypeDto.Wallet) {
-    return AddressType.Wallet;
-  }
-  if (addressTypeDto === 'sms' || addressTypeDto === AddressTypeDto.Sms) {
-    return AddressType.PhoneNumber;
-  }
-  if (
-    addressTypeDto === 'telegram' ||
-    addressTypeDto === AddressTypeDto.Telegram
-  ) {
-    return AddressType.Telegram;
-  }
-  throw new IllegalArgumentError(`Unknown address type ${addressTypeDto}`);
+  return addressType;
 }
 
 export interface DappAddress {
