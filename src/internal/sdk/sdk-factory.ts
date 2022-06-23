@@ -220,8 +220,11 @@ Solana settings:
     if (environment) {
       internalConfig.environment = environment;
     }
-    if (environment === 'production' || environment === 'development') {
+    if (environment === 'production') {
       internalConfig.url = 'https://dialectapi.to';
+    }
+    if (environment === 'development') {
+      internalConfig.url = 'https://dev.dialectapi.to';
     }
     if (environment === 'local-development') {
       internalConfig.url = 'http://localhost:8080';
@@ -230,11 +233,11 @@ Solana settings:
     if (dialectCloudEnvironment) {
       internalConfig.environment = dialectCloudEnvironment;
     }
-    if (
-      dialectCloudEnvironment === 'production' ||
-      dialectCloudEnvironment === 'development'
-    ) {
+    if (dialectCloudEnvironment === 'production') {
       internalConfig.url = 'https://dialectapi.to';
+    }
+    if (dialectCloudEnvironment === 'development') {
+      internalConfig.url = 'https://dev.dialectapi.to';
     }
     if (dialectCloudEnvironment === 'local-development') {
       internalConfig.url = 'http://localhost:8080';
