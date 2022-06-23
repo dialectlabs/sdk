@@ -216,12 +216,14 @@ export class DataServiceThread implements Thread {
     if (this.encryptionEnabledButCannotBeUsed()) {
       return [];
     }
-    return dialect.messages.map((it) => ({
+    var messages = dialect.messages.map((it) => ({
       author:
         it.owner === this.me.publicKey.toBase58() ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
+    messages = messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return messages;
   }
 
   private encryptionEnabledButCannotBeUsed() {

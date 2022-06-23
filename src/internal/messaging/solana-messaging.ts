@@ -213,11 +213,13 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
-    return this.dialectAccount.dialect.messages.map((it) => ({
+    var messages = this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: it.text,
     }));
+    messages = messages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+    return messages;
   }
 
   async send(command: SendMessageCommand): Promise<void> {
