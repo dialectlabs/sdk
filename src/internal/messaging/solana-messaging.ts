@@ -1,4 +1,4 @@
-import type {
+import {
   CreateThreadCommand,
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
@@ -9,8 +9,8 @@ import type {
   Thread,
   ThreadId,
   ThreadMember,
+  ThreadMemberScope,
 } from '@messaging/messaging.interface';
-import { ThreadMemberScope } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
   createDialect,
@@ -192,10 +192,10 @@ export class SolanaThread implements Thread {
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
     private dialectAccount: DialectAccount,
   ) {
-    this.id = {
+    this.id = new ThreadId({
       backend: this.backend,
       address,
-    };
+    });
   }
 
   async delete(): Promise<void> {

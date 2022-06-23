@@ -196,10 +196,10 @@ export class DataServiceThread implements Thread {
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
   ) {
-    this.id = {
+    this.id = new ThreadId({
       backend: this.backend,
       address,
-    };
+    });
   }
 
   async delete(): Promise<void> {

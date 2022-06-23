@@ -38,9 +38,29 @@ export interface FindThreadByOtherMemberQuery {
   otherMembers: PublicKey[];
 }
 
-export interface ThreadId {
+export interface ThreadIdProps {
   address: PublicKey;
   backend?: Backend;
+}
+
+export class ThreadId {
+  readonly address!: PublicKey;
+  readonly backend?: Backend;
+
+  constructor({ address, backend }: ThreadIdProps) {
+    this.address = address;
+    this.backend = backend;
+  }
+
+  public equals(other: ThreadId): boolean {
+    return this.address.equals(other.address) && this.backend === other.backend;
+  }
+
+  public toString(): string {
+    return this.backend
+      ? this.backend.toString() + ':' + this.address.toString()
+      : this.address.toString();
+  }
 }
 
 export interface Thread {
