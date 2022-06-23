@@ -220,7 +220,7 @@ Solana settings:
     if (environment) {
       internalConfig.environment = environment;
     }
-    if (environment === 'production' || environment === 'development') {
+    if (environment === 'production') {
       internalConfig.url = 'https://dialectapi.to';
     }
     if (environment === 'development') {
