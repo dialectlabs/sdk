@@ -57,7 +57,9 @@ export class ThreadId {
   }
 
   public toString(): string {
-    return JSON.stringify(this);
+    return this.backend
+      ? this.backend.toString() + ':' + this.address.toString()
+      : this.address.toString();
   }
 }
 
