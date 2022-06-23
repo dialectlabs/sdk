@@ -13,6 +13,7 @@ const config: Config.InitialOptions = {
     '^@dapp(.*)$': '<rootDir>/src/dapp$1',
     '^@data-service-api(.*)$': '<rootDir>/src/internal/data-service-api$1',
     '^@encryption(.*)$': '<rootDir>/src/internal/encryption$1',
+    '^@interop(.*)$': '<rootDir>/src/internal/interop$1',
     '^@messaging/internal(.*)$': '<rootDir>/src/internal/messaging$1',
     '^@messaging(.*)$': '<rootDir>/src/messaging$1',
     '^@sdk/internal(.*)$': '<rootDir>/src/internal/sdk$1',

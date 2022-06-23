@@ -55,6 +55,9 @@
       "@encryption/*": [
         "./internal/encryption/*"
       ],
+      "@interop/*": [
+        "./internal/interop/*"
+      ],
       "@messaging/*": [
         "./messaging/*"
       ],
