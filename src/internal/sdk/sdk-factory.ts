@@ -7,7 +7,6 @@ import {
   DialectSdkInfo,
   SolanaConfig,
 } from '@sdk/sdk.interface';
-import { InMemoryTokenStore } from '@auth/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
@@ -35,7 +34,8 @@ import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
 import type { Messaging } from '@messaging/messaging.interface';
 import type { Wallets } from '@wallet/wallet.interface';
 import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
-import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
+import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
+import { TokenStore } from '@auth/token-store';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -187,8 +187,7 @@ Solana settings:
     const environment = this.config.environment ?? 'production';
     const wallet = DialectWalletAdapterWrapper.create(this.config.wallet);
     const backends = this.initializeBackends();
-    const encryptionKeysStore =
-      this.config.encryptionKeysStore ?? new InmemoryEncryptionKeysStore();
+    const encryptionKeysStore = this.createEncryptionKeysStore();
     return {
       environment,
       wallet,
@@ -197,6 +196,26 @@ Solana settings:
       encryptionKeysStore,
       backends,
     };
+  }
+
+  private createEncryptionKeysStore() {
+    const encryptionKeysStoreConfig = this.config.encryptionKeysStore;
+    if (
+      encryptionKeysStoreConfig &&
+      encryptionKeysStoreConfig instanceof EncryptionKeysStore
+    ) {
+      return encryptionKeysStoreConfig;
+    }
+    if (encryptionKeysStoreConfig === 'in-memory') {
+      return EncryptionKeysStore.createInMemory();
+    }
+    if (encryptionKeysStoreConfig === 'session-storage') {
+      return EncryptionKeysStore.createSessionStorage();
+    }
+    if (encryptionKeysStoreConfig === 'local-storage') {
+      return EncryptionKeysStore.createLocalStorage();
+    }
+    return EncryptionKeysStore.createInMemory();
   }
 
   private initializeBackends() {
@@ -214,7 +233,7 @@ Solana settings:
     const internalConfig: DialectCloudConfig = {
       environment: 'production',
       url: 'https://dialectapi.to',
-      tokenStore: new InMemoryTokenStore(),
+      tokenStore: this.createTokenStore(),
     };
     const environment = this.config.environment;
     if (environment) {
@@ -245,10 +264,24 @@ Solana settings:
     if (this.config.dialectCloud?.url) {
       internalConfig.url = this.config.dialectCloud.url;
     }
-    if (this.config.dialectCloud?.tokenStore) {
-      internalConfig.tokenStore = this.config.dialectCloud.tokenStore;
-    }
     return internalConfig;
+  }
+
+  private createTokenStore() {
+    const tokenStoreConfig = this.config.dialectCloud?.tokenStore;
+    if (tokenStoreConfig && tokenStoreConfig instanceof TokenStore) {
+      return tokenStoreConfig;
+    }
+    if (tokenStoreConfig === 'in-memory') {
+      return TokenStore.createInMemory();
+    }
+    if (tokenStoreConfig === 'session-storage') {
+      return TokenStore.createSessionStorage();
+    }
+    if (tokenStoreConfig === 'local-storage') {
+      return TokenStore.createLocalStorage();
+    }
+    return TokenStore.createInMemory();
   }
 
   private initializeSolanaConfig(): SolanaConfig {

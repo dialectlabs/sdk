@@ -36,13 +36,18 @@ export interface SolanaInfo {
 }
 
 export type Environment = 'production' | 'development' | 'local-development';
+export type TokenStoreType = 'in-memory' | 'session-storage' | 'local-storage';
+export type EncryptionKeysStoreType =
+  | 'in-memory'
+  | 'session-storage'
+  | 'local-storage';
 
 export interface ConfigProps {
   environment?: Environment;
   wallet: DialectWalletAdapter;
   solana?: SolanaConfigProps;
   dialectCloud?: DialectCloudConfigProps;
-  encryptionKeysStore?: EncryptionKeysStore;
+  encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
   backends?: Backend[];
 }
 
@@ -55,7 +60,7 @@ export interface SolanaConfigProps {
 export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
-  tokenStore?: TokenStore;
+  tokenStore?: TokenStoreType | TokenStore;
 }
 
 export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
