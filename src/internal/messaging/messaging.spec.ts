@@ -25,6 +25,7 @@ interface WalletMessagingState {
 interface MessagingState {
   wallet1: WalletMessagingState;
   wallet2: WalletMessagingState;
+  wallet3: WalletMessagingState;
 }
 
 const baseUrl = 'http://localhost:8080';
@@ -40,8 +41,7 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
-        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet1: { messaging: wallet1Messaging },
       } = await messagingFactory();
       // when
       const threads = await wallet1Messaging.findAll();
@@ -51,12 +51,306 @@ describe('Data service messaging (e2e)', () => {
   );
 
   it.each(messaging)(
-    '%p can create thread',
+    '%p can list all threads when treads created',
     async (messagingType, messagingFactory) => {
       // given
       const {
         wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet3: { adapter: wallet3Adapter, messaging: wallet3Messaging },
+      } = await messagingFactory();
+      // when
+      const command: Omit<CreateThreadCommand, 'otherMembers'> = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      };
+      const fstToSnd = await wallet1Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const sndToTrd = await wallet2Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet3Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const trdToFst = await wallet3Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet1Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const fstThreads = (await wallet1Messaging.findAll()).map((it) => it.id);
+      const sndThreads = (await wallet2Messaging.findAll()).map((it) => it.id);
+      const trdThreads = (await wallet3Messaging.findAll()).map((it) => it.id);
+      // then
+      expect(fstThreads).toMatchObject(
+        expect.arrayContaining([trdToFst.id, fstToSnd.id]),
+      );
+      expect(sndThreads).toMatchObject(
+        expect.arrayContaining([fstToSnd.id, sndToTrd.id]),
+      );
+      expect(trdThreads).toMatchObject(
+        expect.arrayContaining([sndToTrd.id, trdToFst.id]),
+      );
+    },
+  );
+
+  it.each(messaging)(
+    '%p can find one thread by address when treads created',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet3: { adapter: wallet3Adapter, messaging: wallet3Messaging },
+      } = await messagingFactory();
+      const command: Omit<CreateThreadCommand, 'otherMembers'> = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      };
+      const fstToSnd = await wallet1Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const sndToTrd = await wallet2Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet3Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const trdToFst = await wallet3Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet1Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      // when
+      const fstToSndFound = (
+        await wallet1Messaging.find({
+          id: fstToSnd.id,
+        })
+      )?.id!;
+      const sndToTrdFound = (
+        await wallet2Messaging.find({
+          id: sndToTrd.id,
+        })
+      )?.id!;
+      const trdToFstFound = (
+        await wallet3Messaging.find({
+          id: trdToFst.id,
+        })
+      )?.id!;
+      // then
+      expect(fstToSnd.id).toMatchObject(fstToSndFound);
+      expect(sndToTrd.id).toMatchObject(sndToTrdFound);
+      expect(trdToFst.id).toMatchObject(trdToFstFound);
+    },
+  );
+
+  it.each(messaging)(
+    '%p cannot find one thread by address when not a member',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet3: { adapter: wallet3Adapter, messaging: wallet3Messaging },
+      } = await messagingFactory();
+      const command: Omit<CreateThreadCommand, 'otherMembers'> = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      };
+      const fstToSnd = await wallet1Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const sndToTrd = await wallet2Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet3Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const trdToFst = await wallet3Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet1Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      // when
+      const fstToSndFound = await wallet3Messaging.find({
+        id: fstToSnd.id,
+      });
+      const sndToTrdFound = await wallet1Messaging.find({
+        id: sndToTrd.id,
+      });
+      const trdToFstFound = await wallet2Messaging.find({
+        id: trdToFst.id,
+      });
+      // then
+      expect(fstToSndFound).toBeNull();
+      expect(sndToTrdFound).toBeNull();
+      expect(trdToFstFound).toBeNull();
+    },
+  );
+
+  it.each(messaging)(
+    '%p cannot find one thread by other member when not a member',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet3: { adapter: wallet3Adapter, messaging: wallet3Messaging },
+      } = await messagingFactory();
+      const command: Omit<CreateThreadCommand, 'otherMembers'> = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      };
+      await wallet1Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      await wallet2Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet3Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      // when
+      const trdToFst = await wallet3Messaging.find({
+        otherMembers: [wallet1Adapter.publicKey],
+      });
+      const fstToTrd = await wallet1Messaging.find({
+        otherMembers: [wallet3Adapter.publicKey],
+      });
+      // then
+      expect(trdToFst).toBeNull();
+      expect(fstToTrd).toBeNull();
+    },
+  );
+
+  it.each(messaging)(
+    '%p can find one thread by other member when treads created',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet3: { adapter: wallet3Adapter, messaging: wallet3Messaging },
+      } = await messagingFactory();
+      const command: Omit<CreateThreadCommand, 'otherMembers'> = {
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      };
+      const fstToSnd = await wallet1Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet2Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const sndToTrd = await wallet2Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet3Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      const trdToFst = await wallet3Messaging.create({
+        ...command,
+        otherMembers: [
+          {
+            publicKey: wallet1Adapter.publicKey,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      });
+      // when
+      const fstToSndFound = (
+        await wallet1Messaging.find({
+          otherMembers: [wallet2Adapter.publicKey],
+        })
+      )?.id!;
+      const sndToTrdFound = (
+        await wallet2Messaging.find({
+          otherMembers: [wallet3Adapter.publicKey],
+        })
+      )?.id!;
+      const trdToFstFound = (
+        await wallet3Messaging.find({
+          otherMembers: [wallet1Adapter.publicKey],
+        })
+      )?.id!;
+      // then
+      expect(fstToSnd.id).toMatchObject(fstToSndFound);
+      expect(sndToTrd.id).toMatchObject(sndToTrdFound);
+      expect(trdToFst.id).toMatchObject(trdToFstFound);
+    },
+  );
+
+  it.each(messaging)(
+    '%p can create thread',
+    async (messagingType, messagingFactory) => {
+      // given
+      const {
+        wallet1: { messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter },
       } = await messagingFactory();
       const before = await wallet1Messaging.findAll();
       expect(before).toMatchObject([]);
@@ -84,8 +378,8 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
-        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet1: { messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter },
       } = await messagingFactory();
       const before = await wallet1Messaging.findAll();
       expect(before).toMatchObject([]);
@@ -117,7 +411,7 @@ describe('Data service messaging (e2e)', () => {
       // given
       const {
         wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
-        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet2: { adapter: wallet2Adapter },
       } = await messagingFactory();
       const before = await wallet1Messaging.findAll();
       expect(before).toMatchObject([]);
@@ -146,7 +440,7 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet1: { messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       const command: CreateThreadCommand = {
@@ -175,8 +469,8 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
-        wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
+        wallet1: { messaging: wallet1Messaging },
+        wallet2: { adapter: wallet2Adapter },
       } = await messagingFactory();
       // when
       const command: CreateThreadCommand = {
@@ -205,7 +499,7 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet1: { messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       const command: CreateThreadCommand = {
@@ -244,7 +538,7 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet1: { messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       const command: CreateThreadCommand = {
@@ -281,7 +575,7 @@ describe('Data service messaging (e2e)', () => {
     async (messagingType, messagingFactory) => {
       // given
       const {
-        wallet1: { adapter: wallet1Adapter, messaging: wallet1Messaging },
+        wallet1: { messaging: wallet1Messaging },
         wallet2: { adapter: wallet2Adapter, messaging: wallet2Messaging },
       } = await messagingFactory();
       // @ts-ignore
@@ -320,7 +614,8 @@ describe('Data service messaging (e2e)', () => {
 });
 
 async function createSolanaServiceMessaging() {
-  const [wallet1, wallet2] = await Promise.all([
+  const [wallet1, wallet2, wallet3] = await Promise.all([
+    createSolanaWalletMessagingState(),
     createSolanaWalletMessagingState(),
     createSolanaWalletMessagingState(),
   ]);
@@ -328,6 +623,7 @@ async function createSolanaServiceMessaging() {
   const solanaMessagingState: MessagingState = {
     wallet1,
     wallet2,
+    wallet3,
   };
   return solanaMessagingState;
 }
@@ -353,40 +649,31 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
   };
 }
 
+function createDataServiceWalletMessagingState(): WalletMessagingState {
+  const wallet = NodeDialectWalletAdapter.create();
+  const adapter = new DialectWalletAdapterWrapper(wallet);
+  const messaging = new DataServiceMessaging(
+    adapter.publicKey,
+    DataServiceApi.create(
+      baseUrl,
+      TokenProvider.create(new DialectWalletAdapterEd25519TokenSigner(adapter)),
+    ).threads,
+    new DialectWalletAdapterEncryptionKeysProvider(adapter),
+  );
+  return {
+    adapter: adapter,
+    messaging: messaging,
+  };
+}
+
 async function createDataServiceMessaging() {
-  const user1Wallet = NodeDialectWalletAdapter.create();
-  const user1WalletAdapter = new DialectWalletAdapterWrapper(user1Wallet);
-  const user2Wallet = NodeDialectWalletAdapter.create();
-  const user2WalletAdapter = new DialectWalletAdapterWrapper(user2Wallet);
-  const user1DataServiceMessaging = new DataServiceMessaging(
-    user1WalletAdapter.publicKey,
-    DataServiceApi.create(
-      baseUrl,
-      TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(user1WalletAdapter),
-      ),
-    ).threads,
-    new DialectWalletAdapterEncryptionKeysProvider(user1WalletAdapter),
-  );
-  const user2DataServiceMessaging = new DataServiceMessaging(
-    user2WalletAdapter.publicKey,
-    DataServiceApi.create(
-      baseUrl,
-      TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(user2WalletAdapter),
-      ),
-    ).threads,
-    new DialectWalletAdapterEncryptionKeysProvider(user2WalletAdapter),
-  );
+  const wallet1 = createDataServiceWalletMessagingState();
+  const wallet2 = createDataServiceWalletMessagingState();
+  const wallet3 = createDataServiceWalletMessagingState();
   const dataServiceMessagingState: MessagingState = {
-    wallet1: {
-      adapter: user1WalletAdapter,
-      messaging: user1DataServiceMessaging,
-    },
-    wallet2: {
-      adapter: user2WalletAdapter,
-      messaging: user2DataServiceMessaging,
-    },
+    wallet1,
+    wallet2,
+    wallet3,
   };
   return dataServiceMessagingState;
 }
