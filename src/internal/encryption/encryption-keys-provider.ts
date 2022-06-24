@@ -1,11 +1,10 @@
 import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 import { UnsupportedOperationError } from '@sdk/errors';
-import {
-  EncryptionKeysStore,
-  InmemoryEncryptionKeysStore,
-} from '@encryption/encryption-keys-store';
+import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
+import { InmemoryEncryptionKeysStore } from '@encryption/internal/encryption-keys-store';
+import type { PublicKey } from '@solana/web3.js';
 
 export abstract class EncryptionKeysProvider {
   abstract getFailSafe(): Promise<DiffeHellmanKeys | null>;
@@ -19,7 +18,11 @@ export abstract class EncryptionKeysProvider {
     const provider = new DialectWalletAdapterEncryptionKeysProvider(
       dialectWalletAdapter,
     );
-    return new CachedEncryptionKeysProvider(provider, encryptionKeysStore);
+    return new CachedEncryptionKeysProvider(
+      provider,
+      encryptionKeysStore,
+      dialectWalletAdapter.publicKey,
+    );
   }
 }
 
@@ -45,6 +48,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
   constructor(
     private readonly delegate: EncryptionKeysProvider,
     private readonly encryptionKeysStore: EncryptionKeysStore,
+    private readonly subject: PublicKey,
   ) {
     super();
   }
@@ -52,7 +56,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
   private delegateGetPromise: Promise<DiffeHellmanKeys | null> | null = null;
 
   async getFailSafe(): Promise<DiffeHellmanKeys | null> {
-    const existingKeys = this.encryptionKeysStore.get();
+    const existingKeys = this.encryptionKeysStore.get(this.subject);
     if (existingKeys) {
       this.delegateGetPromise = null;
       return existingKeys;
@@ -60,7 +64,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     if (!this.delegateGetPromise) {
       this.delegateGetPromise = this.delegate
         .getFailSafe()
-        .then((it) => it && this.encryptionKeysStore.save(it));
+        .then((it) => it && this.encryptionKeysStore.save(this.subject, it));
     }
     return this.delegateGetPromise;
   }
