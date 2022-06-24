@@ -6,8 +6,7 @@ import type {
 } from '@auth/auth.interface';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
 import type { PublicKey } from '@solana/web3.js';
-import { InMemoryTokenStore } from '@auth/internal/token-store';
-import type { TokenStore } from '@auth/token-store';
+import { TokenStore } from '@auth/token-store';
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;
@@ -15,7 +14,7 @@ export abstract class TokenProvider {
   static create(
     signer: Ed25519TokenSigner,
     ttl: Duration = Duration.fromObject({ hours: 1 }),
-    tokenStore: TokenStore = new InMemoryTokenStore(),
+    tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
     const tokenUtils = new AuthTokensImpl();
     const defaultTokenProvider = new DefaultTokenProvider(
