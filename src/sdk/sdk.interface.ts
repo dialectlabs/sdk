@@ -4,7 +4,7 @@ import type {
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type { Messaging } from '@messaging/messaging.interface';
-import type { TokenStore } from '@auth/internal/token-store';
+import type { TokenStore } from '@auth/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
 import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { Dapps } from '@dapp/dapp.interface';

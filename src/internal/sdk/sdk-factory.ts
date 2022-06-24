@@ -7,7 +7,7 @@ import {
   DialectSdkInfo,
   SolanaConfig,
 } from '@sdk/sdk.interface';
-import { InMemoryTokenStore } from '@auth/internal/token-store';
+import { InMemoryTokenStore } from '@auth/token-store';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
@@ -22,7 +22,6 @@ import { createDialectProgram } from '@messaging/internal/solana-dialect-program
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { IllegalArgumentError } from '@sdk/errors';
 import type { DappAddresses, Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
@@ -30,12 +29,13 @@ import { DappsImpl } from '@dapp/internal/dapp';
 import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
 import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
 import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
-import { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
 import type { Messaging } from '@messaging/messaging.interface';
 import type { Wallets } from '@wallet/wallet.interface';
+import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+import { InmemoryEncryptionKeysStore } from '@encryption/encryption-keys-store';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;

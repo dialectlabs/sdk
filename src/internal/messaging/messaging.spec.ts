@@ -10,12 +10,12 @@ import { DataServiceMessaging } from '@messaging/internal/data-service-messaging
 import { DataServiceApi } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
-import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
 import { ThreadAlreadyExistsError } from '@sdk/errors';
+import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
