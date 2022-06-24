@@ -11,6 +11,12 @@ export interface DataServiceDappsApi {
   find(): Promise<DappDto>;
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
+
+  unicast(command: UnicastNotificationCommandDto): Promise<void>;
+
+  multicast(command: MulticastNotificationCommandDto): Promise<void>;
+
+  broadcast(command: BroadcastNotificationCommandDto): Promise<void>;
 }
 
 export class DataServiceDappsApiClient implements DataServiceDappsApi {
@@ -57,6 +63,51 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .then((it) => it.data),
     );
   }
+
+  async broadcast(command: BroadcastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/broadcast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
+
+  async multicast(command: MulticastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/multicast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
+
+  async unicast(command: UnicastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/unicast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
 }
 
 export class DappDto {
@@ -93,4 +144,21 @@ export enum AddressTypeDto {
   PhoneNumber = 'PHONE_NUMBER',
   Telegram = 'TELEGRAM',
   Wallet = 'WALLET',
+}
+
+export class UnicastNotificationCommandDto {
+  title!: string;
+  message!: string;
+  receiverPublicKey!: string;
+}
+
+export class MulticastNotificationCommandDto {
+  title!: string;
+  message!: string;
+  receiverPublicKeys!: string[];
+}
+
+export class BroadcastNotificationCommandDto {
+  title!: string;
+  message!: string;
 }

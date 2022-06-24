@@ -12,6 +12,7 @@ import type {
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from '@data-service-api/data-service-wallets-api.v0';
+import { Keypair } from '@solana/web3.js';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -52,6 +53,47 @@ describe('Data service dapps api (e2e)', () => {
     const found = await dappsApi.find();
     // then
     expect(found).toMatchObject(created);
+  });
+
+  test('can unicast notification', async () => {
+    // given
+    await dappsApi.create();
+    // when / then
+    await expect(
+      dappsApi.unicast({
+        title: 'test-title',
+        message: 'test',
+        receiverPublicKey: Keypair.generate().publicKey.toBase58(),
+      }),
+    ).resolves.toBeTruthy();
+  });
+
+  test('can multicast notification', async () => {
+    // given
+    await dappsApi.create();
+    // when / then
+    await expect(
+      dappsApi.multicast({
+        title: 'test-title',
+        message: 'test',
+        receiverPublicKeys: [
+          Keypair.generate().publicKey.toBase58(),
+          Keypair.generate().publicKey.toBase58(),
+        ],
+      }),
+    ).resolves.toBeTruthy();
+  });
+
+  test('can broadcast notification', async () => {
+    // given
+    await dappsApi.create();
+    // when / then
+    await expect(
+      dappsApi.broadcast({
+        title: 'test-title',
+        message: 'test',
+      }),
+    ).resolves.toBeTruthy();
   });
 
   describe('Wallet dapp addresses v0', () => {
