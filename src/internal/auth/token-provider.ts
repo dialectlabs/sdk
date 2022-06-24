@@ -1,4 +1,4 @@
-import { InMemoryTokenStore, TokenStore } from './token-store';
+import { InMemoryTokenStore, TokenStore } from '@auth/token-store';
 import { Duration } from 'luxon';
 import type {
   Ed25519TokenSigner,

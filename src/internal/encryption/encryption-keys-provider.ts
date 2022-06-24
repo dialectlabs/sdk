@@ -1,14 +1,11 @@
 import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
+
+import { UnsupportedOperationError } from '@sdk/errors';
 import {
   EncryptionKeysStore,
   InmemoryEncryptionKeysStore,
-} from './encryption-keys-store';
-import { UnsupportedOperationError } from '@sdk/errors';
-
-export interface DiffeHellmanKeys {
-  publicKey: Uint8Array;
-  secretKey: Uint8Array;
-}
+} from '@encryption/encryption-keys-store';
+import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
 
 export abstract class EncryptionKeysProvider {
   abstract getFailSafe(): Promise<DiffeHellmanKeys | null>;

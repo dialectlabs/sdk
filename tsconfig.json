@@ -49,11 +49,14 @@
       "@dapp/internal/*": [
         "./internal/dapp/*"
       ],
+      "@encryption/*": [
+        "./encryption/*"
+      ],
+      "@encryption/internal/*": [
+        "./internal/encryption/*"
+      ],
       "@data-service-api/*": [
         "./internal/data-service-api/*"
-      ],
-      "@encryption/*": [
-        "./internal/encryption/*"
       ],
       "@messaging/*": [
         "./messaging/*"

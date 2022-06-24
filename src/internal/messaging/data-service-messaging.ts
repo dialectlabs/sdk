@@ -22,7 +22,6 @@ import {
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
 } from '@sdk/errors';
-import type { EncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
@@ -33,6 +32,7 @@ import {
   MemberScopeDto,
 } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
+import type { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 
 export class DataServiceMessaging implements Messaging {
   constructor(

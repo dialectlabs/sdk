@@ -1,4 +1,4 @@
-import type { DiffeHellmanKeys } from './encryption-keys-provider';
+import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
 
 export abstract class EncryptionKeysStore {
   abstract get(): DiffeHellmanKeys | null;

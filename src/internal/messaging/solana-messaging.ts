@@ -36,13 +36,13 @@ import {
   SolanaError,
   ThreadAlreadyExistsError,
 } from '@sdk/errors';
-import type {
-  DiffeHellmanKeys,
-  EncryptionKeysProvider,
-} from '@encryption/encryption-keys-provider';
-import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/encryption-keys-provider';
 import { Backend } from '@sdk/sdk.interface';
 import { requireSingleMember } from '@messaging/internal/commons';
+import {
+  DialectWalletAdapterEncryptionKeysProvider,
+  EncryptionKeysProvider,
+} from '@encryption/internal/encryption-keys-provider';
+import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
