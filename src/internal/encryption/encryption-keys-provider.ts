@@ -1,9 +1,8 @@
 import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 import { UnsupportedOperationError } from '@sdk/errors';
-import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
+import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
-import { InmemoryEncryptionKeysStore } from '@encryption/internal/encryption-keys-store';
 import type { PublicKey } from '@solana/web3.js';
 
 export abstract class EncryptionKeysProvider {
@@ -13,7 +12,7 @@ export abstract class EncryptionKeysProvider {
 
   static create(
     dialectWalletAdapter: DialectWalletAdapterWrapper,
-    encryptionKeysStore: EncryptionKeysStore = new InmemoryEncryptionKeysStore(),
+    encryptionKeysStore: EncryptionKeysStore = EncryptionKeysStore.createInMemory(),
   ): EncryptionKeysProvider {
     const provider = new DialectWalletAdapterEncryptionKeysProvider(
       dialectWalletAdapter,
