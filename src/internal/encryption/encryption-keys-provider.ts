@@ -52,20 +52,27 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     super();
   }
 
-  private delegateGetPromise: Promise<DiffeHellmanKeys | null> | null = null;
+  private readonly delegateGetPromises: Record<
+    string,
+    Promise<DiffeHellmanKeys | null>
+  > = {};
 
   async getFailSafe(): Promise<DiffeHellmanKeys | null> {
     const existingKeys = this.encryptionKeysStore.get(this.subject);
+    const subject = this.subject.toBase58();
     if (existingKeys) {
-      this.delegateGetPromise = null;
+      delete this.delegateGetPromises[subject];
       return existingKeys;
     }
-    if (!this.delegateGetPromise) {
-      this.delegateGetPromise = this.delegate
-        .getFailSafe()
-        .then((it) => it && this.encryptionKeysStore.save(this.subject, it));
+    const existingDelegatePromise = this.delegateGetPromises[subject];
+    if (existingDelegatePromise) {
+      return existingDelegatePromise;
     }
-    return this.delegateGetPromise;
+    const delegatePromise = this.delegate
+      .getFailSafe()
+      .then((it) => it && this.encryptionKeysStore.save(this.subject, it));
+    this.delegateGetPromises[subject] = delegatePromise;
+    return delegatePromise;
   }
 
   async getFailFast(): Promise<DiffeHellmanKeys> {
