@@ -20,14 +20,14 @@ export abstract class TokenStore {
 }
 
 class InMemoryTokenStore extends TokenStore {
-  private tokens: Map<string, Token> = new Map<string, Token>();
+  private tokens: Record<string, Token> = {};
 
   get(subject: PublicKey): Token | null {
-    return this.tokens.get(subject.toBase58()) ?? null;
+    return this.tokens[subject.toBase58()] ?? null;
   }
 
   save(token: Token): Token {
-    this.tokens.set(token.body.sub, token);
+    this.tokens[token.body.sub] = token;
     return token;
   }
 }

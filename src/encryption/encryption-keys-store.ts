@@ -20,17 +20,14 @@ export abstract class EncryptionKeysStore {
 }
 
 class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
-  private keys: Map<string, DiffeHellmanKeys> = new Map<
-    string,
-    DiffeHellmanKeys
-  >();
+  private keys: Record<string, DiffeHellmanKeys> = {};
 
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    return this.keys.get(subject.toBase58()) ?? null;
+    return this.keys[subject.toBase58()] ?? null;
   }
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
-    this.keys.set(subject.toBase58(), keys);
+    this.keys[subject.toBase58()] = keys;
     return keys;
   }
 }
