@@ -126,15 +126,57 @@ const messages = await thread.messages();
 
 ### Create a new thread
 
-To do.
+Run the [`create-thread` example script](examples/create-thread.ts).
+
+```typescript
+import type {
+  // ... previous imports
+  ThreadMemberScope,
+} from '@dialectlabs/sdk';
+
+const recipient = new PublicKey('3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk') // Make this arbitrary
+const command: CreateThreadCommand = {
+  encrypted: false,
+  me: {
+    scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+  },
+  otherMembers: [
+    {
+      publicKey: recipient,
+      scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+    },
+  ],
+};
+// Uses the default backend.DialectCloud offchain. The command above may optionally take a preferred backend.
+const thread = await sdk.threads.create(command);
+```
 
 ### Send a message
 
-To do.
+Run the [`send-message` example script](examples/send-message.ts).
+
+```typescript
+// ... code from previous examples
+
+const text = 'gm world';
+const command: SendMessageCommand = {
+  text,
+}
+await thread.send(command);
+```
 
 ### Delete a thread
 
-To do.
+Run the [`delete-thread` example script](examples/delete-thread.ts).
+
+```typescript
+const threadId = thread.id; // Keep for re-querying to confirm deletion
+await thread.delete();
+const query: FindThreadByIdQuery = {
+  id: threadId,
+};
+const refetchedThread = await sdk.threads.find(query); // Will be null
+```
 
 ## Dapp Notifications & Subscriptions
 
@@ -149,3 +191,5 @@ If you'd like to be added to this list, please reach out to us on [twitter](http
 ### Fetch all whitelisted dapp messages
 
 The Dialect SDK provides an endpoint for querying for all messages from whitelisted dapps, which are described above. This is convenient for producing a single feed of notifications.
+
+TODO: Provide example.

@@ -1,4 +1,4 @@
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 import {
   Backend,
   ConfigProps,
@@ -6,14 +6,18 @@ import {
   DialectWalletAdapterWrapper,
   EncryptionKeysStore,
   NodeDialectWalletAdapter,
-  TokenStore
+  TokenStore,
+  ThreadMemberScope,
+  SendMessageCommand,
 } from '../src';
 import type {
+  CreateThreadCommand,
   DialectSdk,
   FindThreadByIdQuery,
   Message,
   Thread,
   ThreadId,
+  ThreadMember,
 } from '../src';
 
 export function createSdk(): DialectSdk {
@@ -46,6 +50,31 @@ export function createSdk(): DialectSdk {
   } as ConfigProps);
 
   return sdk;
+}
+
+export async function createThread(sdk: DialectSdk, recipient: PublicKey): Promise<Thread> {
+  const command: CreateThreadCommand = {
+    encrypted: false,
+    me: {
+      scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+    },
+    otherMembers: [
+      {
+        publicKey: recipient,
+        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+      },
+    ],
+  };
+  const thread = await sdk.threads.create(command);
+  console.log({thread});
+  return thread;
+};
+
+export async function sendMessage(thread: Thread, text: string): Promise<void> {
+  const command: SendMessageCommand = {
+    text,
+  }
+  return await thread.send(command);
 }
 
 export async function getThreads(sdk: DialectSdk): Promise<Thread[]> {
