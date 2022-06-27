@@ -21,10 +21,6 @@ export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
 }
 
-export interface FindDappQuery {
-  publicKey: PublicKey;
-}
-
 export interface CreateDappCommand {
   name: string;
   description?: string;

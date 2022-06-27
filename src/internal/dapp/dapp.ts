@@ -42,7 +42,11 @@ export class DappsImpl implements Dapps {
   }
 
   async findAll(query?: FindDappQuery): Promise<Omit<Dapp, 'dappAddresses'>[]> {
-    const dappDtos = await withErrorParsing(this.dappsApi.findAll());
+    const dappDtos = await withErrorParsing(
+      this.dappsApi.findAll({
+        verified: query?.verified,
+      }),
+    );
     return dappDtos.map((it) => ({
       ...it,
       publicKey: new PublicKey(it.publicKey),
