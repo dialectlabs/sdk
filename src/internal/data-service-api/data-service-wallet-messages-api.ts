@@ -15,6 +15,7 @@ export interface DataServiceWalletMessagesApi {
 export interface FindWalletMessagesQueryDto {
   readonly skip?: number;
   readonly take?: number;
+  readonly dappVerified?: boolean;
 }
 
 export class DataServiceWalletMessagesApiClient
@@ -29,6 +30,7 @@ export class DataServiceWalletMessagesApiClient
     query?: FindWalletMessagesQueryDto,
   ): Promise<MessageDto[]> {
     const token = await this.tokenProvider.get();
+    console.log(query?.dappVerified);
     return withReThrowingDataServiceError(
       axios
         .get<MessageDto[]>(`${this.baseUrl}/api/v1/wallets/me/dappMessages`, {

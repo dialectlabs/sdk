@@ -108,4 +108,5 @@ export interface DappMessage {
 export interface FindDappMessageQuery {
   readonly skip?: number;
   readonly take?: number;
+  readonly dappVerified?: boolean;
 }

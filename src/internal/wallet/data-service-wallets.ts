@@ -171,6 +171,7 @@ export class DataServiceWalletDappMessages implements WalletDappMessages {
     const dappMessages = await this.api.findAllDappMessages({
       skip: query?.skip,
       take: query?.take,
+      dappVerified: query?.dappVerified,
     });
     return dappMessages.map((it) => ({
       author: new PublicKey(it.owner),

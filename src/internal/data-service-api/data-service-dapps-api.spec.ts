@@ -68,7 +68,9 @@ describe('Data service dapps api (e2e)', () => {
       name: 'Test dapp',
     });
     // when
-    const found = await dappsApi.findAll();
+    const found = await dappsApi.findAll({
+      verified: false,
+    });
     // then
     expect(found).toMatchObject(expect.arrayContaining([created]));
     // when
