@@ -182,14 +182,28 @@ const refetchedThread = await sdk.threads.find(query); // Will be null
 
 ### Dapp whitelist
 
-Dialect manages a list of verified dapps that have integrated with Dialect. While all messaging is done via wallets and keypairs and on the core messaging rails, this whitelist is convenient for surfacing just messages that are specific to dapp notifications from the most well known projects on Solana.
+Dialect manages a list of verified dapps that have integrated with Dialect. While all messaging is done via wallets and keypairs and sent along the core messaging rails, this whitelist is convenient for surfacing just messages that are specifically from the most well-known dapps on Solana.
 
 Whether or not this list continues to be maintained is to be determined.
 
 If you'd like to be added to this list, please reach out to us on [twitter](https://twitter.com/saydialect)
 
-### Fetch all whitelisted dapp messages
+### Register a dapp
 
-The Dialect SDK provides an endpoint for querying for all messages from whitelisted dapps, which are described above. This is convenient for producing a single feed of notifications.
+TODO.
 
-TODO: Provide example.
+### Fetch all dapps
+
+TODO.
+
+### Fetch all whitelisted dapp messages for a given wallet
+
+The Dialect SDK provides an endpoint for querying all messages from whitelisted dapps for a given wallet. This is convenient for producing a single feed of notifications.
+
+```typescript
+// ... code from previous examples
+
+const messages = await sdk.wallet.dappMessages.findAll({
+  dappVerified: true,
+});
+```
