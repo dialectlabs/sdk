@@ -8,6 +8,8 @@ import {
 export interface DataServiceDappsApi {
   create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
 
+  findAll(query?: FindDappQueryDto): Promise<DappDto[]>;
+
   find(): Promise<DappDto>;
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
@@ -111,6 +113,18 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .then(),
     );
   }
+
+  async findAll(query?: FindDappQueryDto): Promise<DappDto[]> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<DappDto[]>(`${this.baseUrl}/api/v1/dapps`, {
+          headers: createHeaders(token),
+          ...(query && { params: query }),
+        })
+        .then((it) => it.data),
+    );
+  }
 }
 
 export class DappDto {
@@ -169,4 +183,8 @@ export class MulticastNotificationCommandDto {
 export class BroadcastNotificationCommandDto {
   title!: string;
   message!: string;
+}
+
+export class FindDappQueryDto {
+  verified?: boolean;
 }

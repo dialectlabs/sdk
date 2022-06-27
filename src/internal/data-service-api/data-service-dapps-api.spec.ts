@@ -61,6 +61,26 @@ describe('Data service dapps api (e2e)', () => {
     expect(found).toMatchObject(created);
   });
 
+  test('can find all dapps', async () => {
+    // given
+    await expect(dappsApi.find()).rejects.toBeTruthy();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
+    // when
+    const found = await dappsApi.findAll();
+    // then
+    expect(found).toMatchObject(expect.arrayContaining([created]));
+    // when
+    const foundWithFilter = await dappsApi.findAll({
+      verified: true,
+    });
+    // then
+    expect(foundWithFilter).toMatchObject(
+      expect.not.arrayContaining([created]),
+    );
+  });
+
   test('can unicast notification', async () => {
     // given
     await dappsApi.create({

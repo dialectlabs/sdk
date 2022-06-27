@@ -4,10 +4,14 @@ import type { DappAddress } from '@address/addresses.interface';
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
   find(): Promise<Dapp | null>;
+  findAll(query?: FindDappQuery): Promise<Omit<Dapp, 'dappAddresses'>[]>;
 }
 
 export interface Dapp {
   publicKey: PublicKey;
+  name: string;
+  description?: string;
+  verified: boolean;
   dappAddresses: DappAddresses;
 
   // notify(command: NotifyCommand): Promise<void>;
@@ -24,6 +28,10 @@ export interface FindDappQuery {
 export interface CreateDappCommand {
   name: string;
   description?: string;
+}
+
+export interface FindDappQuery {
+  verified?: boolean;
 }
 
 //
