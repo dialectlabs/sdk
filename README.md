@@ -6,11 +6,11 @@ The Dialect SDK is a single typescript library for interacting with Dialect's on
 
 ### Messaging
 
-All messaging, user to user or dapp to user, is powered by the same Dialect messaging protocol, which supports both on and off chain messaging.
+All messaging, user to user or dapp to user, is powered by the same Dialect messaging protocol, which supports both on and off chain messaging. With the messaging SDK you can:
 
-- Vewing all message threads
-- Creating & deleting threads
-- Sending & receiving messages within threads
+- view all message threads
+- create & delete threads, &
+- send & receive messages within threads.
 
 ### Dapp Notifications & Subscriptions
 
