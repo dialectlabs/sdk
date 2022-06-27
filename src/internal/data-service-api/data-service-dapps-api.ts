@@ -6,11 +6,19 @@ import {
 } from '@data-service-api/data-service-api';
 
 export interface DataServiceDappsApi {
-  create(/*command: CreateDappCommandDto*/): Promise<DappDto>;
+  create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
+
+  findAll(query?: FindDappQueryDto): Promise<DappDto[]>;
 
   find(): Promise<DappDto>;
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
+
+  unicast(command: UnicastNotificationCommandDto): Promise<void>;
+
+  multicast(command: MulticastNotificationCommandDto): Promise<void>;
+
+  broadcast(command: BroadcastNotificationCommandDto): Promise<void>;
 }
 
 export class DataServiceDappsApiClient implements DataServiceDappsApi {
@@ -19,14 +27,17 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async create(): Promise<DappDto> {
+  async create(
+    command: Omit<CreateDappCommandDto, 'publicKey'>,
+  ): Promise<DappDto> {
     const token = await this.tokenProvider.get();
-    const command: CreateDappCommandDto = {
+    const fullCommand: CreateDappCommandDto = {
+      ...command,
       publicKey: token.body.sub,
     };
     return withReThrowingDataServiceError(
       axios
-        .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, command, {
+        .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, fullCommand, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
@@ -57,15 +68,77 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .then((it) => it.data),
     );
   }
+
+  async broadcast(command: BroadcastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/broadcast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
+
+  async multicast(command: MulticastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/multicast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
+
+  async unicast(command: UnicastNotificationCommandDto): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/unicast`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then(),
+    );
+  }
+
+  async findAll(query?: FindDappQueryDto): Promise<DappDto[]> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<DappDto[]>(`${this.baseUrl}/api/v1/dapps`, {
+          headers: createHeaders(token),
+          ...(query && { params: query }),
+        })
+        .then((it) => it.data),
+    );
+  }
 }
 
 export class DappDto {
   readonly id!: string;
   readonly publicKey!: string;
+  readonly name!: string;
+  readonly description?: string;
+  readonly verified!: boolean;
 }
 
 export class CreateDappCommandDto {
+  readonly name!: string;
   readonly publicKey!: string;
+  readonly description?: string;
 }
 
 export class DappAddressDto {
@@ -93,4 +166,25 @@ export enum AddressTypeDto {
   PhoneNumber = 'PHONE_NUMBER',
   Telegram = 'TELEGRAM',
   Wallet = 'WALLET',
+}
+
+export class UnicastNotificationCommandDto {
+  title!: string;
+  message!: string;
+  receiverPublicKey!: string;
+}
+
+export class MulticastNotificationCommandDto {
+  title!: string;
+  message!: string;
+  receiverPublicKeys!: string[];
+}
+
+export class BroadcastNotificationCommandDto {
+  title!: string;
+  message!: string;
+}
+
+export class FindDappQueryDto {
+  verified?: boolean;
 }

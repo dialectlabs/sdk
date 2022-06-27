@@ -3,7 +3,7 @@ import {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  Message,
+  ThreadMessage,
   Messaging,
   SendMessageCommand,
   Thread,
@@ -59,12 +59,18 @@ export class SolanaMessaging implements Messaging {
 
   async create(command: CreateThreadCommand): Promise<Thread> {
     const dialectAccount = await this.createInternal(command);
-    return toSolanaThread(
+    const solanaThread = await toSolanaThread(
       dialectAccount,
       this.walletAdapter,
       this.encryptionKeysProvider,
       this.program,
     );
+    if (!solanaThread) {
+      throw new IllegalStateError(
+        `Should not happen: cannot determine members in created thread.`,
+      );
+    }
+    return solanaThread;
   }
 
   private async createInternal(command: CreateThreadCommand) {
@@ -163,7 +169,7 @@ export class SolanaMessaging implements Messaging {
         userPk: this.walletAdapter.publicKey,
       }),
     );
-    return Promise.all(
+    const all = await Promise.all(
       dialects.map(async (it) =>
         toSolanaThread(
           it,
@@ -173,6 +179,7 @@ export class SolanaMessaging implements Messaging {
         ),
       ),
     );
+    return all.filter((it) => Boolean(it)).map((it) => it!);
   }
 }
 
@@ -204,7 +211,7 @@ export class SolanaThread implements Thread {
     );
   }
 
-  async messages(): Promise<Message[]> {
+  async messages(): Promise<ThreadMessage[]> {
     const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
     const encryptionProps = getEncryptionProps(
       this.me.publicKey,
@@ -269,16 +276,12 @@ async function toSolanaThread(
   walletAdapter: DialectWalletAdapterWrapper,
   encryptionKeysProvider: EncryptionKeysProvider,
   program: Program,
-): Promise<SolanaThread> {
+): Promise<SolanaThread | null> {
   const { dialect, publicKey } = dialectAccount;
   const meMember = findMember(walletAdapter.publicKey, dialect);
   const otherMember = findOtherMember(walletAdapter.publicKey, dialect);
   if (!meMember || !otherMember) {
-    throw new IllegalStateError(
-      `Cannot resolve members from given list: ${dialect.members.map((it) =>
-        it.publicKey.toBase58(),
-      )} and wallet public key ${walletAdapter.publicKey.toBase58()}`,
-    );
+    return null;
   }
   const canBeDecrypted = dialect.encrypted
     ? (await encryptionKeysProvider.getFailSafe()) !== null

@@ -20,6 +20,10 @@ import {
   DataServiceWalletDappAddressesApi,
   DataServiceWalletDappAddressesApiClient,
 } from '@data-service-api/data-service-wallet-dapp-addresses-api';
+import {
+  DataServiceWalletMessagesApi,
+  DataServiceWalletMessagesApiClient,
+} from '@data-service-api/data-service-wallet-messages-api';
 
 export class DataServiceApi {
   private constructor(
@@ -28,6 +32,7 @@ export class DataServiceApi {
     readonly walletsV0: DataServiceWalletsApiV0,
     readonly walletAddresses: DataServiceWalletAddressesApi,
     readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
+    readonly walletMessages: DataServiceWalletMessagesApi,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -51,12 +56,17 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
+    const walletDappMessagesApi = new DataServiceWalletMessagesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
     return new DataServiceApi(
       dialectsApi,
       dappAddressesApi,
       walletsApiV0,
       walletAddressesApi,
       walletDappAddressesApi,
+      walletDappMessagesApi,
     );
   }
 }

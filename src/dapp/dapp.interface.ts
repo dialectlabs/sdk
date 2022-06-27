@@ -2,12 +2,16 @@ import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
 
 export interface Dapps {
-  create(/*command: CreateDappCommand*/): Promise<Dapp>;
+  create(command: CreateDappCommand): Promise<Dapp>;
   find(): Promise<Dapp | null>;
+  findAll(query?: FindDappQuery): Promise<Omit<Dapp, 'dappAddresses'>[]>;
 }
 
 export interface Dapp {
   publicKey: PublicKey;
+  name: string;
+  description?: string;
+  verified: boolean;
   dappAddresses: DappAddresses;
 
   // notify(command: NotifyCommand): Promise<void>;
@@ -17,12 +21,13 @@ export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
 }
 
-export interface FindDappQuery {
-  publicKey: PublicKey;
+export interface CreateDappCommand {
+  name: string;
+  description?: string;
 }
 
-export interface CreateDappCommand {
-  publicKey: PublicKey;
+export interface FindDappQuery {
+  verified?: boolean;
 }
 
 //

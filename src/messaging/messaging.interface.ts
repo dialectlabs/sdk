@@ -13,7 +13,7 @@ export interface SendMessageCommand {
   text: string;
 }
 
-export interface Message {
+export interface ThreadMessage {
   text: string;
   timestamp: Date;
   author: ThreadMember;
@@ -72,7 +72,7 @@ export interface Thread {
   backend: Backend;
   updatedAt: Date;
 
-  messages(): Promise<Message[]>;
+  messages(): Promise<ThreadMessage[]>;
 
   send(command: SendMessageCommand): Promise<void>;
 

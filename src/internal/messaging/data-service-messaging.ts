@@ -3,7 +3,7 @@ import type {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  Message,
+  ThreadMessage,
   Messaging,
   SendMessageCommand,
   Thread,
@@ -208,7 +208,7 @@ export class DataServiceThread implements Thread {
     );
   }
 
-  async messages(): Promise<Message[]> {
+  async messages(): Promise<ThreadMessage[]> {
     const { dialect } = await withErrorParsing(
       this.dataServiceDialectsApi.find(this.address.toBase58()),
     );

@@ -89,6 +89,7 @@ export class DialectSdkFactory {
       config.wallet.publicKey,
       dataServiceApi.walletAddresses,
       dataServiceApi.walletDappAddresses,
+      dataServiceApi.walletMessages,
     );
     return new InternalDialectSdk(
       {

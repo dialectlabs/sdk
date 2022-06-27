@@ -12,6 +12,7 @@ import type {
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from '@data-service-api/data-service-wallets-api.v0';
+import { Keypair } from '@solana/web3.js';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -33,12 +34,16 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can create dapp and find all dappAddresses', async () => {
     // when
-    const created = await dappsApi.create();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
     const addresses = await dappsApi.findAllDappAddresses();
     // then
     const dappDtoExpected: DappDto = {
       id: expect.any(String),
       publicKey: dappWallet.publicKey.toBase58(),
+      name: created.name,
+      verified: false,
     };
     expect(created).toMatchObject(dappDtoExpected);
     expect(addresses).toMatchObject([]);
@@ -47,11 +52,82 @@ describe('Data service dapps api (e2e)', () => {
   test('can find dapp', async () => {
     // given
     await expect(dappsApi.find()).rejects.toBeTruthy();
-    const created = await dappsApi.create();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
     // when
     const found = await dappsApi.find();
     // then
     expect(found).toMatchObject(created);
+  });
+
+  test('can find all dapps', async () => {
+    // given
+    await expect(dappsApi.find()).rejects.toBeTruthy();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
+    // when
+    const found = await dappsApi.findAll({
+      verified: false,
+    });
+    // then
+    expect(found).toMatchObject(expect.arrayContaining([created]));
+    // when
+    const foundWithFilter = await dappsApi.findAll({
+      verified: true,
+    });
+    // then
+    expect(foundWithFilter).toMatchObject(
+      expect.not.arrayContaining([created]),
+    );
+  });
+
+  test('can unicast notification', async () => {
+    // given
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
+    // when / then
+    await expect(
+      dappsApi.unicast({
+        title: 'test-title',
+        message: 'test',
+        receiverPublicKey: Keypair.generate().publicKey.toBase58(),
+      }),
+    ).resolves.toBeTruthy();
+  });
+
+  test('can multicast notification', async () => {
+    // given
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
+    // when / then
+    await expect(
+      dappsApi.multicast({
+        title: 'test-title',
+        message: 'test',
+        receiverPublicKeys: [
+          Keypair.generate().publicKey.toBase58(),
+          Keypair.generate().publicKey.toBase58(),
+        ],
+      }),
+    ).resolves.toBeTruthy();
+  });
+
+  test('can broadcast notification', async () => {
+    // given
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
+    // when / then
+    await expect(
+      dappsApi.broadcast({
+        title: 'test-title',
+        message: 'test',
+      }),
+    ).resolves.toBeTruthy();
   });
 
   describe('Wallet dapp addresses v0', () => {
@@ -75,7 +151,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can create dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       // when
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
@@ -99,7 +177,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can find dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
@@ -122,7 +202,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can delete dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
