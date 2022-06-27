@@ -32,7 +32,7 @@ class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
   }
 }
 
-class SessionStorageEncryptionKeysStore implements EncryptionKeysStore {
+class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
     const keys = sessionStorage.getItem(createStorageKey(subject.toBase58()));
     if (!keys) {
@@ -50,7 +50,7 @@ class SessionStorageEncryptionKeysStore implements EncryptionKeysStore {
   }
 }
 
-class LocalStorageEncryptionKeysStore implements EncryptionKeysStore {
+class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
     const keys = localStorage.getItem(createStorageKey(subject.toBase58()));
     if (!keys) {

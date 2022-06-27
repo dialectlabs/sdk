@@ -6,9 +6,8 @@ import {
 } from '../src';
 import { Duration } from 'luxon';
 
-const walletAdapter = DialectWalletAdapterWrapper.create(
-  NodeDialectWalletAdapter.create(),
-);
+const adapter = NodeDialectWalletAdapter.create();
+const walletAdapter = DialectWalletAdapterWrapper.create(adapter);
 
 (async () => {
   const token = await Auth.tokens.generate(
