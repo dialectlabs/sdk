@@ -1,22 +1,5 @@
-import { createSdk } from './create-sdk';
-import { getThreads } from './get-threads';
-import type { DialectSdk, FindThreadByIdQuery, Message, Thread, ThreadId } from '../src';
-import { PublicKey } from '@solana/web3.js';
-
-export async function getMessages(sdk: DialectSdk, threadId: ThreadId): Promise<Message[]> {
-  const query: FindThreadByIdQuery = {
-    id: threadId,
-  }
-  const thread = await sdk.threads.find(query);
-  if (!thread) {
-    console.log("No thread found with id", threadId);
-    return [];
-  }
-  console.log({thread});
-  const messages = await thread.messages();
-  console.log({messages});
-  return messages;
-};
+import type { Thread } from '../src';
+import { createSdk, getMessages, getThreads } from './helpers';
 
 (async () => {
   const sdk = createSdk();

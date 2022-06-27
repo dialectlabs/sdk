@@ -1,13 +1,4 @@
-import type {
-  DialectSdk,
-  Thread,
-} from '../src';
-import { createSdk } from './create-sdk';
-
-export async function getThreads(sdk: DialectSdk): Promise<Thread[]> {
-  const threads: Thread[] = await sdk.threads.findAll();
-  return threads;
-}
+import { createSdk, getThreads } from './helpers';
 
 (async () => {
   const sdk = createSdk();
