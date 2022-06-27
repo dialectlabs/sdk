@@ -1,4 +1,12 @@
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
+import type {
+  CreateThreadCommand,
+  DialectSdk,
+  FindThreadByIdQuery,
+  Thread,
+  ThreadId,
+  ThreadMessage,
+} from '../src';
 import {
   Backend,
   ConfigProps,
@@ -6,18 +14,9 @@ import {
   DialectWalletAdapterWrapper,
   EncryptionKeysStore,
   NodeDialectWalletAdapter,
-  TokenStore,
-  ThreadMemberScope,
   SendMessageCommand,
-} from '../src';
-import type {
-  CreateThreadCommand,
-  DialectSdk,
-  FindThreadByIdQuery,
-  Message,
-  Thread,
-  ThreadId,
-  ThreadMember,
+  ThreadMemberScope,
+  TokenStore,
 } from '../src';
 
 export function createSdk(): DialectSdk {
@@ -52,7 +51,10 @@ export function createSdk(): DialectSdk {
   return sdk;
 }
 
-export async function createThread(sdk: DialectSdk, recipient: PublicKey): Promise<Thread> {
+export async function createThread(
+  sdk: DialectSdk,
+  recipient: PublicKey,
+): Promise<Thread> {
   const command: CreateThreadCommand = {
     encrypted: false,
     me: {
@@ -66,14 +68,14 @@ export async function createThread(sdk: DialectSdk, recipient: PublicKey): Promi
     ],
   };
   const thread = await sdk.threads.create(command);
-  console.log({thread});
+  console.log({ thread });
   return thread;
-};
+}
 
 export async function sendMessage(thread: Thread, text: string): Promise<void> {
   const command: SendMessageCommand = {
     text,
-  }
+  };
   return await thread.send(command);
 }
 
@@ -82,17 +84,20 @@ export async function getThreads(sdk: DialectSdk): Promise<Thread[]> {
   return threads;
 }
 
-export async function getMessages(sdk: DialectSdk, threadId: ThreadId): Promise<Message[]> {
+export async function getMessages(
+  sdk: DialectSdk,
+  threadId: ThreadId,
+): Promise<ThreadMessage[]> {
   const query: FindThreadByIdQuery = {
     id: threadId,
-  }
+  };
   const thread = await sdk.threads.find(query);
   if (!thread) {
-    console.log("No thread found with id", threadId);
+    console.log('No thread found with id', threadId);
     return [];
   }
-  console.log({thread});
+  console.log({ thread });
   const messages = await thread.messages();
-  console.log({messages});
+  console.log({ messages });
   return messages;
-};
+}

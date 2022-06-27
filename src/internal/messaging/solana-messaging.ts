@@ -3,7 +3,7 @@ import {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  Message,
+  ThreadMessage,
   Messaging,
   SendMessageCommand,
   Thread,
@@ -211,7 +211,7 @@ export class SolanaThread implements Thread {
     );
   }
 
-  async messages(): Promise<Message[]> {
+  async messages(): Promise<ThreadMessage[]> {
     const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
     const encryptionProps = getEncryptionProps(
       this.me.publicKey,

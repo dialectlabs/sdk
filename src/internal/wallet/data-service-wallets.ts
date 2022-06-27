@@ -1,17 +1,20 @@
 import type {
   CreateAddressCommand,
   CreateDappAddressCommand,
+  DappMessage,
   DeleteAddressCommand,
   DeleteDappAddressCommand,
   FindAddressQuery,
   FindDappAddressesQuery,
   FindDappAddressQuery,
+  FindDappMessageQuery,
   PartialUpdateAddressCommand,
   PartialUpdateDappAddressCommand,
   ResendVerificationCodeCommand,
   VerifyAddressCommand,
   WalletAddresses,
   WalletDappAddresses,
+  WalletDappMessages,
   Wallets,
 } from '@wallet/wallet.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -26,21 +29,29 @@ import type {
 } from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
+import type { DataServiceWalletMessagesApi } from '@data-service-api/data-service-wallet-messages-api';
+import type { TextSerde } from '@dialectlabs/web3';
+import { UnencryptedTextSerde } from '@dialectlabs/web3';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
+  dappMessages: WalletDappMessages;
 
   constructor(
     readonly publicKey: PublicKey,
     private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
+    private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
   ) {
     this.addresses = new DataServiceWalletAddresses(
       dataServiceWalletAddressesApi,
     );
     this.dappAddresses = new DataServiceWalletDappAddresses(
       dataServiceWalletDappAddressesApi,
+    );
+    this.dappMessages = new DataServiceWalletDappMessages(
+      dataServiceWalletMessagesApi,
     );
   }
 }
@@ -149,6 +160,23 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
       }),
     );
     return toDappAddress(found);
+  }
+}
+
+export class DataServiceWalletDappMessages implements WalletDappMessages {
+  private readonly textSerde: TextSerde = new UnencryptedTextSerde();
+  constructor(private readonly api: DataServiceWalletMessagesApi) {}
+
+  async findAll(query?: FindDappMessageQuery): Promise<DappMessage[]> {
+    const dappMessages = await this.api.findAllDappMessages({
+      skip: query?.skip,
+      take: query?.take,
+    });
+    return dappMessages.map((it) => ({
+      author: new PublicKey(it.owner),
+      timestamp: new Date(it.timestamp),
+      text: this.textSerde.deserialize(new Uint8Array(it.text)),
+    }));
   }
 }
 

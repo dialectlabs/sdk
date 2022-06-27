@@ -9,6 +9,7 @@ export interface Wallets {
   readonly publicKey: PublicKey;
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
+  readonly dappMessages: WalletDappMessages;
 }
 
 export interface Wallet {
@@ -92,4 +93,19 @@ export interface FindDappAddressesQuery {
 
 export interface DeleteDappAddressCommand {
   readonly dappAddressId: string;
+}
+
+export interface WalletDappMessages {
+  findAll(query?: FindDappMessageQuery): Promise<DappMessage[]>;
+}
+
+export interface DappMessage {
+  text: string;
+  timestamp: Date;
+  author: PublicKey;
+}
+
+export interface FindDappMessageQuery {
+  readonly skip?: number;
+  readonly take?: number;
 }
