@@ -1,4 +1,9 @@
-import type { Dapp, DappAddresses, Dapps } from '@dapp/dapp.interface';
+import type {
+  CreateDappCommand,
+  Dapp,
+  DappAddresses,
+  Dapps,
+} from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
@@ -24,8 +29,13 @@ export class DappsImpl implements Dapps {
     }
   }
 
-  async create(/*command: CreateDappCommand*/): Promise<Dapp> {
-    await withErrorParsing(this.dappsApi.create());
+  async create(command: CreateDappCommand): Promise<Dapp> {
+    await withErrorParsing(
+      this.dappsApi.create({
+        name: command.name,
+        description: command.description,
+      }),
+    );
     return new DappImpl(this.wallet.publicKey, this.dappAddresses);
   }
 }

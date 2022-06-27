@@ -6,7 +6,7 @@ import {
 } from '@data-service-api/data-service-api';
 
 export interface DataServiceDappsApi {
-  create(/*command: CreateDappCommandDto*/): Promise<DappDto>;
+  create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
 
   find(): Promise<DappDto>;
 
@@ -25,14 +25,17 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async create(): Promise<DappDto> {
+  async create(
+    command: Omit<CreateDappCommandDto, 'publicKey'>,
+  ): Promise<DappDto> {
     const token = await this.tokenProvider.get();
-    const command: CreateDappCommandDto = {
+    const fullCommand: CreateDappCommandDto = {
+      ...command,
       publicKey: token.body.sub,
     };
     return withReThrowingDataServiceError(
       axios
-        .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, command, {
+        .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, fullCommand, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
@@ -113,10 +116,15 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
 export class DappDto {
   readonly id!: string;
   readonly publicKey!: string;
+  readonly name!: string;
+  readonly description?: string;
+  readonly verified!: boolean;
 }
 
 export class CreateDappCommandDto {
+  readonly name!: string;
   readonly publicKey!: string;
+  readonly description?: string;
 }
 
 export class DappAddressDto {

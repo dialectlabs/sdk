@@ -34,12 +34,16 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can create dapp and find all dappAddresses', async () => {
     // when
-    const created = await dappsApi.create();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
     const addresses = await dappsApi.findAllDappAddresses();
     // then
     const dappDtoExpected: DappDto = {
       id: expect.any(String),
       publicKey: dappWallet.publicKey.toBase58(),
+      name: created.name,
+      verified: false,
     };
     expect(created).toMatchObject(dappDtoExpected);
     expect(addresses).toMatchObject([]);
@@ -48,7 +52,9 @@ describe('Data service dapps api (e2e)', () => {
   test('can find dapp', async () => {
     // given
     await expect(dappsApi.find()).rejects.toBeTruthy();
-    const created = await dappsApi.create();
+    const created = await dappsApi.create({
+      name: 'Test dapp',
+    });
     // when
     const found = await dappsApi.find();
     // then
@@ -57,7 +63,9 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can unicast notification', async () => {
     // given
-    await dappsApi.create();
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
     // when / then
     await expect(
       dappsApi.unicast({
@@ -70,7 +78,9 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can multicast notification', async () => {
     // given
-    await dappsApi.create();
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
     // when / then
     await expect(
       dappsApi.multicast({
@@ -86,7 +96,9 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can broadcast notification', async () => {
     // given
-    await dappsApi.create();
+    await dappsApi.create({
+      name: 'Test dapp',
+    });
     // when / then
     await expect(
       dappsApi.broadcast({
@@ -117,7 +129,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can create dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       // when
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
@@ -141,7 +155,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can find dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
@@ -164,7 +180,9 @@ describe('Data service dapps api (e2e)', () => {
 
     test('can delete dapp address', async () => {
       // given
-      const dapp = await dapps.create();
+      const dapp = await dapps.create({
+        name: 'Test dapp',
+      });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
