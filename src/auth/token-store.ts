@@ -32,7 +32,7 @@ class InMemoryTokenStore extends TokenStore {
   }
 }
 
-class SessionStorageTokenStore implements TokenStore {
+class SessionStorageTokenStore extends TokenStore {
   get(subject: PublicKey): Token | null {
     const token = sessionStorage.getItem(createStorageKey(subject.toBase58()));
     if (!token) {
@@ -50,7 +50,7 @@ class SessionStorageTokenStore implements TokenStore {
   }
 }
 
-class LocalStorageTokenStore implements TokenStore {
+class LocalStorageTokenStore extends TokenStore {
   get(subject: PublicKey): Token | null {
     const token = localStorage.getItem(createStorageKey(subject.toBase58()));
     if (!token) {
