@@ -136,4 +136,14 @@ To do.
 
 ## Dapp Notifications & Subscriptions
 
-To do.
+### Dapp whitelist
+
+Dialect manages a list of verified dapps that have integrated with Dialect. While all messaging is done via wallets and keypairs and on the core messaging rails, this whitelist is convenient for surfacing just messages that are specific to dapp notifications from the most well known projects on Solana.
+
+Whether or not this list continues to be maintained is to be determined.
+
+If you'd like to be added to this list, please reach out to us on [twitter](https://twitter.com/saydialect)
+
+### Fetch all whitelisted dapp messages
+
+The Dialect SDK provides an endpoint for querying for all messages from whitelisted dapps, which are described above. This is convenient for producing a single feed of notifications.
