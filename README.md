@@ -4,6 +4,10 @@
 
 ## Usage
 
+### Create an SDK client & connect your wallet to it
+
+Run the [`create-sdk` example script](examples/create-sdk.ts).
+
 ```typescript
 import { PublicKey } from '@solana/web3';j
 import { Dialect, SolanaConfig } from '@dialectlabs/sdk';
