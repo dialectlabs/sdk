@@ -13,26 +13,27 @@ describe('Dapps (e2e)', () => {
   test('Can find all dapps using filters', async () => {
     // given
     const dapp1Sdk = createSdk();
-    const allDappsBefore = await dapp1Sdk.dapps.findAll();
-    await dapp1Sdk.dapps.create({
+    const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-    });
-    const dapp2Sdk = createSdk();
-    await dapp2Sdk.dapps.create({
-      name: 'test2',
     });
     // when
     const sdk = createSdk();
-    const allDapps = await sdk.dapps.findAll();
-    const allVerifiedDapps = await sdk.dapps.findAll({
-      verified: true,
-    });
-    const allNotVerifiedDapps = await sdk.dapps.findAll({
-      verified: false,
-    });
+    const allVerifiedDapps = (
+      await sdk.dapps.findAll({
+        verified: true,
+      })
+    ).map((it) => it.publicKey);
+    const allNotVerifiedDapps = (
+      await sdk.dapps.findAll({
+        verified: false,
+      })
+    ).map((it) => it.publicKey);
     // then
-    expect(allDapps.length).toBe(allDappsBefore.length + 2);
-    expect(allNotVerifiedDapps.length).toBe(allDappsBefore.length + 2);
-    expect(allVerifiedDapps.length).toBe(0);
+    expect(allNotVerifiedDapps).toMatchObject(
+      expect.arrayContaining([dapp.publicKey]),
+    );
+    expect(allVerifiedDapps).toMatchObject(
+      expect.not.arrayContaining([dapp.publicKey]),
+    );
   });
 });

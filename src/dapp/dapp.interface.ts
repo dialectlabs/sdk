@@ -4,7 +4,7 @@ import type { DappAddress } from '@address/addresses.interface';
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
   find(): Promise<Dapp | null>;
-  findAll(query?: FindDappQuery): Promise<Omit<Dapp, 'dappAddresses'>[]>;
+  findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
 export interface Dapp {
@@ -13,12 +13,17 @@ export interface Dapp {
   description?: string;
   verified: boolean;
   dappAddresses: DappAddresses;
-
-  // notify(command: NotifyCommand): Promise<void>;
+  notifications: DappNotifications;
 }
+
+export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'notifications'>;
 
 export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
+}
+
+export interface DappNotifications {
+  send(command: SendNotificationCommand): Promise<void>;
 }
 
 export interface CreateDappCommand {
@@ -30,20 +35,27 @@ export interface FindDappQuery {
   verified?: boolean;
 }
 
-//
-// export type NotifyCommand = BroadcastNotifyCommand | UnicastNotifyCommand;
-//
-// interface BroadcastNotifyCommand {
-//   title: string;
-//   message: string;
-// }
-//
-// interface UnicastNotifyCommand {
-//   title: string;
-//   message: string;
-//   wallets: PublicKey[];
-// }
-//
+export type SendNotificationCommand =
+  | BroadcastSendNotificationCommand
+  | UnicastSendNotificationCommand
+  | MulticastSendNotificationCommand;
+
+export interface BroadcastSendNotificationCommand {
+  title: string;
+  message: string;
+}
+
+export interface UnicastSendNotificationCommand {
+  title: string;
+  message: string;
+  receiver: PublicKey;
+}
+
+export interface MulticastSendNotificationCommand {
+  title: string;
+  message: string;
+  receivers: PublicKey[];
+}
 
 //
 //

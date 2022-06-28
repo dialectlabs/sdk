@@ -22,7 +22,11 @@ import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { IllegalArgumentError } from '@sdk/errors';
-import type { DappAddresses, Dapps } from '@dapp/dapp.interface';
+import type {
+  DappAddresses,
+  DappNotifications,
+  Dapps,
+} from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import { DappsImpl } from '@dapp/internal/dapp';
 import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
@@ -36,6 +40,9 @@ import type { Wallets } from '@wallet/wallet.interface';
 import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { TokenStore } from '@auth/token-store';
+import { DappNotificationsFacade } from '@dapp/internal/dapp-notifications-facade';
+import { SolanaDappNotifications } from '@dapp/internal/solana-dapp-notifications';
+import { DataServiceDappNotifications } from '@dapp/internal/data-service-dapp-notifications';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -56,7 +63,6 @@ export class DialectSdkFactory {
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
     DialectSdkFactory.logConfiguration(config);
-
     const dialectProgram: Program = createDialectProgram(
       config.wallet,
       config.solana.dialectProgramAddress,
@@ -82,6 +88,7 @@ export class DialectSdkFactory {
     );
     const dapps = this.createDapps(
       config,
+      encryptionKeysProvider,
       dialectProgram,
       dataServiceApi.dapps,
     );
@@ -161,6 +168,7 @@ Solana settings:
 
   private createDapps(
     config: InternalConfig,
+    encryptionKeysProvider: EncryptionKeysProvider,
     program: Program,
     dataServiceDappsApi: DataServiceDappsApi,
   ) {
@@ -177,9 +185,31 @@ Solana settings:
       },
     );
     const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
+    const dappNotificationBackends: DappNotifications[] = config.backends.map(
+      (backend) => {
+        switch (backend) {
+          case Backend.Solana:
+            return new SolanaDappNotifications(
+              new SolanaMessaging(
+                config.wallet,
+                program,
+                encryptionKeysProvider,
+              ),
+              new SolanaDappAddresses(program),
+            );
+          case Backend.DialectCloud:
+            return new DataServiceDappNotifications(dataServiceDappsApi);
+          default:
+            throw new IllegalArgumentError(`Unknown backend ${backend}`);
+        }
+      },
+    );
+    const dappNotificationsFacade = new DappNotificationsFacade(
+      dappNotificationBackends,
+    );
     return new DappsImpl(
-      config.wallet,
       dappAddressesFacade,
+      dappNotificationsFacade,
       dataServiceDappsApi,
     );
   }

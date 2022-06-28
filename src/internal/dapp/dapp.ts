@@ -2,21 +2,24 @@ import type {
   CreateDappCommand,
   Dapp,
   DappAddresses,
+  DappNotifications,
   Dapps,
   FindDappQuery,
+  ReadOnlyDapp,
 } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import type { DappDto } from '@data-service-api/data-service-dapps-api';
+import type {
+  DappDto,
+  DataServiceDappsApi,
+} from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 import { ResourceNotFoundError } from '@sdk/errors';
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 export class DappsImpl implements Dapps {
   constructor(
-    private readonly wallet: DialectWalletAdapterWrapper,
     private readonly dappAddresses: DappAddresses,
+    private readonly dappNotifications: DappNotifications,
     private readonly dappsApi: DataServiceDappsApi,
   ) {}
 
@@ -37,19 +40,22 @@ export class DappsImpl implements Dapps {
       dappDto.name,
       dappDto.verified,
       this.dappAddresses,
+      this.dappNotifications,
       dappDto.description,
     );
   }
 
-  async findAll(query?: FindDappQuery): Promise<Omit<Dapp, 'dappAddresses'>[]> {
+  async findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]> {
     const dappDtos = await withErrorParsing(
       this.dappsApi.findAll({
         verified: query?.verified,
       }),
     );
     return dappDtos.map((it) => ({
-      ...it,
       publicKey: new PublicKey(it.publicKey),
+      name: it.name,
+      description: it.description,
+      verified: it.verified,
     }));
   }
 
@@ -61,10 +67,11 @@ export class DappsImpl implements Dapps {
       }),
     );
     return new DappImpl(
-      this.wallet.publicKey,
+      new PublicKey(dappDto.publicKey),
       dappDto.name,
       dappDto.verified,
       this.dappAddresses,
+      this.dappNotifications,
       dappDto.description,
     );
   }
@@ -76,6 +83,7 @@ export class DappImpl implements Dapp {
     readonly name: string,
     readonly verified: boolean,
     readonly dappAddresses: DappAddresses,
+    readonly notifications: DappNotifications,
     readonly description?: string,
   ) {}
 }
