@@ -36,6 +36,8 @@ import type { Wallets } from '@wallet/wallet.interface';
 import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { TokenStore } from '@auth/token-store';
+import { NameServiceResolver } from 'internal/naming/name-service';
+import type { NameService } from 'naming/naming.interface';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -47,6 +49,7 @@ export class InternalDialectSdk implements DialectSdk {
     readonly threads: Messaging,
     readonly dapps: Dapps,
     readonly wallet: Wallets,
+    readonly nameService: NameService,
   ) {}
 }
 
@@ -91,6 +94,7 @@ export class DialectSdkFactory {
       dataServiceApi.walletDappAddresses,
       dataServiceApi.walletMessages,
     );
+    const nameService = new NameServiceResolver(config.solana.rpcUrl);
     return new InternalDialectSdk(
       {
         apiAvailability: config.wallet,
@@ -103,6 +107,7 @@ export class DialectSdkFactory {
       messaging,
       dapps,
       wallet,
+      nameService,
     );
   }
 
