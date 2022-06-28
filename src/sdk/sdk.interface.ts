@@ -10,6 +10,7 @@ import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
+import type { NameService } from 'naming/naming.interface';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
@@ -22,6 +23,7 @@ export interface DialectSdk {
   readonly threads: Messaging;
   readonly dapps: Dapps;
   readonly wallet: Wallets;
+  readonly nameService: NameService;
 }
 
 export interface DialectSdkInfo {
