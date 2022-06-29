@@ -23,7 +23,7 @@ export interface DappAddresses {
 }
 
 export interface DappMessages {
-  send(command: SendMessageCommand): Promise<void>;
+  send(command: SendDappMessageCommand): Promise<void>;
 }
 
 export interface CreateDappCommand {
@@ -35,23 +35,23 @@ export interface FindDappQuery {
   verified?: boolean;
 }
 
-export type SendMessageCommand =
-  | BroadcastMessageCommand
-  | UnicastMessageCommand
-  | MulticastMessageCommand;
+export type SendDappMessageCommand =
+  | BroadcastDappMessageCommand
+  | UnicastDappMessageCommand
+  | MulticastDappMessageCommand;
 
-export interface BroadcastMessageCommand {
+export interface BroadcastDappMessageCommand {
   title: string;
   message: string;
 }
 
-export interface UnicastMessageCommand {
+export interface UnicastDappMessageCommand {
   title: string;
   message: string;
   recipient: PublicKey;
 }
 
-export interface MulticastMessageCommand {
+export interface MulticastDappMessageCommand {
   title: string;
   message: string;
   recipients: PublicKey[];

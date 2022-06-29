@@ -1,9 +1,9 @@
 import type {
-  BroadcastMessageCommand,
+  BroadcastDappMessageCommand,
   DappMessages,
-  MulticastMessageCommand,
-  SendMessageCommand,
-  UnicastMessageCommand,
+  MulticastDappMessageCommand,
+  SendDappMessageCommand,
+  UnicastDappMessageCommand,
 } from '@dapp/dapp.interface';
 import type { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import type { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
@@ -16,7 +16,7 @@ export class SolanaDappMessages implements DappMessages {
     private readonly dappAddresses: SolanaDappAddresses,
   ) {}
 
-  async send(command: SendMessageCommand): Promise<void> {
+  async send(command: SendDappMessageCommand): Promise<void> {
     if ('recipient' in command) {
       return this.unicast(command);
     }
@@ -26,7 +26,7 @@ export class SolanaDappMessages implements DappMessages {
     return this.broadcast(command);
   }
 
-  private async unicast(command: UnicastMessageCommand) {
+  private async unicast(command: UnicastDappMessageCommand) {
     const thread = await this.messaging.find({
       otherMembers: [command.recipient],
     });
@@ -37,7 +37,7 @@ export class SolanaDappMessages implements DappMessages {
     }
   }
 
-  private async multicast(command: MulticastMessageCommand) {
+  private async multicast(command: MulticastDappMessageCommand) {
     const allSettled = await Promise.allSettled(
       command.recipients.map((it) =>
         this.unicast({
@@ -56,7 +56,7 @@ export class SolanaDappMessages implements DappMessages {
     }
   }
 
-  private async broadcast(command: BroadcastMessageCommand) {
+  private async broadcast(command: BroadcastDappMessageCommand) {
     const dappAddresses = await this.dappAddresses.findAll();
     return this.multicast({
       ...command,

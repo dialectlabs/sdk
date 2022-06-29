@@ -1,4 +1,7 @@
-import type { DappMessages, SendMessageCommand } from '@dapp/dapp.interface';
+import type {
+  DappMessages,
+  SendDappMessageCommand,
+} from '@dapp/dapp.interface';
 import { IllegalArgumentError } from '@sdk/errors';
 
 export class DappMessagesFacade implements DappMessages {
@@ -10,7 +13,7 @@ export class DappMessagesFacade implements DappMessages {
     }
   }
 
-  async send(command: SendMessageCommand): Promise<void> {
+  async send(command: SendDappMessageCommand): Promise<void> {
     const allSettled = await Promise.allSettled(
       this.dappMessageBackends.map((it) => it.send(command)),
     );

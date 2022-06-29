@@ -1,9 +1,9 @@
 import type {
-  BroadcastMessageCommand,
+  BroadcastDappMessageCommand,
   DappMessages,
-  MulticastMessageCommand,
-  SendMessageCommand,
-  UnicastMessageCommand,
+  MulticastDappMessageCommand,
+  SendDappMessageCommand,
+  UnicastDappMessageCommand,
 } from '@dapp/dapp.interface';
 import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
@@ -11,7 +11,7 @@ import { withErrorParsing } from '@data-service-api/data-service-errors';
 export class DataServiceDappMessages implements DappMessages {
   constructor(private readonly api: DataServiceDappsApi) {}
 
-  async send(command: SendMessageCommand): Promise<void> {
+  async send(command: SendDappMessageCommand): Promise<void> {
     if ('recipient' in command) {
       return this.unicast(command);
     }
@@ -21,7 +21,7 @@ export class DataServiceDappMessages implements DappMessages {
     return this.broadcast(command);
   }
 
-  private async unicast(command: UnicastMessageCommand) {
+  private async unicast(command: UnicastDappMessageCommand) {
     return withErrorParsing(
       this.api.unicast({
         ...command,
@@ -30,7 +30,7 @@ export class DataServiceDappMessages implements DappMessages {
     );
   }
 
-  private async multicast(command: MulticastMessageCommand) {
+  private async multicast(command: MulticastDappMessageCommand) {
     return withErrorParsing(
       this.api.multicast({
         ...command,
@@ -39,7 +39,7 @@ export class DataServiceDappMessages implements DappMessages {
     );
   }
 
-  private async broadcast(command: BroadcastMessageCommand) {
+  private async broadcast(command: BroadcastDappMessageCommand) {
     return withErrorParsing(
       this.api.broadcast({
         ...command,

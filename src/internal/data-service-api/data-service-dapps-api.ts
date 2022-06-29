@@ -14,11 +14,11 @@ export interface DataServiceDappsApi {
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 
-  unicast(command: UnicastMessageCommandDto): Promise<void>;
+  unicast(command: UnicastDappMessageCommandDto): Promise<void>;
 
-  multicast(command: MulticastMessageCommandDto): Promise<void>;
+  multicast(command: MulticastDappMessageCommandDto): Promise<void>;
 
-  broadcast(command: BroadcastMessageCommandDto): Promise<void>;
+  broadcast(command: BroadcastDappMessageCommandDto): Promise<void>;
 }
 
 export class DataServiceDappsApiClient implements DataServiceDappsApi {
@@ -69,7 +69,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async broadcast(command: BroadcastMessageCommandDto): Promise<void> {
+  async broadcast(command: BroadcastDappMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
@@ -84,7 +84,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async multicast(command: MulticastMessageCommandDto): Promise<void> {
+  async multicast(command: MulticastDappMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
@@ -99,7 +99,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async unicast(command: UnicastMessageCommandDto): Promise<void> {
+  async unicast(command: UnicastDappMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
@@ -168,19 +168,19 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
-export class UnicastMessageCommandDto {
+export class UnicastDappMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKey!: string;
 }
 
-export class MulticastMessageCommandDto {
+export class MulticastDappMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKeys!: string[];
 }
 
-export class BroadcastMessageCommandDto {
+export class BroadcastDappMessageCommandDto {
   title!: string;
   message!: string;
 }
