@@ -68,7 +68,7 @@ class LocalStorageTokenStore extends TokenStore {
   }
 }
 
-const storageTokenKeyPrefix = 'dialect-auth-token-';
+const storageTokenKeyPrefix = 'dialect-auth-token';
 
 function createStorageKey(subject: string) {
   return `${storageTokenKeyPrefix}-${subject}`;

@@ -93,7 +93,7 @@ describe('Data service dapps api (e2e)', () => {
       dappsApi.unicast({
         title: 'test-title',
         message: 'test',
-        receiverPublicKey: Keypair.generate().publicKey.toBase58(),
+        recipientPublicKey: Keypair.generate().publicKey.toBase58(),
       }),
     ).resolves.toBeTruthy();
   });
@@ -108,7 +108,7 @@ describe('Data service dapps api (e2e)', () => {
       dappsApi.multicast({
         title: 'test-title',
         message: 'test',
-        receiverPublicKeys: [
+        recipientPublicKeys: [
           Keypair.generate().publicKey.toBase58(),
           Keypair.generate().publicKey.toBase58(),
         ],
