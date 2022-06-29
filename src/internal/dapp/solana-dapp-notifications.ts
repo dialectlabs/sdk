@@ -28,7 +28,7 @@ export class SolanaDappNotifications implements DappNotifications {
 
   private async unicast(command: UnicastSendNotificationCommand) {
     const thread = await this.messaging.find({
-      otherMembers: [command.receiver],
+      otherMembers: [command.recipient],
     });
     if (thread) {
       return thread.send({
@@ -39,10 +39,10 @@ export class SolanaDappNotifications implements DappNotifications {
 
   private async multicast(command: MulticastSendNotificationCommand) {
     const allSettled = await Promise.allSettled(
-      command.receivers.map((it) =>
+      command.recipients.map((it) =>
         this.unicast({
           ...command,
-          receiver: it,
+          recipient: it,
         }),
       ),
     );
@@ -60,7 +60,7 @@ export class SolanaDappNotifications implements DappNotifications {
     const dappAddresses = await this.dappAddresses.findAll();
     return this.multicast({
       ...command,
-      receivers: dappAddresses
+      recipients: dappAddresses
         .filter((it) => it.address.type === AddressType.Wallet)
         .map((it) => new PublicKey(it.address.value)),
     });

@@ -61,12 +61,12 @@ describe('Dapp notifications (e2e)', () => {
     await dapp.notifications.send({
       title: 'Test',
       message: 'Multicast',
-      receivers: [sdk.info.wallet.publicKey!],
+      recipients: [sdk.info.wallet.publicKey!],
     });
     await dapp.notifications.send({
       title: 'Test',
       message: 'Unicast',
-      receiver: sdk.info.wallet.publicKey!,
+      recipient: sdk.info.wallet.publicKey!,
     });
     await dapp.notifications.send({
       title: 'Test',

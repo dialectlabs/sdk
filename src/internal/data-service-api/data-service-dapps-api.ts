@@ -171,13 +171,13 @@ export enum AddressTypeDto {
 export class UnicastNotificationCommandDto {
   title!: string;
   message!: string;
-  receiverPublicKey!: string;
+  recipientPublicKey!: string;
 }
 
 export class MulticastNotificationCommandDto {
   title!: string;
   message!: string;
-  receiverPublicKeys!: string[];
+  recipientPublicKeys!: string[];
 }
 
 export class BroadcastNotificationCommandDto {

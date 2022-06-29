@@ -48,13 +48,13 @@ export interface BroadcastSendNotificationCommand {
 export interface UnicastSendNotificationCommand {
   title: string;
   message: string;
-  receiver: PublicKey;
+  recipient: PublicKey;
 }
 
 export interface MulticastSendNotificationCommand {
   title: string;
   message: string;
-  receivers: PublicKey[];
+  recipients: PublicKey[];
 }
 
 //
