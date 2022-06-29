@@ -14,11 +14,11 @@ export interface DataServiceDappsApi {
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 
-  unicast(command: UnicastNotificationCommandDto): Promise<void>;
+  unicast(command: UnicastMessageCommandDto): Promise<void>;
 
-  multicast(command: MulticastNotificationCommandDto): Promise<void>;
+  multicast(command: MulticastMessageCommandDto): Promise<void>;
 
-  broadcast(command: BroadcastNotificationCommandDto): Promise<void>;
+  broadcast(command: BroadcastMessageCommandDto): Promise<void>;
 }
 
 export class DataServiceDappsApiClient implements DataServiceDappsApi {
@@ -69,12 +69,12 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async broadcast(command: BroadcastNotificationCommandDto): Promise<void> {
+  async broadcast(command: BroadcastMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .post<void>(
-          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/broadcast`,
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/messages/broadcast`,
           command,
           {
             headers: createHeaders(token),
@@ -84,12 +84,12 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async multicast(command: MulticastNotificationCommandDto): Promise<void> {
+  async multicast(command: MulticastMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .post<void>(
-          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/multicast`,
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/messages/multicast`,
           command,
           {
             headers: createHeaders(token),
@@ -99,12 +99,12 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async unicast(command: UnicastNotificationCommandDto): Promise<void> {
+  async unicast(command: UnicastMessageCommandDto): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .post<void>(
-          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/notifications/unicast`,
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}/messages/unicast`,
           command,
           {
             headers: createHeaders(token),
@@ -168,19 +168,19 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
-export class UnicastNotificationCommandDto {
+export class UnicastMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKey!: string;
 }
 
-export class MulticastNotificationCommandDto {
+export class MulticastMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKeys!: string[];
 }
 
-export class BroadcastNotificationCommandDto {
+export class BroadcastMessageCommandDto {
   title!: string;
   message!: string;
 }

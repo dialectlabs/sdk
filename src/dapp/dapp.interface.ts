@@ -13,17 +13,17 @@ export interface Dapp {
   description?: string;
   verified: boolean;
   dappAddresses: DappAddresses;
-  notifications: DappNotifications;
+  messages: DappMessages;
 }
 
-export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'notifications'>;
+export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'messages'>;
 
 export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
 }
 
-export interface DappNotifications {
-  send(command: SendNotificationCommand): Promise<void>;
+export interface DappMessages {
+  send(command: SendMessageCommand): Promise<void>;
 }
 
 export interface CreateDappCommand {
@@ -35,23 +35,23 @@ export interface FindDappQuery {
   verified?: boolean;
 }
 
-export type SendNotificationCommand =
-  | BroadcastSendNotificationCommand
-  | UnicastSendNotificationCommand
-  | MulticastSendNotificationCommand;
+export type SendMessageCommand =
+  | BroadcastMessageCommand
+  | UnicastMessageCommand
+  | MulticastMessageCommand;
 
-export interface BroadcastSendNotificationCommand {
+export interface BroadcastMessageCommand {
   title: string;
   message: string;
 }
 
-export interface UnicastSendNotificationCommand {
+export interface UnicastMessageCommand {
   title: string;
   message: string;
   recipient: PublicKey;
 }
 
-export interface MulticastSendNotificationCommand {
+export interface MulticastMessageCommand {
   title: string;
   message: string;
   recipients: PublicKey[];

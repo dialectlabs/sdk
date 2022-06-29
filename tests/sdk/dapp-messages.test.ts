@@ -24,11 +24,11 @@ function sdkFactory(backend: Backend) {
   };
 }
 
-describe('Dapp notifications (e2e)', () => {
+describe('Dapp messages (e2e)', () => {
   it.each([
     [Backend.Solana, sdkFactory(Backend.Solana)],
     [Backend.DialectCloud, sdkFactory(Backend.DialectCloud)],
-  ])('%p can get notifications', async (backend, createSdk) => {
+  ])('%p can get messages', async (backend, createSdk) => {
     // given
     const dappSdk = await createSdk();
     const dapp = await dappSdk.dapps.create({
@@ -58,17 +58,17 @@ describe('Dapp notifications (e2e)', () => {
       encrypted: false,
     });
     // when
-    await dapp.notifications.send({
+    await dapp.messages.send({
       title: 'Test',
       message: 'Multicast',
       recipients: [sdk.info.wallet.publicKey!],
     });
-    await dapp.notifications.send({
+    await dapp.messages.send({
       title: 'Test',
       message: 'Unicast',
       recipient: sdk.info.wallet.publicKey!,
     });
-    await dapp.notifications.send({
+    await dapp.messages.send({
       title: 'Test',
       message: 'Broadcast',
     });

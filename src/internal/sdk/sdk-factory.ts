@@ -22,11 +22,7 @@ import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
 import { IllegalArgumentError } from '@sdk/errors';
-import type {
-  DappAddresses,
-  DappNotifications,
-  Dapps,
-} from '@dapp/dapp.interface';
+import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import { DappsImpl } from '@dapp/internal/dapp';
 import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
@@ -40,9 +36,9 @@ import type { Wallets } from '@wallet/wallet.interface';
 import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import { TokenStore } from '@auth/token-store';
-import { DappNotificationsFacade } from '@dapp/internal/dapp-notifications-facade';
-import { SolanaDappNotifications } from '@dapp/internal/solana-dapp-notifications';
-import { DataServiceDappNotifications } from '@dapp/internal/data-service-dapp-notifications';
+import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
+import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
+import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -185,11 +181,11 @@ Solana settings:
       },
     );
     const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
-    const dappNotificationBackends: DappNotifications[] = config.backends.map(
+    const dappMessageBackends: DappMessages[] = config.backends.map(
       (backend) => {
         switch (backend) {
           case Backend.Solana:
-            return new SolanaDappNotifications(
+            return new SolanaDappMessages(
               new SolanaMessaging(
                 config.wallet,
                 program,
@@ -198,18 +194,16 @@ Solana settings:
               new SolanaDappAddresses(program),
             );
           case Backend.DialectCloud:
-            return new DataServiceDappNotifications(dataServiceDappsApi);
+            return new DataServiceDappMessages(dataServiceDappsApi);
           default:
             throw new IllegalArgumentError(`Unknown backend ${backend}`);
         }
       },
     );
-    const dappNotificationsFacade = new DappNotificationsFacade(
-      dappNotificationBackends,
-    );
+    const dappMessagesFacade = new DappMessagesFacade(dappMessageBackends);
     return new DappsImpl(
       dappAddressesFacade,
-      dappNotificationsFacade,
+      dappMessagesFacade,
       dataServiceDappsApi,
     );
   }

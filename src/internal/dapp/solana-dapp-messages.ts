@@ -1,32 +1,32 @@
 import type {
-  BroadcastSendNotificationCommand,
-  DappNotifications,
-  MulticastSendNotificationCommand,
-  SendNotificationCommand,
-  UnicastSendNotificationCommand,
+  BroadcastMessageCommand,
+  DappMessages,
+  MulticastMessageCommand,
+  SendMessageCommand,
+  UnicastMessageCommand,
 } from '@dapp/dapp.interface';
 import type { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import type { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
 import { PublicKey } from '@solana/web3.js';
 import { AddressType } from '@address/addresses.interface';
 
-export class SolanaDappNotifications implements DappNotifications {
+export class SolanaDappMessages implements DappMessages {
   constructor(
     private readonly messaging: SolanaMessaging,
     private readonly dappAddresses: SolanaDappAddresses,
   ) {}
 
-  async send(command: SendNotificationCommand): Promise<void> {
-    if ('receiver' in command) {
+  async send(command: SendMessageCommand): Promise<void> {
+    if ('recipient' in command) {
       return this.unicast(command);
     }
-    if ('receivers' in command) {
+    if ('recipients' in command) {
       return this.multicast(command);
     }
     return this.broadcast(command);
   }
 
-  private async unicast(command: UnicastSendNotificationCommand) {
+  private async unicast(command: UnicastMessageCommand) {
     const thread = await this.messaging.find({
       otherMembers: [command.recipient],
     });
@@ -37,7 +37,7 @@ export class SolanaDappNotifications implements DappNotifications {
     }
   }
 
-  private async multicast(command: MulticastSendNotificationCommand) {
+  private async multicast(command: MulticastMessageCommand) {
     const allSettled = await Promise.allSettled(
       command.recipients.map((it) =>
         this.unicast({
@@ -49,14 +49,14 @@ export class SolanaDappNotifications implements DappNotifications {
     const rejected = allSettled.filter((it) => it.status === 'rejected');
     if (rejected.length > 0) {
       console.error(
-        `Error during sending solana dapp notifications: ${rejected
+        `Error during sending solana dapp messages: ${rejected
           .map((it) => it as PromiseRejectedResult)
           .map((it) => JSON.stringify(it.reason))}`,
       );
     }
   }
 
-  private async broadcast(command: BroadcastSendNotificationCommand) {
+  private async broadcast(command: BroadcastMessageCommand) {
     const dappAddresses = await this.dappAddresses.findAll();
     return this.multicast({
       ...command,

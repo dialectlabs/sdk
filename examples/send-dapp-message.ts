@@ -16,19 +16,19 @@ import { PublicKey } from '@solana/web3.js';
     '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
   );
   // Unicast
-  await dapp.notifications.send({
+  await dapp.messages.send({
     title: 'Hello',
     message: 'Hello, world',
     recipient,
   });
   // Multicast
-  await dapp.notifications.send({
+  await dapp.messages.send({
     title: 'Hello',
     message: 'Hello, world',
     recipients: [recipient],
   });
   // Broadcast, in this case notification is sent to all dapp subscribers using all user-enabled notification channels
-  await dapp.notifications.send({
+  await dapp.messages.send({
     title: 'Hello',
     message: 'Hello, world',
   });

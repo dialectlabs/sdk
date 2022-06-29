@@ -2,7 +2,7 @@ import type {
   CreateDappCommand,
   Dapp,
   DappAddresses,
-  DappNotifications,
+  DappMessages,
   Dapps,
   FindDappQuery,
   ReadOnlyDapp,
@@ -19,7 +19,7 @@ import { ResourceNotFoundError } from '@sdk/errors';
 export class DappsImpl implements Dapps {
   constructor(
     private readonly dappAddresses: DappAddresses,
-    private readonly dappNotifications: DappNotifications,
+    private readonly dappMessages: DappMessages,
     private readonly dappsApi: DataServiceDappsApi,
   ) {}
 
@@ -40,7 +40,7 @@ export class DappsImpl implements Dapps {
       dappDto.name,
       dappDto.verified,
       this.dappAddresses,
-      this.dappNotifications,
+      this.dappMessages,
       dappDto.description,
     );
   }
@@ -71,7 +71,7 @@ export class DappsImpl implements Dapps {
       dappDto.name,
       dappDto.verified,
       this.dappAddresses,
-      this.dappNotifications,
+      this.dappMessages,
       dappDto.description,
     );
   }
@@ -83,7 +83,7 @@ export class DappImpl implements Dapp {
     readonly name: string,
     readonly verified: boolean,
     readonly dappAddresses: DappAddresses,
-    readonly notifications: DappNotifications,
+    readonly messages: DappMessages,
     readonly description?: string,
   ) {}
 }
