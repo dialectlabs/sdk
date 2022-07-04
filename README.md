@@ -180,21 +180,65 @@ const refetchedThread = await sdk.threads.find(query); // Will be null
 
 ## Dapp Notifications & Subscriptions
 
-### Dapp whitelist
+The following examples describe how to interact use the Dialect SDK to manage dapp and notification related resources.
+
+### Register a dapp
+
+To allow users to subscribe to notifications from you, you first need to create a dapp in the Dialect API.
+
+```typescript
+// Construct the SDK client from all of the above. Let's use 'development' for the environment, and pass
+const environment = 'development';
+const dialectCloud = {
+  // N.b. we omit the url value here, since 'development' will default to https://dev.dialectapi.to.
+  tokenStore: TokenStore.createInMemory(),
+};
+// Use ConfigProps values from example above.
+const sdk: DialectSdk = Dialect.sdk({
+  backends,
+  dialectCloud,
+  environment,
+  encryptionKeysStore,
+  solana,
+  wallet,
+} as ConfigProps);
+
+// N.b. this created dapp is associated with the wallet public key connected to the sdk instance.
+const dapp = await sdk.dapps.create({
+  name: 'My test dapp',
+  description: `My test dapp's description.`
+});
+```
+
+Note that all dapps created with Dialect must be associated with a wallet keypair. This keypair will be used for all authenticated requests made for the dapp, and for all user messaging.
+
+The `sdk.dapps.create` method above uses the wallet public key connected to the `sdk` client instance.
+
+You can only create one dapp per public key.
+
+**Dapp whitelist**
 
 Dialect manages a list of verified dapps that have integrated with Dialect. While all messaging is done via wallets and keypairs and sent along the core messaging rails, this whitelist is convenient for surfacing just messages that are specifically from the most well-known dapps on Solana.
 
 Whether or not this list continues to be maintained is to be determined.
 
-If you'd like to be added to this list, please reach out to us on [twitter](https://twitter.com/saydialect)
+If you'd like to be added to this list, please reach out to us on [twitter](https://twitter.com/saydialect) or email us at hello@dialect.to.
 
-### Register a dapp
+### Get your dapp
 
-TODO.
+If the wallet you've connected to your `sdk` client instance is associated with a dapp, you can get the dapp record by making a simple `find` call.
 
-### Fetch all dapps
+```typescript
+const dapp = await sdk.dapps.find();
+```
 
-TODO.
+### Get all dapps
+
+You can query for all registered dapps in the the Dialect API DB.
+
+```typescript
+const dapps = await sdk.dapps.findAll();
+```
 
 ### Fetch all whitelisted dapp messages for a given wallet
 
