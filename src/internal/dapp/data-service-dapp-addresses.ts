@@ -19,7 +19,7 @@ export class DataServiceDappAddresses implements DappAddresses {
   }
 }
 
-function toDappAddress(dto: DappAddressDto) {
+export function toDappAddress(dto: DappAddressDto) {
   const dapp: DappAddress = {
     id: dto.id,
     enabled: dto.enabled,

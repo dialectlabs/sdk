@@ -23,15 +23,13 @@ import { toAddressType, toAddressTypeDto } from '@address/addresses.interface';
 import { ResourceNotFoundError } from '@sdk/errors';
 import type { DataServiceWalletAddressesApi } from '@data-service-api/data-service-wallet-addresses-api';
 import type { DataServiceWalletDappAddressesApi } from '@data-service-api/data-service-wallet-dapp-addresses-api';
-import type {
-  AddressDto,
-  DappAddressDto,
-} from '@data-service-api/data-service-dapps-api';
+import type { AddressDto } from '@data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 import type { DataServiceWalletMessagesApi } from '@data-service-api/data-service-wallet-messages-api';
 import type { TextSerde } from '@dialectlabs/web3';
 import { UnencryptedTextSerde } from '@dialectlabs/web3';
+import { toDappAddress } from '@dapp/internal/data-service-dapp-addresses';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -191,22 +189,4 @@ function toAddress(addressDto: AddressDto): Address {
       publicKey: new PublicKey(addressDto.wallet.publicKey),
     },
   };
-}
-
-function toDappAddress(dto: DappAddressDto) {
-  const dapp: DappAddress = {
-    id: dto.id,
-    enabled: dto.enabled,
-    channelId: dto.channelId,
-    address: {
-      id: dto.id,
-      type: toAddressType(dto.address.type),
-      value: dto.address.value,
-      verified: dto.address.verified,
-      wallet: {
-        publicKey: new PublicKey(dto.address.wallet.publicKey),
-      },
-    },
-  };
-  return dapp;
 }
