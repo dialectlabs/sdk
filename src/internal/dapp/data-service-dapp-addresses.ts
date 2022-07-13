@@ -25,7 +25,7 @@ function toDappAddress(dto: DappAddressDto) {
     enabled: dto.enabled,
     channelId: dto.channelId,
     address: {
-      id: dto.id,
+      id: dto.address.id,
       type: toAddressType(dto.address.type),
       value: dto.address.value,
       verified: dto.address.verified,
