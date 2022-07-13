@@ -2,6 +2,9 @@
 
 ## [UNRELEASED]
 
+## [0.2.1] - 2022-07-13
+- Expose correct address id in wallet dapp addresses.
+
 ## [0.2.0] - 2022-06-29
 
 - Start collecting changelog.

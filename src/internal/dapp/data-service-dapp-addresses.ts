@@ -19,13 +19,13 @@ export class DataServiceDappAddresses implements DappAddresses {
   }
 }
 
-function toDappAddress(dto: DappAddressDto) {
+export function toDappAddress(dto: DappAddressDto) {
   const dapp: DappAddress = {
     id: dto.id,
     enabled: dto.enabled,
     channelId: dto.channelId,
     address: {
-      id: dto.id,
+      id: dto.address.id,
       type: toAddressType(dto.address.type),
       value: dto.address.value,
       verified: dto.address.verified,
