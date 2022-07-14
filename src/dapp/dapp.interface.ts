@@ -1,9 +1,15 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
+import type {
+  DappNotificationConfig,
+  WalletDappNotificationConfig,
+} from '../notification/notification.inerface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
+
   find(): Promise<Dapp | null>;
+
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
@@ -14,6 +20,13 @@ export interface Dapp {
   verified: boolean;
   dappAddresses: DappAddresses;
   messages: DappMessages;
+  notifications?: DappNotifications;
+}
+
+export interface DappNotifications {
+  findAllWallet(): Promise<WalletDappNotificationConfig[]>;
+
+  findAll(): Promise<DappNotificationConfig[]>;
 }
 
 export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'messages'>;

@@ -4,12 +4,17 @@ import type {
   AddressType,
   DappAddress,
 } from '@address/addresses.interface';
+import type {
+  DappNotificationConfig,
+  NotificationConfig,
+} from '../notification/notification.inerface';
 
 export interface Wallets {
   readonly publicKey: PublicKey;
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
   readonly dappMessages: WalletDappMessages;
+  readonly dappNotificationSubscriptionConfigs: WalletDappNotificationConfigs;
 }
 
 export interface Wallet {
@@ -109,4 +114,23 @@ export interface FindDappMessageQuery {
   readonly skip?: number;
   readonly take?: number;
   readonly dappVerified?: boolean;
+}
+
+export interface WalletDappNotificationConfigs {
+  findAll(
+    query?: FindWalletDappNotificationQuery,
+  ): Promise<DappNotificationConfig[]>;
+
+  upsert(
+    command: UpsertWalletDappNotificationCommand,
+  ): Promise<DappNotificationConfig>;
+}
+
+export interface FindWalletDappNotificationQuery {
+  readonly dappPublicKey?: PublicKey;
+}
+
+export interface UpsertWalletDappNotificationCommand {
+  readonly dappNotificationId: string;
+  readonly config: NotificationConfig;
 }

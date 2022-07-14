@@ -15,6 +15,7 @@ import type {
   WalletAddresses,
   WalletDappAddresses,
   WalletDappMessages,
+  WalletDappNotificationConfigs,
   Wallets,
 } from '@wallet/wallet.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -35,6 +36,7 @@ export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
   dappMessages: WalletDappMessages;
+  dappNotificationSubscriptionConfigs: WalletDappNotificationConfigs = null!; // TODO: implement
 
   constructor(
     readonly publicKey: PublicKey,
@@ -163,6 +165,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
 
 export class DataServiceWalletDappMessages implements WalletDappMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
+
   constructor(private readonly api: DataServiceWalletMessagesApi) {}
 
   async findAll(query?: FindDappMessageQuery): Promise<DappMessage[]> {
