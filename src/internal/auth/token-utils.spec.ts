@@ -2,15 +2,18 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { Duration } from 'luxon';
 import { AuthTokensImpl } from './token-utils';
 import { Keypair } from '@solana/web3.js';
-import type {
-  AuthTokens,
+import type { AuthTokens, TokenBody } from '@auth/auth.interface';
+import {
+  DialectWalletAdapterEd25519TokenSigner,
   Ed25519TokenSigner,
-  TokenBody,
-} from '@auth/auth.interface';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+} from '@auth/signers/ed25519-token-signer';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
+import {
+  DialectWalletAdapterSolanaTxTokenSigner,
+  SolanaTxTokenSigner,
+} from '@auth/signers/solana-tx-token-signer';
 
-describe('token tests', () => {
+describe('ed25519 token tests', () => {
   let wallet: DialectWalletAdapterWrapper;
   let signer: Ed25519TokenSigner;
   let tokenUtils: AuthTokens;
@@ -95,6 +98,45 @@ describe('token tests', () => {
         token.base64Signature,
     );
     const isParsedTokenValid = tokenUtils.isValid(compromisedToken);
+    expect(isParsedTokenValid).toBeFalsy();
+  });
+});
+
+describe('solana-tx token tests', () => {
+  let wallet: DialectWalletAdapterWrapper;
+  let signer: SolanaTxTokenSigner;
+  let tokenUtils: AuthTokens;
+  beforeEach(() => {
+    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
+    signer = new DialectWalletAdapterSolanaTxTokenSigner(wallet);
+    tokenUtils = new AuthTokensImpl();
+  });
+
+  test('when not expired validation returns true', async () => {
+    // when
+    const token = await tokenUtils.generate(
+      signer,
+      Duration.fromObject({ seconds: 100 }),
+    );
+    // then
+    const isValid = tokenUtils.isValid(token);
+    expect(isValid).toBeTruthy();
+    const parsedToken = tokenUtils.parse(token.rawValue);
+    const isParsedTokenValid = tokenUtils.isValid(parsedToken);
+    expect(isParsedTokenValid).toBeTruthy();
+  });
+
+  test('when expired validation returns false', async () => {
+    // when
+    const token = await tokenUtils.generate(
+      signer,
+      Duration.fromObject({ seconds: -100 }),
+    );
+    // then
+    const isValid = tokenUtils.isValid(token);
+    expect(isValid).toBeFalsy();
+    const parsedToken = tokenUtils.parse(token.rawValue);
+    const isParsedTokenValid = tokenUtils.isValid(parsedToken);
     expect(isParsedTokenValid).toBeFalsy();
   });
 });

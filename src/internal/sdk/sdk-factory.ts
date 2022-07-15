@@ -20,7 +20,7 @@ import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import { IllegalArgumentError } from '@sdk/errors';
 import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
