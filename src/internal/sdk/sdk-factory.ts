@@ -39,6 +39,7 @@ import { TokenStore } from '@auth/token-store';
 import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
 import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
 import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '../../auth/signers/solana-tx-token-signer';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -68,10 +69,14 @@ export class DialectSdkFactory {
       config.wallet,
       config.encryptionKeysStore,
     );
+    const tokenSigner = config.wallet.canSignMessage()
+      ? new DialectWalletAdapterEd25519TokenSigner(config.wallet)
+      : new DialectWalletAdapterSolanaTxTokenSigner(config.wallet);
+
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
       config.dialectCloud.url,
       TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+        tokenSigner,
         Duration.fromObject({ minutes: 60 }),
         config.dialectCloud.tokenStore,
       ),

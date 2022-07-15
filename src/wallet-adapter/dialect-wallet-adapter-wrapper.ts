@@ -70,7 +70,18 @@ export class DialectWalletAdapterWrapper
   }
 
   private canUseDialectCloud() {
-    return Boolean(this.publicKey && this.delegate.signMessage);
+    return Boolean(
+      this.publicKey &&
+        (this.delegate.signMessage || this.delegate.signTransaction),
+    );
+  }
+
+  canSignMessage(): boolean {
+    return Boolean(this.delegate.signMessage);
+  }
+
+  canSignTransaction(): boolean {
+    return Boolean(this.delegate.signTransaction);
   }
 
   get canEncrypt() {
