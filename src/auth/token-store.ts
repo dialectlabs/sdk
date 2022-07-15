@@ -1,5 +1,6 @@
 import type { Token } from '@auth/auth.interface';
 import type { PublicKey } from '@solana/web3.js';
+import { TokenParser } from '../internal/auth/token-parser';
 
 export abstract class TokenStore {
   abstract get(subject: PublicKey): Token | null;
@@ -38,14 +39,11 @@ class SessionStorageTokenStore extends TokenStore {
     if (!token) {
       return null;
     }
-    return JSON.parse(token) as Token;
+    return TokenParser.parse(token) as Token;
   }
 
   save(token: Token): Token {
-    sessionStorage.setItem(
-      createStorageKey(token.body.sub),
-      JSON.stringify(token),
-    );
+    sessionStorage.setItem(createStorageKey(token.body.sub), token.rawValue);
     return token;
   }
 }
@@ -56,14 +54,11 @@ class LocalStorageTokenStore extends TokenStore {
     if (!token) {
       return null;
     }
-    return JSON.parse(token) as Token;
+    return TokenParser.parse(token) as Token;
   }
 
   save(token: Token): Token {
-    localStorage.setItem(
-      createStorageKey(token.body.sub),
-      JSON.stringify(token),
-    );
+    localStorage.setItem(createStorageKey(token.body.sub), token.rawValue);
     return token;
   }
 }

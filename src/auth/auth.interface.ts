@@ -1,7 +1,6 @@
 import { AuthTokensImpl } from '@auth/internal/token-utils';
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
-import { TokenParser } from '../internal/auth/token-parser';
 
 export class Auth {
   static tokens = new AuthTokensImpl();
