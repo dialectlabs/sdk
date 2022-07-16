@@ -10,6 +10,7 @@ export interface Wallets {
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
   readonly dappMessages: WalletDappMessages;
+  readonly notificationSubscriptions: WalletNotificationSubscriptions;
 }
 
 export interface Wallet {
@@ -109,4 +110,48 @@ export interface FindDappMessageQuery {
   readonly skip?: number;
   readonly take?: number;
   readonly dappVerified?: boolean;
+}
+
+export interface WalletNotificationSubscriptions {
+  findAll(
+    query?: FindNotificationSubscriptionQuery,
+  ): Promise<WalletNotificationSubscription[]>;
+
+  upsert(
+    command: UpsertNotificationSubscriptionCommand,
+  ): Promise<WalletNotificationSubscription>;
+}
+
+export interface FindNotificationSubscriptionQuery {
+  readonly dappPublicKey?: string;
+}
+
+export interface WalletNotificationSubscription {
+  notificationType: NotificationType;
+  subscription: NotificationSubscription;
+}
+
+export class NotificationSubscription {
+  wallet!: Wallet;
+  config!: NotificationConfig;
+}
+
+export interface NotificationType {
+  id: string;
+  name: string;
+  humanReadableId: string;
+  trigger?: string;
+  orderingPriority?: number;
+  tags: string[];
+  defaultConfig: NotificationConfig;
+  dappId: string;
+}
+
+export interface NotificationConfig {
+  enabled: boolean;
+}
+
+export interface UpsertNotificationSubscriptionCommand {
+  readonly notificationTypeId: string;
+  readonly config: NotificationConfig;
 }
