@@ -146,7 +146,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     const dappAddressDtoExpected: DappAddressDto = {
       id: expect.any(String),
       address: walletAddress,
-      enabled: true,
+      enabled: false,
     };
     expect(patched).toMatchObject(dappAddressDtoExpected);
     expect(foundAfterPatch).toMatchObject(dappAddressDtoExpected);
