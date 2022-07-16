@@ -43,18 +43,21 @@ export type SendDappMessageCommand =
 export interface BroadcastDappMessageCommand {
   title: string;
   message: string;
+  notificationTypeId?: string;
 }
 
 export interface UnicastDappMessageCommand {
   title: string;
   message: string;
   recipient: PublicKey;
+  notificationTypeId?: string;
 }
 
 export interface MulticastDappMessageCommand {
   title: string;
   message: string;
   recipients: PublicKey[];
+  notificationTypeId?: string;
 }
 
 //
