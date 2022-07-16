@@ -1,22 +1,17 @@
+import { AuthTokensImpl } from '@auth/internal/token-utils';
 import type { PublicKey } from '@solana/web3.js';
 import type { Duration } from 'luxon';
-import { AuthTokensImpl } from '@auth/internal/token-utils';
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 
 export class Auth {
   static tokens = new AuthTokensImpl();
 }
 
 export abstract class AuthTokens {
-  abstract generate(signer: Ed25519TokenSigner, ttl: Duration): Promise<Token>;
+  abstract generate(signer: TokenSigner, ttl: Duration): Promise<Token>;
 
   abstract parse(rawToken: string): Token;
 
   abstract isValid(token: Token): boolean;
-
-  abstract isSignatureValid(token: Token): boolean;
-
-  abstract isExpired(token: Token): boolean;
 }
 
 export interface Token {
@@ -29,8 +24,10 @@ export interface Token {
   base64Signature: string;
 }
 
+export type TokenHeaderAlg = 'ed25519' | 'solana-tx' | string;
+
 export interface TokenHeader {
-  alg?: string;
+  alg?: TokenHeaderAlg;
   typ?: string;
 }
 
@@ -40,22 +37,14 @@ export interface TokenBody {
   exp: number;
 }
 
-export interface Ed25519TokenSigner {
-  subject: PublicKey;
-
-  sign(payload: Uint8Array): Promise<Uint8Array>;
+export interface TokenSignerResult {
+  payload: Uint8Array;
+  signature: Uint8Array;
 }
 
-export class DialectWalletAdapterEd25519TokenSigner
-  implements Ed25519TokenSigner
-{
-  readonly subject: PublicKey;
+export interface TokenSigner {
+  alg: TokenHeaderAlg;
+  subject: PublicKey;
 
-  constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
-    this.subject = dialectWalletAdapter.publicKey;
-  }
-
-  sign(payload: Uint8Array): Promise<Uint8Array> {
-    return this.dialectWalletAdapter.signMessage(payload);
-  }
+  sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }

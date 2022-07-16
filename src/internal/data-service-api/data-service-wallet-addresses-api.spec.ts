@@ -1,7 +1,7 @@
 import { DataServiceApi } from './data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
   CreateAddressCommandDto,

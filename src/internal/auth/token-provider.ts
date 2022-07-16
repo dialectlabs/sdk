@@ -1,18 +1,14 @@
-import { Duration } from 'luxon';
-import type {
-  AuthTokens,
-  Ed25519TokenSigner,
-  Token,
-} from '@auth/auth.interface';
+import type { AuthTokens, Token, TokenSigner } from '@auth/auth.interface';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
-import type { PublicKey } from '@solana/web3.js';
 import { TokenStore } from '@auth/token-store';
+import type { PublicKey } from '@solana/web3.js';
+import { Duration } from 'luxon';
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 
   static create(
-    signer: Ed25519TokenSigner,
+    signer: TokenSigner,
     ttl: Duration = Duration.fromObject({ hours: 1 }),
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
@@ -33,7 +29,7 @@ export abstract class TokenProvider {
 
 class DefaultTokenProvider extends TokenProvider {
   constructor(
-    private readonly signer: Ed25519TokenSigner,
+    private readonly signer: TokenSigner,
     private readonly ttl: Duration,
     private readonly tokenUtils: AuthTokens,
   ) {
@@ -60,7 +56,7 @@ class CachedTokenProvider extends TokenProvider {
   async get(): Promise<Token> {
     const existingToken = this.tokenStore.get(this.subject);
     const subject = this.subject.toBase58();
-    if (existingToken && !this.tokenUtils.isExpired(existingToken)) {
+    if (existingToken && this.tokenUtils.isValid(existingToken)) {
       delete this.delegateGetPromises[subject];
       return existingToken;
     }

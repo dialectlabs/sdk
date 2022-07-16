@@ -9,7 +9,7 @@ import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-ad
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import { DataServiceApi } from '@data-service-api/data-service-api';
 import { TokenProvider } from '@auth/internal/token-provider';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';

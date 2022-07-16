@@ -20,7 +20,7 @@ import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
 import { Duration } from 'luxon';
 import { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import { IllegalArgumentError } from '@sdk/errors';
 import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
@@ -39,6 +39,7 @@ import { TokenStore } from '@auth/token-store';
 import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
 import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
 import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '../../auth/signers/solana-tx-token-signer';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -68,10 +69,14 @@ export class DialectSdkFactory {
       config.wallet,
       config.encryptionKeysStore,
     );
+    const tokenSigner = config.wallet.canSignMessage()
+      ? new DialectWalletAdapterEd25519TokenSigner(config.wallet)
+      : new DialectWalletAdapterSolanaTxTokenSigner(config.wallet);
+
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
       config.dialectCloud.url,
       TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+        tokenSigner,
         Duration.fromObject({ minutes: 60 }),
         config.dialectCloud.tokenStore,
       ),
