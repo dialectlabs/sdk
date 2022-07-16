@@ -1,9 +1,15 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
+import type {
+  NotificationConfig,
+  NotificationType,
+} from '@wallet/wallet.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
+
   find(): Promise<Dapp | null>;
+
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
@@ -14,9 +20,13 @@ export interface Dapp {
   verified: boolean;
   dappAddresses: DappAddresses;
   messages: DappMessages;
+  notificationTypes: DappNotificationTypes;
 }
 
-export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'messages'>;
+export type ReadOnlyDapp = Omit<
+  Dapp,
+  'dappAddresses' | 'messages' | 'notificationTypes'
+>;
 
 export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
@@ -58,4 +68,37 @@ export interface MulticastDappMessageCommand {
   message: string;
   recipients: PublicKey[];
   notificationTypeId?: string;
+}
+
+export interface DappNotificationTypes {
+  create(command: CreateNotificationTypeCommand): Promise<NotificationType>;
+
+  findAll(): Promise<NotificationType[]>;
+
+  find(id: string): Promise<NotificationType>;
+
+  patch(
+    id: string,
+    command: PatchNotificationTypeCommand,
+  ): Promise<NotificationType>;
+
+  delete(id: string): Promise<void>;
+}
+
+export interface CreateNotificationTypeCommand {
+  name: string;
+  humanReadableId: string;
+  trigger?: string;
+  orderingPriority?: number;
+  tags?: string[];
+  defaultConfig: NotificationConfig;
+}
+
+export interface PatchNotificationTypeCommand {
+  name?: string;
+  humanReadableId?: string;
+  trigger?: string;
+  orderingPriority?: number;
+  tags?: string[];
+  defaultConfig?: NotificationConfig;
 }
