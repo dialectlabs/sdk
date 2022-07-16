@@ -2,7 +2,12 @@
 
 ## [UNRELEASED]
 
+## [0.3.0] - 2022-07-16
+
+- Support authentication via transaction. Can be used for wallets which doesn't support message signing
+
 ## [0.2.1] - 2022-07-13
+
 - Expose correct address id in wallet dapp addresses.
 
 ## [0.2.0] - 2022-06-29
