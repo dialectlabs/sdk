@@ -114,7 +114,7 @@ export interface FindDappMessageQuery {
 
 export interface WalletNotificationSubscriptions {
   findAll(
-    query?: FindNotificationSubscriptionQuery,
+    query: FindNotificationSubscriptionQuery,
   ): Promise<WalletNotificationSubscription[]>;
 
   upsert(
@@ -123,7 +123,7 @@ export interface WalletNotificationSubscriptions {
 }
 
 export interface FindNotificationSubscriptionQuery {
-  readonly dappPublicKey?: string;
+  readonly dappPublicKey: PublicKey;
 }
 
 export interface WalletNotificationSubscription {

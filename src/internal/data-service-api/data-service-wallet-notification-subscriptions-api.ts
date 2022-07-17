@@ -7,7 +7,7 @@ import type { TokenProvider } from '@auth/internal/token-provider';
 import type { WalletDto } from '@data-service-api/data-service-dapps-api';
 
 export interface FindNotificationSubscriptionQueryDto {
-  readonly dappPublicKey?: string;
+  readonly dappPublicKey: string;
 }
 
 export interface WalletNotificationSubscriptionDto {
@@ -42,7 +42,7 @@ export interface UpsertNotificationSubscriptionCommandDto {
 
 export interface DataServiceWalletNotificationSubscriptionsApi {
   findAll(
-    query?: FindNotificationSubscriptionQueryDto,
+    query: FindNotificationSubscriptionQueryDto,
   ): Promise<WalletNotificationSubscriptionDto[]>;
 
   upsert(
@@ -59,7 +59,7 @@ export class DataServiceWalletNotificationSubscriptionsApiClient
   ) {}
 
   async findAll(
-    query?: FindNotificationSubscriptionQueryDto,
+    query: FindNotificationSubscriptionQueryDto,
   ): Promise<WalletNotificationSubscriptionDto[]> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
@@ -68,7 +68,7 @@ export class DataServiceWalletNotificationSubscriptionsApiClient
           `${this.baseUrl}/api/v1/wallets/me/notificationSubscriptions`,
           {
             headers: createHeaders(token),
-            ...(query && { params: query }),
+            params: query,
           },
         )
         .then((it) => it.data),

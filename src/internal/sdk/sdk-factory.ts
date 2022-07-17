@@ -42,6 +42,8 @@ import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messag
 import { DialectWalletAdapterSolanaTxTokenSigner } from '@auth/signers/solana-tx-token-signer';
 import { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
 import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
+import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
+import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -95,6 +97,7 @@ export class DialectSdkFactory {
       dialectProgram,
       dataServiceApi.dapps,
       dataServiceApi.dappNotificationTypes,
+      dataServiceApi.dappNotificationSubscriptions,
     );
     const wallet = new DataServiceWallets(
       config.wallet.publicKey,
@@ -177,6 +180,7 @@ Solana settings:
     program: Program,
     dataServiceDappsApi: DataServiceDappsApi,
     dataServiceDappNotificationTypesApi: DataServiceDappNotificationTypesApi,
+    dappNotificationSubscriptionsApi: DataServiceDappNotificationSubscriptionsApi,
   ) {
     const dappAddressesBackends: DappAddresses[] = config.backends.map(
       (backend) => {
@@ -214,10 +218,15 @@ Solana settings:
     const dappNotificationTypes = new DataServiceDappNotificationTypes(
       dataServiceDappNotificationTypesApi,
     );
+    const dappNotificationSubscriptions =
+      new DataServiceDappNotificationSubscriptions(
+        dappNotificationSubscriptionsApi,
+      );
     return new DappsImpl(
       dappAddressesFacade,
       dappMessagesFacade,
       dappNotificationTypes,
+      dappNotificationSubscriptions,
       dataServiceDappsApi,
     );
   }

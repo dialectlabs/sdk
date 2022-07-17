@@ -3,6 +3,7 @@ import type {
   Dapp,
   DappAddresses,
   DappMessages,
+  DappNotificationSubscriptions,
   DappNotificationTypes,
   Dapps,
   FindDappQuery,
@@ -17,12 +18,14 @@ import { withErrorParsing } from '@data-service-api/data-service-errors';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 import { ResourceNotFoundError } from '@sdk/errors';
 import type { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
+import type { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
 
 export class DappsImpl implements Dapps {
   constructor(
     private readonly dappAddresses: DappAddresses,
     private readonly dappMessages: DappMessages,
     private readonly notificationTypes: DataServiceDappNotificationTypes,
+    private readonly notificationSubscriptions: DataServiceDappNotificationSubscriptions,
     private readonly dappsApi: DataServiceDappsApi,
   ) {}
 
@@ -45,6 +48,7 @@ export class DappsImpl implements Dapps {
       this.dappAddresses,
       this.dappMessages,
       this.notificationTypes,
+      this.notificationSubscriptions,
       dappDto.description,
     );
   }
@@ -77,6 +81,7 @@ export class DappsImpl implements Dapps {
       this.dappAddresses,
       this.dappMessages,
       this.notificationTypes,
+      this.notificationSubscriptions,
       dappDto.description,
     );
   }
@@ -90,6 +95,7 @@ export class DappImpl implements Dapp {
     readonly dappAddresses: DappAddresses,
     readonly messages: DappMessages,
     readonly notificationTypes: DappNotificationTypes,
+    readonly notificationSubscriptions: DappNotificationSubscriptions,
     readonly description?: string,
   ) {}
 }

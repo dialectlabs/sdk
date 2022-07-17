@@ -216,9 +216,13 @@ export class DataServiceWalletNotificationSubscriptions
   ) {}
 
   async findAll(
-    query?: FindNotificationSubscriptionQuery,
+    query: FindNotificationSubscriptionQuery,
   ): Promise<WalletNotificationSubscription[]> {
-    const dtos = await withErrorParsing(this.api.findAll(query));
+    const dtos = await withErrorParsing(
+      this.api.findAll({
+        dappPublicKey: query?.dappPublicKey?.toBase58(),
+      }),
+    );
     return dtos.map(fromNotificationSubscriptionDto);
   }
 

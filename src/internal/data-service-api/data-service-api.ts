@@ -28,12 +28,15 @@ import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data
 import { DataServiceDappNotificationTypesApiClient } from '@data-service-api/data-service-dapp-notification-types-api';
 import type { DataServiceWalletNotificationSubscriptionsApi } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
 import { DataServiceWalletNotificationSubscriptionsApiClient } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+import { DataServiceDappNotificationSubscriptionsApiClient } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 
 export class DataServiceApi {
   private constructor(
     readonly threads: DataServiceDialectsApi,
     readonly dapps: DataServiceDappsApi,
     readonly dappNotificationTypes: DataServiceDappNotificationTypesApi,
+    readonly dappNotificationSubscriptions: DataServiceDappNotificationSubscriptionsApi,
     readonly walletsV0: DataServiceWalletsApiV0,
     readonly walletAddresses: DataServiceWalletAddressesApi,
     readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
@@ -54,6 +57,11 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
+    const dappNotificationSubscriptions =
+      new DataServiceDappNotificationSubscriptionsApiClient(
+        baseUrl,
+        tokenProvider,
+      );
     const walletsApiV0 = new DataServiceWalletsApiClientV0(
       baseUrl,
       tokenProvider,
@@ -79,6 +87,7 @@ export class DataServiceApi {
       dialectsApi,
       dappsApiClient,
       dappNotificationTypes,
+      dappNotificationSubscriptions,
       walletsApiV0,
       walletAddressesApi,
       walletDappAddressesApi,

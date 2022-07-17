@@ -2,6 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
 import type {
   NotificationConfig,
+  NotificationSubscription,
   NotificationType,
 } from '@wallet/wallet.interface';
 
@@ -21,11 +22,15 @@ export interface Dapp {
   dappAddresses: DappAddresses;
   messages: DappMessages;
   notificationTypes: DappNotificationTypes;
+  notificationSubscriptions: DappNotificationSubscriptions;
 }
 
 export type ReadOnlyDapp = Omit<
   Dapp,
-  'dappAddresses' | 'messages' | 'notificationTypes'
+  | 'dappAddresses'
+  | 'messages'
+  | 'notificationTypes'
+  | 'notificationSubscriptions'
 >;
 
 export interface DappAddresses {
@@ -101,4 +106,13 @@ export interface PatchNotificationTypeCommand {
   orderingPriority?: number;
   tags?: string[];
   defaultConfig?: NotificationConfig;
+}
+
+export interface DappNotificationSubscriptions {
+  findAll(): Promise<DappNotificationSubscription[]>;
+}
+
+export class DappNotificationSubscription {
+  notificationType!: NotificationType;
+  subscriptions!: NotificationSubscription[];
 }
