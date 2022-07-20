@@ -2,6 +2,11 @@
 
 ## [UNRELEASED]
 
+## [0.4.6] - 2022-07-20
+- Add notification types configuration for dapps.
+- Add notification subscriptions querying and configuration for wallets.
+- Add notification subscriptions querying for dapp.
+
 ## [0.3.1] - 2022-07-21
 
 - chore: invalidate token storages if data is invalid
