@@ -35,11 +35,17 @@ class InMemoryTokenStore extends TokenStore {
 
 class SessionStorageTokenStore extends TokenStore {
   get(subject: PublicKey): Token | null {
-    const token = sessionStorage.getItem(createStorageKey(subject.toBase58()));
-    if (!token) {
+    const key = createStorageKey(subject.toBase58());
+    try {
+      const token = sessionStorage.getItem(key);
+      if (!token) {
+        return null;
+      }
+      return TokenParser.parse(token) as Token;
+    } catch {
+      sessionStorage.removeItem(key);
       return null;
     }
-    return TokenParser.parse(token) as Token;
   }
 
   save(token: Token): Token {
@@ -50,11 +56,17 @@ class SessionStorageTokenStore extends TokenStore {
 
 class LocalStorageTokenStore extends TokenStore {
   get(subject: PublicKey): Token | null {
-    const token = localStorage.getItem(createStorageKey(subject.toBase58()));
-    if (!token) {
+    const key = createStorageKey(subject.toBase58());
+    try {
+      const token = localStorage.getItem(key);
+      if (!token) {
+        return null;
+      }
+      return TokenParser.parse(token) as Token;
+    } catch {
+      localStorage.removeItem(key);
       return null;
     }
-    return TokenParser.parse(token) as Token;
   }
 
   save(token: Token): Token {
