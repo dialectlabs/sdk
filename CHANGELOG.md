@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+## [0.3.1] - 2022-07-21
+
 - chore: invalidate token storages if data is invalid
 
 ## [0.3.0] - 2022-07-16
