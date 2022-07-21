@@ -34,11 +34,17 @@ class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
 
 class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    const keys = sessionStorage.getItem(createStorageKey(subject.toBase58()));
-    if (!keys) {
+    const key = createStorageKey(subject.toBase58());
+    try {
+      const keys = sessionStorage.getItem(key);
+      if (!keys) {
+        return null;
+      }
+      return deserializeDiffeHellmanKeys(keys);
+    } catch {
+      sessionStorage.removeItem(key);
       return null;
     }
-    return deserializeDiffeHellmanKeys(keys);
   }
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
@@ -52,11 +58,17 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
 
 class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    const keys = localStorage.getItem(createStorageKey(subject.toBase58()));
-    if (!keys) {
+    const key = createStorageKey(subject.toBase58());
+    try {
+      const keys = localStorage.getItem(key);
+      if (!keys) {
+        return null;
+      }
+      return deserializeDiffeHellmanKeys(keys) as DiffeHellmanKeys;
+    } catch {
+      localStorage.removeItem(key);
       return null;
     }
-    return deserializeDiffeHellmanKeys(keys) as DiffeHellmanKeys;
   }
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
