@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- chore: invalidate token storages if data is invalid
+
 ## [0.3.0] - 2022-07-16
 
 - Support authentication via transaction. Can be used for wallets which doesn't support message signing
