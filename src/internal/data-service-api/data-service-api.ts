@@ -24,15 +24,24 @@ import {
   DataServiceWalletMessagesApi,
   DataServiceWalletMessagesApiClient,
 } from '@data-service-api/data-service-wallet-messages-api';
+import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
+import { DataServiceDappNotificationTypesApiClient } from '@data-service-api/data-service-dapp-notification-types-api';
+import type { DataServiceWalletNotificationSubscriptionsApi } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import { DataServiceWalletNotificationSubscriptionsApiClient } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+import { DataServiceDappNotificationSubscriptionsApiClient } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 
 export class DataServiceApi {
   private constructor(
     readonly threads: DataServiceDialectsApi,
     readonly dapps: DataServiceDappsApi,
+    readonly dappNotificationTypes: DataServiceDappNotificationTypesApi,
+    readonly dappNotificationSubscriptions: DataServiceDappNotificationSubscriptionsApi,
     readonly walletsV0: DataServiceWalletsApiV0,
     readonly walletAddresses: DataServiceWalletAddressesApi,
     readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
     readonly walletMessages: DataServiceWalletMessagesApi,
+    readonly walletNotificationSubscriptions: DataServiceWalletNotificationSubscriptionsApi,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -40,10 +49,19 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
-    const dappAddressesApi = new DataServiceDappsApiClient(
+    const dappsApiClient = new DataServiceDappsApiClient(
       baseUrl,
       tokenProvider,
     );
+    const dappNotificationTypes = new DataServiceDappNotificationTypesApiClient(
+      baseUrl,
+      tokenProvider,
+    );
+    const dappNotificationSubscriptions =
+      new DataServiceDappNotificationSubscriptionsApiClient(
+        baseUrl,
+        tokenProvider,
+      );
     const walletsApiV0 = new DataServiceWalletsApiClientV0(
       baseUrl,
       tokenProvider,
@@ -60,13 +78,21 @@ export class DataServiceApi {
       baseUrl,
       tokenProvider,
     );
+    const walletNotificationSubscriptions =
+      new DataServiceWalletNotificationSubscriptionsApiClient(
+        baseUrl,
+        tokenProvider,
+      );
     return new DataServiceApi(
       dialectsApi,
-      dappAddressesApi,
+      dappsApiClient,
+      dappNotificationTypes,
+      dappNotificationSubscriptions,
       walletsApiV0,
       walletAddressesApi,
       walletDappAddressesApi,
       walletDappMessagesApi,
+      walletNotificationSubscriptions,
     );
   }
 }

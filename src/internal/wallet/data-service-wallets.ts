@@ -8,13 +8,17 @@ import type {
   FindDappAddressesQuery,
   FindDappAddressQuery,
   FindDappMessageQuery,
+  FindNotificationSubscriptionQuery,
   PartialUpdateAddressCommand,
   PartialUpdateDappAddressCommand,
   ResendVerificationCodeCommand,
+  UpsertNotificationSubscriptionCommand,
   VerifyAddressCommand,
   WalletAddresses,
   WalletDappAddresses,
   WalletDappMessages,
+  WalletNotificationSubscription,
+  WalletNotificationSubscriptions,
   Wallets,
 } from '@wallet/wallet.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -30,17 +34,23 @@ import type { DataServiceWalletMessagesApi } from '@data-service-api/data-servic
 import type { TextSerde } from '@dialectlabs/web3';
 import { UnencryptedTextSerde } from '@dialectlabs/web3';
 import { toDappAddress } from '@dapp/internal/data-service-dapp-addresses';
+import type {
+  DataServiceWalletNotificationSubscriptionsApi,
+  WalletNotificationSubscriptionDto,
+} from '@data-service-api/data-service-wallet-notification-subscriptions-api';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
   dappMessages: WalletDappMessages;
+  notificationSubscriptions: WalletNotificationSubscriptions;
 
   constructor(
     readonly publicKey: PublicKey,
     private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
     private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
+    private readonly dataServiceWalletNotificationSubscriptionsApi: DataServiceWalletNotificationSubscriptionsApi,
   ) {
     this.addresses = new DataServiceWalletAddresses(
       dataServiceWalletAddressesApi,
@@ -51,6 +61,10 @@ export class DataServiceWallets implements Wallets {
     this.dappMessages = new DataServiceWalletDappMessages(
       dataServiceWalletMessagesApi,
     );
+    this.notificationSubscriptions =
+      new DataServiceWalletNotificationSubscriptions(
+        dataServiceWalletNotificationSubscriptionsApi,
+      );
   }
 }
 
@@ -163,14 +177,17 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
 
 export class DataServiceWalletDappMessages implements WalletDappMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
+
   constructor(private readonly api: DataServiceWalletMessagesApi) {}
 
   async findAll(query?: FindDappMessageQuery): Promise<DappMessage[]> {
-    const dappMessages = await this.api.findAllDappMessages({
-      skip: query?.skip,
-      take: query?.take,
-      dappVerified: query?.dappVerified,
-    });
+    const dappMessages = await withErrorParsing(
+      this.api.findAllDappMessages({
+        skip: query?.skip,
+        take: query?.take,
+        dappVerified: query?.dappVerified,
+      }),
+    );
     return dappMessages.map((it) => ({
       author: new PublicKey(it.owner),
       timestamp: new Date(it.timestamp),
@@ -187,6 +204,46 @@ function toAddress(addressDto: AddressDto): Address {
     type: toAddressType(addressDto.type),
     wallet: {
       publicKey: new PublicKey(addressDto.wallet.publicKey),
+    },
+  };
+}
+
+export class DataServiceWalletNotificationSubscriptions
+  implements WalletNotificationSubscriptions
+{
+  constructor(
+    private readonly api: DataServiceWalletNotificationSubscriptionsApi,
+  ) {}
+
+  async findAll(
+    query: FindNotificationSubscriptionQuery,
+  ): Promise<WalletNotificationSubscription[]> {
+    const dtos = await withErrorParsing(
+      this.api.findAll({
+        dappPublicKey: query?.dappPublicKey?.toBase58(),
+      }),
+    );
+    return dtos.map(fromNotificationSubscriptionDto);
+  }
+
+  async upsert(
+    command: UpsertNotificationSubscriptionCommand,
+  ): Promise<WalletNotificationSubscription> {
+    const dto = await withErrorParsing(this.api.upsert(command));
+    return fromNotificationSubscriptionDto(dto);
+  }
+}
+
+function fromNotificationSubscriptionDto(
+  dto: WalletNotificationSubscriptionDto,
+): WalletNotificationSubscription {
+  return {
+    notificationType: dto.notificationType,
+    subscription: {
+      wallet: {
+        publicKey: new PublicKey(dto.subscription.wallet.publicKey),
+      },
+      config: dto.subscription.config,
     },
   };
 }

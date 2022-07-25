@@ -39,7 +39,11 @@ import { TokenStore } from '@auth/token-store';
 import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
 import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
 import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '../../auth/signers/solana-tx-token-signer';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '@auth/signers/solana-tx-token-signer';
+import { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
+import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
+import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
+import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -92,12 +96,15 @@ export class DialectSdkFactory {
       encryptionKeysProvider,
       dialectProgram,
       dataServiceApi.dapps,
+      dataServiceApi.dappNotificationTypes,
+      dataServiceApi.dappNotificationSubscriptions,
     );
     const wallet = new DataServiceWallets(
       config.wallet.publicKey,
       dataServiceApi.walletAddresses,
       dataServiceApi.walletDappAddresses,
       dataServiceApi.walletMessages,
+      dataServiceApi.walletNotificationSubscriptions,
     );
     return new InternalDialectSdk(
       {
@@ -172,6 +179,8 @@ Solana settings:
     encryptionKeysProvider: EncryptionKeysProvider,
     program: Program,
     dataServiceDappsApi: DataServiceDappsApi,
+    dataServiceDappNotificationTypesApi: DataServiceDappNotificationTypesApi,
+    dappNotificationSubscriptionsApi: DataServiceDappNotificationSubscriptionsApi,
   ) {
     const dappAddressesBackends: DappAddresses[] = config.backends.map(
       (backend) => {
@@ -185,6 +194,13 @@ Solana settings:
         }
       },
     );
+    const dappNotificationTypes = new DataServiceDappNotificationTypes(
+      dataServiceDappNotificationTypesApi,
+    );
+    const dappNotificationSubscriptions =
+      new DataServiceDappNotificationSubscriptions(
+        dappNotificationSubscriptionsApi,
+      );
     const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
     const dappMessageBackends: DappMessages[] = config.backends.map(
       (backend) => {
@@ -197,6 +213,8 @@ Solana settings:
                 encryptionKeysProvider,
               ),
               new SolanaDappAddresses(program),
+              dappNotificationTypes,
+              dappNotificationSubscriptions,
             );
           case Backend.DialectCloud:
             return new DataServiceDappMessages(dataServiceDappsApi);
@@ -209,6 +227,8 @@ Solana settings:
     return new DappsImpl(
       dappAddressesFacade,
       dappMessagesFacade,
+      dappNotificationTypes,
+      dappNotificationSubscriptions,
       dataServiceDappsApi,
     );
   }

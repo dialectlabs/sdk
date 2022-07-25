@@ -25,6 +25,7 @@ export class DataServiceDappMessages implements DappMessages {
     return withErrorParsing(
       this.api.unicast({
         ...command,
+        notificationTypeId: command.notificationTypeId,
         recipientPublicKey: command.recipient.toBase58(),
       }),
     );
@@ -34,6 +35,7 @@ export class DataServiceDappMessages implements DappMessages {
     return withErrorParsing(
       this.api.multicast({
         ...command,
+        notificationTypeId: command.notificationTypeId,
         recipientPublicKeys: command.recipients.map((it) => it.toBase58()),
       }),
     );
@@ -43,6 +45,7 @@ export class DataServiceDappMessages implements DappMessages {
     return withErrorParsing(
       this.api.broadcast({
         ...command,
+        notificationTypeId: command.notificationTypeId,
       }),
     );
   }

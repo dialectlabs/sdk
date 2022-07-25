@@ -1,9 +1,16 @@
 import type { PublicKey } from '@solana/web3.js';
 import type { DappAddress } from '@address/addresses.interface';
+import type {
+  NotificationConfig,
+  NotificationSubscription,
+  NotificationType,
+} from '@wallet/wallet.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
+
   find(): Promise<Dapp | null>;
+
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
@@ -14,9 +21,17 @@ export interface Dapp {
   verified: boolean;
   dappAddresses: DappAddresses;
   messages: DappMessages;
+  notificationTypes: DappNotificationTypes;
+  notificationSubscriptions: DappNotificationSubscriptions;
 }
 
-export type ReadOnlyDapp = Omit<Dapp, 'dappAddresses' | 'messages'>;
+export type ReadOnlyDapp = Omit<
+  Dapp,
+  | 'dappAddresses'
+  | 'messages'
+  | 'notificationTypes'
+  | 'notificationSubscriptions'
+>;
 
 export interface DappAddresses {
   findAll(): Promise<DappAddress[]>;
@@ -43,67 +58,61 @@ export type SendDappMessageCommand =
 export interface BroadcastDappMessageCommand {
   title: string;
   message: string;
+  notificationTypeId?: string;
 }
 
 export interface UnicastDappMessageCommand {
   title: string;
   message: string;
   recipient: PublicKey;
+  notificationTypeId?: string;
 }
 
 export interface MulticastDappMessageCommand {
   title: string;
   message: string;
   recipients: PublicKey[];
+  notificationTypeId?: string;
 }
 
-//
-//
-// export interface DeleteDappCommand {
-//   publicKey: PublicKey;
-//   telegramBotToken?: string;
-//   twilioApiKey?: string;
-// }
-//
+export interface DappNotificationTypes {
+  create(command: CreateNotificationTypeCommand): Promise<NotificationType>;
 
-//
-// export interface Wallets {
-//   addresses: Addresses;
-// }
-//
-// export interface Addresses {
-//   list(): Promise<Address[]>;
-//
-//   save(command: UpsertAddressCommand): Promise<Address>;
-// }
-//
-// export interface UpsertAddressCommand {
-//   type: string;
-//   enabled: boolean;
-// }
-//
-// export interface Address {
-//   type: string;
-//   enabled: boolean;
-//
-//   update(command: UpdateAddressCommand): Promise<Address>;
-//
-//   verify(command: VerifyAddressCommand): Promise<Address>;
-//
-//   delete(command: DeleteAddressCommand): Promise<void>;
-// }
-//
-// export interface VerifyAddressCommand {
-//   dapp: PublicKey;
-//   code: string;
-// }
-//
-// export interface DeleteAddressCommand {
-//   dapp: PublicKey;
-//   code: string;
-// }
-//
-// export interface UpdateAddressCommand {
-//   dapp: PublicKey;
-//   enabled?: boolean;
-// }
+  findAll(): Promise<NotificationType[]>;
+
+  find(id: string): Promise<NotificationType>;
+
+  patch(
+    id: string,
+    command: PatchNotificationTypeCommand,
+  ): Promise<NotificationType>;
+
+  delete(id: string): Promise<void>;
+}
+
+export interface CreateNotificationTypeCommand {
+  name: string;
+  humanReadableId: string;
+  trigger?: string;
+  orderingPriority?: number;
+  tags?: string[];
+  defaultConfig: NotificationConfig;
+}
+
+export interface PatchNotificationTypeCommand {
+  name?: string;
+  humanReadableId?: string;
+  trigger?: string;
+  orderingPriority?: number;
+  tags?: string[];
+  defaultConfig?: NotificationConfig;
+}
+
+export interface DappNotificationSubscriptions {
+  findAll(): Promise<DappNotificationSubscription[]>;
+}
+
+export class DappNotificationSubscription {
+  notificationType!: NotificationType;
+  subscriptions!: NotificationSubscription[];
+}

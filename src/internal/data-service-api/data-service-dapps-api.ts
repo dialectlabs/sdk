@@ -172,17 +172,20 @@ export class UnicastDappMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKey!: string;
+  notificationTypeId?: string;
 }
 
 export class MulticastDappMessageCommandDto {
   title!: string;
   message!: string;
   recipientPublicKeys!: string[];
+  notificationTypeId?: string;
 }
 
 export class BroadcastDappMessageCommandDto {
   title!: string;
   message!: string;
+  notificationTypeId?: string;
 }
 
 export class FindDappQueryDto {
