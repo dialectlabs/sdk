@@ -2,7 +2,7 @@
 
 ## [UNRELEASED]
 
-## [0.4.6] - 2022-07-20
+## [0.4.8] - 2022-07-20
 - Add notification types configuration for dapps.
 - Add notification subscriptions querying and configuration for wallets.
 - Add notification subscriptions querying for dapp.
