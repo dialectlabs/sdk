@@ -41,7 +41,7 @@ export async function withErrorParsing<T>(
       if (e.statusCode === 409) {
         throw onResourceAlreadyExists(e);
       }
-      if (e.statusCode === 412) {
+      if (e.statusCode === 422) {
         throw new BusinessConstraintViolationError(createMessage(e));
       }
       throw new UnknownError([e], createMessage(e));
