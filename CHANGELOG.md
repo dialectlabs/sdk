@@ -2,7 +2,11 @@
 
 ## [UNRELEASED]
 
-## [0.4.8] - 2022-07-20
+## [0.4.10] - 2022-07-20
+
+- Show correct error message for all http calls.
+
+## [0.4.9] - 2022-07-20
 - Add notification types configuration for dapps.
 - Add notification subscriptions querying and configuration for wallets.
 - Add notification subscriptions querying for dapp.
