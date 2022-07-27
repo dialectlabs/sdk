@@ -51,5 +51,7 @@ export async function withErrorParsing<T>(
 }
 
 function createMessage(e: DataServiceApiError) {
-  return `${e.message}. ${e.requestId ? `Request ID: ${e.requestId}` : ''}`;
+  return `${e.message ?? e.error}. ${
+    e.requestId ? `Request ID: ${e.requestId}` : ''
+  }`;
 }
