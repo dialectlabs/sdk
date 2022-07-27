@@ -107,9 +107,9 @@ export class NetworkError {}
 
 export class DataServiceApiError {
   constructor(
-    readonly message: string,
     readonly error: string,
     readonly statusCode: number,
+    readonly message?: string | null,
     readonly requestId?: string | null,
   ) {}
 }
@@ -137,9 +137,9 @@ export async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
         (err.config.headers[XRequestIdHeader] as string)) ??
       null;
     throw new DataServiceApiError(
-      data.message,
       err.response.statusText,
       Number(err.response.status),
+      data.message,
       requestId,
     );
   }
