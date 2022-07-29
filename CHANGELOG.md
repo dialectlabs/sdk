@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.5.0] - 2022-07-29
+
+- Add basic message read receipts: tracking of last read message time.
+
 ## [0.4.10] - 2022-07-20
 
 - Show correct error message for all http calls.
