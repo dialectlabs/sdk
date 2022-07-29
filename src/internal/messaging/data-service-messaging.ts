@@ -284,8 +284,12 @@ export class DataServiceThread implements Thread {
     );
   }
 
-  setLastReadMessageTime(time: Date): Promise<void> {
-    return Promise.resolve(undefined);
+  async setLastReadMessageTime(time: Date): Promise<void> {
+    await withErrorParsing(
+      this.dataServiceDialectsApi.patchMember(this.id.address.toBase58(), {
+        lastReadMessageTimestamp: time.getTime(),
+      }),
+    );
   }
 }
 
