@@ -31,7 +31,6 @@ import { DataServiceWalletNotificationSubscriptionsApiClient } from '@data-servi
 import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappNotificationSubscriptionsApiClient } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServicePushNotificationSubscriptionsApi, DataServicePushNotificationSubscriptionsApiClient } from './data-service-push-notification-subscriptions-api';
-import { token } from '@project-serum/anchor/dist/cjs/utils';
 
 export class DataServiceApi {
   private constructor(
