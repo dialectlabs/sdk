@@ -98,6 +98,7 @@ export class DataServiceMessaging implements Messaging {
     const otherThreadMember: ThreadMember = {
       publicKey: new PublicKey(otherMember.publicKey),
       scopes: fromDataServiceScopes(otherMember.scopes),
+      lastReadMessageTimestamp: new Date(), // TODO: implement
     };
     return new DataServiceThread(
       this.dataServiceDialectsApi,
@@ -107,6 +108,7 @@ export class DataServiceMessaging implements Messaging {
       {
         publicKey: new PublicKey(meMember.publicKey),
         scopes: fromDataServiceScopes(meMember.scopes),
+        lastReadMessageTimestamp: new Date(), // TODO: implement
       },
       [otherThreadMember],
       otherThreadMember,
@@ -253,10 +255,6 @@ export class DataServiceThread implements Thread {
 
   setLastReadMessageTime(time: Date): Promise<void> {
     return Promise.resolve(undefined);
-  }
-
-  get hasUnreadMessages(): boolean {
-    return false;
   }
 }
 

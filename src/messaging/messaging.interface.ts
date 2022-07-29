@@ -85,7 +85,6 @@ export interface Thread {
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
-  hasUnreadMessages: boolean;
   backend: Backend;
   updatedAt: Date;
 
@@ -101,6 +100,7 @@ export interface Thread {
 export interface ThreadMember {
   publicKey: PublicKey;
   scopes: ThreadMemberScope[];
+  lastReadMessageTimestamp: Date;
 }
 
 export enum ThreadMemberScope {

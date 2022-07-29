@@ -21,5 +21,5 @@ import { Keypair } from '@solana/web3.js';
   const message = messages[0];
   await thread.setLastReadMessageTime(message.timestamp);
   // check unread messages
-  const threadHasUnredMessages = thread.hasUnreadMessages;
+  const lastReadMessageTimestamp = thread.me.lastReadMessageTimestamp;
 })();
