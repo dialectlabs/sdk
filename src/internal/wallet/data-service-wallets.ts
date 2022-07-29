@@ -16,7 +16,7 @@ import type {
   VerifyAddressCommand,
   WalletAddresses,
   WalletDappAddresses,
-  WalletDappMessages,
+  WalletMessages,
   WalletNotificationSubscription,
   WalletNotificationSubscriptions,
   Wallets,
@@ -38,11 +38,12 @@ import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
-  dappMessages: WalletDappMessages;
+  messages: WalletMessages;
   notificationSubscriptions: WalletNotificationSubscriptions;
 
   constructor(
@@ -58,7 +59,7 @@ export class DataServiceWallets implements Wallets {
     this.dappAddresses = new DataServiceWalletDappAddresses(
       dataServiceWalletDappAddressesApi,
     );
-    this.dappMessages = new DataServiceWalletDappMessages(
+    this.messages = new DataServiceWalletDappMessages(
       dataServiceWalletMessagesApi,
     );
     this.notificationSubscriptions =
@@ -175,12 +176,12 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
   }
 }
 
-export class DataServiceWalletDappMessages implements WalletDappMessages {
+export class DataServiceWalletDappMessages implements WalletMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
 
   constructor(private readonly api: DataServiceWalletMessagesApi) {}
 
-  async findAll(query?: FindDappMessageQuery): Promise<DappMessage[]> {
+  async findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]> {
     const dappMessages = await withErrorParsing(
       this.api.findAllDappMessages({
         skip: query?.skip,
@@ -193,6 +194,10 @@ export class DataServiceWalletDappMessages implements WalletDappMessages {
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
+  }
+
+  hasUnread(query: FindThreadByOtherMemberQuery): Boolean {
+    return Math.random() > 0.7;
   }
 }
 

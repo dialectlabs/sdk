@@ -1,8 +1,10 @@
 import type {
   CreateThreadCommand,
   FindThreadQuery,
+  FindThreadSummaryByMembers,
   Messaging,
   Thread,
+  ThreadSummary,
 } from '@messaging/messaging.interface';
 import { IllegalArgumentError, IllegalStateError } from '@sdk/errors';
 import type { Backend } from '@sdk/sdk.interface';
@@ -89,5 +91,11 @@ export class MessagingFacade implements Messaging {
       .map((it) => it.value)
       .flat()
       .sort((t1, t2) => t2.updatedAt.getTime() - t1.updatedAt.getTime());
+  }
+
+  async findSummary(
+    query: FindThreadSummaryByMembers,
+  ): Promise<ThreadSummary | null> {
+    return null;
   }
 }

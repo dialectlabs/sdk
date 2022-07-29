@@ -1,6 +1,7 @@
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { Backend, Dialect, DialectSdk } from '@sdk/sdk.interface';
 import { ThreadMemberScope } from '@messaging/messaging.interface';
+import { Keypair } from '@solana/web3.js';
 
 function createSdk() {
   return Dialect.sdk({
@@ -47,14 +48,19 @@ describe('Wallet dapp messages (e2e)', () => {
     const dapp2Sdk2Thread = await createThread(dapp2Sdk, sdk2);
     await dapp2Sdk2Thread.send({ text: 'dapp2Sdk2Thread' });
     // then
-    const sdk1Messages = await sdk1.wallet.dappMessages.findAll({
+
+    const bool: boolean = await sdk1.wallet.messages.hasUnread({
+      dappPublicKey: new Keypair().publicKey,
+    });
+
+    const sdk1Messages = await sdk1.wallet.messages.findAllFromDapps({
       dappVerified: false,
     });
     expect(sdk1Messages.length).toBe(2);
     expect(sdk1Messages.map((it) => it.text)).toMatchObject(
       expect.arrayContaining(['dapp1Sdk1Thread', 'dapp2Sdk1Thread']),
     );
-    const sdk2Messages = await sdk2.wallet.dappMessages.findAll({
+    const sdk2Messages = await sdk2.wallet.messages.findAllFromDapps({
       dappVerified: false,
     });
     expect(sdk2Messages.length).toBe(2);

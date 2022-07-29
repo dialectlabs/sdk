@@ -10,6 +10,8 @@ import {
   ThreadId,
   ThreadMember,
   ThreadMemberScope,
+  FindThreadSummaryByMembers,
+  ThreadSummary,
 } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
@@ -181,6 +183,12 @@ export class SolanaMessaging implements Messaging {
     );
     return all.filter((it) => Boolean(it)).map((it) => it!);
   }
+
+  async findSummary(
+    query: FindThreadSummaryByMembers,
+  ): Promise<ThreadSummary | null> {
+    return null;
+  }
 }
 
 export class SolanaThread implements Thread {
@@ -246,6 +254,13 @@ export class SolanaThread implements Thread {
 
   get updatedAt() {
     return new Date(this.dialectAccount.dialect.lastMessageTimestamp);
+  }
+
+  setLastReadMessageTime(time: Date): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+  get hasUnreadMessages(): boolean {
+    return false;
   }
 }
 

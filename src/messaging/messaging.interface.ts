@@ -7,6 +7,17 @@ export interface Messaging {
   create(command: CreateThreadCommand): Promise<Thread>;
 
   find(query: FindThreadQuery): Promise<Thread | null>;
+
+  findSummary(query: FindThreadSummaryByMembers): Promise<ThreadSummary | null>;
+}
+
+export interface ThreadSummary {
+  me: ThreadMemberSummary;
+}
+
+export interface ThreadMemberSummary {
+  publicKey: PublicKey;
+  hasUnreadMessages: boolean;
 }
 
 export interface SendMessageCommand {
@@ -35,6 +46,11 @@ export interface FindThreadByIdQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
+  otherMembers: PublicKey[];
+}
+
+export interface FindThreadSummaryByMembers {
+  me: PublicKey;
   otherMembers: PublicKey[];
 }
 
@@ -69,6 +85,7 @@ export interface Thread {
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
+  hasUnreadMessages: boolean;
   backend: Backend;
   updatedAt: Date;
 
@@ -77,6 +94,8 @@ export interface Thread {
   send(command: SendMessageCommand): Promise<void>;
 
   delete(): Promise<void>;
+
+  setLastReadMessageTime(time: Date): Promise<void>;
 }
 
 export interface ThreadMember {

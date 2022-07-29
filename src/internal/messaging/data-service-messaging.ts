@@ -8,6 +8,8 @@ import type {
   SendMessageCommand,
   Thread,
   ThreadMember,
+  FindThreadSummaryByMembers,
+  ThreadSummary,
 } from '@messaging/messaging.interface';
 import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -178,6 +180,16 @@ export class DataServiceMessaging implements Messaging {
     }
     return dialectAccountDtos[0] ?? null;
   }
+
+  async findSummary(query: FindThreadSummaryByMembers): Promise<ThreadSummary> {
+    const summary: ThreadSummary = {
+      me: {
+        hasUnreadMessages: true,
+        publicKey: query.me,
+      },
+    };
+    return summary;
+  }
 }
 
 export class DataServiceThread implements Thread {
@@ -237,6 +249,14 @@ export class DataServiceThread implements Thread {
         text: Array.from(this.textSerde.serialize(command.text)),
       }),
     );
+  }
+
+  setLastReadMessageTime(time: Date): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  get hasUnreadMessages(): boolean {
+    return false;
   }
 }
 
