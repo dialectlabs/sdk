@@ -48,11 +48,6 @@ describe('Wallet dapp messages (e2e)', () => {
     const dapp2Sdk2Thread = await createThread(dapp2Sdk, sdk2);
     await dapp2Sdk2Thread.send({ text: 'dapp2Sdk2Thread' });
     // then
-
-    const bool: boolean = await sdk1.wallet.messages.hasUnread({
-      dappPublicKey: new Keypair().publicKey,
-    });
-
     const sdk1Messages = await sdk1.wallet.messages.findAllFromDapps({
       dappVerified: false,
     });

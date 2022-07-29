@@ -194,7 +194,10 @@ describe('Data service dialects api (e2e)', () => {
     expect(publicKey).not.toBeNull();
     const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
       messages: [],
-      members: command.members,
+      members: command.members.map((it) => ({
+        ...it,
+        lastReadMessageTimestamp: 0,
+      })),
       encrypted: command.encrypted,
       nextMessageIdx: 0,
     };
@@ -288,24 +291,30 @@ describe('Data service dialects api (e2e)', () => {
     const actualDialects = new Set(
       dialectAccountDtos.map((it) => ({
         ...it.dialect,
-        lastMessageTimestamp: undefined,
       })),
     );
-    const expectedDialects: Set<Omit<DialectDto, 'lastMessageTimestamp'>> =
-      new Set([
-        {
-          messages: [],
-          members: createDialect1Command.members,
-          encrypted: createDialect1Command.encrypted,
-          nextMessageIdx: 0,
-        },
-        {
-          messages: [],
-          members: createDialect2Command.members,
-          encrypted: createDialect2Command.encrypted,
-          nextMessageIdx: 0,
-        },
-      ]);
+    const expectedDialects: Set<DialectDto> = new Set([
+      {
+        messages: [],
+        members: createDialect1Command.members.map((it) => ({
+          ...it,
+          lastReadMessageTimestamp: 0,
+        })),
+        encrypted: createDialect1Command.encrypted,
+        nextMessageIdx: 0,
+        lastMessageTimestamp: expect.any(Number),
+      },
+      {
+        messages: [],
+        members: createDialect2Command.members.map((it) => ({
+          ...it,
+          lastReadMessageTimestamp: 0,
+        })),
+        encrypted: createDialect2Command.encrypted,
+        nextMessageIdx: 0,
+        lastMessageTimestamp: expect.any(Number),
+      },
+    ]);
     expect(actualDialects).toMatchObject(expectedDialects);
   });
 

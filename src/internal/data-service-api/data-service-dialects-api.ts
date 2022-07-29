@@ -137,6 +137,7 @@ export class DialectDto {
 export class MemberDto {
   readonly publicKey!: string;
   readonly scopes!: MemberScopeDto[];
+  readonly lastReadMessageTimestamp!: number;
 }
 
 export enum MemberScopeDto {

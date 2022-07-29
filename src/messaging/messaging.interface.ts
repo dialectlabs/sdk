@@ -34,8 +34,8 @@ export interface ThreadMessage {
 }
 
 export interface CreateThreadCommand {
-  me: Omit<ThreadMember, 'publicKey'>;
-  otherMembers: ThreadMember[];
+  me: Omit<ThreadMember, 'publicKey' | 'lastReadMessageTimestamp'>;
+  otherMembers: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
   encrypted: boolean;
   backend?: Backend;
 }
@@ -103,7 +103,7 @@ export interface Thread {
 export interface ThreadMember {
   publicKey: PublicKey;
   scopes: ThreadMemberScope[];
-  lastReadMessageTimestamp: Date;
+  // lastReadMessageTimestamp: Date;
 }
 
 export enum ThreadMemberScope {

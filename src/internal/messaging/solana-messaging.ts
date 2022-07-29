@@ -305,14 +305,14 @@ async function toSolanaThread(
   const otherThreadMember: ThreadMember = {
     publicKey: otherMember.publicKey,
     scopes: fromProtocolScopes(otherMember.scopes),
-    lastReadMessageTimestamp: new Date(), // TODO: implement
+    // lastReadMessageTimestamp: new Date(), // TODO: implement
   };
   return new SolanaThread(
     publicKey,
     {
       publicKey: meMember.publicKey,
       scopes: fromProtocolScopes(meMember.scopes),
-      lastReadMessageTimestamp: new Date(), // TODO: implement
+      // lastReadMessageTimestamp: new Date(), // TODO: implement
     },
     [otherThreadMember],
     otherThreadMember,
