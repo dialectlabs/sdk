@@ -1,5 +1,6 @@
 import type {
   CreateThreadCommand,
+  FindThreadByOtherMemberQuery,
   FindThreadQuery,
   FindThreadSummaryByMembers,
   Messaging,
@@ -94,8 +95,18 @@ export class MessagingFacade implements Messaging {
   }
 
   async findSummary(
-    query: FindThreadSummaryByMembers,
+    query: FindThreadByOtherMemberQuery,
   ): Promise<ThreadSummary | null> {
+    for (const { messaging } of this.messagingBackends) {
+      try {
+        const thread = await messaging.findSummary(query);
+        if (thread) {
+          return thread;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
     return null;
   }
 }

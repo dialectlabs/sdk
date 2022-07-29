@@ -185,7 +185,7 @@ export class SolanaMessaging implements Messaging {
   }
 
   async findSummary(
-    query: FindThreadSummaryByMembers,
+    query: FindThreadByOtherMemberQuery,
   ): Promise<ThreadSummary | null> {
     return null;
   }

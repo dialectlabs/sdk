@@ -17,7 +17,11 @@ export interface DataServiceDialectsApi {
   sendMessage(
     publicKey: string,
     command: SendMessageCommand,
-  ): Promise<DialectAccountDto | null>;
+  ): Promise<DialectAccountDto>;
+
+  findSummary(
+    query: FindDialectSummaryByMembersQueryDto,
+  ): Promise<DialectSummaryDto>;
 }
 
 export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
@@ -91,6 +95,19 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
         .then((it) => it.data),
     );
   }
+
+  findSummary(
+    query: FindDialectSummaryByMembersQueryDto,
+  ): Promise<DialectSummaryDto> {
+    return withReThrowingDataServiceError(
+      axios
+        .get<DialectSummaryDto>(`${this.baseUrl}/api/v1/dialects/summary`, {
+          headers: createHeaders(),
+          ...(query && { params: query }),
+        })
+        .then((it) => it.data),
+    );
+  }
 }
 
 export class CreateDialectCommand {
@@ -139,4 +156,18 @@ export class SendMessageCommand {
 
 export class FindDialectQuery {
   readonly memberPublicKey?: string;
+}
+
+export class DialectSummaryDto {
+  readonly publicKey!: string;
+  readonly memberSummaries!: MemberSummaryDto[];
+}
+
+export class MemberSummaryDto {
+  readonly publicKey!: string;
+  readonly hasUnreadMessages!: boolean;
+}
+
+export class FindDialectSummaryByMembersQueryDto {
+  memberPublicKeys!: string[];
 }

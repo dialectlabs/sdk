@@ -8,10 +8,13 @@ export interface Messaging {
 
   find(query: FindThreadQuery): Promise<Thread | null>;
 
-  findSummary(query: FindThreadSummaryByMembers): Promise<ThreadSummary | null>;
+  findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null>;
 }
 
 export interface ThreadSummary {
+  id: ThreadId;
   me: ThreadMemberSummary;
 }
 
