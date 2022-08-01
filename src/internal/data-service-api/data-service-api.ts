@@ -30,6 +30,7 @@ import type { DataServiceWalletNotificationSubscriptionsApi } from '@data-servic
 import { DataServiceWalletNotificationSubscriptionsApiClient } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
 import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappNotificationSubscriptionsApiClient } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+import { DataServicePushNotificationSubscriptionsApi, DataServicePushNotificationSubscriptionsApiClient } from './data-service-push-notification-subscriptions-api';
 
 export class DataServiceApi {
   private constructor(
@@ -42,6 +43,7 @@ export class DataServiceApi {
     readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
     readonly walletMessages: DataServiceWalletMessagesApi,
     readonly walletNotificationSubscriptions: DataServiceWalletNotificationSubscriptionsApi,
+    readonly pushNotificationSubscriptions: DataServicePushNotificationSubscriptionsApi,
   ) {}
 
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -83,6 +85,10 @@ export class DataServiceApi {
         baseUrl,
         tokenProvider,
       );
+    const pushNotificationSubscriptions = new DataServicePushNotificationSubscriptionsApiClient(
+      baseUrl, 
+      tokenProvider
+    );
     return new DataServiceApi(
       dialectsApi,
       dappsApiClient,
@@ -93,6 +99,7 @@ export class DataServiceApi {
       walletDappAddressesApi,
       walletDappMessagesApi,
       walletNotificationSubscriptions,
+      pushNotificationSubscriptions
     );
   }
 }

@@ -13,12 +13,15 @@ import type {
   PartialUpdateDappAddressCommand,
   ResendVerificationCodeCommand,
   UpsertNotificationSubscriptionCommand,
+  UpsertPushNotificationSubscriptionCommand,
   VerifyAddressCommand,
   WalletAddresses,
   WalletDappAddresses,
   WalletMessages,
   WalletNotificationSubscription,
   WalletNotificationSubscriptions,
+  WalletPushNotificationSubscription,
+  WalletPushNotificationSubscriptions,
   Wallets,
 } from '@wallet/wallet.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -38,13 +41,14 @@ import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
+import type { DataServicePushNotificationSubscriptionsApi } from '@data-service-api/data-service-push-notification-subscriptions-api';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
   messages: WalletMessages;
   notificationSubscriptions: WalletNotificationSubscriptions;
+  pushNotificationSubscriptions: WalletPushNotificationSubscriptions;
 
   constructor(
     readonly publicKey: PublicKey,
@@ -52,6 +56,7 @@ export class DataServiceWallets implements Wallets {
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
     private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
     private readonly dataServiceWalletNotificationSubscriptionsApi: DataServiceWalletNotificationSubscriptionsApi,
+    private readonly dataServicePushWalletNotificationSubscriptionsApi: DataServicePushNotificationSubscriptionsApi,
   ) {
     this.addresses = new DataServiceWalletAddresses(
       dataServiceWalletAddressesApi,
@@ -63,6 +68,10 @@ export class DataServiceWallets implements Wallets {
     this.notificationSubscriptions =
       new DataServiceWalletNotificationSubscriptions(
         dataServiceWalletNotificationSubscriptionsApi,
+      );
+    this.pushNotificationSubscriptions =
+      new DataServiceWalletPushNotificationSubscriptions(
+        dataServicePushWalletNotificationSubscriptionsApi
       );
   }
 }
@@ -245,4 +254,29 @@ function fromNotificationSubscriptionDto(
       config: dto.subscription.config,
     },
   };
+}
+
+export class DataServiceWalletPushNotificationSubscriptions
+  implements WalletPushNotificationSubscriptions
+{
+  constructor(
+    private readonly api: DataServicePushNotificationSubscriptionsApi,
+  ) {}
+
+  async delete(physicalId: string): Promise<void> {
+    await withErrorParsing(this.api.delete(physicalId));
+  }
+  async upsert(command: UpsertPushNotificationSubscriptionCommand): Promise<WalletPushNotificationSubscription> {
+    const dto = await this.api.upsert(command);
+    return {
+      ...dto
+    }
+  }
+
+  async get(physicalId: string): Promise<WalletPushNotificationSubscription> {
+    const dto = await this.api.get(physicalId);
+    return {
+      ...dto
+    }
+  }
 }

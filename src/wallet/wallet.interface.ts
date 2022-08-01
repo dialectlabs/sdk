@@ -12,6 +12,7 @@ export interface Wallets {
   readonly dappAddresses: WalletDappAddresses;
   readonly messages: WalletMessages;
   readonly notificationSubscriptions: WalletNotificationSubscriptions;
+  readonly pushNotificationSubscriptions: WalletPushNotificationSubscriptions;
 }
 
 export interface Wallet {
@@ -123,6 +124,16 @@ export interface WalletNotificationSubscriptions {
   ): Promise<WalletNotificationSubscription>;
 }
 
+export interface WalletPushNotificationSubscriptions {
+  delete(physicalId: string): Promise<void>;
+
+  upsert(
+    command: UpsertPushNotificationSubscriptionCommand
+  ): Promise<WalletPushNotificationSubscription>;
+  
+  get(physicalId: string): Promise<WalletPushNotificationSubscription>;
+}
+
 export interface FindNotificationSubscriptionQuery {
   readonly dappPublicKey: PublicKey;
 }
@@ -130,6 +141,12 @@ export interface FindNotificationSubscriptionQuery {
 export interface WalletNotificationSubscription {
   notificationType: NotificationType;
   subscription: NotificationSubscription;
+}
+
+export interface WalletPushNotificationSubscription {
+  walletPublicKey: string;
+  physicalId: string;
+  token: string;
 }
 
 export class NotificationSubscription {
@@ -155,4 +172,9 @@ export interface NotificationConfig {
 export interface UpsertNotificationSubscriptionCommand {
   readonly notificationTypeId: string;
   readonly config: NotificationConfig;
+}
+
+export interface UpsertPushNotificationSubscriptionCommand {
+  readonly physicalId: string;
+  readonly token: string;
 }
