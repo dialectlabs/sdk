@@ -59,9 +59,7 @@ export class DataServiceWallets implements Wallets {
     this.dappAddresses = new DataServiceWalletDappAddresses(
       dataServiceWalletDappAddressesApi,
     );
-    this.messages = new DataServiceWalletDappMessages(
-      dataServiceWalletMessagesApi,
-    );
+    this.messages = new DataServiceWalletMessages(dataServiceWalletMessagesApi);
     this.notificationSubscriptions =
       new DataServiceWalletNotificationSubscriptions(
         dataServiceWalletNotificationSubscriptionsApi,
@@ -176,7 +174,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
   }
 }
 
-export class DataServiceWalletDappMessages implements WalletMessages {
+export class DataServiceWalletMessages implements WalletMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
 
   constructor(private readonly api: DataServiceWalletMessagesApi) {}
