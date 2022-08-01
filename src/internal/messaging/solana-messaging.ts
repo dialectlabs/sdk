@@ -3,7 +3,6 @@ import {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  FindThreadSummaryByMembers,
   Messaging,
   SendMessageCommand,
   Thread,
@@ -258,10 +257,6 @@ export class SolanaThread implements Thread {
 
   setLastReadMessageTime(time: Date): Promise<void> {
     return Promise.resolve(undefined);
-  }
-
-  get hasUnreadMessages(): boolean {
-    return false;
   }
 }
 

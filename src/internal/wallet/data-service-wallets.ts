@@ -195,10 +195,6 @@ export class DataServiceWalletDappMessages implements WalletMessages {
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
   }
-
-  hasUnread(query: FindThreadByOtherMemberQuery): Boolean {
-    return Math.random() > 0.7;
-  }
 }
 
 function toAddress(addressDto: AddressDto): Address {
