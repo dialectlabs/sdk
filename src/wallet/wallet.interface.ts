@@ -4,12 +4,13 @@ import type {
   AddressType,
   DappAddress,
 } from '@address/addresses.interface';
+import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
 
 export interface Wallets {
   readonly publicKey: PublicKey;
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
-  readonly dappMessages: WalletDappMessages;
+  readonly messages: WalletMessages;
   readonly notificationSubscriptions: WalletNotificationSubscriptions;
 }
 
@@ -96,8 +97,8 @@ export interface DeleteDappAddressCommand {
   readonly dappAddressId: string;
 }
 
-export interface WalletDappMessages {
-  findAll(query?: FindDappMessageQuery): Promise<DappMessage[]>;
+export interface WalletMessages {
+  findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]>;
 }
 
 export interface DappMessage {

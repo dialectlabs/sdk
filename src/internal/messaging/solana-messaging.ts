@@ -3,13 +3,14 @@ import {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  ThreadMessage,
   Messaging,
   SendMessageCommand,
   Thread,
   ThreadId,
   ThreadMember,
   ThreadMemberScope,
+  ThreadMessage,
+  ThreadSummary,
 } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
 import {
@@ -181,6 +182,12 @@ export class SolanaMessaging implements Messaging {
     );
     return all.filter((it) => Boolean(it)).map((it) => it!);
   }
+
+  async findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null> {
+    return null;
+  }
 }
 
 export class SolanaThread implements Thread {
@@ -247,6 +254,10 @@ export class SolanaThread implements Thread {
   get updatedAt() {
     return new Date(this.dialectAccount.dialect.lastMessageTimestamp);
   }
+
+  setLastReadMessageTime(time: Date): Promise<void> {
+    return Promise.resolve(undefined);
+  }
 }
 
 function fromProtocolScopes(scopes: [boolean, boolean]) {
@@ -286,15 +297,17 @@ async function toSolanaThread(
   const canBeDecrypted = dialect.encrypted
     ? (await encryptionKeysProvider.getFailSafe()) !== null
     : true;
-  const otherThreadMember = {
+  const otherThreadMember: ThreadMember = {
     publicKey: otherMember.publicKey,
     scopes: fromProtocolScopes(otherMember.scopes),
+    // lastReadMessageTimestamp: new Date(), // TODO: implement
   };
   return new SolanaThread(
     publicKey,
     {
       publicKey: meMember.publicKey,
       scopes: fromProtocolScopes(meMember.scopes),
+      // lastReadMessageTimestamp: new Date(), // TODO: implement
     },
     [otherThreadMember],
     otherThreadMember,

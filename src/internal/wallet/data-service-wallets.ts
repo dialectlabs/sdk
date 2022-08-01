@@ -16,7 +16,7 @@ import type {
   VerifyAddressCommand,
   WalletAddresses,
   WalletDappAddresses,
-  WalletDappMessages,
+  WalletMessages,
   WalletNotificationSubscription,
   WalletNotificationSubscriptions,
   Wallets,
@@ -38,11 +38,12 @@ import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
   dappAddresses: WalletDappAddresses;
-  dappMessages: WalletDappMessages;
+  messages: WalletMessages;
   notificationSubscriptions: WalletNotificationSubscriptions;
 
   constructor(
@@ -58,9 +59,7 @@ export class DataServiceWallets implements Wallets {
     this.dappAddresses = new DataServiceWalletDappAddresses(
       dataServiceWalletDappAddressesApi,
     );
-    this.dappMessages = new DataServiceWalletDappMessages(
-      dataServiceWalletMessagesApi,
-    );
+    this.messages = new DataServiceWalletMessages(dataServiceWalletMessagesApi);
     this.notificationSubscriptions =
       new DataServiceWalletNotificationSubscriptions(
         dataServiceWalletNotificationSubscriptionsApi,
@@ -175,12 +174,12 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
   }
 }
 
-export class DataServiceWalletDappMessages implements WalletDappMessages {
+export class DataServiceWalletMessages implements WalletMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
 
   constructor(private readonly api: DataServiceWalletMessagesApi) {}
 
-  async findAll(query?: FindDappMessageQuery): Promise<DappMessage[]> {
+  async findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]> {
     const dappMessages = await withErrorParsing(
       this.api.findAllDappMessages({
         skip: query?.skip,

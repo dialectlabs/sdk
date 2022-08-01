@@ -17,7 +17,16 @@ export interface DataServiceDialectsApi {
   sendMessage(
     publicKey: string,
     command: SendMessageCommand,
-  ): Promise<DialectAccountDto | null>;
+  ): Promise<DialectAccountDto>;
+
+  findSummary(
+    query: FindDialectSummaryByMembersQueryDto,
+  ): Promise<DialectSummaryDto>;
+
+  patchMember(
+    dialectPublicKey: string,
+    command: PatchMemberCommandDto,
+  ): Promise<MemberDto>;
 }
 
 export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
@@ -25,6 +34,24 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     private readonly baseUrl: string,
     private readonly tokenProvider: TokenProvider,
   ) {}
+
+  async patchMember(
+    dialectPublicKey: string,
+    command: PatchMemberCommandDto,
+  ): Promise<MemberDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .patch<MemberDto>(
+          `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/members/me`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
 
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
@@ -91,35 +118,49 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
         .then((it) => it.data),
     );
   }
+
+  findSummary(
+    query: FindDialectSummaryByMembersQueryDto,
+  ): Promise<DialectSummaryDto> {
+    return withReThrowingDataServiceError(
+      axios
+        .get<DialectSummaryDto>(`${this.baseUrl}/api/v1/dialects/summary`, {
+          headers: createHeaders(),
+          ...(query && { params: query }),
+        })
+        .then((it) => it.data),
+    );
+  }
 }
 
-export class CreateDialectCommand {
-  readonly members!: PostMemberDto[];
-  readonly encrypted!: boolean;
+export interface CreateDialectCommand {
+  readonly members: PostMemberDto[];
+  readonly encrypted: boolean;
 }
 
-export class PostMemberDto {
-  readonly publicKey!: string;
-  readonly scopes!: MemberScopeDto[];
+export interface PostMemberDto {
+  readonly publicKey: string;
+  readonly scopes: MemberScopeDto[];
 }
 
-export class DialectAccountDto {
-  readonly publicKey!: string;
-  readonly dialect!: DialectDto;
+export interface DialectAccountDto {
+  readonly publicKey: string;
+  readonly dialect: DialectDto;
 }
 
-export class DialectDto {
-  readonly members!: MemberDto[];
-  readonly messages!: MessageDto[];
+export interface DialectDto {
+  readonly members: MemberDto[];
+  readonly messages: MessageDto[];
   // N.b. nextMessageIdx & lastMessageTimestamp are added only so we have schema parity with what's on chain.
-  readonly nextMessageIdx!: number;
-  readonly lastMessageTimestamp!: number;
-  readonly encrypted!: boolean;
+  readonly nextMessageIdx: number;
+  readonly lastMessageTimestamp: number;
+  readonly encrypted: boolean;
 }
 
-export class MemberDto {
-  readonly publicKey!: string;
-  readonly scopes!: MemberScopeDto[];
+export interface MemberDto {
+  readonly publicKey: string;
+  readonly scopes: MemberScopeDto[];
+  readonly lastReadMessageTimestamp: number;
 }
 
 export enum MemberScopeDto {
@@ -127,16 +168,34 @@ export enum MemberScopeDto {
   WRITE = 'WRITE',
 }
 
-export class MessageDto {
-  readonly owner!: string;
-  readonly text!: number[];
-  readonly timestamp!: number;
+export interface MessageDto {
+  readonly owner: string;
+  readonly text: number[];
+  readonly timestamp: number;
 }
 
-export class SendMessageCommand {
-  readonly text!: number[];
+export interface SendMessageCommand {
+  readonly text: number[];
 }
 
-export class FindDialectQuery {
+export interface FindDialectQuery {
   readonly memberPublicKey?: string;
+}
+
+export interface DialectSummaryDto {
+  readonly publicKey: string;
+  readonly memberSummaries: MemberSummaryDto[];
+}
+
+export interface MemberSummaryDto {
+  readonly publicKey: string;
+  readonly hasUnreadMessages: boolean;
+}
+
+export interface FindDialectSummaryByMembersQueryDto {
+  readonly memberPublicKeys: string[];
+}
+
+export interface PatchMemberCommandDto {
+  readonly lastReadMessageTimestamp?: number;
 }
