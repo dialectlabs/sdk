@@ -2,7 +2,7 @@
 
 ## [UNRELEASED]
 
-## [0.5.0] - 2022-07-29
+## [0.5.1] - 2022-07-29
 
 - Add basic message read receipts: tracking of last read message time.
 
