@@ -3,11 +3,14 @@ import type {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  ThreadMessage,
+  FindThreadSummaryByMembers,
   Messaging,
   SendMessageCommand,
   Thread,
   ThreadMember,
+  ThreadMemberSummary,
+  ThreadMessage,
+  ThreadSummary,
 } from '@messaging/messaging.interface';
 import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
 import { PublicKey } from '@solana/web3.js';
@@ -96,6 +99,7 @@ export class DataServiceMessaging implements Messaging {
     const otherThreadMember: ThreadMember = {
       publicKey: new PublicKey(otherMember.publicKey),
       scopes: fromDataServiceScopes(otherMember.scopes),
+      // lastReadMessageTimestamp: new Date(), // TODO: implement
     };
     return new DataServiceThread(
       this.dataServiceDialectsApi,
@@ -105,6 +109,7 @@ export class DataServiceMessaging implements Messaging {
       {
         publicKey: new PublicKey(meMember.publicKey),
         scopes: fromDataServiceScopes(meMember.scopes),
+        // lastReadMessageTimestamp: new Date(), // TODO: implement
       },
       [otherThreadMember],
       otherThreadMember,
@@ -178,6 +183,46 @@ export class DataServiceMessaging implements Messaging {
     }
     return dialectAccountDtos[0] ?? null;
   }
+
+  async findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null> {
+    try {
+      const dialectSummaryDto = await withErrorParsing(
+        this.dataServiceDialectsApi.findSummary({
+          memberPublicKeys: [
+            this.me.toBase58(),
+            ...query.otherMembers.map((it) => it.toBase58()),
+          ],
+        }),
+      );
+      const meMember = dialectSummaryDto.memberSummaries.find(
+        (it) => it.publicKey === this.me.toBase58(),
+      );
+      if (!meMember) {
+        throw new IllegalStateError(
+          `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
+            (it) => it.publicKey,
+          )} and provided member public key ${this.me.toBase58()}`,
+        );
+      }
+      const meMemberSummary: ThreadMemberSummary = {
+        publicKey: new PublicKey(meMember.publicKey),
+        hasUnreadMessages: meMember.hasUnreadMessages,
+      };
+      return {
+        id: new ThreadId({
+          address: new PublicKey(dialectSummaryDto.publicKey),
+          backend: Backend.DialectCloud,
+        }),
+        me: meMemberSummary,
+      };
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
+  }
 }
 
 export class DataServiceThread implements Thread {
@@ -235,6 +280,14 @@ export class DataServiceThread implements Thread {
     await withErrorParsing(
       this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
         text: Array.from(this.textSerde.serialize(command.text)),
+      }),
+    );
+  }
+
+  async setLastReadMessageTime(time: Date): Promise<void> {
+    await withErrorParsing(
+      this.dataServiceDialectsApi.patchMember(this.id.address.toBase58(), {
+        lastReadMessageTimestamp: time.getTime(),
       }),
     );
   }

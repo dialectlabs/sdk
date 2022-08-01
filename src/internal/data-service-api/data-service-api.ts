@@ -123,9 +123,11 @@ export class DataServiceApiError {
 
 const XRequestIdHeader = 'x-request-id';
 
-export function createHeaders(token: Token) {
+export function createHeaders(token?: Token) {
   return {
-    Authorization: `Bearer ${token.rawValue}`,
+    ...(token && {
+      Authorization: `Bearer ${token.rawValue}`,
+    }),
     [XRequestIdHeader]: nanoid(),
   };
 }

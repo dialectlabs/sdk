@@ -7,6 +7,20 @@ export interface Messaging {
   create(command: CreateThreadCommand): Promise<Thread>;
 
   find(query: FindThreadQuery): Promise<Thread | null>;
+
+  findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null>;
+}
+
+export interface ThreadSummary {
+  id: ThreadId;
+  me: ThreadMemberSummary;
+}
+
+export interface ThreadMemberSummary {
+  publicKey: PublicKey;
+  hasUnreadMessages: boolean;
 }
 
 export interface SendMessageCommand {
@@ -20,8 +34,8 @@ export interface ThreadMessage {
 }
 
 export interface CreateThreadCommand {
-  me: Omit<ThreadMember, 'publicKey'>;
-  otherMembers: ThreadMember[];
+  me: Omit<ThreadMember, 'publicKey' | 'lastReadMessageTimestamp'>;
+  otherMembers: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
   encrypted: boolean;
   backend?: Backend;
 }
@@ -35,6 +49,11 @@ export interface FindThreadByIdQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
+  otherMembers: PublicKey[];
+}
+
+export interface FindThreadSummaryByMembers {
+  me: PublicKey;
   otherMembers: PublicKey[];
 }
 
@@ -77,11 +96,14 @@ export interface Thread {
   send(command: SendMessageCommand): Promise<void>;
 
   delete(): Promise<void>;
+
+  setLastReadMessageTime(time: Date): Promise<void>;
 }
 
 export interface ThreadMember {
   publicKey: PublicKey;
   scopes: ThreadMemberScope[];
+  // lastReadMessageTimestamp: Date;
 }
 
 export enum ThreadMemberScope {
