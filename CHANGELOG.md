@@ -2,6 +2,11 @@
 
 ## [UNRELEASED]
 
+## [0.6.0] - 2022-08-03
+
+- Add push notifications subscriptions.
+- Add avatar url for dapps.
+
 ## [0.5.1] - 2022-07-29
 
 - Add basic message read receipts: tracking of last read message time.
