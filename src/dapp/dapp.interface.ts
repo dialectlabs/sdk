@@ -18,6 +18,7 @@ export interface Dapp {
   publicKey: PublicKey;
   name: string;
   description?: string;
+  avatarUrl?: string;
   verified: boolean;
   dappAddresses: DappAddresses;
   messages: DappMessages;
@@ -44,6 +45,7 @@ export interface DappMessages {
 export interface CreateDappCommand {
   name: string;
   description?: string;
+  avatarUrl?: string;
 }
 
 export interface FindDappQuery {
