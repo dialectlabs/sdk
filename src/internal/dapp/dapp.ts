@@ -50,6 +50,7 @@ export class DappsImpl implements Dapps {
       this.notificationTypes,
       this.notificationSubscriptions,
       dappDto.description,
+      dappDto.avatarUrl,
     );
   }
 
@@ -64,6 +65,7 @@ export class DappsImpl implements Dapps {
       name: it.name,
       description: it.description,
       verified: it.verified,
+      avatarUrl: it.avatarUrl,
     }));
   }
 
@@ -72,18 +74,10 @@ export class DappsImpl implements Dapps {
       this.dappsApi.create({
         name: command.name,
         description: command.description,
+        avatarUrl: command.avatarUrl,
       }),
     );
-    return new DappImpl(
-      new PublicKey(dappDto.publicKey),
-      dappDto.name,
-      dappDto.verified,
-      this.dappAddresses,
-      this.dappMessages,
-      this.notificationTypes,
-      this.notificationSubscriptions,
-      dappDto.description,
-    );
+    return this.toDapp(dappDto);
   }
 }
 
@@ -97,5 +91,6 @@ export class DappImpl implements Dapp {
     readonly notificationTypes: DappNotificationTypes,
     readonly notificationSubscriptions: DappNotificationSubscriptions,
     readonly description?: string,
+    readonly avatarUrl?: string,
   ) {}
 }

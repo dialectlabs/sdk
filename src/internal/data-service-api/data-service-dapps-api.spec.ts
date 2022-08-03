@@ -13,6 +13,7 @@ import type {
   DataServiceWalletsApiV0,
 } from '@data-service-api/data-service-wallets-api.v0';
 import { Keypair } from '@solana/web3.js';
+import type { CreateDappCommand } from '@dapp/dapp.interface';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -34,15 +35,20 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can create dapp and find all dappAddresses', async () => {
     // when
-    const created = await dappsApi.create({
+    const command: CreateDappCommand = {
       name: 'Test dapp',
-    });
+      description: 'Test description',
+      avatarUrl: 'https://www.dialect.to/favicon-32x32.png',
+    };
+    const created = await dappsApi.create(command);
     const addresses = await dappsApi.findAllDappAddresses();
     // then
     const dappDtoExpected: DappDto = {
       id: expect.any(String),
       publicKey: dappWallet.publicKey.toBase58(),
-      name: created.name,
+      name: command.name,
+      description: command.description,
+      avatarUrl: command.avatarUrl,
       verified: false,
     };
     expect(created).toMatchObject(dappDtoExpected);
@@ -51,14 +57,25 @@ describe('Data service dapps api (e2e)', () => {
 
   test('can find dapp', async () => {
     // given
-    await expect(dappsApi.find()).rejects.toBeTruthy();
-    const created = await dappsApi.create({
+    const command: CreateDappCommand = {
       name: 'Test dapp',
-    });
+      description: 'Test description',
+      avatarUrl: 'https://www.dialect.to/favicon-32x32.png',
+    };
+    await expect(dappsApi.find()).rejects.toBeTruthy();
+    await dappsApi.create(command);
     // when
     const found = await dappsApi.find();
     // then
-    expect(found).toMatchObject(created);
+    const dappDtoExpected: DappDto = {
+      id: expect.any(String),
+      publicKey: dappWallet.publicKey.toBase58(),
+      name: command.name,
+      description: command.description,
+      avatarUrl: command.avatarUrl,
+      verified: false,
+    };
+    expect(found).toMatchObject(dappDtoExpected);
   });
 
   test('can find all dapps', async () => {

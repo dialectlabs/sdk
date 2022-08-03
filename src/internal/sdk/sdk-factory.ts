@@ -105,6 +105,7 @@ export class DialectSdkFactory {
       dataServiceApi.walletDappAddresses,
       dataServiceApi.walletMessages,
       dataServiceApi.walletNotificationSubscriptions,
+      dataServiceApi.pushNotificationSubscriptions,
     );
     return new InternalDialectSdk(
       {
