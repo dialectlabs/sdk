@@ -2,6 +2,7 @@ import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
   verbose: true,
+  setupFiles: ['<rootDir>/src/shim.js'],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
@@ -20,6 +21,7 @@ const config: Config.InitialOptions = {
     '^@sdk(.*)$': '<rootDir>/src/sdk$1',
     '^@utils/internal(.*)$': '<rootDir>/src/internal/utils$1',
     '^@wallet/internal(.*)$': '<rootDir>/src/internal/wallet$1',
+    '^@walletconnect/(.*)$': '<rootDir>/node_modules/@walletconnect/$1', // used to avoid below line catching @walletconnect package
     '^@wallet(.*)$': '<rootDir>/src/wallet$1',
     '^@wallet-adapter/internal(.*)$': '<rootDir>/src/internal/wallet-adapter$1',
     '^@wallet-adapter(.*)$': '<rootDir>/src/wallet-adapter$1',

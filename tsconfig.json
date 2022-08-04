@@ -17,6 +17,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowJs": true,
     // linting
     "strict": true,
     //    "noUnusedLocals": true,
@@ -90,6 +91,6 @@
   "rootDir": "./src",
   "include": [
     "src/**/*.ts",
-    "tests/**/*.ts"
+    "tests/**/*.ts", "src/shim.js", 
   ]
 }

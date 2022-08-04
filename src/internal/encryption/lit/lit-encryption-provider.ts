@@ -1,40 +1,78 @@
-import type { PublicKey } from "@solana/web3.js";
-import type { DialectWalletAdapterWrapper } from "@wallet-adapter/dialect-wallet-adapter-wrapper";
+import type { PublicKey } from '@solana/web3.js';
+import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import LitJsSdk from 'lit-js-sdk';
+import type { LitSignatureStore } from './lit-sig-store';
 
-const client = new LitJsSdk.LitNodeClient()
-const chain = 'solana'
+const client = new LitJsSdk.LitNodeClient({ litNetwork: 'serrano' });
+const chain = 'solana';
 const AUTH_SIGNATURE_BODY =
-  "I am creating an account to use Lit Protocol at {{timestamp}}";
+  'I am creating an account to use Lit Protocol at {{timestamp}}';
+
+type EncryptStringResult = {
+  encryptedString: string,
+  encryptedSymmetricKey: string
+}
 
 export class LitProtocolEncryptionProvider {
   constructor(
     private readonly dialectWalletAdapter: DialectWalletAdapterWrapper,
-  ) {
-      LitJsSdk.encryptString();
-  }
+    private signatureStore: LitSignatureStore,
+  ) {}
+
   private litNodeClient: any;
 
   async connect() {
-    await client.connect()
-    this.litNodeClient = client
+    await client.connect();
+    this.litNodeClient = client;
   }
 
-  async encrypt(message: string, otherMembers: PublicKey[]) {
+  private async generateSymmetricKey(): Promise<Uint8Array> {
+    const symmKey = await LitJsSdk.generateSymmetricKey();
+    return new Uint8Array(
+      await crypto.subtle.exportKey("raw", symmKey)
+    );
+  }
+
+  async createEncryptedSymmetricKey(membersWithAccess: PublicKey[]): Promise<string> {
     if (!this.litNodeClient) {
-      await this.connect()
+      await this.connect();
+    }
+    const authSig = await this.checkAndSignAuthMessage();
+    const symmetricKey = await this.generateSymmetricKey();
+    const accessControlConditions = getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+    const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
+      solRpcConditions: accessControlConditions,
+      symmetricKey: symmetricKey,
+      authSig: authSig,
+      chain: chain,
+    });
+    return LitJsSdk.uint8arrayToString(encryptedSymmetricKey, "base16");
+  }
+
+  async encrypt(message: string, membersWithAccess: PublicKey[], key?: string): Promise<EncryptStringResult> {
+    if (!this.litNodeClient) {
+      await this.connect();
     }
 
-    const authSig = await this.checkAndSignAuthMessage()
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(message);
+    if (key) {
+      return this.encryptWithKey(key, message, membersWithAccess);
+    }
+    return this.encryptWithoutKey(message, membersWithAccess);
+  }
 
-    const accessControlConditions = getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...otherMembers]);
+  private async encryptWithoutKey(message: string, membersWithAccess: PublicKey[]): Promise<EncryptStringResult> {
+    const authSig = await this.checkAndSignAuthMessage();
+    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(
+      message,
+    );
+
+    const accessControlConditions = getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
     const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
-      accessControlConditions,
-      symmetricKey,
-      authSig,
-      chain,
-    })
+      solRpcConditions: accessControlConditions,
+      symmetricKey: symmetricKey,
+      authSig: authSig,
+      chain: chain,
+    });
 
     return {
       encryptedString,
@@ -42,112 +80,149 @@ export class LitProtocolEncryptionProvider {
     }
   }
 
-  async checkAndSignAuthMessage(): Promise<AuthSig> {
-    let authSigString = localStorage.getItem("lit-auth-sol-signature");
+  private async encryptWithKey(encryptedSymmetricKey: string, message: string, membersWithAccess: PublicKey[]): Promise<EncryptStringResult> {
+    const authSig = await this.checkAndSignAuthMessage();
+    const accessControlConditions = getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+    const symmetricKey = await this.litNodeClient.getEncryptionKey({
+      solRpcConditions: accessControlConditions,
+      toDecrypt: encryptedSymmetricKey,
+      chain: chain,
+      authSig: authSig
+    });
+
+    const importedSymmetricKey = await LitJsSdk.importSymmetricKey(symmetricKey);
+    const encodedString = LitJsSdk.uint8arrayFromString(message, "utf8");
+    const encryptedString = await LitJsSdk.encryptWithSymmetricKey(
+      importedSymmetricKey,
+      encodedString.buffer
+    )
+    return {
+      encryptedString,
+      encryptedSymmetricKey: encryptedSymmetricKey
+    }
+  }
+
+  async decrypt(encryptedString: string, encryptedSymmetricKey: string, membersWithAccess: PublicKey[]) {
+    if (!this.litNodeClient) {
+      await this.connect();
+    }
+
+    const authSig = await this.checkAndSignAuthMessage();
+
+    const accessControlConditions = getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+    const symmetricKey = await this.litNodeClient.getEncryptionKey({
+      solRpcConditions: accessControlConditions,
+      toDecrypt: encryptedSymmetricKey,
+      chain: chain,
+      authSig: authSig
+    });
+    console.log(symmetricKey);
+    console.log(encryptedString);
+    const decryptedString = await LitJsSdk.decryptString(
+      encryptedString,
+      symmetricKey
+    );
+    console.log(decryptedString);
+    // return decryptedString;
+    return "";
+  }
+
+  private async checkAndSignAuthMessage(): Promise<AuthSig> {
+    let authSigString = this.signatureStore.get(
+      this.dialectWalletAdapter.publicKey,
+    );
     if (!authSigString) {
       await this.signAndSaveAuthMessage();
-      authSigString = localStorage.getItem("lit-auth-sol-signature");
+      authSigString = this.signatureStore.get(
+        this.dialectWalletAdapter.publicKey,
+      );
     }
     let authSig: AuthSig = JSON.parse(authSigString!);
 
     if (this.dialectWalletAdapter.publicKey.toBase58() !== authSig.address) {
       await this.signAndSaveAuthMessage();
-      authSigString = localStorage.getItem("lit-auth-sol-signature");
+      authSigString = this.signatureStore.get(
+        this.dialectWalletAdapter.publicKey,
+      );
       authSig = JSON.parse(authSigString!);
     }
     return authSig;
   }
 
-  async signAndSaveAuthMessage() {
+  private async signAndSaveAuthMessage() {
     const now = new Date().toISOString();
-    const body = AUTH_SIGNATURE_BODY.replace("{{timestamp}}", now);
-  
+    const body = AUTH_SIGNATURE_BODY.replace('{{timestamp}}', now);
+
     const data = new TextEncoder().encode(body);
     const signed = await this.dialectWalletAdapter.signMessage(data);
-  
-    const hexSig = LitJsSdk.uint8arrayToString(signed, "base16");
-  
+
+    const hexSig = LitJsSdk.uint8arrayToString(signed, 'base16');
+
     const authSig = {
       sig: hexSig,
-      derivedVia: "solana.signMessage",
+      derivedVia: 'solana.signMessage',
       signedMessage: body,
       address: this.dialectWalletAdapter.publicKey.toBase58(),
     };
-  
-    localStorage.setItem("lit-auth-sol-signature", JSON.stringify(authSig));
+
+    this.signatureStore.save(
+      this.dialectWalletAdapter.publicKey,
+      JSON.stringify(authSig),
+    );
     return authSig;
   }
-
-  // async encryptString(key: string, str: string) {
-  //   // -- validate
-  //   if (
-  //     !LitJsSdk.checkType({
-  //       value: str,
-  //       allowedTypes: ["String"],
-  //       paramName: "str",
-  //       functionName: "encryptString",
-  //     })
-  //   )
-  //     return;
-  //   const encodedString = LitJsSdk.uint8arrayFromString(str, "utf8");
-  
-  //   const symmKey = await LitJsSdk.generateSymmetricKey();
-  //   const encryptedString = await LitJsSdk.encryptWithSymmetricKey(
-  //     symmKey,
-  //     encodedString.buffer
-  //   );
-  
-  //   const exportedSymmKey = new Uint8Array(
-  //     await crypto.subtle.exportKey("raw", symmKey)
-  //   );
-  
-  //   return {
-  //     symmetricKey: exportedSymmKey,
-  //     encryptedString,
-  //     encryptedData: encryptedString,
-  //   };
-  // }
 }
 
 export type AuthSig = {
-  sig: string,
-  derivedVia: string,
-  signedMessage: string,
-  address: string
-}
+  sig: string;
+  derivedVia: string;
+  signedMessage: string;
+  address: string;
+};
 
-export type AccessControlConditionType = {
-  method: string,
-  params: string[],
-  chain: string,
-  returnValueTest: {
-    key: string,
-    comparator: string,
-    value: string
-  }
-} | typeof AccessControlOrConditionType;
-export const AccessControlOrConditionType = {"operator": "or"};
+export type AccessControlConditionType =
+  | {
+      method: string;
+      params: string[];
+      chain: string;
+      returnValueTest: {
+        key: string;
+        comparator: string;
+        value: string;
+      };
+    }
+  | typeof AccessControlOrConditionType;
+export const AccessControlOrConditionType = { operator: 'or' };
 
-export function getAccessControlConditionForWallet(publicKey: PublicKey): AccessControlConditionType {
+export function getAccessControlConditionForWallet(
+  publicKey: PublicKey,
+): AccessControlConditionType {
   return {
-    method: "",
-    params: [":userAddress"],
+    method: '',
+    params: [':userAddress'],
     chain: 'solana',
     returnValueTest: {
-      key: "",
-      comparator: "=",
+      key: '',
+      comparator: '=',
       value: publicKey.toBase58(),
     },
   };
 }
 
-export function getAccessControlConditionForWallets(otherMembers: PublicKey[]): AccessControlConditionType[] {
+export function getAccessControlConditionForWallets(
+  membersWithAccess: PublicKey[],
+): AccessControlConditionType[] {
+  // set and sort to preserve conditions hash
+  const membersWithAccessSorted = [...new Set(membersWithAccess)].sort();
   // for each wallet access control condition, add an or operator condition
-  const accessControlStackedArray = otherMembers.map((item) => [
-    {"operator": "or"}, getAccessControlConditionForWallet(item)
+  const accessControlStackedArray = membersWithAccessSorted.map((item) => [
+    { operator: 'or' },
+    getAccessControlConditionForWallet(item),
   ]);
-  // flatten the array and remove the first or operator condition
-  return ([] as AccessControlConditionType[])
-    .concat(...accessControlStackedArray)
-    .splice(0, 1);
+  // flatten the array
+  const conditions = ([] as AccessControlConditionType[])
+    .concat(...accessControlStackedArray);
+  // remove the first or operator condition
+  conditions.splice(0,1);
+  return conditions;
 }
