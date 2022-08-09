@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- fix: rethrow errors from facades if all delegates fail
+
 ## [0.6.0] - 2022-08-03
 
 - Add push notifications subscriptions.

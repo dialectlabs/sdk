@@ -2,7 +2,7 @@ import type {
   DappMessages,
   SendDappMessageCommand,
 } from '@dapp/dapp.interface';
-import { IllegalArgumentError } from '@sdk/errors';
+import { DialectSdkError, IllegalArgumentError } from '@sdk/errors';
 
 export class DappMessagesFacade implements DappMessages {
   constructor(private readonly dappMessageBackends: DappMessages[]) {
@@ -17,13 +17,24 @@ export class DappMessagesFacade implements DappMessages {
     const allSettled = await Promise.allSettled(
       this.dappMessageBackends.map((it) => it.send(command)),
     );
-    const rejected = allSettled.filter((it) => it.status === 'rejected');
-    if (rejected.length > 0) {
+    const errors = allSettled
+      .filter((it) => it.status === 'rejected')
+      .map((it) => it as PromiseRejectedResult)
+      .map((it) => it.reason as DialectSdkError);
+    if (errors.length > 0) {
       console.error(
-        `Error during sending dapp messages: ${rejected
-          .map((it) => it as PromiseRejectedResult)
-          .map((it) => JSON.stringify(it.reason))}`,
+        `Error during sending dapp messages: ${errors.map((it) =>
+          JSON.stringify(it),
+        )}`,
       );
+    }
+    const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
+    if (errors.length > 0 && fulfilled.length === 0) {
+      const error: DialectSdkError = {
+        ...errors[0]!,
+        details: errors,
+      };
+      throw error;
     }
   }
 }

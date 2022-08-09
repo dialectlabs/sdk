@@ -1,6 +1,6 @@
 import type { DappAddresses } from '@dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
-import { IllegalArgumentError } from '@sdk/errors';
+import { DialectSdkError, IllegalArgumentError } from '@sdk/errors';
 import { groupBy } from '@utils/internal/collection-utils';
 import type { DappAddress } from '@address/addresses.interface';
 import { AddressType } from '@address/addresses.interface';
@@ -18,16 +18,26 @@ export class DappAddressesFacade implements DappAddresses {
     const allSettled = await Promise.allSettled(
       this.dappAddressesBackends.map((it) => it.findAll()),
     );
-    const rejected = allSettled.filter((it) => it.status === 'rejected');
-    if (rejected.length > 0) {
+    const errors = allSettled
+      .filter((it) => it.status === 'rejected')
+      .map((it) => it as PromiseRejectedResult)
+      .map((it) => it.reason as DialectSdkError);
+    if (errors.length > 0) {
       console.error(
-        `Error during finding dapp addresses: ${rejected
-          .map((it) => it as PromiseRejectedResult)
-          .map((it) => JSON.stringify(it.reason))}`,
+        `Error during finding dapp addresses: ${errors.map((it) =>
+          JSON.stringify(it),
+        )}`,
       );
     }
-    const allDappAddresses = allSettled
-      .filter((it) => it.status === 'fulfilled')
+    const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
+    if (errors.length > 0 && fulfilled.length === 0) {
+      const error: DialectSdkError = {
+        ...errors[0]!,
+        details: errors,
+      };
+      throw error;
+    }
+    const allDappAddresses = fulfilled
       .map((it) => it as PromiseFulfilledResult<DappAddress[]>)
       .map((it) => it.value)
       .flat();

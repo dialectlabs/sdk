@@ -2,12 +2,15 @@ import type {
   CreateThreadCommand,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  FindThreadSummaryByMembers,
   Messaging,
   Thread,
   ThreadSummary,
 } from '@messaging/messaging.interface';
-import { IllegalArgumentError, IllegalStateError } from '@sdk/errors';
+import {
+  DialectSdkError,
+  IllegalArgumentError,
+  IllegalStateError,
+} from '@sdk/errors';
 import type { Backend } from '@sdk/sdk.interface';
 
 export interface MessagingBackend {
@@ -78,14 +81,24 @@ export class MessagingFacade implements Messaging {
     const allSettled = await Promise.allSettled(
       this.messagingBackends.map(({ messaging }) => messaging.findAll()),
     );
-    const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
-    const rejected = allSettled.filter((it) => it.status === 'rejected');
-    if (rejected.length > 0) {
+    const errors = allSettled
+      .filter((it) => it.status === 'rejected')
+      .map((it) => it as PromiseRejectedResult)
+      .map((it) => it.reason as DialectSdkError);
+    if (errors.length > 0) {
       console.error(
-        `Error during finding dialects: ${rejected
-          .map((it) => it as PromiseRejectedResult)
-          .map((it) => JSON.stringify(it.reason))}`,
+        `Error during finding dialects: ${errors.map((it) =>
+          JSON.stringify(it),
+        )}`,
       );
+    }
+    const fulfilled = allSettled.filter((it) => it.status === 'fulfilled');
+    if (errors.length > 0 && fulfilled.length === 0) {
+      const error: DialectSdkError = {
+        ...errors[0]!,
+        details: errors,
+      };
+      throw error;
     }
     return fulfilled
       .map((it) => it as PromiseFulfilledResult<Thread[]>)
