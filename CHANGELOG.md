@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+## [0.6.1] - 2022-08-10
+
 - fix: rethrow errors from facades if all delegates fail
 
 ## [0.6.0] - 2022-08-03
