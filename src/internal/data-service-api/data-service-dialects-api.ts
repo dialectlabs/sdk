@@ -3,7 +3,7 @@ import {
   createHeaders,
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
-import type { TokenProvider } from '@auth/auth.interface';
+import type { TokenProvider } from '@auth/token-provider';
 
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;

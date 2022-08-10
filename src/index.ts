@@ -3,6 +3,7 @@ export * from './auth/auth.interface';
 export * from './auth/signers/ed25519-token-signer';
 export * from './auth/signers/solana-tx-token-signer';
 export * from './auth/token-store';
+export * from './auth/token-provider';
 export * from './dapp/dapp.interface';
 export * from './encryption/encryption.interface';
 export * from './encryption/encryption-keys-store';

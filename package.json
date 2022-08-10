@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/sdk",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
@@ -34,6 +34,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^28.1.0",
     "jest-jasmine2": "^28.1.0",
+    "madge": "^5.0.1",
     "prettier": "^2.6.2",
     "ts-jest": "^28.0.3",
     "ts-node": "^10.8.0",

@@ -1,10 +1,33 @@
 import type { AuthTokens, Token, TokenSigner } from '@auth/auth.interface';
-import { TokenProvider } from '@auth/auth.interface';
-import type { TokenStore } from '@auth/token-store';
+import { TokenStore } from '@auth/token-store';
 import type { PublicKey } from '@solana/web3.js';
-import type { Duration } from 'luxon';
+import { Duration } from 'luxon';
+import { AuthTokensImpl } from '@auth/internal/token-utils';
 
-export class DefaultTokenProvider extends TokenProvider {
+export abstract class TokenProvider {
+  abstract get(): Promise<Token>;
+
+  static create(
+    signer: TokenSigner,
+    ttl: Duration = Duration.fromObject({ hours: 1 }),
+    tokenStore: TokenStore = TokenStore.createInMemory(),
+  ): TokenProvider {
+    const authTokens = new AuthTokensImpl();
+    const defaultTokenProvider = new DefaultTokenProvider(
+      signer,
+      ttl,
+      authTokens,
+    );
+    return new CachedTokenProvider(
+      defaultTokenProvider,
+      tokenStore,
+      authTokens,
+      signer.subject,
+    );
+  }
+}
+
+class DefaultTokenProvider extends TokenProvider {
   constructor(
     private readonly signer: TokenSigner,
     private readonly ttl: Duration,
@@ -18,7 +41,7 @@ export class DefaultTokenProvider extends TokenProvider {
   }
 }
 
-export class CachedTokenProvider extends TokenProvider {
+class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,

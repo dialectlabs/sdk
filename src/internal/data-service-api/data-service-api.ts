@@ -5,7 +5,7 @@ import {
   DataServiceDappsApi,
   DataServiceDappsApiClient,
 } from '@data-service-api/data-service-dapps-api';
-import type { Token, TokenProvider } from '@auth/auth.interface';
+import type { Token } from '@auth/auth.interface';
 import {
   DataServiceWalletsApiClientV0,
   DataServiceWalletsApiV0,
@@ -33,6 +33,7 @@ import {
   DataServicePushNotificationSubscriptionsApi,
   DataServicePushNotificationSubscriptionsApiClient,
 } from './data-service-push-notification-subscriptions-api';
+import type { TokenProvider } from '@auth/token-provider';
 
 export class DataServiceApi {
   private constructor(

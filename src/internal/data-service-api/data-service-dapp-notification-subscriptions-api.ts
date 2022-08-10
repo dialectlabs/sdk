@@ -7,7 +7,7 @@ import type {
   NotificationSubscriptionDto,
   NotificationTypeDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import type { TokenProvider } from '@auth/auth.interface';
+import type { TokenProvider } from '@auth/token-provider';
 
 export interface DataServiceDappNotificationSubscriptionsApi {
   findAll(): Promise<DappNotificationSubscriptionDto[]>;
