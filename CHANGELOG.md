@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.6.4] - 2022-08-11
+
+- feature: expose token provider in sdk info
+
 ## [0.6.3] - 2022-08-10
 
 - fix: circular dep after exposing token provider to public api
