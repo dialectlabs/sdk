@@ -128,9 +128,9 @@ export interface WalletPushNotificationSubscriptions {
   delete(physicalId: string): Promise<void>;
 
   upsert(
-    command: UpsertPushNotificationSubscriptionCommand
+    command: UpsertPushNotificationSubscriptionCommand,
   ): Promise<WalletPushNotificationSubscription>;
-  
+
   get(physicalId: string): Promise<WalletPushNotificationSubscription>;
 }
 

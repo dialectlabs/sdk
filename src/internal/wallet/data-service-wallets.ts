@@ -71,7 +71,7 @@ export class DataServiceWallets implements Wallets {
       );
     this.pushNotificationSubscriptions =
       new DataServiceWalletPushNotificationSubscriptions(
-        dataServicePushWalletNotificationSubscriptionsApi
+        dataServicePushWalletNotificationSubscriptionsApi,
       );
   }
 }
@@ -266,17 +266,19 @@ export class DataServiceWalletPushNotificationSubscriptions
   async delete(physicalId: string): Promise<void> {
     await withErrorParsing(this.api.delete(physicalId));
   }
-  async upsert(command: UpsertPushNotificationSubscriptionCommand): Promise<WalletPushNotificationSubscription> {
+  async upsert(
+    command: UpsertPushNotificationSubscriptionCommand,
+  ): Promise<WalletPushNotificationSubscription> {
     const dto = await this.api.upsert(command);
     return {
-      ...dto
-    }
+      ...dto,
+    };
   }
 
   async get(physicalId: string): Promise<WalletPushNotificationSubscription> {
     const dto = await this.api.get(physicalId);
     return {
-      ...dto
-    }
+      ...dto,
+    };
   }
 }
