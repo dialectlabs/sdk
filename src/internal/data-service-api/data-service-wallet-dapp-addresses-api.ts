@@ -1,5 +1,5 @@
 import type { DappAddressDto } from '@data-service-api/data-service-dapps-api';
-import type { TokenProvider } from '@auth/internal/token-provider';
+import type { TokenProvider } from '@auth/auth.interface';
 import {
   createHeaders,
   withReThrowingDataServiceError,

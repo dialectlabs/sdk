@@ -10,7 +10,6 @@ import {
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceApi } from '@data-service-api/data-service-api';
-import { TokenProvider } from '@auth/internal/token-provider';
 import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
 import {
   MessagingBackend,
@@ -44,6 +43,7 @@ import { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notificati
 import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
 import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
 import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+import { Auth } from '@auth/auth.interface';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -79,7 +79,7 @@ export class DialectSdkFactory {
 
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
       config.dialectCloud.url,
-      TokenProvider.create(
+      Auth.createTokenProvider(
         tokenSigner,
         Duration.fromObject({ minutes: 60 }),
         config.dialectCloud.tokenStore,

@@ -1,10 +1,10 @@
-import type { TokenProvider } from '@auth/internal/token-provider';
 import type { AddressDto, AddressTypeDto } from './data-service-dapps-api';
 import {
   createHeaders,
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
 import axios from 'axios';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface DataServiceWalletAddressesApi {
   create(command: CreateAddressCommandDto): Promise<AddressDto>;

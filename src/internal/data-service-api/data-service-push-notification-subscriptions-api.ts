@@ -1,14 +1,15 @@
-import type { TokenProvider } from '@auth/internal/token-provider';
-
 import {
   createHeaders,
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
 import axios from 'axios';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface DataServicePushNotificationSubscriptionsApi {
   delete(physicalId: string): Promise<void>;
-  upsert(command: UpsertPushNotificationSubscriptionCommandDto): Promise<PushNotificationSubscriptionDto>;
+  upsert(
+    command: UpsertPushNotificationSubscriptionCommandDto,
+  ): Promise<PushNotificationSubscriptionDto>;
   get(physicalId: string): Promise<PushNotificationSubscriptionDto>;
 }
 
@@ -21,44 +22,45 @@ export class DataServicePushNotificationSubscriptionsApiClient
   ) {}
 
   async get(physicalId: string): Promise<PushNotificationSubscriptionDto> {
-      const token = await this.tokenProvider.get();
-      return withReThrowingDataServiceError(
-          axios
-            .get<PushNotificationSubscriptionDto>(
-                `${this.baseUrl}/api/v1/pushNotificationSubscriptions/${physicalId}`,
-                {
-                    headers: createHeaders(token)
-                }
-            )
-            .then((it) => it.data),
-      );
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<PushNotificationSubscriptionDto>(
+          `${this.baseUrl}/api/v1/pushNotificationSubscriptions/${physicalId}`,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
+    );
   }
 
   async delete(physicalId: string): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
-        axios
-          .delete(
-              `${this.baseUrl}/api/v1/pushNotificationSubscriptions/${physicalId}`,
-              {
-                  headers: createHeaders(token)
-              }
-          )
+      axios.delete(
+        `${this.baseUrl}/api/v1/pushNotificationSubscriptions/${physicalId}`,
+        {
+          headers: createHeaders(token),
+        },
+      ),
     );
   }
-  
-  async upsert(command: UpsertPushNotificationSubscriptionCommandDto): Promise<PushNotificationSubscriptionDto> {
+
+  async upsert(
+    command: UpsertPushNotificationSubscriptionCommandDto,
+  ): Promise<PushNotificationSubscriptionDto> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
-        axios
-          .post<PushNotificationSubscriptionDto>(
-              `${this.baseUrl}/api/v1/pushNotificationSubscriptions`,
-              command,
-              {
-                  headers: createHeaders(token)
-              }
-          )
-          .then((it) => it.data),
+      axios
+        .post<PushNotificationSubscriptionDto>(
+          `${this.baseUrl}/api/v1/pushNotificationSubscriptions`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
     );
   }
 }
