@@ -1,5 +1,3 @@
-import type { TokenProvider } from '@auth/internal/token-provider';
-
 import {
   createHeaders,
   withReThrowingDataServiceError,
@@ -9,6 +7,7 @@ import type {
   NotificationConfigDto,
   NotificationTypeDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface DataServiceDappNotificationTypesApi {
   create(

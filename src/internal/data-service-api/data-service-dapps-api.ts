@@ -1,9 +1,9 @@
-import type { TokenProvider } from '@auth/internal/token-provider';
 import axios from 'axios';
 import {
   createHeaders,
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface DataServiceDappsApi {
   create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;

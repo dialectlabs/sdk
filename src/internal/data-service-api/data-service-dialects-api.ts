@@ -1,9 +1,9 @@
 import axios from 'axios';
-import type { TokenProvider } from '@auth/internal/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;

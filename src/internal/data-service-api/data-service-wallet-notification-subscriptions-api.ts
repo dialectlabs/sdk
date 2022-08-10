@@ -3,8 +3,8 @@ import {
   withReThrowingDataServiceError,
 } from '@data-service-api/data-service-api';
 import axios from 'axios';
-import type { TokenProvider } from '@auth/internal/token-provider';
 import type { WalletDto } from '@data-service-api/data-service-dapps-api';
+import type { TokenProvider } from '@auth/auth.interface';
 
 export interface FindNotificationSubscriptionQueryDto {
   readonly dappPublicKey: string;
