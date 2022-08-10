@@ -4,7 +4,7 @@ import {
 } from '@data-service-api/data-service-api';
 import axios from 'axios';
 import type { MessageDto } from '@data-service-api/data-service-dialects-api';
-import type { TokenProvider } from '@auth/auth.interface';
+import type { TokenProvider } from '@auth/token-provider';
 
 export interface DataServiceWalletMessagesApi {
   findAllDappMessages(

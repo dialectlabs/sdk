@@ -1,5 +1,5 @@
 import { DataServiceApi } from './data-service-api';
-import { TokenProvider } from '@auth/internal/token-provider';
+import { TokenProvider } from '@auth/token-provider';
 import { Keypair } from '@solana/web3.js';
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';

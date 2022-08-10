@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.6.3] - 2022-08-10
+
+- fix: circular dep after exposing token provider to public api
+
 ## [0.6.2] - 2022-08-10
 
 - feat: expose token provider to public api
