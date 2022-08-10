@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.6.2] - 2022-08-10
+
+- feat: expose token provider to public api
+
 ## [0.6.1] - 2022-08-10
 
 - fix: rethrow errors from facades if all delegates fail
