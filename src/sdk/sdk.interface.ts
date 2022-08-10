@@ -10,6 +10,7 @@ import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
+import type { TokenProvider } from '@auth/token-provider';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
@@ -29,6 +30,7 @@ export interface DialectSdkInfo {
   readonly config: Config;
   readonly wallet: DialectWalletAdapter;
   readonly solana: SolanaInfo;
+  readonly tokenProvider: TokenProvider;
 }
 
 export interface SolanaInfo {

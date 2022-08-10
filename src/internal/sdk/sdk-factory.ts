@@ -44,6 +44,7 @@ import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data
 import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
 import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 import { Auth } from '@auth/auth.interface';
+import type { TokenProvider } from '@auth/token-provider';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -77,13 +78,14 @@ export class DialectSdkFactory {
       ? new DialectWalletAdapterEd25519TokenSigner(config.wallet)
       : new DialectWalletAdapterSolanaTxTokenSigner(config.wallet);
 
+    const tokenProvider: TokenProvider = Auth.createTokenProvider(
+      tokenSigner,
+      Duration.fromObject({ minutes: 60 }),
+      config.dialectCloud.tokenStore,
+    );
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
       config.dialectCloud.url,
-      Auth.createTokenProvider(
-        tokenSigner,
-        Duration.fromObject({ minutes: 60 }),
-        config.dialectCloud.tokenStore,
-      ),
+      tokenProvider,
     );
     const messaging = this.createMessaging(
       config,
@@ -115,6 +117,7 @@ export class DialectSdkFactory {
         solana: {
           dialectProgram,
         },
+        tokenProvider,
       },
       messaging,
       dapps,
