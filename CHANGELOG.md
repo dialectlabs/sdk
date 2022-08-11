@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- fix: recover after signing message/tx failed during authentication
+
 ## [0.6.4] - 2022-08-11
 
 - feature: expose token provider in sdk info
@@ -32,6 +34,7 @@
 - Show correct error message for all http calls.
 
 ## [0.4.9] - 2022-07-20
+
 - Add notification types configuration for dapps.
 - Add notification subscriptions querying and configuration for wallets.
 - Add notification subscriptions querying for dapp.
