@@ -67,6 +67,12 @@ class CachedTokenProvider extends TokenProvider {
     const delegatePromise = this.delegate
       .get()
       .then((it) => this.tokenStore.save(it));
+
+    // delete promise to refetch the token in case of failure
+    delegatePromise.catch(() => {
+      delete this.delegateGetPromises[subject];
+    });
+
     this.delegateGetPromises[subject] = delegatePromise;
     return delegatePromise;
   }
