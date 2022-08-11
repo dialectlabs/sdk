@@ -175,6 +175,7 @@ export class UnicastDappMessageCommandDto {
   message!: string;
   recipientPublicKey!: string;
   notificationTypeId?: string;
+  addressTypes?: AddressTypeDto[];
 }
 
 export class MulticastDappMessageCommandDto {
@@ -182,12 +183,14 @@ export class MulticastDappMessageCommandDto {
   message!: string;
   recipientPublicKeys!: string[];
   notificationTypeId?: string;
+  addressTypes?: AddressTypeDto[];
 }
 
 export class BroadcastDappMessageCommandDto {
   title!: string;
   message!: string;
   notificationTypeId?: string;
+  addressTypes?: AddressTypeDto[];
 }
 
 export class FindDappQueryDto {
