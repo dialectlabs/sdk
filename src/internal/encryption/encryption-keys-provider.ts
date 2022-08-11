@@ -71,6 +71,12 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     const delegatePromise = this.delegate
       .getFailSafe()
       .then((it) => it && this.encryptionKeysStore.save(this.subject, it));
+
+    // delete promise to refetch the token in case of failure
+    delegatePromise.catch(() => {
+      delete this.delegateGetPromises[subject];
+    });
+
     this.delegateGetPromises[subject] = delegatePromise;
     return delegatePromise;
   }
