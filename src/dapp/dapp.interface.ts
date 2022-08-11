@@ -62,7 +62,7 @@ export interface BroadcastDappMessageCommand {
   title: string;
   message: string;
   notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
+  addressTypes?: AddressType[];
 }
 
 export interface UnicastDappMessageCommand {
@@ -70,7 +70,7 @@ export interface UnicastDappMessageCommand {
   message: string;
   recipient: PublicKey;
   notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
+  addressTypes?: AddressType[];
 }
 
 export interface MulticastDappMessageCommand {
@@ -78,7 +78,7 @@ export interface MulticastDappMessageCommand {
   message: string;
   recipients: PublicKey[];
   notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
+  addressTypes?: AddressType[];
 }
 
 export interface DappNotificationTypes {
