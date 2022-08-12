@@ -1,3 +1,4 @@
+import { toAddressTypeDto } from '@address/addresses.interface';
 import type {
   BroadcastDappMessageCommand,
   DappMessages,
@@ -27,6 +28,9 @@ export class DataServiceDappMessages implements DappMessages {
         ...command,
         notificationTypeId: command.notificationTypeId,
         recipientPublicKey: command.recipient.toBase58(),
+        addressTypes: command?.addressTypes?.map((addr) =>
+          toAddressTypeDto(addr),
+        ),
       }),
     );
   }
@@ -37,6 +41,9 @@ export class DataServiceDappMessages implements DappMessages {
         ...command,
         notificationTypeId: command.notificationTypeId,
         recipientPublicKeys: command.recipients.map((it) => it.toBase58()),
+        addressTypes: command?.addressTypes?.map((addr) =>
+          toAddressTypeDto(addr),
+        ),
       }),
     );
   }
@@ -46,6 +53,9 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.broadcast({
         ...command,
         notificationTypeId: command.notificationTypeId,
+        addressTypes: command?.addressTypes?.map((addr) =>
+          toAddressTypeDto(addr),
+        ),
       }),
     );
   }
