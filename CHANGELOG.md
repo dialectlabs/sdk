@@ -2,7 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.6.5] - 2022-08-15
+
 - fix: recover after signing message/tx failed during authentication
+- feature: select channels for broadcast/multicast/unicast 
 
 ## [0.6.4] - 2022-08-11
 
