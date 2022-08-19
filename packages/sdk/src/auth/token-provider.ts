@@ -1,6 +1,6 @@
 import type { AuthTokens, Token, TokenSigner } from '@auth/auth.interface';
 import { TokenStore } from '@auth/token-store';
-import type { PublicKey } from '@solana/web3.js';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 import { Duration } from 'luxon';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
 import { IllegalArgumentError } from '@sdk/errors';
@@ -55,7 +55,7 @@ class CachedTokenProvider extends TokenProvider {
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
     private readonly tokenUtils: AuthTokens,
-    private readonly subject: PublicKey,
+    private readonly subject: WalletAddress,
   ) {
     super();
   }

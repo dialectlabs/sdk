@@ -16,6 +16,7 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
 import { ThreadAlreadyExistsError } from '@sdk/errors';
 import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+import { SolanaAddress } from '@wallet/internal/wallet-address';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
@@ -632,9 +633,9 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
   const walletAdapter = new DialectWalletAdapterWrapper(
     NodeDialectWalletAdapter.create(),
   );
-  const program = await createDialectProgram(
+  const program = createDialectProgram(
     walletAdapter,
-    new PublicKey(programs['localnet'].programAddress),
+    new SolanaAddress(new PublicKey(programs['localnet'].programAddress)),
     programs['localnet'].clusterAddress,
   );
   const airdropRequest = await program.provider.connection.requestAirdrop(

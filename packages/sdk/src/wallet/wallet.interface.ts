@@ -1,13 +1,13 @@
-import type { PublicKey } from '@solana/web3.js';
 import type {
   Address,
   AddressType,
   DappAddress,
 } from '@address/addresses.interface';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
 
 export interface Wallets {
-  readonly publicKey: PublicKey;
+  readonly publicKey: WalletAddress;
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
   readonly messages: WalletMessages;
@@ -16,7 +16,7 @@ export interface Wallets {
 }
 
 export interface Wallet {
-  readonly publicKey: PublicKey;
+  readonly publicKey: WalletAddress;
 }
 
 export interface WalletAddresses {
@@ -75,7 +75,7 @@ export interface WalletDappAddresses {
 }
 
 export interface CreateDappAddressCommand {
-  readonly dappPublicKey: PublicKey;
+  readonly dappPublicKey: WalletAddress;
   readonly addressId: string;
   readonly enabled: boolean;
 }
@@ -91,7 +91,7 @@ export interface FindDappAddressQuery {
 
 export interface FindDappAddressesQuery {
   readonly addressIds?: string[];
-  readonly dappPublicKey?: PublicKey;
+  readonly dappPublicKey?: WalletAddress;
 }
 
 export interface DeleteDappAddressCommand {
@@ -105,7 +105,7 @@ export interface WalletMessages {
 export interface DappMessage {
   text: string;
   timestamp: Date;
-  author: PublicKey;
+  author: WalletAddress;
 }
 
 export interface FindDappMessageQuery {
@@ -135,7 +135,7 @@ export interface WalletPushNotificationSubscriptions {
 }
 
 export interface FindNotificationSubscriptionQuery {
-  readonly dappPublicKey: PublicKey;
+  readonly dappPublicKey: WalletAddress;
 }
 
 export interface WalletNotificationSubscription {

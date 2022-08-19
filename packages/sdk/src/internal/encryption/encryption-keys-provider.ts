@@ -3,7 +3,8 @@ import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet
 import { UnsupportedOperationError } from '@sdk/errors';
 import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
 import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
+
 
 export abstract class EncryptionKeysProvider {
   abstract getFailSafe(): Promise<DiffeHellmanKeys | null>;
@@ -47,7 +48,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
   constructor(
     private readonly delegate: EncryptionKeysProvider,
     private readonly encryptionKeysStore: EncryptionKeysStore,
-    private readonly subject: PublicKey,
+    private readonly subject: WalletAddress,
   ) {
     super();
   }

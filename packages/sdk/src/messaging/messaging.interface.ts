@@ -1,5 +1,6 @@
-import type { PublicKey } from '@solana/web3.js';
+
 import type { Backend } from '@sdk/sdk.interface';
+import type { WalletAddress } from '../internal/wallet/wallet-address';
 
 export interface Messaging {
   findAll(): Promise<Thread[]>;
@@ -25,7 +26,7 @@ export interface ThreadSummary {
 }
 
 export interface ThreadMemberSummary {
-  publicKey: PublicKey;
+  publicKey: WalletAddress;
   hasUnreadMessages: boolean;
 }
 
@@ -55,21 +56,21 @@ export interface FindThreadByIdQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
-  otherMembers: PublicKey[];
+  otherMembers: WalletAddress[];
 }
 
 export interface FindThreadSummaryByMembers {
-  me: PublicKey;
-  otherMembers: PublicKey[];
+  me: WalletAddress;
+  otherMembers: WalletAddress[];
 }
 
 export interface ThreadIdProps {
-  address: PublicKey;
+  address: WalletAddress;
   backend?: Backend;
 }
 
 export class ThreadId {
-  readonly address!: PublicKey;
+  readonly address!: WalletAddress;
   readonly backend?: Backend;
 
   constructor({ address, backend }: ThreadIdProps) {
@@ -107,7 +108,7 @@ export interface Thread {
 }
 
 export interface ThreadMember {
-  publicKey: PublicKey;
+  publicKey: WalletAddress;
   scopes: ThreadMemberScope[];
   // lastReadMessageTimestamp: Date;
 }

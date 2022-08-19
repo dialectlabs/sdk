@@ -10,7 +10,7 @@ import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-a
 import { withErrorParsing } from '@data-service-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
-  constructor(private readonly api: DataServiceDappsApi) {}
+  constructor(private readonly api: DataServiceDappsApi) { }
 
   async send(command: SendDappMessageCommand): Promise<void> {
     if ('recipient' in command) {

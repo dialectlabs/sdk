@@ -13,7 +13,7 @@ import {
   ThreadsGeneralSummary,
   ThreadSummary,
 } from '@messaging/messaging.interface';
-import type { PublicKey } from '@solana/web3.js';
+
 import {
   createDialect,
   deleteDialect,
@@ -45,6 +45,7 @@ import {
   EncryptionKeysProvider,
 } from '@encryption/internal/encryption-keys-provider';
 import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
@@ -57,7 +58,7 @@ export class SolanaMessaging implements Messaging {
     private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly program: Program,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-  ) {}
+  ) { }
 
   async create(command: CreateThreadCommand): Promise<Thread> {
     const dialectAccount = await this.createInternal(command);
@@ -200,7 +201,7 @@ export class SolanaThread implements Thread {
   readonly id: ThreadId;
 
   constructor(
-    address: PublicKey,
+    address: WalletAddress,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
     readonly otherMember: ThreadMember,
@@ -279,11 +280,11 @@ function toProtocolScopes(scopes: ThreadMemberScope[]): [boolean, boolean] {
   ];
 }
 
-function findMember(memberPk: PublicKey, dialect: Dialect) {
+function findMember(memberPk: WalletAddress, dialect: Dialect) {
   return dialect.members.find((it) => it.publicKey.equals(memberPk)) ?? null;
 }
 
-function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
+function findOtherMember(memberPk: WalletAddress, dialect: Dialect) {
   return dialect.members.find((it) => !it.publicKey.equals(memberPk)) ?? null;
 }
 
@@ -337,7 +338,7 @@ async function getEncryptionPropsForMutation(
 }
 
 function getEncryptionProps(
-  me: PublicKey,
+  me: WalletAddress,
   encryptionKeys: DiffeHellmanKeys | null,
 ) {
   return (

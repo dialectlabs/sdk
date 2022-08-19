@@ -37,13 +37,14 @@ import {
 } from '@data-service-api/data-service-dialects-api';
 import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
 import type { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
-    private readonly me: PublicKey,
+    private readonly me: WalletAddress,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-  ) {}
+  ) { }
 
   async create(command: CreateThreadCommand): Promise<Thread> {
     command.encrypted && (await this.checkEncryptionSupported());
@@ -310,13 +311,13 @@ function toDataServiceScopes(scopes: ThreadMemberScope[]) {
   return scopes.map((it) => MemberScopeDto[it]);
 }
 
-function findMember(memberPk: PublicKey, dialect: DialectDto) {
+function findMember(memberPk: WalletAddress, dialect: DialectDto) {
   return (
     dialect.members.find((it) => memberPk.toBase58() === it.publicKey) ?? null
   );
 }
 
-function findOtherMember(memberPk: PublicKey, dialect: DialectDto) {
+function findOtherMember(memberPk: WalletAddress, dialect: DialectDto) {
   return (
     dialect.members.find((it) => memberPk.toBase58() !== it.publicKey) ?? null
   );

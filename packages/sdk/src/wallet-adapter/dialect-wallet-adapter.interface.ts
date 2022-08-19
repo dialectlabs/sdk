@@ -2,7 +2,9 @@ import type {
   MessageSignerWalletAdapterProps,
   SignerWalletAdapterProps,
 } from '@solana/wallet-adapter-base/lib/types/signer';
-import type { PublicKey } from '@solana/web3.js';
+
+import type { WalletAddress } from '../internal/wallet/wallet-address';
+
 import type { Backend } from '@sdk/sdk.interface';
 
 export interface ApiAvailability {
@@ -11,7 +13,7 @@ export interface ApiAvailability {
 }
 
 export interface DialectWalletAdapter {
-  publicKey?: PublicKey;
+  publicKey?: WalletAddress;
   signTransaction?: SignerWalletAdapterProps['signTransaction'];
   signAllTransactions?: SignerWalletAdapterProps['signAllTransactions'];
   signMessage?: MessageSignerWalletAdapterProps['signMessage'];

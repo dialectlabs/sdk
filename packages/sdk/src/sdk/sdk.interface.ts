@@ -2,7 +2,7 @@ import type {
   ApiAvailability,
   DialectWalletAdapter,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
-import type { PublicKey } from '@solana/web3.js';
+
 import type { Messaging } from '@messaging/messaging.interface';
 import type { TokenStore } from '@auth/token-store';
 import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
@@ -11,8 +11,8 @@ import type { Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
 import type { TokenProvider } from '@auth/token-provider';
-import type { Duration } from 'luxon';
 import type { IdentityResolver } from '@identity/identity.interface';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
@@ -59,7 +59,7 @@ export interface ConfigProps {
 
 export interface SolanaConfigProps {
   network?: SolanaNetwork;
-  dialectProgramAddress?: PublicKey;
+  dialectProgramAddress?: WalletAddress;
   rpcUrl?: string;
 }
 
@@ -104,7 +104,7 @@ export interface Config extends ConfigProps {
 
 export interface SolanaConfig extends SolanaConfigProps {
   network: SolanaNetwork;
-  dialectProgramAddress: PublicKey;
+  dialectProgramAddress: WalletAddress;
   rpcUrl: string;
 }
 

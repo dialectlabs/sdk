@@ -69,7 +69,7 @@ export class InternalDialectSdk implements DialectSdk {
 }
 
 export class DialectSdkFactory {
-  constructor(private readonly config: ConfigProps) {}
+  constructor(private readonly config: ConfigProps) { }
 
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();

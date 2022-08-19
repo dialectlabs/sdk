@@ -1,9 +1,11 @@
 import type { Token } from '@auth/auth.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { Wallet } from '@dialectlabs/web3/lib/types/utils/Wallet';
+
 import { TokenParser } from '../internal/auth/token-parser';
+import type { WalletAddress } from '../internal/wallet/wallet-address';
 
 export abstract class TokenStore {
-  abstract get(subject: PublicKey): Token | null;
+  abstract get(subject: WalletAddress): Token | null;
 
   abstract save(token: Token): Token;
 
@@ -23,7 +25,7 @@ export abstract class TokenStore {
 class InMemoryTokenStore extends TokenStore {
   private tokens: Record<string, Token> = {};
 
-  get(subject: PublicKey): Token | null {
+  get(subject: WalletAddress): Token | null {
     return this.tokens[subject.toBase58()] ?? null;
   }
 
@@ -34,7 +36,7 @@ class InMemoryTokenStore extends TokenStore {
 }
 
 class SessionStorageTokenStore extends TokenStore {
-  get(subject: PublicKey): Token | null {
+  get(subject: WalletAddress): Token | null {
     const key = createStorageKey(subject.toBase58());
     try {
       const token = sessionStorage.getItem(key);
@@ -55,7 +57,7 @@ class SessionStorageTokenStore extends TokenStore {
 }
 
 class LocalStorageTokenStore extends TokenStore {
-  get(subject: PublicKey): Token | null {
+  get(subject: WalletAddress): Token | null {
     const key = createStorageKey(subject.toBase58());
     try {
       const token = localStorage.getItem(key);

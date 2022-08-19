@@ -3,15 +3,15 @@ import type {
   DialectWalletAdapter,
 } from '@wallet-adapter/dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@sdk/errors';
-import type { PublicKey, Transaction } from '@solana/web3.js';
+import type { Transaction } from '@solana/web3.js';
 import { Backend } from '@sdk/sdk.interface';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 
 export class DialectWalletAdapterWrapper
-  implements DialectWalletAdapter, ApiAvailability
-{
-  constructor(private readonly delegate: DialectWalletAdapter) {}
+  implements DialectWalletAdapter, ApiAvailability {
+  constructor(private readonly delegate: DialectWalletAdapter) { }
 
-  get publicKey(): PublicKey {
+  get publicKey(): WalletAddress {
     if (!this.delegate.publicKey) {
       throw new UnsupportedOperationError(
         'Public key not available',
@@ -64,15 +64,15 @@ export class DialectWalletAdapterWrapper
   private canUseSolana() {
     return Boolean(
       this.publicKey &&
-        this.delegate.signTransaction &&
-        this.delegate.signAllTransactions,
+      this.delegate.signTransaction &&
+      this.delegate.signAllTransactions,
     );
   }
 
   private canUseDialectCloud() {
     return Boolean(
       this.publicKey &&
-        (this.delegate.signMessage || this.delegate.signTransaction),
+      (this.delegate.signMessage || this.delegate.signTransaction),
     );
   }
 

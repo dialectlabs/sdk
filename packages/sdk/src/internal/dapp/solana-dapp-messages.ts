@@ -8,8 +8,9 @@ import type {
 } from '@dapp/dapp.interface';
 import type { SolanaMessaging } from '@messaging/internal/solana-messaging';
 import type { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
-import type { PublicKey } from '@solana/web3.js';
+
 import { IllegalArgumentError } from '@sdk/errors';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 
 export class SolanaDappMessages implements DappMessages {
   constructor(
@@ -17,7 +18,7 @@ export class SolanaDappMessages implements DappMessages {
     private readonly dappAddresses: SolanaDappAddresses,
     private readonly dappNotificationTypes: DappNotificationTypes,
     private readonly notificationSubscriptions: DappNotificationSubscriptions,
-  ) {}
+  ) { }
 
   async send(command: SendDappMessageCommand): Promise<void> {
     if ('recipient' in command) {
@@ -80,7 +81,7 @@ export class SolanaDappMessages implements DappMessages {
 
   async getRecipients(
     notificationTypeId?: string,
-    recipientPredicate: (recipient: PublicKey) => boolean = () => true,
+    recipientPredicate: (recipient: WalletAddress) => boolean = () => true,
   ) {
     const dappNotificationTypes = await this.dappNotificationTypes.findAll();
     if (dappNotificationTypes.length > 0 && !notificationTypeId) {
@@ -108,7 +109,7 @@ export class SolanaDappMessages implements DappMessages {
   }
 
   private async getRecipientsByAddressSubscription(
-    recipientPredicate: (recipient: PublicKey) => boolean,
+    recipientPredicate: (recipient: WalletAddress) => boolean,
   ) {
     const addressSubscriptions = await this.dappAddresses.findAll();
     return addressSubscriptions
@@ -119,7 +120,7 @@ export class SolanaDappMessages implements DappMessages {
 
   private async getRecipientsByNotificationType(
     notificationTypeId: string,
-    recipientPredicate: (recipient: PublicKey) => boolean,
+    recipientPredicate: (recipient: WalletAddress) => boolean,
   ) {
     const notificationSubscriptions =
       await this.notificationSubscriptions.findAll();
@@ -128,7 +129,7 @@ export class SolanaDappMessages implements DappMessages {
         (it) =>
           it.notificationType.id === notificationTypeId ||
           it.notificationType.humanReadableId.toLowerCase() ===
-            notificationTypeId.toLowerCase(),
+          notificationTypeId.toLowerCase(),
       )
       .flatMap((it) => it.subscriptions)
       .filter((it) => it.config.enabled)

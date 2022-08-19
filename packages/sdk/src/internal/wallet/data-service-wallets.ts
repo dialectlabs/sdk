@@ -42,6 +42,7 @@ import type {
   WalletNotificationSubscriptionDto,
 } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
 import type { DataServicePushNotificationSubscriptionsApi } from '@data-service-api/data-service-push-notification-subscriptions-api';
+import type { WalletAddress } from './wallet-address';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -51,7 +52,7 @@ export class DataServiceWallets implements Wallets {
   pushNotificationSubscriptions: WalletPushNotificationSubscriptions;
 
   constructor(
-    readonly publicKey: PublicKey,
+    readonly publicKey: WalletAddress,
     private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
     private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
@@ -77,7 +78,7 @@ export class DataServiceWallets implements Wallets {
 }
 
 export class DataServiceWalletAddresses implements WalletAddresses {
-  constructor(private readonly api: DataServiceWalletAddressesApi) {}
+  constructor(private readonly api: DataServiceWalletAddressesApi) { }
 
   async create(command: CreateAddressCommand): Promise<Address> {
     const created = await withErrorParsing(
@@ -135,7 +136,7 @@ export class DataServiceWalletAddresses implements WalletAddresses {
 }
 
 export class DataServiceWalletDappAddresses implements WalletDappAddresses {
-  constructor(private readonly api: DataServiceWalletDappAddressesApi) {}
+  constructor(private readonly api: DataServiceWalletDappAddressesApi) { }
 
   async create(command: CreateDappAddressCommand): Promise<DappAddress> {
     const created = await withErrorParsing(
@@ -186,7 +187,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
 export class DataServiceWalletMessages implements WalletMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
 
-  constructor(private readonly api: DataServiceWalletMessagesApi) {}
+  constructor(private readonly api: DataServiceWalletMessagesApi) { }
 
   async findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]> {
     const dappMessages = await withErrorParsing(
@@ -217,11 +218,10 @@ function toAddress(addressDto: AddressDto): Address {
 }
 
 export class DataServiceWalletNotificationSubscriptions
-  implements WalletNotificationSubscriptions
-{
+  implements WalletNotificationSubscriptions {
   constructor(
     private readonly api: DataServiceWalletNotificationSubscriptionsApi,
-  ) {}
+  ) { }
 
   async findAll(
     query: FindNotificationSubscriptionQuery,
@@ -257,11 +257,10 @@ function fromNotificationSubscriptionDto(
 }
 
 export class DataServiceWalletPushNotificationSubscriptions
-  implements WalletPushNotificationSubscriptions
-{
+  implements WalletPushNotificationSubscriptions {
   constructor(
     private readonly api: DataServicePushNotificationSubscriptionsApi,
-  ) {}
+  ) { }
 
   async delete(physicalId: string): Promise<void> {
     await withErrorParsing(this.api.delete(physicalId));

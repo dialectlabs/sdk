@@ -3,18 +3,19 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type { TokenSigner, TokenSignerResult } from '../auth.interface';
 
 export abstract class SolanaTxTokenSigner implements TokenSigner {
   readonly alg = 'solana-tx';
 
-  abstract subject: PublicKey;
+  abstract subject: WalletAddress;
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }
 
 export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner {
-  readonly subject: PublicKey;
+  readonly subject: WalletAddress;
 
   constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
     super();

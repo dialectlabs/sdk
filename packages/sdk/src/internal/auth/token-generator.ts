@@ -9,7 +9,7 @@ import { bytesToBase64, jsonStringifyToBase64 } from '../utils/bytes-utils';
 import { TokenUnsupportedAlgError } from './token-parser';
 
 export abstract class TokenGenerator {
-  constructor(protected readonly signer: TokenSigner) {}
+  constructor(protected readonly signer: TokenSigner) { }
 
   static new(signer: TokenSigner): TokenGenerator {
     if (signer.alg === 'ed25519') {

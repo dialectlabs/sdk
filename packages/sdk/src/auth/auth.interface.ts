@@ -1,5 +1,5 @@
 import { AuthTokensImpl } from '@auth/internal/token-utils';
-import type { PublicKey } from '@solana/web3.js';
+import type { WalletAddress } from '@wallet/internal/wallet-address';
 import type { Duration } from 'luxon';
 import { TokenStore } from '@auth/token-store';
 import { DEFAULT_TOKEN_LIFETIME, TokenProvider } from '@auth/token-provider';
@@ -54,7 +54,7 @@ export interface TokenSignerResult {
 
 export interface TokenSigner {
   alg: TokenHeaderAlg;
-  subject: PublicKey;
+  subject: WalletAddress;
 
   sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }

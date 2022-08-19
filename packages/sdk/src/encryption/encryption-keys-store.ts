@@ -1,10 +1,11 @@
 import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { WalletAddress } from '../internal/wallet/wallet-address';
+
 
 export abstract class EncryptionKeysStore {
-  abstract get(subject: PublicKey): DiffeHellmanKeys | null;
+  abstract get(subject: WalletAddress): DiffeHellmanKeys | null;
 
-  abstract save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys;
+  abstract save(subject: WalletAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys;
 
   static createInMemory(): EncryptionKeysStore {
     return new InmemoryEncryptionKeysStore();
@@ -22,18 +23,18 @@ export abstract class EncryptionKeysStore {
 class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
   private keys: Record<string, DiffeHellmanKeys> = {};
 
-  get(subject: PublicKey): DiffeHellmanKeys | null {
+  get(subject: WalletAddress): DiffeHellmanKeys | null {
     return this.keys[subject.toBase58()] ?? null;
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+  save(subject: WalletAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     this.keys[subject.toBase58()] = keys;
     return keys;
   }
 }
 
 class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
-  get(subject: PublicKey): DiffeHellmanKeys | null {
+  get(subject: WalletAddress): DiffeHellmanKeys | null {
     const key = createStorageKey(subject.toBase58());
     try {
       const keys = sessionStorage.getItem(key);
@@ -47,7 +48,7 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
     }
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+  save(subject: WalletAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     sessionStorage.setItem(
       createStorageKey(subject.toBase58()),
       serializeDiffeHellmanKeys(keys),
@@ -57,7 +58,7 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
 }
 
 class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
-  get(subject: PublicKey): DiffeHellmanKeys | null {
+  get(subject: WalletAddress): DiffeHellmanKeys | null {
     const key = createStorageKey(subject.toBase58());
     try {
       const keys = localStorage.getItem(key);
@@ -71,7 +72,7 @@ class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
     }
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+  save(subject: WalletAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     localStorage.setItem(
       createStorageKey(subject.toBase58()),
       serializeDiffeHellmanKeys(keys),
