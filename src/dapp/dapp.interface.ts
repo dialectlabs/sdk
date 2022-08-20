@@ -5,7 +5,6 @@ import type {
   NotificationSubscription,
   NotificationType,
 } from '@wallet/wallet.interface';
-import type { AddressTypeDto } from '@data-service-api/data-service-dapps-api';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
@@ -53,33 +52,28 @@ export interface FindDappQuery {
   verified?: boolean;
 }
 
+export interface SendDappMessageCommandBase {
+  message: string;
+  title?: string;
+  notificationTypeId?: string;
+  addressTypes?: AddressType[];
+}
+
+export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
+
+export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
+  recipient: PublicKey;
+}
+
+export interface MulticastDappMessageCommand
+  extends SendDappMessageCommandBase {
+  recipients: PublicKey[];
+}
+
 export type SendDappMessageCommand =
   | BroadcastDappMessageCommand
   | UnicastDappMessageCommand
   | MulticastDappMessageCommand;
-
-export interface BroadcastDappMessageCommand {
-  title: string;
-  message: string;
-  notificationTypeId?: string;
-  addressTypes?: AddressType[];
-}
-
-export interface UnicastDappMessageCommand {
-  title: string;
-  message: string;
-  recipient: PublicKey;
-  notificationTypeId?: string;
-  addressTypes?: AddressType[];
-}
-
-export interface MulticastDappMessageCommand {
-  title: string;
-  message: string;
-  recipients: PublicKey[];
-  notificationTypeId?: string;
-  addressTypes?: AddressType[];
-}
 
 export interface DappNotificationTypes {
   create(command: CreateNotificationTypeCommand): Promise<NotificationType>;

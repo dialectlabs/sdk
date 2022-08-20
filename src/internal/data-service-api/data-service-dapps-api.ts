@@ -170,28 +170,22 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
-export class UnicastDappMessageCommandDto {
-  title!: string;
+class SendDappMessageCommand {
+  title?: string;
   message!: string;
+  notificationTypeId?: string;
+  addressTypes?: AddressTypeDto[];
+}
+
+export class UnicastDappMessageCommandDto extends SendDappMessageCommand {
   recipientPublicKey!: string;
-  notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
 }
 
-export class MulticastDappMessageCommandDto {
-  title!: string;
-  message!: string;
+export class MulticastDappMessageCommandDto extends SendDappMessageCommand {
   recipientPublicKeys!: string[];
-  notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
 }
 
-export class BroadcastDappMessageCommandDto {
-  title!: string;
-  message!: string;
-  notificationTypeId?: string;
-  addressTypes?: AddressTypeDto[];
-}
+export const BroadcastDappMessageCommandDto = SendDappMessageCommand;
 
 export class FindDappQueryDto {
   verified?: boolean;
