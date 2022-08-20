@@ -185,7 +185,7 @@ export class MulticastDappMessageCommandDto extends SendDappMessageCommand {
   recipientPublicKeys!: string[];
 }
 
-export const BroadcastDappMessageCommandDto = SendDappMessageCommand;
+export type BroadcastDappMessageCommandDto = SendDappMessageCommand;
 
 export class FindDappQueryDto {
   verified?: boolean;
