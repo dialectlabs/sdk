@@ -2,7 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 
 export interface Identity {
   publicKey: PublicKey;
-  identityProviderName: string;
+  identityName: string;
   name?: string;
   avatarUrl?: string;
 }

@@ -72,7 +72,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
             return { ...curr, ...prev };
           },
           {
-            identityProviderName: 'DIALECT_AGGREGATED_IDENTITY',
+            identityName: 'DIALECT_AGGREGATED_IDENTITY',
             publicKey: publicKey,
           },
         );
