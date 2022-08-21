@@ -5,6 +5,7 @@ import {
   DialectCloudConfig,
   DialectSdk,
   DialectSdkInfo,
+  IdentityConfig,
   SolanaConfig,
 } from '@sdk/sdk.interface';
 import { programs } from '@dialectlabs/web3';
@@ -46,6 +47,11 @@ import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-
 import { Auth } from '@auth/auth.interface';
 import type { TokenProvider } from '@auth/token-provider';
 import { DEFAULT_TOKEN_LIFETIME } from '@auth/token-provider';
+import type { IdentityResolver } from 'identity/identity.interface';
+import {
+  AggregateSequentialIdentityResolver,
+  FirstFoundFastIdentityResolver,
+} from 'internal/identity/identity-resolvers';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -57,6 +63,7 @@ export class InternalDialectSdk implements DialectSdk {
     readonly threads: Messaging,
     readonly dapps: Dapps,
     readonly wallet: Wallets,
+    readonly identity: IdentityResolver,
   ) {}
 }
 
@@ -112,6 +119,8 @@ export class DialectSdkFactory {
       dataServiceApi.walletNotificationSubscriptions,
       dataServiceApi.pushNotificationSubscriptions,
     );
+    const identity = this.createIdentityResolver(config.identity);
+
     return new InternalDialectSdk(
       {
         apiAvailability: config.wallet,
@@ -125,6 +134,7 @@ export class DialectSdkFactory {
       messaging,
       dapps,
       wallet,
+      identity,
     );
   }
 
@@ -240,11 +250,28 @@ Solana settings:
     );
   }
 
+  private createIdentityResolver(config: IdentityConfig): IdentityResolver {
+    if (config.strategy === 'first-found') {
+      return new FirstFoundFastIdentityResolver(config.resolvers);
+    }
+    if (config.strategy === 'first-found-fast') {
+      return new FirstFoundFastIdentityResolver(config.resolvers);
+    }
+    if (config.strategy === 'aggregate-sequential') {
+      return new AggregateSequentialIdentityResolver(config.resolvers);
+    }
+
+    throw new IllegalArgumentError(
+      `Unknown identity strategy ${config.strategy}`,
+    );
+  }
+
   private initializeConfig(): InternalConfig {
     const environment = this.config.environment ?? 'production';
     const wallet = DialectWalletAdapterWrapper.create(this.config.wallet);
     const backends = this.initializeBackends();
     const encryptionKeysStore = this.createEncryptionKeysStore();
+    const identity = this.createIdentityConfig();
     return {
       environment,
       wallet,
@@ -252,6 +279,7 @@ Solana settings:
       solana: this.initializeSolanaConfig(),
       encryptionKeysStore,
       backends,
+      identity,
     };
   }
 
@@ -414,5 +442,26 @@ Solana settings:
       internalConfig.rpcUrl = this.config.solana.rpcUrl;
     }
     return internalConfig;
+  }
+
+  private createIdentityConfig(): IdentityConfig {
+    let identityConfig: IdentityConfig = {
+      strategy: 'first-found',
+      resolvers: [],
+    };
+
+    if (!this.config.identity) {
+      return identityConfig;
+    }
+
+    if (this.config.identity.strategy) {
+      identityConfig.strategy = this.config.identity.strategy;
+    }
+
+    if (this.config.identity.resolvers) {
+      identityConfig.resolvers = this.config.identity.resolvers;
+    }
+
+    return identityConfig;
   }
 }
