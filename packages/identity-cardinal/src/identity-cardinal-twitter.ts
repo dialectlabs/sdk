@@ -7,9 +7,9 @@ import type {
 import type { PublicKey, Connection } from '@solana/web3.js';
 import { tryGetImageUrl } from 'utils';
 
-const NAME = 'CARDINAL';
+const NAME = 'CARDINAL_TWITTER';
 
-export class CardinalIdentityResolver implements IdentityResolver {
+export class CardinalTwitterIdentityResolver implements IdentityResolver {
   constructor(private readonly connection: Connection) {}
 
   async resolve(publicKey: PublicKey): Promise<Identity | null> {
