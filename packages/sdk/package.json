@@ -23,6 +23,8 @@
     "token:generate": "ts-node -r tsconfig-paths/register examples/generate-token.ts"
   },
   "devDependencies": {
+    "@solana/wallet-adapter-base": "^0.9.15",
+    "@solana/web3.js": "^1.53.0",
     "@types/ed2curve": "^0.2.2",
     "@types/luxon": "^2.3.2"
   },
