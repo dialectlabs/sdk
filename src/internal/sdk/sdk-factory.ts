@@ -445,7 +445,7 @@ Solana settings:
   }
 
   private createIdentityConfig(): IdentityConfig {
-    let identityConfig: IdentityConfig = {
+    const identityConfig: IdentityConfig = {
       strategy: 'first-found',
       resolvers: [],
     };
