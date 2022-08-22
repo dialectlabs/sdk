@@ -23,8 +23,9 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
         identityName: NAME,
         publicKey,
         name: name[0],
-        additonals: {
+        additionals: {
           avatarUrl: avatar,
+          link: `https://twitter.com/${name[0]}`,
         },
       };
     } catch {}

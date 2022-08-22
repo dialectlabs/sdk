@@ -4,8 +4,9 @@ export interface Identity {
   identityName: string;
   publicKey: PublicKey;
   name?: string;
-  additonals?: {
+  additionals?: {
     avatarUrl?: string;
+    link?: string;
     [key: string]: any;
   };
 }

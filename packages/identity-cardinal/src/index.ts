@@ -1,1 +1,1 @@
-export * from './identity-cardinal';
+export * from './identity-cardinal-twitter';

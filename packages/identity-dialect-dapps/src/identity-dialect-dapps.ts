@@ -22,7 +22,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
           identityName: NAME,
           publicKey: new PublicKey(it.publicKey),
           name: it.name,
-          additonals: {
+          additionals: {
             avatarUrl: it.avatarUrl,
             description: it.description,
             verified: it.verified,

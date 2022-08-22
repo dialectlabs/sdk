@@ -113,7 +113,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
             return {
               ...curr,
               ...prev,
-              additonals: { ...curr.additonals, ...prev.additonals },
+              additionals: { ...curr.additionals, ...prev.additionals },
             };
           },
           {
