@@ -2,7 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type {
   Identity,
   IdentityResolver,
-  ReverseIdentity
+  ReverseIdentity,
 } from '@identity/identity.interface';
 
 export class FirstFoundIdentityResolver implements IdentityResolver {
