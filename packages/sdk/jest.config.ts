@@ -23,6 +23,8 @@ const config: Config.InitialOptions = {
     '^@wallet(.*)$': '<rootDir>/src/wallet$1',
     '^@wallet-adapter/internal(.*)$': '<rootDir>/src/internal/wallet-adapter$1',
     '^@wallet-adapter(.*)$': '<rootDir>/src/wallet-adapter$1',
+    '^@identity/internal(.*)$': '<rootDir>/src/internal/identity$1',
+    '^@identity(.*)$': '<rootDir>/src/identity$1',
   },
   testTimeout: 60000,
   testRunner: 'jasmine2',

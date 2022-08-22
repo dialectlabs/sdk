@@ -47,11 +47,11 @@ import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-
 import { Auth } from '@auth/auth.interface';
 import type { TokenProvider } from '@auth/token-provider';
 import { DEFAULT_TOKEN_LIFETIME } from '@auth/token-provider';
-import type { IdentityResolver } from 'identity/identity.interface';
+import type { IdentityResolver } from '@identity/identity.interface';
 import {
   AggregateSequentialIdentityResolver,
   FirstFoundFastIdentityResolver,
-} from 'internal/identity/identity-resolvers';
+} from '@identity/internal/identity-resolvers';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;

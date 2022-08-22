@@ -12,7 +12,7 @@ import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
 import type { TokenProvider } from '@auth/token-provider';
 import type { Duration } from 'luxon';
-import type { IdentityResolver } from 'identity/identity.interface';
+import type { IdentityResolver } from '@identity/identity.interface';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {

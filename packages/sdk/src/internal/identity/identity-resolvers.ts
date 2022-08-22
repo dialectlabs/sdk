@@ -3,7 +3,7 @@ import type {
   Identity,
   IdentityResolver,
   ReverseIdentity
-} from 'identity/identity.interface';
+} from '@identity/identity.interface';
 
 export class FirstFoundIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
