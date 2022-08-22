@@ -26,11 +26,13 @@
     "@types/ed2curve": "^0.2.2",
     "@types/luxon": "^2.3.2"
   },
+  "peerDependencies": {
+    "@solana/wallet-adapter-base": "0.x",
+    "@solana/web3.js": "1.x"
+  },
   "dependencies": {
     "@dialectlabs/web3": "^0.3.2",
     "@project-serum/anchor": "0.23.0",
-    "@solana/wallet-adapter-base": "^0.9.5",
-    "@solana/web3.js": "^1.22.0",
     "@stablelib/base64": "^1.0.1",
     "axios": "^0.27.2",
     "ed2curve": "^0.3.0",

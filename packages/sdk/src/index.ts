@@ -14,3 +14,4 @@ export * from './wallet/wallet.interface';
 export * from './wallet-adapter/dialect-wallet-adapter.interface';
 export * from './wallet-adapter/dialect-wallet-adapter-wrapper';
 export * from './wallet-adapter/node-dialect-wallet-adapter';
+export * from './identity/identity.interface';
