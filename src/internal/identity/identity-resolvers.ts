@@ -1,5 +1,9 @@
 import type { PublicKey } from '@solana/web3.js';
-import type { Identity, IdentityResolver } from 'identity/identity.interface';
+import type {
+  Identity,
+  IdentityResolver,
+  ReverseIdentity
+} from 'identity/identity.interface';
 
 export class FirstFoundIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
@@ -13,6 +17,24 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
         const identity = await resolver.resolve(publicKey);
         if (identity) {
           return identity;
+        }
+      } catch {
+        // probably errors from identities could be ignored
+        // but should be reported somehow?
+      }
+    }
+    return null;
+  }
+
+  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+    if (!this.resolvers.length) {
+      return null;
+    }
+    for await (const resolver of this.resolvers) {
+      try {
+        const reverseIdentity = await resolver.resolveReverse(domainName);
+        if (reverseIdentity) {
+          return reverseIdentity;
         }
       } catch {
         // probably errors from identities could be ignored
@@ -42,6 +64,23 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
 
     return null;
   }
+
+  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+    if (!this.resolvers.length) {
+      return null;
+    }
+    try {
+      const any = await Promise.any(
+        this.resolvers.map((it) => it.resolveReverse(domainName)),
+      );
+      return any;
+    } catch {
+      // probably errors from identities could be ignored
+      // but should be reported somehow?
+    }
+
+    return null;
+  }
 }
 
 export class AggregateSequentialIdentityResolver implements IdentityResolver {
@@ -49,7 +88,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
 
   async resolve(
     publicKey: PublicKey,
-    onProgress?: (identity: Identity | null) => void,
+    onProgress?: (identity: Identity) => void,
   ): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
@@ -58,7 +97,9 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
       const allSettled = await Promise.allSettled(
         this.resolvers.map((it) =>
           it.resolve(publicKey).then((it) => {
-            onProgress?.(it);
+            if (it) {
+              onProgress?.(it);
+            }
             return it;
           }),
         ),
@@ -69,13 +110,62 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
         .map((it) => it.value)
         .reduce(
           (prev, curr) => {
-            return { ...curr, ...prev };
+            return {
+              ...curr,
+              ...prev,
+              additonals: { ...curr.additonals, ...prev.additonals },
+            };
           },
           {
             identityName: 'DIALECT_AGGREGATED_IDENTITY',
             publicKey: publicKey,
-          },
+          } as Identity,
         );
+
+      return aggregated;
+    } catch {
+      // probably errors from identities could be ignored
+      // but should be reported somehow?
+    }
+
+    return null;
+  }
+
+  async resolveReverse(
+    domainName: string,
+    onProgress?: (reverseIdentity: ReverseIdentity) => void,
+  ): Promise<ReverseIdentity | null> {
+    if (!this.resolvers.length) {
+      return null;
+    }
+    try {
+      const allSettled = await Promise.allSettled(
+        this.resolvers.map((it) =>
+          it.resolveReverse(domainName).then((it) => {
+            if (it) {
+              onProgress?.(it);
+            }
+            return it;
+          }),
+        ),
+      );
+      const resolved = allSettled.filter((it) => it.status === 'fulfilled');
+      const aggregated = resolved
+        .map((it) => it as PromiseFulfilledResult<ReverseIdentity>)
+        .map((it) => it.value)
+        .reduce(
+          (prev, curr) => {
+            return { ...curr, ...prev };
+          },
+          {
+            identityName: 'DIALECT_AGGREGATED_IDENTITY',
+            name: domainName,
+          } as ReverseIdentity,
+        );
+
+      if (!aggregated || !aggregated.publicKey) {
+        return null;
+      }
 
       return aggregated;
     } catch {
