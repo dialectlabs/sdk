@@ -1,10 +1,14 @@
-import { getFavoriteDomain } from '@bonfida/spl-name-service';
+import {
+  getDomainKey,
+  getFavoriteDomain,
+  NameRegistryState,
+} from '@bonfida/spl-name-service';
 import type {
   Identity,
   IdentityResolver,
   ReverseIdentity,
 } from '@dialectlabs/sdk';
-import type { PublicKey, Connection } from '@solana/web3.js';
+import type { Connection, PublicKey } from '@solana/web3.js';
 
 const NAME = 'SNS';
 
@@ -19,11 +23,31 @@ export class SNSIdentityResolver implements IdentityResolver {
         publicKey,
         identityName: NAME,
       };
-    } catch {}
+    } catch (e) {}
     return null;
   }
 
-  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+  async resolveReverse(rawDomainName: string): Promise<ReverseIdentity | null> {
+    const domainName = rawDomainName.trim();
+    try {
+      const { pubkey } = await getDomainKey(domainName);
+
+      const { registry } = await NameRegistryState.retrieve(
+        this.connection,
+        pubkey,
+      );
+
+      if (!registry.owner) {
+        return null;
+      }
+
+      return {
+        identityName: NAME,
+        name: domainName,
+        publicKey: registry.owner,
+      };
+    } catch (e) {}
+
     return null;
   }
 }

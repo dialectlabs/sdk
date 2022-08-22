@@ -1,3 +1,42 @@
+import { Auth } from '@auth/auth.interface';
+import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '@auth/signers/solana-tx-token-signer';
+import type { TokenProvider } from '@auth/token-provider';
+import { TokenStore } from '@auth/token-store';
+import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
+import { DappsImpl } from '@dapp/internal/dapp';
+import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
+import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
+import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
+import { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
+import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
+import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
+import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
+import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
+import { DataServiceApi } from '@data-service-api/data-service-api';
+import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
+import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+import { programs } from '@dialectlabs/web3';
+import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
+import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+import type { IdentityResolver } from '@identity/identity.interface';
+import {
+  AggregateSequentialIdentityResolver,
+  FirstFoundFastIdentityResolver,
+  FirstFoundIdentityResolver,
+} from '@identity/internal/identity-resolvers';
+import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
+import {
+  MessagingBackend,
+  MessagingFacade,
+} from '@messaging/internal/messaging-facade';
+import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
+import { SolanaMessaging } from '@messaging/internal/solana-messaging';
+import type { Messaging } from '@messaging/messaging.interface';
+import type { Program } from '@project-serum/anchor';
+import { IllegalArgumentError } from '@sdk/errors';
 import {
   Backend,
   Config,
@@ -8,30 +47,9 @@ import {
   IdentityConfig,
   SolanaConfig,
 } from '@sdk/sdk.interface';
-import { programs } from '@dialectlabs/web3';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import { DataServiceApi } from '@data-service-api/data-service-api';
-import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
-import {
-  MessagingBackend,
-  MessagingFacade,
-} from '@messaging/internal/messaging-facade';
 import { PublicKey } from '@solana/web3.js';
-import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
-import { Duration } from 'luxon';
-import { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { IllegalArgumentError } from '@sdk/errors';
-import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
-import type { Program } from '@project-serum/anchor';
-import { DappsImpl } from '@dapp/internal/dapp';
-import { DappAddressesFacade } from '@dapp/internal/dapp-addresses-facade';
-import { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
-import { DataServiceDappAddresses } from '@dapp/internal/data-service-dapp-addresses';
-import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
-import type { Messaging } from '@messaging/messaging.interface';
 import type { Wallets } from '@wallet/wallet.interface';
 import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
@@ -252,7 +270,7 @@ Solana settings:
 
   private createIdentityResolver(config: IdentityConfig): IdentityResolver {
     if (config.strategy === 'first-found') {
-      return new FirstFoundFastIdentityResolver(config.resolvers);
+      return new FirstFoundIdentityResolver(config.resolvers);
     }
     if (config.strategy === 'first-found-fast') {
       return new FirstFoundFastIdentityResolver(config.resolvers);
