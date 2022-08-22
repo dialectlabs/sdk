@@ -11,6 +11,7 @@ import type { Dapps } from '@dapp/dapp.interface';
 import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
 import type { TokenProvider } from '@auth/token-provider';
+import type { Duration } from 'luxon';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
@@ -63,6 +64,7 @@ export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStoreType | TokenStore;
+  tokenLifetime?: Duration;
 }
 
 export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
@@ -96,4 +98,5 @@ export interface DialectCloudConfig extends DialectCloudConfigProps {
   environment: DialectCloudEnvironment;
   url: string;
   tokenStore: TokenStore;
+  tokenLifetime: Duration;
 }

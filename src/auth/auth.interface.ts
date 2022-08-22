@@ -1,15 +1,15 @@
 import { AuthTokensImpl } from '@auth/internal/token-utils';
 import type { PublicKey } from '@solana/web3.js';
-import { Duration } from 'luxon';
+import type { Duration } from 'luxon';
 import { TokenStore } from '@auth/token-store';
-import { TokenProvider } from '@auth/token-provider';
+import { DEFAULT_TOKEN_LIFETIME, TokenProvider } from '@auth/token-provider';
 
 export abstract class Auth {
   static tokens: AuthTokens = new AuthTokensImpl();
 
   static createTokenProvider(
     signer: TokenSigner,
-    ttl: Duration = Duration.fromObject({ hours: 1 }),
+    ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
     return TokenProvider.create(signer, ttl, tokenStore);
