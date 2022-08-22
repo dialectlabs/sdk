@@ -81,7 +81,9 @@ export class DialectSdkFactory {
 
     const tokenProvider: TokenProvider = Auth.createTokenProvider(
       tokenSigner,
-      config.dialectCloud.tokenLifetime,
+      Duration.fromObject({
+        minutes: config.dialectCloud.tokenLifetimeMinutes,
+      }),
       config.dialectCloud.tokenStore,
     );
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
@@ -289,7 +291,7 @@ Solana settings:
       environment: 'production',
       url: 'https://dialectapi.to',
       tokenStore: this.createTokenStore(),
-      tokenLifetime: this.createTokenLifetime(),
+      tokenLifetimeMinutes: this.createTokenLifetime(),
     };
     const environment = this.config.environment;
     if (environment) {
@@ -324,7 +326,10 @@ Solana settings:
   }
 
   private createTokenLifetime() {
-    return this.config.dialectCloud?.tokenLifetime ?? DEFAULT_TOKEN_LIFETIME;
+    return (
+      this.config.dialectCloud?.tokenLifetimeMinutes ??
+      DEFAULT_TOKEN_LIFETIME.toMillis() / 1000 / 60
+    );
   }
 
   private createTokenStore() {

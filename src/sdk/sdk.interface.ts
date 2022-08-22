@@ -64,7 +64,7 @@ export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStoreType | TokenStore;
-  tokenLifetime?: Duration;
+  tokenLifetimeMinutes?: number;
 }
 
 export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
@@ -98,5 +98,5 @@ export interface DialectCloudConfig extends DialectCloudConfigProps {
   environment: DialectCloudEnvironment;
   url: string;
   tokenStore: TokenStore;
-  tokenLifetime: Duration;
+  tokenLifetimeMinutes: number;
 }
