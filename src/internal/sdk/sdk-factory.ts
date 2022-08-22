@@ -45,6 +45,7 @@ import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-no
 import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
 import { Auth } from '@auth/auth.interface';
 import type { TokenProvider } from '@auth/token-provider';
+import { DEFAULT_TOKEN_LIFETIME } from '@auth/token-provider';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -80,7 +81,9 @@ export class DialectSdkFactory {
 
     const tokenProvider: TokenProvider = Auth.createTokenProvider(
       tokenSigner,
-      Duration.fromObject({ minutes: 60 }),
+      Duration.fromObject({
+        minutes: config.dialectCloud.tokenLifetimeMinutes,
+      }),
       config.dialectCloud.tokenStore,
     );
     const dataServiceApi: DataServiceApi = DataServiceApi.create(
@@ -284,41 +287,49 @@ Solana settings:
   }
 
   private initializeDialectCloudConfig(): DialectCloudConfig {
-    const internalConfig: DialectCloudConfig = {
+    const baseConfig: DialectCloudConfig = {
       environment: 'production',
       url: 'https://dialectapi.to',
       tokenStore: this.createTokenStore(),
+      tokenLifetimeMinutes: this.createTokenLifetime(),
     };
     const environment = this.config.environment;
     if (environment) {
-      internalConfig.environment = environment;
+      baseConfig.environment = environment;
     }
     if (environment === 'production') {
-      internalConfig.url = 'https://dialectapi.to';
+      baseConfig.url = 'https://dialectapi.to';
     }
     if (environment === 'development') {
-      internalConfig.url = 'https://dev.dialectapi.to';
+      baseConfig.url = 'https://dev.dialectapi.to';
     }
     if (environment === 'local-development') {
-      internalConfig.url = 'http://localhost:8080';
+      baseConfig.url = 'http://localhost:8080';
     }
     const dialectCloudEnvironment = this.config.dialectCloud?.environment;
     if (dialectCloudEnvironment) {
-      internalConfig.environment = dialectCloudEnvironment;
+      baseConfig.environment = dialectCloudEnvironment;
     }
     if (dialectCloudEnvironment === 'production') {
-      internalConfig.url = 'https://dialectapi.to';
+      baseConfig.url = 'https://dialectapi.to';
     }
     if (dialectCloudEnvironment === 'development') {
-      internalConfig.url = 'https://dev.dialectapi.to';
+      baseConfig.url = 'https://dev.dialectapi.to';
     }
     if (dialectCloudEnvironment === 'local-development') {
-      internalConfig.url = 'http://localhost:8080';
+      baseConfig.url = 'http://localhost:8080';
     }
     if (this.config.dialectCloud?.url) {
-      internalConfig.url = this.config.dialectCloud.url;
+      baseConfig.url = this.config.dialectCloud.url;
     }
-    return internalConfig;
+    return baseConfig;
+  }
+
+  private createTokenLifetime() {
+    return (
+      this.config.dialectCloud?.tokenLifetimeMinutes ??
+      DEFAULT_TOKEN_LIFETIME.toMillis() / 1000 / 60
+    );
   }
 
   private createTokenStore() {

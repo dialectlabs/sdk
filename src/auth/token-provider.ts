@@ -3,13 +3,17 @@ import { TokenStore } from '@auth/token-store';
 import type { PublicKey } from '@solana/web3.js';
 import { Duration } from 'luxon';
 import { AuthTokensImpl } from '@auth/internal/token-utils';
+import { IllegalArgumentError } from '@sdk/errors';
+
+export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
+export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 
 export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 
   static create(
     signer: TokenSigner,
-    ttl: Duration = Duration.fromObject({ hours: 1 }),
+    ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
     const authTokens = new AuthTokensImpl();
@@ -33,6 +37,11 @@ class DefaultTokenProvider extends TokenProvider {
     private readonly ttl: Duration,
     private readonly tokenUtils: AuthTokens,
   ) {
+    if (ttl.toMillis() > MAX_TOKEN_LIFETIME.toMillis()) {
+      throw new IllegalArgumentError(
+        `Token TTL ${ttl.toHuman()} must be <= ${MAX_TOKEN_LIFETIME.toHuman()}`,
+      );
+    }
     super();
   }
 
