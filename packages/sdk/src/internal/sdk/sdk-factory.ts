@@ -2,6 +2,7 @@ import { Auth } from '@auth/auth.interface';
 import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import { DialectWalletAdapterSolanaTxTokenSigner } from '@auth/signers/solana-tx-token-signer';
 import type { TokenProvider } from '@auth/token-provider';
+import { DEFAULT_TOKEN_LIFETIME } from '@auth/token-provider';
 import { TokenStore } from '@auth/token-store';
 import type { DappAddresses, DappMessages, Dapps } from '@dapp/dapp.interface';
 import { DappsImpl } from '@dapp/internal/dapp';
@@ -51,25 +52,7 @@ import { PublicKey } from '@solana/web3.js';
 import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceWallets } from '@wallet/internal/data-service-wallets';
 import type { Wallets } from '@wallet/wallet.interface';
-import { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
-import { EncryptionKeysStore } from '@encryption/encryption-keys-store';
-import { TokenStore } from '@auth/token-store';
-import { DappMessagesFacade } from '@dapp/internal/dapp-messages-facade';
-import { SolanaDappMessages } from '@dapp/internal/solana-dapp-messages';
-import { DataServiceDappMessages } from '@dapp/internal/data-service-dapp-messages';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '@auth/signers/solana-tx-token-signer';
-import { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
-import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
-import { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
-import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
-import { Auth } from '@auth/auth.interface';
-import type { TokenProvider } from '@auth/token-provider';
-import { DEFAULT_TOKEN_LIFETIME } from '@auth/token-provider';
-import type { IdentityResolver } from '@identity/identity.interface';
-import {
-  AggregateSequentialIdentityResolver,
-  FirstFoundFastIdentityResolver,
-} from '@identity/internal/identity-resolvers';
+import { Duration } from 'luxon';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
