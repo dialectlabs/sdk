@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- feature: configurable token lifetime
+
 ## [0.6.5] - 2022-08-15
 
 - fix: recover after signing message/tx failed during authentication
