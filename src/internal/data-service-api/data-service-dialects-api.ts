@@ -141,7 +141,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
           `${this.baseUrl}/api/v1/dialects/summary/all`,
           {
             headers: createHeaders(),
-            ...(query && { params: query }),
+            params: query,
           },
         )
         .then((it) => it.data),
