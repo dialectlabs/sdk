@@ -11,7 +11,7 @@ function createSdk() {
 }
 
 describe('Wallet messages read messages', () => {
-  test('by default there re no unread messages', async () => {
+  test('by default there are no unread messages', async () => {
     // given
     const user1 = createSdk();
     const user2 = createSdk();
@@ -34,9 +34,13 @@ describe('Wallet messages read messages', () => {
     const user2Summary = await user2.threads.findSummary({
       otherMembers: [user1.wallet.publicKey],
     });
+    const user1GeneralSummary = await user1.threads.findSummaryAll();
+    const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeFalsy();
     expect(user2Summary!.me.hasUnreadMessages).toBeFalsy();
+    expect(user1GeneralSummary!.unreadMessagesAmount).toBe(0);
+    expect(user2GeneralSummary!.unreadMessagesAmount).toBe(0);
   });
 
   test('when message is sent but not read then there are unread messages', async () => {
@@ -65,9 +69,13 @@ describe('Wallet messages read messages', () => {
     const user2Summary = await user2.threads.findSummary({
       otherMembers: [user1.wallet.publicKey],
     });
+    const user1GeneralSummary = await user1.threads.findSummaryAll();
+    const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeFalsy();
     expect(user2Summary!.me.hasUnreadMessages).toBeTruthy();
+    expect(user1GeneralSummary!.unreadMessagesAmount).toBe(0);
+    expect(user2GeneralSummary!.unreadMessagesAmount).toBe(1);
   });
 
   test('when message is sent by both members but not read then there are unread messages for both', async () => {
@@ -100,9 +108,13 @@ describe('Wallet messages read messages', () => {
     const user2Summary = await user2.threads.findSummary({
       otherMembers: [user1.wallet.publicKey],
     });
+    const user1GeneralSummary = await user1.threads.findSummaryAll();
+    const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeTruthy();
     expect(user2Summary!.me.hasUnreadMessages).toBeTruthy();
+    expect(user1GeneralSummary!.unreadMessagesAmount).toBe(1);
+    expect(user2GeneralSummary!.unreadMessagesAmount).toBe(1);
   });
 
   test('when message is sent and read by other member then there are no unread', async () => {
@@ -127,7 +139,9 @@ describe('Wallet messages read messages', () => {
     const user2SummaryBefore = await user2.threads.findSummary({
       otherMembers: [user1.wallet.publicKey],
     });
+    const user2GeneralSummaryBefore = await user2.threads.findSummaryAll();
     expect(user2SummaryBefore!.me.hasUnreadMessages).toBeTruthy();
+    expect(user2GeneralSummaryBefore!.unreadMessagesAmount).toBe(1);
     // when
     const user2Thread = await user2.threads.find(user1Thread);
     const messages = await user2Thread!.messages();
@@ -136,7 +150,9 @@ describe('Wallet messages read messages', () => {
     const user2SummaryAfter = await user2.threads.findSummary({
       otherMembers: [user1.wallet.publicKey],
     });
+    const user2GeneralSummaryAfter = await user2.threads.findSummaryAll();
     // then
     expect(user2SummaryAfter!.me.hasUnreadMessages).toBeFalsy();
+    expect(user2GeneralSummaryAfter!.unreadMessagesAmount).toBe(0);
   });
 });
