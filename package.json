@@ -6,6 +6,7 @@
   "author": "dialectlabs",
   "license": "Apache-2.0",
   "workspaces": [
+    "packages/sdk",
     "packages/*"
   ],
   "scripts": {
