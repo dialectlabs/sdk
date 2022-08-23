@@ -204,7 +204,7 @@ export interface DialectSummaryDto {
 }
 
 export interface DialectsSummaryDto {
-  readonly unreadMessagesAmount: number;
+  readonly unreadMessagesCount: number;
 }
 
 export interface MemberSummaryDto {

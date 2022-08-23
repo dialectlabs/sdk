@@ -16,7 +16,7 @@ export interface Messaging {
 }
 
 export interface ThreadsGeneralSummary {
-  unreadMessagesAmount: number;
+  unreadMessagesCount: number;
 }
 
 export interface ThreadSummary {
