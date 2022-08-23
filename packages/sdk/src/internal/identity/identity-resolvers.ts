@@ -1,12 +1,12 @@
 import type { PublicKey } from '@solana/web3.js';
-import type {
-  Identity,
-  IdentityResolver,
-  ReverseIdentity,
-} from '@identity/identity.interface';
+import type { Identity, IdentityResolver } from '@identity/identity.interface';
 
 export class FirstFoundIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
+
+  get type(): string {
+    return 'DIALECT_FIRST_FOUND_IDENTITY_RESOLVER';
+  }
 
   async resolve(publicKey: PublicKey): Promise<Identity | null> {
     if (!this.resolvers.length) {
@@ -18,15 +18,19 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
         if (identity) {
           return identity;
         }
-      } catch {
-        // probably errors from identities could be ignored
-        // but should be reported somehow?
+      } catch (e) {
+        console.error(
+          `error resolving identity at ${
+            resolver.type
+          } for public key ${publicKey.toString()}`,
+          e,
+        );
       }
     }
     return null;
   }
 
-  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+  async resolveReverse(domainName: string): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
@@ -36,9 +40,11 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
         if (reverseIdentity) {
           return reverseIdentity;
         }
-      } catch {
-        // probably errors from identities could be ignored
-        // but should be reported somehow?
+      } catch (e) {
+        console.error(
+          `error resolving identity at ${resolver.type} for name ${domainName}`,
+          e,
+        );
       }
     }
     return null;
@@ -47,6 +53,10 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
 
 export class FirstFoundFastIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
+
+  get type(): string {
+    return 'DIALECT_FIRST_FOUND_FAST_IDENTITY_RESOLVER';
+  }
 
   async resolve(publicKey: PublicKey): Promise<Identity | null> {
     if (!this.resolvers.length) {
@@ -57,15 +67,17 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
         this.resolvers.map((it) => it.resolve(publicKey)),
       );
       return any;
-    } catch {
-      // probably errors from identities could be ignored
-      // but should be reported somehow?
+    } catch (e) {
+      console.error(
+        `error resolving identity for public key ${publicKey.toString()}`,
+        e,
+      );
     }
 
     return null;
   }
 
-  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+  async resolveReverse(domainName: string): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
@@ -74,9 +86,8 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
         this.resolvers.map((it) => it.resolveReverse(domainName)),
       );
       return any;
-    } catch {
-      // probably errors from identities could be ignored
-      // but should be reported somehow?
+    } catch (e) {
+      console.error(`error resolving identity for name ${domainName}`, e);
     }
 
     return null;
@@ -86,23 +97,17 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
 export class AggregateSequentialIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
 
-  async resolve(
-    publicKey: PublicKey,
-    onProgress?: (identity: Identity) => void,
-  ): Promise<Identity | null> {
+  get type(): string {
+    return 'DIALECT_AGGREGATED_SEQUENTIAL_IDENTITY_RESOLVER';
+  }
+
+  async resolve(publicKey: PublicKey): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
     try {
       const allSettled = await Promise.allSettled(
-        this.resolvers.map((it) =>
-          it.resolve(publicKey).then((it) => {
-            if (it) {
-              onProgress?.(it);
-            }
-            return it;
-          }),
-        ),
+        this.resolvers.map((it) => it.resolve(publicKey)),
       );
       const resolved = allSettled.filter((it) => it.status === 'fulfilled');
       const aggregated = resolved
@@ -117,50 +122,46 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
             };
           },
           {
-            identityName: 'DIALECT_AGGREGATED_IDENTITY',
+            type: this.type,
             publicKey: publicKey,
           } as Identity,
         );
 
+      if (!aggregated || !aggregated.name) {
+        return null;
+      }
+
       return aggregated;
-    } catch {
-      // probably errors from identities could be ignored
-      // but should be reported somehow?
+    } catch (e) {
+      console.error(
+        `error resolving identity for public key ${publicKey.toString()}`,
+        e,
+      );
     }
 
     return null;
   }
 
-  async resolveReverse(
-    domainName: string,
-    onProgress?: (reverseIdentity: ReverseIdentity) => void,
-  ): Promise<ReverseIdentity | null> {
+  async resolveReverse(domainName: string): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
     try {
       const allSettled = await Promise.allSettled(
-        this.resolvers.map((it) =>
-          it.resolveReverse(domainName).then((it) => {
-            if (it) {
-              onProgress?.(it);
-            }
-            return it;
-          }),
-        ),
+        this.resolvers.map((it) => it.resolveReverse(domainName)),
       );
       const resolved = allSettled.filter((it) => it.status === 'fulfilled');
       const aggregated = resolved
-        .map((it) => it as PromiseFulfilledResult<ReverseIdentity>)
+        .map((it) => it as PromiseFulfilledResult<Identity>)
         .map((it) => it.value)
         .reduce(
           (prev, curr) => {
             return { ...curr, ...prev };
           },
           {
-            identityName: 'DIALECT_AGGREGATED_IDENTITY',
+            type: 'DIALECT_AGGREGATED_IDENTITY',
             name: domainName,
-          } as ReverseIdentity,
+          } as Identity,
         );
 
       if (!aggregated || !aggregated.publicKey) {
@@ -168,9 +169,8 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
       }
 
       return aggregated;
-    } catch {
-      // probably errors from identities could be ignored
-      // but should be reported somehow?
+    } catch (e) {
+      console.error(`error resolving identity for name ${domainName}`, e);
     }
 
     return null;

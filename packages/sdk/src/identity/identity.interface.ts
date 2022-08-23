@@ -1,9 +1,9 @@
 import type { PublicKey } from '@solana/web3.js';
 
 export interface Identity {
-  identityName: string;
+  type: string;
   publicKey: PublicKey;
-  name?: string;
+  name: string;
   additionals?: {
     avatarUrl?: string;
     link?: string;
@@ -11,20 +11,10 @@ export interface Identity {
   };
 }
 
-export interface ReverseIdentity {
-  name: string;
-  identityName: string;
-  publicKey: PublicKey;
-}
-
 export interface IdentityResolver {
-  resolve(
-    publicKey: PublicKey,
-    onProgress?: (identity: Identity) => void,
-  ): Promise<Identity | null>;
+  resolve(publicKey: PublicKey): Promise<Identity | null>;
 
-  resolveReverse(
-    domainName: string,
-    onProgress?: (reverseIdentity: ReverseIdentity) => void,
-  ): Promise<ReverseIdentity | null>;
+  resolveReverse(domainName: string): Promise<Identity | null>;
+
+  get type(): string;
 }
