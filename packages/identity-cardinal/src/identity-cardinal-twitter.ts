@@ -18,12 +18,13 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
       return null;
     }
     const realName = name[0].slice(1);
-    const avatar = (await tryGetImageUrl(name[0])) || undefined;
+    const avatar = (await tryGetImageUrl(realName)) || undefined;
     return {
       type: this.type,
       publicKey,
       name: realName,
       additionals: {
+        displayName: name[0],
         avatarUrl: avatar,
         link: `https://twitter.com/${realName}`,
       },
@@ -43,10 +44,16 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     if (!parsed.data) {
       return null;
     }
+    const avatar = (await tryGetImageUrl(domainName)) || undefined;
     return {
       type: this.type,
       name: domainName,
       publicKey: parsed.data,
+      additionals: {
+        displayName: rawDomainName,
+        avatarUrl: avatar,
+        link: `https://twitter.com/${domainName}`,
+      },
     };
   }
 }

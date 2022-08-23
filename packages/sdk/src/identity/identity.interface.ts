@@ -7,6 +7,7 @@ export interface Identity {
   additionals?: {
     avatarUrl?: string;
     link?: string;
+    displayName?: string;
     [key: string]: any;
   };
 }
