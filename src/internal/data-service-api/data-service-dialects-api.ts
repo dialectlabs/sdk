@@ -23,6 +23,8 @@ export interface DataServiceDialectsApi {
     query: FindDialectSummaryByMembersQueryDto,
   ): Promise<DialectSummaryDto>;
 
+  findSummaryAll(query: FindDialectsSummaryDto): Promise<DialectsSummaryDto>;
+
   patchMember(
     dialectPublicKey: string,
     command: PatchMemberCommandDto,
@@ -131,6 +133,20 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
         .then((it) => it.data),
     );
   }
+
+  findSummaryAll(query: FindDialectsSummaryDto): Promise<DialectsSummaryDto> {
+    return withReThrowingDataServiceError(
+      axios
+        .get<DialectsSummaryDto>(
+          `${this.baseUrl}/api/v1/dialects/summary/all`,
+          {
+            headers: createHeaders(),
+            params: query,
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
 }
 
 export interface CreateDialectCommand {
@@ -187,6 +203,10 @@ export interface DialectSummaryDto {
   readonly memberSummaries: MemberSummaryDto[];
 }
 
+export interface DialectsSummaryDto {
+  readonly unreadMessagesCount: number;
+}
+
 export interface MemberSummaryDto {
   readonly publicKey: string;
   readonly hasUnreadMessages: boolean;
@@ -194,6 +214,10 @@ export interface MemberSummaryDto {
 
 export interface FindDialectSummaryByMembersQueryDto {
   readonly memberPublicKeys: string[];
+}
+
+export interface FindDialectsSummaryDto {
+  readonly publicKey: string;
 }
 
 export interface PatchMemberCommandDto {

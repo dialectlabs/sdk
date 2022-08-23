@@ -4,6 +4,7 @@ import type {
   FindThreadQuery,
   Messaging,
   Thread,
+  ThreadsGeneralSummary,
   ThreadSummary,
 } from '@messaging/messaging.interface';
 import {
@@ -115,6 +116,20 @@ export class MessagingFacade implements Messaging {
         const thread = await messaging.findSummary(query);
         if (thread) {
           return thread;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return null;
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary | null> {
+    for (const { messaging } of this.messagingBackends) {
+      try {
+        const summary = await messaging.findSummaryAll();
+        if (summary) {
+          return summary;
         }
       } catch (e) {
         console.error(e);
