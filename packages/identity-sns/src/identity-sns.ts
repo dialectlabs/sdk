@@ -18,6 +18,9 @@ export class SNSIdentityResolver implements IdentityResolver {
       name: res.reverse,
       publicKey,
       type: this.type,
+      additionals: {
+        displayName: `${res.reverse}.sol`,
+      },
     };
   }
 
@@ -38,6 +41,9 @@ export class SNSIdentityResolver implements IdentityResolver {
       type: this.type,
       name: domainName,
       publicKey: registry.owner,
+      additionals: {
+        displayName: rawDomainName,
+      },
     };
   }
 }
