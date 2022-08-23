@@ -12,6 +12,7 @@ import type { Program } from '@project-serum/anchor';
 import type { Wallets } from '@wallet/wallet.interface';
 import type { TokenProvider } from '@auth/token-provider';
 import type { Duration } from 'luxon';
+import type { IdentityResolver } from '@identity/identity.interface';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
@@ -24,6 +25,7 @@ export interface DialectSdk {
   readonly threads: Messaging;
   readonly dapps: Dapps;
   readonly wallet: Wallets;
+  readonly identity: IdentityResolver;
 }
 
 export interface DialectSdkInfo {
@@ -52,6 +54,7 @@ export interface ConfigProps {
   dialectCloud?: DialectCloudConfigProps;
   encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
   backends?: Backend[];
+  identity?: IdentityConfigProps;
 }
 
 export interface SolanaConfigProps {
@@ -79,6 +82,16 @@ export enum Backend {
   DialectCloud = 'DIALECT_CLOUD',
 }
 
+type IdentityResolveStrategy =
+  | 'first-found'
+  | 'first-found-fast'
+  | 'aggregate-sequential';
+
+export interface IdentityConfigProps {
+  strategy?: IdentityResolveStrategy;
+  resolvers?: IdentityResolver[];
+}
+
 export interface Config extends ConfigProps {
   environment: Environment;
   wallet: DialectWalletAdapter;
@@ -86,6 +99,7 @@ export interface Config extends ConfigProps {
   dialectCloud: DialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;
   backends: Backend[];
+  identity: IdentityConfig;
 }
 
 export interface SolanaConfig extends SolanaConfigProps {
@@ -99,4 +113,9 @@ export interface DialectCloudConfig extends DialectCloudConfigProps {
   url: string;
   tokenStore: TokenStore;
   tokenLifetimeMinutes: number;
+}
+
+export interface IdentityConfig extends IdentityConfigProps {
+  strategy: IdentityResolveStrategy;
+  resolvers: IdentityResolver[];
 }
