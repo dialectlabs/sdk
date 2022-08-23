@@ -1,12 +1,6 @@
-import type {
-  Identity,
-  IdentityResolver,
-  ReverseIdentity,
-} from '@dialectlabs/sdk';
+import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
 import { PublicKey } from '@solana/web3.js';
 import { Dapp, fetchAllDapps } from './api';
-
-const NAME = 'DIALECT_DAPPS';
 
 export class DialectDappsIdentityResolver implements IdentityResolver {
   // public key to identity
@@ -14,6 +8,10 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
   dappsData?: Promise<Dapp[]>;
 
   constructor(private readonly baseUrl: string = 'https://dialectapi.to') {}
+
+  get type(): string {
+    return 'DIALECT_DAPPS';
+  }
 
   async resolve(publicKey: PublicKey): Promise<Identity | null> {
     if (!this.dappsCached) {
@@ -24,7 +22,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
       }
       this.dappsCached = (await this.dappsData).reduce((acc, it) => {
         acc[it.publicKey] = {
-          identityName: NAME,
+          type: this.type,
           publicKey: new PublicKey(it.publicKey),
           name: it.name,
           additionals: {
@@ -39,7 +37,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
     return this.dappsCached[publicKey.toString()] || null;
   }
 
-  async resolveReverse(domainName: string): Promise<ReverseIdentity | null> {
+  async resolveReverse(domainName: string): Promise<Identity | null> {
     return null;
   }
 }

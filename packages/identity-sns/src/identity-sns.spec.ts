@@ -11,7 +11,7 @@ describe('bonfida tests', () => {
     const identity = await resolver.resolve(owner);
 
     expect(identity).toStrictEqual({
-      identityName: 'SNS',
+      type: 'SNS',
       name: 'bonfida',
       publicKey: owner,
     });
@@ -23,7 +23,7 @@ describe('bonfida tests', () => {
     const identity = await resolver.resolveReverse(domainName);
 
     expect(identity).toStrictEqual({
-      identityName: 'SNS',
+      type: 'SNS',
       name: domainName,
       publicKey: new PublicKey('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA'),
     });
@@ -35,7 +35,7 @@ describe('bonfida tests', () => {
     const identity = await resolver.resolveReverse(domainName);
 
     expect(identity).toStrictEqual({
-      identityName: 'SNS',
+      type: 'SNS',
       name: domainName,
       publicKey: new PublicKey('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA'),
     });

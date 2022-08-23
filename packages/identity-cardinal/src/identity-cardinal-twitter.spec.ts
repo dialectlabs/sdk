@@ -11,7 +11,7 @@ describe('cardinal twitter tests', () => {
     const identity = await resolver.resolve(owner);
 
     expect(identity).toStrictEqual({
-      identityName: 'CARDINAL_TWITTER',
+      type: 'CARDINAL_TWITTER',
       name: 'aliquotchris',
       additionals: {
         link: `https://twitter.com/aliquotchris`,
@@ -27,7 +27,7 @@ describe('cardinal twitter tests', () => {
     const identity = await resolver.resolveReverse(domainName);
 
     expect(identity).toEqual({
-      identityName: 'CARDINAL_TWITTER',
+      type: 'CARDINAL_TWITTER',
       name: 'aliquotchris',
       publicKey: new PublicKey('3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk'),
     });
@@ -39,7 +39,7 @@ describe('cardinal twitter tests', () => {
     const identity = await resolver.resolveReverse(domainName);
 
     expect(identity).toEqual({
-      identityName: 'CARDINAL_TWITTER',
+      type: 'CARDINAL_TWITTER',
       name: domainName,
       publicKey: new PublicKey('3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk'),
     });

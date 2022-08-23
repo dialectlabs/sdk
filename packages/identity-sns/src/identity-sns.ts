@@ -3,51 +3,41 @@ import {
   getFavoriteDomain,
   NameRegistryState,
 } from '@bonfida/spl-name-service';
-import type {
-  Identity,
-  IdentityResolver,
-  ReverseIdentity,
-} from '@dialectlabs/sdk';
+import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
 import type { Connection, PublicKey } from '@solana/web3.js';
-
-const NAME = 'SNS';
 
 export class SNSIdentityResolver implements IdentityResolver {
   constructor(private readonly connection: Connection) {}
-
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
-    try {
-      const res = await getFavoriteDomain(this.connection, publicKey);
-      return {
-        name: res.reverse,
-        publicKey,
-        identityName: NAME,
-      };
-    } catch (e) {}
-    return null;
+  get type(): string {
+    return 'SNS';
   }
 
-  async resolveReverse(rawDomainName: string): Promise<ReverseIdentity | null> {
+  async resolve(publicKey: PublicKey): Promise<Identity | null> {
+    const res = await getFavoriteDomain(this.connection, publicKey);
+    return {
+      name: res.reverse,
+      publicKey,
+      type: this.type,
+    };
+  }
+
+  async resolveReverse(rawDomainName: string): Promise<Identity | null> {
     const domainName = rawDomainName.trim();
-    try {
-      const { pubkey } = await getDomainKey(domainName);
 
-      const { registry } = await NameRegistryState.retrieve(
-        this.connection,
-        pubkey,
-      );
+    const { pubkey } = await getDomainKey(domainName);
+    const { registry } = await NameRegistryState.retrieve(
+      this.connection,
+      pubkey,
+    );
 
-      if (!registry.owner) {
-        return null;
-      }
+    if (!registry.owner) {
+      return null;
+    }
 
-      return {
-        identityName: NAME,
-        name: domainName,
-        publicKey: registry.owner,
-      };
-    } catch (e) {}
-
-    return null;
+    return {
+      type: this.type,
+      name: domainName,
+      publicKey: registry.owner,
+    };
   }
 }
