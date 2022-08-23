@@ -10,6 +10,7 @@ import type {
   ThreadMember,
   ThreadMemberSummary,
   ThreadMessage,
+  ThreadsGeneralSummary,
   ThreadSummary,
 } from '@messaging/messaging.interface';
 import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
@@ -222,6 +223,14 @@ export class DataServiceMessaging implements Messaging {
       if (err instanceof ResourceNotFoundError) return null;
       throw e;
     }
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary> {
+    return await withErrorParsing(
+      this.dataServiceDialectsApi.findSummaryAll({
+        publicKey: this.me.toBase58(),
+      }),
+    );
   }
 }
 

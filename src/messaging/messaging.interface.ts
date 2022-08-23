@@ -11,6 +11,12 @@ export interface Messaging {
   findSummary(
     query: FindThreadByOtherMemberQuery,
   ): Promise<ThreadSummary | null>;
+
+  findSummaryAll(): Promise<ThreadsGeneralSummary | null>;
+}
+
+export interface ThreadsGeneralSummary {
+  unreadMessagesAmount: number;
 }
 
 export interface ThreadSummary {

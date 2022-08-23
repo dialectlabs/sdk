@@ -10,6 +10,7 @@ import {
   ThreadMember,
   ThreadMemberScope,
   ThreadMessage,
+  ThreadsGeneralSummary,
   ThreadSummary,
 } from '@messaging/messaging.interface';
 import type { PublicKey } from '@solana/web3.js';
@@ -186,6 +187,10 @@ export class SolanaMessaging implements Messaging {
   async findSummary(
     query: FindThreadByOtherMemberQuery,
   ): Promise<ThreadSummary | null> {
+    return null;
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary | null> {
     return null;
   }
 }
