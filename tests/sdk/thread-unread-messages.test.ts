@@ -156,3 +156,58 @@ describe('Wallet messages read messages', () => {
     expect(user2GeneralSummaryAfter!.unreadMessagesAmount).toBe(0);
   });
 });
+
+describe('Wallet multi-thread read messages', () => {
+  test('when user has unread messages from 2 threads, after reading from one, still sees unread messages amount from the other one', async () => {
+    // given
+    const mainUser = createSdk();
+
+    const user1 = createSdk();
+    const user2 = createSdk();
+
+    const user1Thread = await user1.threads.create({
+      encrypted: false,
+      me: {
+        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+      },
+      otherMembers: [
+        {
+          publicKey: mainUser.info.wallet.publicKey!,
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      ],
+    });
+
+    const user2Thread = await user2.threads.create({
+      encrypted: false,
+      me: {
+        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+      },
+      otherMembers: [
+        {
+          publicKey: mainUser.info.wallet.publicKey!,
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      ],
+    });
+
+    await user1Thread.send({
+      text: 'foo',
+    });
+
+    await user2Thread.send({
+      text: 'bar',
+    });
+
+    const mainUserGeneralSummaryBefore = await mainUser.threads.findSummaryAll();
+    expect(mainUserGeneralSummaryBefore!.unreadMessagesAmount).toBe(2);
+    // when
+    const mainUserPovThread2 = await mainUser.threads.find(user2Thread);
+    const messages = await mainUserPovThread2!.messages();
+    const theOnlyMessage = messages[0]!;
+    await mainUserPovThread2!.setLastReadMessageTime(theOnlyMessage.timestamp);
+    // then
+    const mainUserGeneralSummaryAfter = await mainUser.threads.findSummaryAll();
+    expect(mainUserGeneralSummaryAfter!.unreadMessagesAmount).toBe(1);
+  })
+});
