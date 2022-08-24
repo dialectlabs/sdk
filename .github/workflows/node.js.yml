@@ -28,5 +28,5 @@ jobs:
         cache: 'npm'
     - run: yarn 
     - run: yarn build:all
-    - run: npm i --global jest-cli
+    - run: npm i --global jest-cli ts-node
     - run: jest
