@@ -38,7 +38,9 @@ describe('Wallet messages read messages', () => {
     const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeFalsy();
+    expect(user1Summary!.me.unreadMessagesCount).toBe(0);
     expect(user2Summary!.me.hasUnreadMessages).toBeFalsy();
+    expect(user2Summary!.me.unreadMessagesCount).toBe(0);
     expect(user1GeneralSummary!.unreadMessagesCount).toBe(0);
     expect(user2GeneralSummary!.unreadMessagesCount).toBe(0);
   });
@@ -73,7 +75,9 @@ describe('Wallet messages read messages', () => {
     const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeFalsy();
+    expect(user1Summary!.me.unreadMessagesCount).toBe(0);
     expect(user2Summary!.me.hasUnreadMessages).toBeTruthy();
+    expect(user2Summary!.me.unreadMessagesCount).toBe(1);
     expect(user1GeneralSummary!.unreadMessagesCount).toBe(0);
     expect(user2GeneralSummary!.unreadMessagesCount).toBe(1);
   });
@@ -112,7 +116,9 @@ describe('Wallet messages read messages', () => {
     const user2GeneralSummary = await user2.threads.findSummaryAll();
     // then
     expect(user1Summary!.me.hasUnreadMessages).toBeTruthy();
+    expect(user1Summary!.me.unreadMessagesCount).toBe(1);
     expect(user2Summary!.me.hasUnreadMessages).toBeTruthy();
+    expect(user1Summary!.me.unreadMessagesCount).toBe(1);
     expect(user1GeneralSummary!.unreadMessagesCount).toBe(1);
     expect(user2GeneralSummary!.unreadMessagesCount).toBe(1);
   });
@@ -141,6 +147,7 @@ describe('Wallet messages read messages', () => {
     });
     const user2GeneralSummaryBefore = await user2.threads.findSummaryAll();
     expect(user2SummaryBefore!.me.hasUnreadMessages).toBeTruthy();
+    expect(user2SummaryBefore!.me.unreadMessagesCount).toBe(1);
     expect(user2GeneralSummaryBefore!.unreadMessagesCount).toBe(1);
     // when
     const user2Thread = await user2.threads.find(user1Thread);
@@ -153,6 +160,7 @@ describe('Wallet messages read messages', () => {
     const user2GeneralSummaryAfter = await user2.threads.findSummaryAll();
     // then
     expect(user2SummaryAfter!.me.hasUnreadMessages).toBeFalsy();
+    expect(user2SummaryAfter!.me.unreadMessagesCount).toBe(0);
     expect(user2GeneralSummaryAfter!.unreadMessagesCount).toBe(0);
   });
 });
@@ -200,6 +208,11 @@ describe('Wallet multi-thread read messages', () => {
     });
 
     const mainUserGeneralSummaryBefore = await mainUser.threads.findSummaryAll();
+    const mainUserThread1SummaryBefore = await mainUser.threads.findSummary({ otherMembers: [user1.wallet.publicKey] });
+    const mainUserThread2SummaryBefore = await mainUser.threads.findSummary({ otherMembers: [user2.wallet.publicKey] });
+
+    expect(mainUserThread1SummaryBefore!.me.unreadMessagesCount).toBe(1);
+    expect(mainUserThread2SummaryBefore!.me.unreadMessagesCount).toBe(1);
     expect(mainUserGeneralSummaryBefore!.unreadMessagesCount).toBe(2);
     // when
     const mainUserPovThread2 = await mainUser.threads.find(user2Thread);
@@ -208,6 +221,11 @@ describe('Wallet multi-thread read messages', () => {
     await mainUserPovThread2!.setLastReadMessageTime(theOnlyMessage.timestamp);
     // then
     const mainUserGeneralSummaryAfter = await mainUser.threads.findSummaryAll();
+    const mainUserThread1SummaryAfter = await mainUser.threads.findSummary({ otherMembers: [user1.wallet.publicKey] });
+    const mainUserThread2SummaryAfter = await mainUser.threads.findSummary({ otherMembers: [user2.wallet.publicKey] });
+
+    expect(mainUserThread1SummaryAfter!.me.unreadMessagesCount).toBe(1);
+    expect(mainUserThread2SummaryAfter!.me.unreadMessagesCount).toBe(0);
     expect(mainUserGeneralSummaryAfter!.unreadMessagesCount).toBe(1);
   })
 });

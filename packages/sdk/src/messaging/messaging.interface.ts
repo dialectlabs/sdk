@@ -27,6 +27,7 @@ export interface ThreadSummary {
 export interface ThreadMemberSummary {
   publicKey: PublicKey;
   hasUnreadMessages: boolean;
+  unreadMessagesCount: number;
 }
 
 export interface SendMessageCommand {

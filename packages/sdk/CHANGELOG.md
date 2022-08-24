@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- feature: per-thread unread messages count
+
 ## [0.7.0] - 2022-08-24
 
 - feature: configurable token lifetime

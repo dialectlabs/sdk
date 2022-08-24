@@ -3,7 +3,6 @@ import type {
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
   FindThreadQuery,
-  FindThreadSummaryByMembers,
   Messaging,
   SendMessageCommand,
   Thread,
@@ -210,6 +209,7 @@ export class DataServiceMessaging implements Messaging {
       const meMemberSummary: ThreadMemberSummary = {
         publicKey: new PublicKey(meMember.publicKey),
         hasUnreadMessages: meMember.hasUnreadMessages,
+        unreadMessagesCount: meMember.unreadMessagesCount,
       };
       return {
         id: new ThreadId({
