@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+## [0.7.1] - 2022-08-24
+
 - feature: per-thread unread messages count
 
 ## [0.7.0] - 2022-08-24
