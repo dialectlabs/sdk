@@ -28,6 +28,6 @@ jobs:
         cache: 'npm'
     - run: yarn 
     - run: yarn build:all
-    - run: npm i jest
+    - run: npm install -g jest
     - name: Run tests
       run: jest
