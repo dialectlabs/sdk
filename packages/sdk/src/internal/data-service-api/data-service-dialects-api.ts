@@ -210,6 +210,7 @@ export interface DialectsSummaryDto {
 export interface MemberSummaryDto {
   readonly publicKey: string;
   readonly hasUnreadMessages: boolean;
+  readonly unreadMessagesCount: number;
 }
 
 export interface FindDialectSummaryByMembersQueryDto {
