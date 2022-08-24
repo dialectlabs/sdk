@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+## [0.7.0] - 2022-08-24
+
 - feature: configurable token lifetime
 - feature: summary across all threads (currently: amount of unread messages)
 - feature: add identity providers
