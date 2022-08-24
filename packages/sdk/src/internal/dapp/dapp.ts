@@ -51,6 +51,7 @@ export class DappsImpl implements Dapps {
       this.notificationSubscriptions,
       dappDto.description,
       dappDto.avatarUrl,
+      dappDto.telegramBotUserName,
     );
   }
 
@@ -66,6 +67,7 @@ export class DappsImpl implements Dapps {
       description: it.description,
       verified: it.verified,
       avatarUrl: it.avatarUrl,
+      telegramUsername: it.telegramBotUserName,
     }));
   }
 
@@ -75,6 +77,7 @@ export class DappsImpl implements Dapps {
         name: command.name,
         description: command.description,
         avatarUrl: command.avatarUrl,
+        telegramBotConfiguration: command.telegramBotConfiguration,
       }),
     );
     return this.toDapp(dappDto);
@@ -92,5 +95,6 @@ export class DappImpl implements Dapp {
     readonly notificationSubscriptions: DappNotificationSubscriptions,
     readonly description?: string,
     readonly avatarUrl?: string,
+    readonly telegramUsername?: string,
   ) {}
 }

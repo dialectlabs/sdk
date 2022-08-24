@@ -133,6 +133,7 @@ export class DappDto {
   readonly name!: string;
   readonly description?: string;
   readonly avatarUrl?: string;
+  readonly telegramBotUserName?: string;
   readonly verified!: boolean;
 }
 
@@ -141,6 +142,11 @@ export class CreateDappCommandDto {
   readonly publicKey!: string;
   readonly description?: string;
   readonly avatarUrl?: string;
+  readonly telegramBotConfiguration?: DappTelegramBotConfigurationDto;
+}
+
+export class DappTelegramBotConfigurationDto {
+  readonly token!: string;
 }
 
 export class DappAddressDto {
