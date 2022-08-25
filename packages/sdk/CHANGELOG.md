@@ -4,7 +4,7 @@
 
 ## [0.8.0] - 2022-08-25
 
-- feature: support multiple telegram bots
+- feature: support dapp telegram bot configuration
 
 ## [0.7.1] - 2022-08-24
 
