@@ -20,7 +20,7 @@ export interface Dapp {
   description?: string;
   avatarUrl?: string;
   verified: boolean;
-  telegramUsername?: string;
+  telegramUsername: string;
   dappAddresses: DappAddresses;
   messages: DappMessages;
   notificationTypes: DappNotificationTypes;

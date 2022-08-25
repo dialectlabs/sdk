@@ -45,13 +45,13 @@ export class DappsImpl implements Dapps {
       new PublicKey(dappDto.publicKey),
       dappDto.name,
       dappDto.verified,
+      dappDto.telegramBotUserName,
       this.dappAddresses,
       this.dappMessages,
       this.notificationTypes,
       this.notificationSubscriptions,
       dappDto.description,
       dappDto.avatarUrl,
-      dappDto.telegramBotUserName,
     );
   }
 
@@ -89,12 +89,12 @@ export class DappImpl implements Dapp {
     readonly publicKey: PublicKey,
     readonly name: string,
     readonly verified: boolean,
+    readonly telegramUsername: string,
     readonly dappAddresses: DappAddresses,
     readonly messages: DappMessages,
     readonly notificationTypes: DappNotificationTypes,
     readonly notificationSubscriptions: DappNotificationSubscriptions,
     readonly description?: string,
     readonly avatarUrl?: string,
-    readonly telegramUsername?: string,
   ) {}
 }

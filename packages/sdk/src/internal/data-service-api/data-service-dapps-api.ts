@@ -133,7 +133,7 @@ export class DappDto {
   readonly name!: string;
   readonly description?: string;
   readonly avatarUrl?: string;
-  readonly telegramBotUserName?: string;
+  readonly telegramBotUserName!: string;
   readonly verified!: boolean;
 }
 
