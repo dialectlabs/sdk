@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.8.0] - 2022-08-25
+
+- feature: support dapp telegram bot configuration
+
 ## [0.7.1] - 2022-08-24
 
 - feature: per-thread unread messages count

@@ -20,6 +20,7 @@ export interface Dapp {
   description?: string;
   avatarUrl?: string;
   verified: boolean;
+  telegramUsername: string;
   dappAddresses: DappAddresses;
   messages: DappMessages;
   notificationTypes: DappNotificationTypes;
@@ -46,6 +47,11 @@ export interface CreateDappCommand {
   name: string;
   description?: string;
   avatarUrl?: string;
+  telegramBotConfiguration?: DappTelegramBotConfiguration;
+}
+
+export interface DappTelegramBotConfiguration {
+  token: string;
 }
 
 export interface FindDappQuery {

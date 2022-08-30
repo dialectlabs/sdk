@@ -13,6 +13,9 @@ export class DataServiceDappMessages implements DappMessages {
   constructor(private readonly api: DataServiceDappsApi) {}
 
   async send(command: SendDappMessageCommand): Promise<void> {
+    if (command.addressTypes?.length === 0) {
+      return;
+    }
     if ('recipient' in command) {
       return this.unicast(command);
     }
@@ -36,6 +39,9 @@ export class DataServiceDappMessages implements DappMessages {
   }
 
   private async multicast(command: MulticastDappMessageCommand) {
+    if (command.recipients.length === 0) {
+      return;
+    }
     return withErrorParsing(
       this.api.multicast({
         ...command,
