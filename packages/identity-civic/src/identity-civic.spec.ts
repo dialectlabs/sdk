@@ -17,6 +17,7 @@ describe('Civic tests', () => {
       additionals: {
         avatarUrl: 'https://arweave.net/C3oH-InR6fqeqN62TQOI5LnQqNXDmboRK75xFIIT3fU',
         link: `https://www.civic.me/${owner.toBase58()}`,
+        headline: 'this is my headline'
       },
     });
   });

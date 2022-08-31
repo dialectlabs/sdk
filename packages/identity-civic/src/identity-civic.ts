@@ -19,7 +19,7 @@ export class CivicIdentityResolver implements IdentityResolver {
       additionals: {
         avatarUrl: profile.image?.url,
         link: `https://www.civic.me/${publicKey.toBase58()}`,
-        headline: profile.headline,
+        headline: profile.headline?.value,
       },
     };
   }
