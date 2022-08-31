@@ -26,6 +26,6 @@
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
-    "@civic/profile": "^0.0.1-alpha.8"
+    "@civic/profile": "^0.0.1"
   }
 }
