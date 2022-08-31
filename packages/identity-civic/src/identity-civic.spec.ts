@@ -22,4 +22,20 @@ describe('Civic tests', () => {
     });
   });
 
+  it('should perform a reverse lookup from a .sol address', async () => {
+    const resolver = new CivicIdentityResolver(connection);
+    const owner = new PublicKey('BriW4tTAiAm541uB2Fua3dUNoGayRa8Wt7pZUshUbrPB');
+    const identity = await resolver.resolveReverse('solana.sol');
+
+    expect(identity).toStrictEqual({
+      type: 'CIVIC',
+      name: '',
+      publicKey: owner,
+      additionals: {
+        avatarUrl: undefined,
+        link: `https://www.civic.me/${owner.toBase58()}`,
+        headline: undefined
+      },
+    });
+  });
 });

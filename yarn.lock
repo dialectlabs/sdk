@@ -325,7 +325,7 @@
     "@bonfida/name-offers" "^0.0.1"
     "@ethersproject/sha2" "^5.5.0"
 
-"@bonfida/spl-name-service@^0.1.25":
+"@bonfida/spl-name-service@^0.1.50":
   version "0.1.50"
   resolved "https://registry.yarnpkg.com/@bonfida/spl-name-service/-/spl-name-service-0.1.50.tgz#462560199f6869fd97c8a19a8a09851ac15191db"
   integrity sha512-StwKh4DPuLm/zSpf2Dk6pFr7gYrV7T+XTSafgoGI+2STXrzipPDtUtwXeF56HGKZ/IkUtZh4SRUd42q6U/MyrA==
@@ -400,21 +400,21 @@
     ed2curve-esm "^0.3.0-alpha-1"
     tweetnacl "^1.0.3"
 
-"@civic/profile@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@civic/profile/-/profile-0.0.1.tgz#70129c5e60b6ea8b63aea03661db8002ce2acb29"
-  integrity sha512-XGyeweUM+yOluYHowgQsOAKZVu6zlobqPcVEnyGQH0C9XKaDNOzHgyYXXgVcbGXeXdt7F97UO2IrOc+esJAjIQ==
+"@civic/profile@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@civic/profile/-/profile-0.0.2.tgz#a1b27ba9e895d89411f3eee45b8c1bd67ec8b773"
+  integrity sha512-g9HyjOHuwxDbP676ypa5eRkTFnE1GpYraU3BxntYOkEtRN3iu2vCeEk1i2px8qUCgeOumRMeDapFBuf0ff3sBw==
   dependencies:
-    "@bonfida/spl-name-service" "^0.1.25"
-    "@civic/storage" "^0.1.10"
+    "@bonfida/spl-name-service" "^0.1.50"
+    "@civic/storage" "^0.1.11"
     "@identity.com/sol-did-client" "^2.0.0"
     "@solana/web3.js" "^1.48.0"
     ramda "^0.28.0"
 
-"@civic/storage@^0.1.10":
-  version "0.1.10"
-  resolved "https://registry.yarnpkg.com/@civic/storage/-/storage-0.1.10.tgz#adcd5414d4a81720f22c729890166f54fb919973"
-  integrity sha512-mC9byLJtLp6mYoGuXZxvKAmHEvBQoR9zXDinDSRRd6sBEBMbfoJDQyQjrOIaQ/tZjBFjnaLuBwz39mtl5RAmaA==
+"@civic/storage@^0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@civic/storage/-/storage-0.1.11.tgz#d26b5184ba3589d4d27bb5cbf549c84025d816b5"
+  integrity sha512-DwCmEw+f0sE4QHvHLhlwMAHpopRZkW3IGLl7Fxgu5RCsh9i7RA7mSC17XdipL3zZshCBuyksYcfBUYLSXQ+TVw==
   dependencies:
     "@civic/lexi" "0.0.10"
     "@identity.com/sol-did-client" "^2.0.1"
