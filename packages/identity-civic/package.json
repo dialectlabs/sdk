@@ -1,0 +1,32 @@
+{
+  "name": "@dialectlabs/identity-civic",
+  "version": "0.0.2",
+  "description": "Civic Identity Resolver",
+  "repository": "git@github.com:dialectlabs/sdk.git",
+  "author": "Kevin Colgan",
+  "license": "Apache-2.0",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    "import": "./lib/esm/index.js",
+    "require": "./lib/cjs/index.js"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "npm run clean && npm run build:cjs; npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:cjs:watch": "concurrently \"tsc --project tsconfig.cjs.json --watch\"",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\"",
+    "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\"",
+    "test": "jest"
+  },
+  "peerDependencies": {
+    "@dialectlabs/sdk": "*",
+    "@solana/web3.js": "1.x"
+  },
+  "dependencies": {
+    "@civic/profile": "^0.0.3"
+  }
+}
