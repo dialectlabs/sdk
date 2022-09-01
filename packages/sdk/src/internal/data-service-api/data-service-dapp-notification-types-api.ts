@@ -1,13 +1,13 @@
+import type { TokenProvider } from '../../auth/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,
-} from '@data-service-api/data-service-api';
-import axios from 'axios';
+} from './data-service-api';
 import type {
   NotificationConfigDto,
   NotificationTypeDto,
-} from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import type { TokenProvider } from '@auth/token-provider';
+} from './data-service-wallet-notification-subscriptions-api';
+import axios from 'axios';
 
 export interface DataServiceDappNotificationTypesApi {
   create(

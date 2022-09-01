@@ -1,5 +1,5 @@
-import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
 import type { PublicKey } from '@solana/web3.js';
+import type { DiffeHellmanKeys } from './encryption.interface';
 
 export abstract class EncryptionKeysStore {
   abstract get(subject: PublicKey): DiffeHellmanKeys | null;

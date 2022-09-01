@@ -1,9 +1,9 @@
 import axios from 'axios';
+import type { TokenProvider } from '../../auth/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,
-} from '@data-service-api/data-service-api';
-import type { TokenProvider } from '@auth/token-provider';
+} from './data-service-api';
 
 export type AddressTypeV0 = 'email' | 'sms' | 'telegram' | 'wallet';
 

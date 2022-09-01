@@ -1,4 +1,4 @@
-import {
+import type {
   CreateThreadCommand,
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
@@ -6,14 +6,11 @@ import {
   Messaging,
   SendMessageCommand,
   Thread,
-  ThreadId,
   ThreadMember,
-  ThreadMemberScope,
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '@messaging/messaging.interface';
-import type { PublicKey } from '@solana/web3.js';
+} from '../../messaging/messaging.interface';
 import {
   createDialect,
   deleteDialect,
@@ -25,26 +22,30 @@ import {
   getDialectForMembers,
   sendMessage,
 } from '@dialectlabs/web3';
-
-import type { Program } from '@project-serum/anchor';
-import type { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import {
-  AccountAlreadyExistsError,
-  AccountNotFoundError,
-  withErrorParsing,
-} from '@messaging/internal/solana-messaging-errors';
+import { requireSingleMember } from './commons';
 import {
   IllegalStateError,
   SolanaError,
   ThreadAlreadyExistsError,
-} from '@sdk/errors';
-import { Backend } from '@sdk/sdk.interface';
-import { requireSingleMember } from '@messaging/internal/commons';
+} from '../../sdk/errors';
 import {
   DialectWalletAdapterEncryptionKeysProvider,
   EncryptionKeysProvider,
-} from '@encryption/internal/encryption-keys-provider';
-import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
+} from '../encryption/encryption-keys-provider';
+import {
+  ThreadId,
+  ThreadMemberScope,
+} from '../../messaging/messaging.interface';
+import {
+  AccountAlreadyExistsError,
+  AccountNotFoundError,
+  withErrorParsing,
+} from './solana-messaging-errors';
+import type { DiffeHellmanKeys } from '../../encryption/encryption.interface';
+import type { Program } from '@project-serum/anchor';
+import type { PublicKey } from '@solana/web3.js';
+import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { Backend } from '../../sdk/sdk.interface';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {

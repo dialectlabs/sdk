@@ -1,10 +1,11 @@
+import type { DappAddress } from '../address/addresses.interface';
 import type { PublicKey } from '@solana/web3.js';
-import type { AddressType, DappAddress } from '@address/addresses.interface';
 import type {
   NotificationConfig,
-  NotificationSubscription,
   NotificationType,
-} from '@wallet/wallet.interface';
+} from '../wallet/wallet.interface';
+import type { AddressType } from '../address/addresses.interface';
+import type { NotificationSubscription } from '../wallet/wallet.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;

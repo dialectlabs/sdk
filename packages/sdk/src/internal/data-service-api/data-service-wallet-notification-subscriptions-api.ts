@@ -1,10 +1,10 @@
+import type { WalletDto } from './data-service-dapps-api';
+import type { TokenProvider } from '../../auth/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,
-} from '@data-service-api/data-service-api';
+} from './data-service-api';
 import axios from 'axios';
-import type { WalletDto } from '@data-service-api/data-service-dapps-api';
-import type { TokenProvider } from '@auth/token-provider';
 
 export interface FindNotificationSubscriptionQueryDto {
   readonly dappPublicKey: string;

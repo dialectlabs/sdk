@@ -1,9 +1,9 @@
-import type { DappAddresses } from '@dapp/dapp.interface';
+import type { DappAddress } from '../../address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
-import { DialectSdkError, IllegalArgumentError } from '@sdk/errors';
-import { groupBy } from '@utils/internal/collection-utils';
-import type { DappAddress } from '@address/addresses.interface';
-import { AddressType } from '@address/addresses.interface';
+import { DialectSdkError, IllegalArgumentError } from '../../sdk/errors';
+import type { DappAddresses } from '../../dapp/dapp.interface';
+import { groupBy } from '../utils/collection-utils';
+import { AddressType } from '../../address/addresses.interface';
 
 export class DappAddressesFacade implements DappAddresses {
   constructor(private readonly dappAddressesBackends: DappAddresses[]) {

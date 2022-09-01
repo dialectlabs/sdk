@@ -1,6 +1,6 @@
-import type { Token } from '@auth/auth.interface';
 import type { PublicKey } from '@solana/web3.js';
 import { TokenParser } from '../internal/auth/token-parser';
+import type { Token } from './auth.interface';
 
 export abstract class TokenStore {
   abstract get(subject: PublicKey): Token | null;

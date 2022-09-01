@@ -1,5 +1,4 @@
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { Backend, Dialect } from '@sdk/sdk.interface';
+import { Backend, Dialect, NodeDialectWalletAdapter } from '../../src';
 
 function createSdk() {
   return Dialect.sdk({

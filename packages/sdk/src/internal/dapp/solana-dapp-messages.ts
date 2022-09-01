@@ -5,11 +5,11 @@ import type {
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
-} from '@dapp/dapp.interface';
-import type { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import type { SolanaDappAddresses } from '@dapp/internal/solana-dapp-addresses';
+} from '../../dapp/dapp.interface';
 import type { PublicKey } from '@solana/web3.js';
-import { IllegalArgumentError } from '@sdk/errors';
+import { IllegalArgumentError } from '../../sdk/errors';
+import type { SolanaMessaging } from '../messaging/solana-messaging';
+import type { SolanaDappAddresses } from './solana-dapp-addresses';
 
 export class SolanaDappMessages implements DappMessages {
   constructor(

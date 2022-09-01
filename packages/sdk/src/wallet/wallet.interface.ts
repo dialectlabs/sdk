@@ -1,10 +1,6 @@
 import type { PublicKey } from '@solana/web3.js';
-import type {
-  Address,
-  AddressType,
-  DappAddress,
-} from '@address/addresses.interface';
-import type { FindThreadByOtherMemberQuery } from '@messaging/messaging.interface';
+import type { Address, DappAddress } from '../address/addresses.interface';
+import type { AddressType } from '../address/addresses.interface';
 
 export interface Wallets {
   readonly publicKey: PublicKey;

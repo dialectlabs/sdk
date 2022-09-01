@@ -1,17 +1,17 @@
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { Duration } from 'luxon';
-import { AuthTokensImpl } from './token-utils';
+import type { AuthTokens, TokenBody } from '../../auth/auth.interface';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
-import type { AuthTokens, TokenBody } from '@auth/auth.interface';
-import {
-  DialectWalletAdapterEd25519TokenSigner,
-  Ed25519TokenSigner,
-} from '@auth/signers/ed25519-token-signer';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import {
   DialectWalletAdapterSolanaTxTokenSigner,
   SolanaTxTokenSigner,
-} from '@auth/signers/solana-tx-token-signer';
+} from '../../auth/signers/solana-tx-token-signer';
+import {
+  DialectWalletAdapterEd25519TokenSigner,
+  Ed25519TokenSigner,
+} from '../../auth/signers/ed25519-token-signer';
+import { Duration } from 'luxon';
+import { AuthTokensImpl } from './token-utils';
 
 describe('ed25519 token tests', () => {
   let wallet: DialectWalletAdapterWrapper;

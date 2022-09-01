@@ -1,16 +1,16 @@
-import { DataServiceApi } from './data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { Keypair } from '@solana/web3.js';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
-import {
+import { TokenProvider } from '../../auth/token-provider';
+import type {
   CreateDialectCommand,
+  DataServiceDialectsApi,
   DialectDto,
-  MemberScopeDto,
   SendMessageCommand,
-} from '@data-service-api/data-service-dialects-api';
+} from './data-service-dialects-api';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { MemberScopeDto } from './data-service-dialects-api';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { Keypair } from '@solana/web3.js';
+import { DataServiceApi } from './data-service-api';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
 
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

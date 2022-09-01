@@ -1,9 +1,9 @@
-import type { AuthTokens, Token, TokenSigner } from '@auth/auth.interface';
-import { TokenStore } from '@auth/token-store';
+import type { AuthTokens, Token, TokenSigner } from './auth.interface';
 import type { PublicKey } from '@solana/web3.js';
+import { IllegalArgumentError } from '../sdk/errors';
 import { Duration } from 'luxon';
-import { AuthTokensImpl } from '@auth/internal/token-utils';
-import { IllegalArgumentError } from '@sdk/errors';
+import { AuthTokensImpl } from '../internal/auth/token-utils';
+import { TokenStore } from './token-store';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });

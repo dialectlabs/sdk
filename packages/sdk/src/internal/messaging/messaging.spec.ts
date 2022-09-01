@@ -1,21 +1,21 @@
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
   CreateThreadCommand,
   Messaging,
   SendMessageCommand,
-} from '@messaging/messaging.interface';
-import { ThreadMemberScope } from '@messaging/messaging.interface';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DataServiceMessaging } from '@messaging/internal/data-service-messaging';
-import { DataServiceApi } from '@data-service-api/data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { SolanaMessaging } from '@messaging/internal/solana-messaging';
-import { createDialectProgram } from '@messaging/internal/solana-dialect-program-factory';
+} from '../../messaging/messaging.interface';
+import { ThreadMemberScope } from '../../messaging/messaging.interface';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { createDialectProgram } from './solana-dialect-program-factory';
+import { ThreadAlreadyExistsError } from '../../sdk/errors';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import { DialectWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import { TokenProvider } from '../../auth/token-provider';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DataServiceMessaging } from './data-service-messaging';
+import { DataServiceApi } from '../data-service-api/data-service-api';
+import { SolanaMessaging } from './solana-messaging';
 import { programs } from '@dialectlabs/web3';
-import { ThreadAlreadyExistsError } from '@sdk/errors';
-import { DialectWalletAdapterEncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
