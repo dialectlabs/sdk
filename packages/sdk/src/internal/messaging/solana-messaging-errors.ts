@@ -1,11 +1,11 @@
+import type { AnchorError } from '@project-serum/anchor';
 import {
   DisconnectedFromChainError,
   InsufficientFundsError,
   NotSignedError,
   SolanaError,
   UnknownError,
-} from '@sdk/errors';
-import type { AnchorError } from '@project-serum/anchor';
+} from '../../sdk/errors';
 
 export class AccountNotFoundError extends SolanaError {
   static matchers = ['Account does not exist'];

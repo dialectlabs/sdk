@@ -1,12 +1,12 @@
+import type { Duration } from 'luxon';
+import { bytesToBase64, jsonStringifyToBase64 } from '../utils/bytes-utils';
+import { TokenUnsupportedAlgError } from './token-parser';
 import type {
   Token,
   TokenBody,
   TokenHeader,
   TokenSigner,
-} from '@auth/auth.interface';
-import type { Duration } from 'luxon';
-import { bytesToBase64, jsonStringifyToBase64 } from '../utils/bytes-utils';
-import { TokenUnsupportedAlgError } from './token-parser';
+} from '../../auth/auth.interface';
 
 export abstract class TokenGenerator {
   constructor(protected readonly signer: TokenSigner) {}

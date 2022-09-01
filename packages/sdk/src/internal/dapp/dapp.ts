@@ -1,3 +1,7 @@
+import { PublicKey } from '@solana/web3.js';
+import type { DataServiceApiClientError } from '../data-service-api/data-service-api';
+import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
+import { ResourceNotFoundError } from '../../sdk/errors';
 import type {
   CreateDappCommand,
   Dapp,
@@ -8,17 +12,11 @@ import type {
   Dapps,
   FindDappQuery,
   ReadOnlyDapp,
-} from '@dapp/dapp.interface';
-import { PublicKey } from '@solana/web3.js';
-import type {
-  DappDto,
-  DataServiceDappsApi,
-} from '@data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
-import { ResourceNotFoundError } from '@sdk/errors';
-import type { DataServiceDappNotificationTypes } from '@dapp/internal/dapp-notification-types';
-import type { DataServiceDappNotificationSubscriptions } from '@dapp/internal/dapp-notification-subscriptions';
+} from '../../dapp/dapp.interface';
+import type { DappDto } from '../data-service-api/data-service-dapps-api';
+import type { DataServiceDappNotificationTypes } from './dapp-notification-types';
+import type { DataServiceDappNotificationSubscriptions } from './dapp-notification-subscriptions';
+import { withErrorParsing } from '../data-service-api/data-service-errors';
 
 export class DappsImpl implements Dapps {
   constructor(

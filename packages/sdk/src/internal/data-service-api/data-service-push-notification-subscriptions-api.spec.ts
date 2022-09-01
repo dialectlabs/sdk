@@ -1,9 +1,9 @@
 import { DataServiceApi } from './data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
+import { TokenProvider } from '../../auth/token-provider';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
 
 describe('Data service push notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

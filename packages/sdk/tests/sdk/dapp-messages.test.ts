@@ -1,12 +1,16 @@
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { Backend, Dialect } from '@sdk/sdk.interface';
-import { AddressType } from '@address/addresses.interface';
-import { ThreadMemberScope } from '@messaging/messaging.interface';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import {
+  AddressType,
+  Backend,
+  Dialect,
+  NodeDialectWalletAdapter,
+  ThreadMemberScope,
+} from '../../src';
 
 function sdkFactory(backend: Backend) {
   return async () => {
     const wallet = NodeDialectWalletAdapter.create();
+
     const dialectSdk = Dialect.sdk({
       wallet: wallet,
       backends: [backend],

@@ -1,39 +1,37 @@
-import type { AxiosError } from 'axios';
-import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
-import { DataServiceDialectsApiClient } from '@data-service-api/data-service-dialects-api';
 import {
-  DataServiceDappsApi,
-  DataServiceDappsApiClient,
-} from '@data-service-api/data-service-dapps-api';
-import type { Token } from '@auth/auth.interface';
+  DataServiceDialectsApi,
+  DataServiceDialectsApiClient,
+} from './data-service-dialects-api';
 import {
-  DataServiceWalletsApiClientV0,
-  DataServiceWalletsApiV0,
-} from '@data-service-api/data-service-wallets-api.v0';
-import { nanoid } from 'nanoid';
-import {
-  DataServiceWalletAddressesApi,
-  DataServiceWalletAddressesApiClient,
-} from '@data-service-api/data-service-wallet-addresses-api';
-import {
-  DataServiceWalletDappAddressesApi,
-  DataServiceWalletDappAddressesApiClient,
-} from '@data-service-api/data-service-wallet-dapp-addresses-api';
-import {
-  DataServiceWalletMessagesApi,
-  DataServiceWalletMessagesApiClient,
-} from '@data-service-api/data-service-wallet-messages-api';
-import type { DataServiceDappNotificationTypesApi } from '@data-service-api/data-service-dapp-notification-types-api';
-import { DataServiceDappNotificationTypesApiClient } from '@data-service-api/data-service-dapp-notification-types-api';
-import type { DataServiceWalletNotificationSubscriptionsApi } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import { DataServiceWalletNotificationSubscriptionsApiClient } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import type { DataServiceDappNotificationSubscriptionsApi } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
-import { DataServiceDappNotificationSubscriptionsApiClient } from '@data-service-api/data-service-dapp-notification-subscriptions-api';
+  DataServiceWalletNotificationSubscriptionsApi,
+  DataServiceWalletNotificationSubscriptionsApiClient,
+} from './data-service-wallet-notification-subscriptions-api';
+import type { DataServiceWalletsApiV0 } from './data-service-wallets-api.v0';
+import type { DataServiceWalletDappAddressesApi } from './data-service-wallet-dapp-addresses-api';
+import type { DataServiceWalletAddressesApi } from './data-service-wallet-addresses-api';
+import { DataServiceWalletDappAddressesApiClient } from './data-service-wallet-dapp-addresses-api';
+import type { Token } from '../../auth/auth.interface';
+import type { DataServiceDappsApi } from './data-service-dapps-api';
 import {
   DataServicePushNotificationSubscriptionsApi,
   DataServicePushNotificationSubscriptionsApiClient,
 } from './data-service-push-notification-subscriptions-api';
-import type { TokenProvider } from '@auth/token-provider';
+import { nanoid } from 'nanoid';
+import type { TokenProvider } from '../../auth/token-provider';
+import {
+  DataServiceDappNotificationTypesApi,
+  DataServiceDappNotificationTypesApiClient,
+} from './data-service-dapp-notification-types-api';
+import {
+  DataServiceWalletMessagesApi,
+  DataServiceWalletMessagesApiClient,
+} from './data-service-wallet-messages-api';
+import { DataServiceDappsApiClient } from './data-service-dapps-api';
+import { DataServiceWalletsApiClientV0 } from './data-service-wallets-api.v0';
+import type { AxiosError } from 'axios';
+import type { DataServiceDappNotificationSubscriptionsApi } from './data-service-dapp-notification-subscriptions-api';
+import { DataServiceDappNotificationSubscriptionsApiClient } from './data-service-dapp-notification-subscriptions-api';
+import { DataServiceWalletAddressesApiClient } from './data-service-wallet-addresses-api';
 import type { DataServiceHealthApi } from '@data-service-api/data-service-health-api';
 import { DataServiceHealthApiClient } from '@data-service-api/data-service-health-api';
 

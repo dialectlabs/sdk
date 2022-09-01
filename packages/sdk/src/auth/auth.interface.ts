@@ -1,8 +1,8 @@
-import { AuthTokensImpl } from '@auth/internal/token-utils';
+import { DEFAULT_TOKEN_LIFETIME, TokenProvider } from './token-provider';
 import type { PublicKey } from '@solana/web3.js';
+import { AuthTokensImpl } from '../internal/auth/token-utils';
+import { TokenStore } from './token-store';
 import type { Duration } from 'luxon';
-import { TokenStore } from '@auth/token-store';
-import { DEFAULT_TOKEN_LIFETIME, TokenProvider } from '@auth/token-provider';
 
 export abstract class Auth {
   static tokens: AuthTokens = new AuthTokensImpl();

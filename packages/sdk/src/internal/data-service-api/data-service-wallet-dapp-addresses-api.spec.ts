@@ -1,20 +1,20 @@
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DataServiceApi } from '@data-service-api/data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
 import type {
   CreateDappAddressCommandDto,
   DataServiceWalletDappAddressesApi,
   PartialUpdateDappAddressCommandDto,
-} from '@data-service-api/data-service-wallet-dapp-addresses-api';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
+} from './data-service-wallet-dapp-addresses-api';
 import {
   AddressDto,
   AddressTypeDto,
   DappAddressDto,
   DappDto,
-} from '@data-service-api/data-service-dapps-api';
+  DataServiceDappsApi,
+} from './data-service-dapps-api';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import { TokenProvider } from '../../auth/token-provider';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DataServiceApi } from './data-service-api';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

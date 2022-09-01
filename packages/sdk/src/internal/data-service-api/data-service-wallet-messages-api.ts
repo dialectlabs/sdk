@@ -1,10 +1,10 @@
+import type { TokenProvider } from '../../auth/token-provider';
+import type { MessageDto } from './data-service-dialects-api';
 import {
   createHeaders,
   withReThrowingDataServiceError,
-} from '@data-service-api/data-service-api';
+} from './data-service-api';
 import axios from 'axios';
-import type { MessageDto } from '@data-service-api/data-service-dialects-api';
-import type { TokenProvider } from '@auth/token-provider';
 
 export interface DataServiceWalletMessagesApi {
   findAllDappMessages(

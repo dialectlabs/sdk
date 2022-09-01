@@ -8,11 +8,8 @@ import {
   ResourceAlreadyExistsError,
   ResourceNotFoundError,
   UnknownError,
-} from '@sdk/errors';
-import {
-  DataServiceApiError,
-  NetworkError,
-} from '@data-service-api/data-service-api';
+} from '../../sdk/errors';
+import { DataServiceApiError, NetworkError } from './data-service-api';
 
 export async function withErrorParsing<T>(
   promise: Promise<T>,

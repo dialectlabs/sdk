@@ -1,14 +1,14 @@
-import { DataServiceApi } from './data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import type { DappDto } from '@data-service-api/data-service-dapps-api';
+import { TokenProvider } from '../../auth/token-provider';
 import type {
   CreateNotificationTypeCommandDto,
   DataServiceDappNotificationTypesApi,
-} from '@data-service-api/data-service-dapp-notification-types-api';
-import type { NotificationTypeDto } from '@data-service-api/data-service-wallet-notification-subscriptions-api';
+} from './data-service-dapp-notification-types-api';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DataServiceApi } from './data-service-api';
+import type { NotificationTypeDto } from './data-service-wallet-notification-subscriptions-api';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import type { DappDto } from './data-service-dapps-api';
 
 describe('Data service dapp notification types api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

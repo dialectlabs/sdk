@@ -1,19 +1,17 @@
-import { DataServiceApi } from './data-service-api';
-import { TokenProvider } from '@auth/token-provider';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '@auth/signers/ed25519-token-signer';
-import { DialectWalletAdapterWrapper } from '@wallet-adapter/dialect-wallet-adapter-wrapper';
-import type {
-  DappDto,
-  DataServiceDappsApi,
-} from '@data-service-api/data-service-dapps-api';
 import type {
   CreateAddressCommandV0,
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
-} from '@data-service-api/data-service-wallets-api.v0';
+} from './data-service-wallets-api.v0';
+import { TokenProvider } from '../../auth/token-provider';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
-import type { CreateDappCommand } from '@dapp/dapp.interface';
+import { DataServiceApi } from './data-service-api';
+import type { DataServiceDappsApi } from './data-service-dapps-api';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import type { CreateDappCommand } from '../../dapp/dapp.interface';
+import type { DappDto } from './data-service-dapps-api';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

@@ -11,32 +11,34 @@ import type {
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '@messaging/messaging.interface';
-import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
-import { PublicKey } from '@solana/web3.js';
+} from '../../messaging/messaging.interface';
+import type {
+  DataServiceDialectsApi,
+  DialectAccountDto,
+  DialectDto,
+} from '../data-service-api/data-service-dialects-api';
+import { requireSingleMember } from './commons';
+import type { DataServiceApiClientError } from '../data-service-api/data-service-api';
+import {
+  IllegalStateError,
+  ResourceNotFoundError,
+  ThreadAlreadyExistsError,
+} from '../../sdk/errors';
+import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import { MemberScopeDto } from '../data-service-api/data-service-dialects-api';
+import {
+  ThreadId,
+  ThreadMemberScope,
+} from '../../messaging/messaging.interface';
 import {
   EncryptedTextSerde,
   EncryptionProps,
   TextSerde,
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
-import {
-  IllegalStateError,
-  ResourceNotFoundError,
-  ThreadAlreadyExistsError,
-  UnsupportedOperationError,
-} from '@sdk/errors';
-import { Backend } from '@sdk/sdk.interface';
-import { requireAtLeastOneMember } from '@messaging/internal/commons';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
-import {
-  DialectAccountDto,
-  DialectDto,
-  MemberScopeDto,
-} from '@data-service-api/data-service-dialects-api';
-import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
-import type { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+import { PublicKey } from '@solana/web3.js';
+import { Backend } from '../../sdk/sdk.interface';
+import { withErrorParsing } from '../data-service-api/data-service-errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(

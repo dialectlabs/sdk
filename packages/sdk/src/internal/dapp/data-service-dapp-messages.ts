@@ -1,13 +1,13 @@
-import { toAddressTypeDto } from '@address/addresses.interface';
 import type {
   BroadcastDappMessageCommand,
   DappMessages,
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
-} from '@dapp/dapp.interface';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
+} from '../../dapp/dapp.interface';
+import { toAddressTypeDto } from '../../address/addresses.interface';
+import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
+import { withErrorParsing } from '../data-service-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
   constructor(private readonly api: DataServiceDappsApi) {}

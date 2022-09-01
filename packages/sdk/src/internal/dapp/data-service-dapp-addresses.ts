@@ -1,12 +1,10 @@
-import type { DappAddresses } from '@dapp/dapp.interface';
-
+import type { DappAddress } from '../../address/addresses.interface';
+import { toAddressType } from '../../address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type {
-  DappAddressDto,
-  DataServiceDappsApi,
-} from '@data-service-api/data-service-dapps-api';
-import { DappAddress, toAddressType } from '@address/addresses.interface';
+import type { DappAddresses } from '../../dapp/dapp.interface';
+import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
+import type { DappAddressDto } from '../data-service-api/data-service-dapps-api';
+import { withErrorParsing } from '../messaging/solana-messaging-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
   constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}

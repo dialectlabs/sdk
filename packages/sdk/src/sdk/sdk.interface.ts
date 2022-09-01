@@ -1,18 +1,17 @@
 import type {
   ApiAvailability,
   DialectWalletAdapter,
-} from '@wallet-adapter/dialect-wallet-adapter.interface';
-import type { PublicKey } from '@solana/web3.js';
-import type { Messaging } from '@messaging/messaging.interface';
-import type { TokenStore } from '@auth/token-store';
-import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
-import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
-import type { Dapps } from '@dapp/dapp.interface';
+} from '../wallet-adapter/dialect-wallet-adapter.interface';
+import type { TokenProvider } from '../auth/token-provider';
+import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
-import type { Wallets } from '@wallet/wallet.interface';
-import type { TokenProvider } from '@auth/token-provider';
-import type { Duration } from 'luxon';
-import type { IdentityResolver } from '@identity/identity.interface';
+import type { PublicKey } from '@solana/web3.js';
+import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
+import type { Messaging } from '../messaging/messaging.interface';
+import type { Dapps } from '../dapp/dapp.interface';
+import type { IdentityResolver } from '../identity/identity.interface';
+import type { TokenStore } from '../auth/token-store';
+import { DialectSdkFactory } from '../internal/sdk/sdk-factory';
 
 export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {

@@ -6,13 +6,13 @@ import type {
   Thread,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '@messaging/messaging.interface';
+} from '../../messaging/messaging.interface';
+import type { Backend } from '../../sdk/sdk.interface';
 import {
   DialectSdkError,
   IllegalArgumentError,
   IllegalStateError,
-} from '@sdk/errors';
-import type { Backend } from '@sdk/sdk.interface';
+} from '../../sdk/errors';
 
 export interface MessagingBackend {
   messaging: Messaging;
