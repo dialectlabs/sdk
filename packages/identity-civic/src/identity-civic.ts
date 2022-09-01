@@ -4,9 +4,12 @@ import type { Connection } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
 
 const civicType = 'CIVIC';
-const civicProfileToDialectIdentity = (profile: ProfileResult): Identity => {
+const civicProfileToDialectIdentity = (
+  profile: ProfileResult,
+  defaultName = '',
+): Identity => {
   return {
-    name: profile?.name?.value || '',
+    name: profile?.name?.value || defaultName,
     publicKey: new PublicKey(profile.address),
     type: civicType,
     additionals: {
@@ -32,6 +35,7 @@ export class CivicIdentityResolver implements IdentityResolver {
   async resolveReverse(_rawDomainName: string): Promise<Identity | null> {
     // CivicProfile supports other non-public key type queries like Bonfida addresses
     const profile = await CivicProfile.get(_rawDomainName);
-    return civicProfileToDialectIdentity(profile);
+    // use the raw domain name as the default profile name in case there is no profile
+    return civicProfileToDialectIdentity(profile, _rawDomainName);
   }
 }
