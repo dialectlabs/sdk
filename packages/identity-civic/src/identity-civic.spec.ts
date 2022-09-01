@@ -29,7 +29,7 @@ describe('Civic tests', () => {
 
     expect(identity).toStrictEqual({
       type: 'CIVIC',
-      name: 'solana.sol',
+      name: '',
       publicKey: owner,
       additionals: {
         avatarUrl: undefined,

@@ -35,7 +35,6 @@ export class CivicIdentityResolver implements IdentityResolver {
   async resolveReverse(_rawDomainName: string): Promise<Identity | null> {
     // CivicProfile supports other non-public key type queries like Bonfida addresses
     const profile = await CivicProfile.get(_rawDomainName);
-    // use the raw domain name as the default profile name in case there is no profile
-    return civicProfileToDialectIdentity(profile, _rawDomainName);
+    return civicProfileToDialectIdentity(profile);
   }
 }
