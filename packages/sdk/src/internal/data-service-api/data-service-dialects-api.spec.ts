@@ -1,4 +1,4 @@
-import { TokenProvider } from '../../auth/token-provider';
+import { TokenProvider } from '../../core/auth/token-provider';
 import type {
   CreateDialectCommand,
   DataServiceDialectsApi,
@@ -10,7 +10,8 @@ import { MemberScopeDto } from './data-service-dialects-api';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
 
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -30,11 +31,19 @@ describe('Data service dialects api (e2e)', () => {
     );
     wallet1Api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(new DialectWalletAdapterEd25519TokenSigner(wallet1)),
+      TokenProvider.create(
+        new Ed25519AuthenticationFacadeFactory(
+          new DialectWalletAdapterEd25519TokenSigner(wallet1),
+        ).get(),
+      ),
     ).threads;
     wallet2Api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(new DialectWalletAdapterEd25519TokenSigner(wallet2)),
+      TokenProvider.create(
+        new Ed25519AuthenticationFacadeFactory(
+          new DialectWalletAdapterEd25519TokenSigner(wallet2),
+        ).get(),
+      ),
     ).threads;
   });
 

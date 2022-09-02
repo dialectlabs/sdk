@@ -8,13 +8,14 @@ import type {
   IdentityConfig,
   SolanaConfig,
 } from '../../sdk/sdk.interface';
+import { Backend } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
 import { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import {
   DEFAULT_TOKEN_LIFETIME,
   TokenProvider,
-} from '../../auth/token-provider';
+} from '../../core/auth/token-provider';
 import type { Wallets } from '../../wallet/wallet.interface';
 import { SolanaMessaging } from '../messaging/solana-messaging';
 import type {
@@ -27,13 +28,13 @@ import type { Program } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../messaging/solana-dialect-program-factory';
 import { Duration } from 'luxon';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '../../auth/signers/solana-tx-token-signer';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '../../solana/auth/solana-tx/solana-tx-token-signer';
 import { DataServiceApi } from '../data-service-api/data-service-api';
 import { DappMessagesFacade } from '../dapp/dapp-messages-facade';
 import { DappsImpl } from '../dapp/dapp';
 import { programs } from '@dialectlabs/web3';
 import type { DataServiceDappNotificationTypesApi } from '../data-service-api/data-service-dapp-notification-types-api';
-import { TokenStore } from '../../auth/token-store';
+import { TokenStore } from '../../core/auth/token-store';
 import { DappAddressesFacade } from '../dapp/dapp-addresses-facade';
 import {
   AggregateSequentialIdentityResolver,
@@ -47,7 +48,6 @@ import {
   MessagingBackend,
   MessagingFacade,
 } from '../messaging/messaging-facade';
-import { Auth } from '../../auth/auth.interface';
 import { IllegalArgumentError } from '../../sdk/errors';
 import type { DataServiceDappNotificationSubscriptionsApi } from '../data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
@@ -55,10 +55,11 @@ import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
 import type { DataServiceDialectsApi } from '../data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { Backend } from '../../sdk/sdk.interface';
 import { DataServiceDappNotificationTypes } from '../dapp/dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
 import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
+import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { SolanaTxAuthenticationFacadeFactory } from '../../solana/auth/solana-tx/solana-tx-authentication-facade-factory';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -89,12 +90,18 @@ export class DialectSdkFactory {
       config.wallet,
       config.encryptionKeysStore,
     );
-    const tokenSigner = config.wallet.canSignMessage()
-      ? new DialectWalletAdapterEd25519TokenSigner(config.wallet)
-      : new DialectWalletAdapterSolanaTxTokenSigner(config.wallet);
+    const authenticationFacadeFactory = config.wallet.canSignMessage()
+      ? new Ed25519AuthenticationFacadeFactory(
+          new DialectWalletAdapterEd25519TokenSigner(config.wallet),
+        )
+      : new SolanaTxAuthenticationFacadeFactory(
+          new DialectWalletAdapterSolanaTxTokenSigner(config.wallet),
+        );
 
-    const tokenProvider: TokenProvider = Auth.createTokenProvider(
-      tokenSigner,
+    const authenticationFacade = authenticationFacadeFactory.get();
+
+    const tokenProvider: TokenProvider = TokenProvider.create(
+      authenticationFacade,
       Duration.fromObject({
         minutes: config.dialectCloud.tokenLifetimeMinutes,
       }),

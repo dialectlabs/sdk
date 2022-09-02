@@ -10,14 +10,14 @@ import type { DataServiceWalletsApiV0 } from './data-service-wallets-api.v0';
 import type { DataServiceWalletDappAddressesApi } from './data-service-wallet-dapp-addresses-api';
 import type { DataServiceWalletAddressesApi } from './data-service-wallet-addresses-api';
 import { DataServiceWalletDappAddressesApiClient } from './data-service-wallet-dapp-addresses-api';
-import type { Token } from '../../auth/auth.interface';
+import type { Token } from '../../core/auth/auth.interface';
 import type { DataServiceDappsApi } from './data-service-dapps-api';
 import {
   DataServicePushNotificationSubscriptionsApi,
   DataServicePushNotificationSubscriptionsApiClient,
 } from './data-service-push-notification-subscriptions-api';
 import { nanoid } from 'nanoid';
-import type { TokenProvider } from '../../auth/token-provider';
+import type { TokenProvider } from '../../core/auth/token-provider';
 import {
   DataServiceDappNotificationTypesApi,
   DataServiceDappNotificationTypesApiClient,

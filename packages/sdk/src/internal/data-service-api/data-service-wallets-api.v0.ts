@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { TokenProvider } from '../../auth/token-provider';
+import type { TokenProvider } from '../../core/auth/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,

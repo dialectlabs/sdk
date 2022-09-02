@@ -3,8 +3,11 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import type { TokenSigner, TokenSignerResult } from '../auth.interface';
+import type { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type {
+  TokenSigner,
+  TokenSignerResult,
+} from '../../../core/auth/auth.interface';
 
 export abstract class SolanaTxTokenSigner implements TokenSigner {
   readonly alg = 'solana-tx';
