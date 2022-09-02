@@ -1,13 +1,7 @@
-import { Transaction } from '@solana/web3.js';
 import { decodeURLSafe } from '@stablelib/base64';
-import type {
-  Token,
-  TokenBody,
-  TokenHeader,
-  TokenHeaderAlg,
-} from '../../auth/auth.interface';
+import type { Token, TokenBody, TokenHeader } from './auth.interface';
 import { DialectSdkError } from '../../sdk/errors';
-import { bytesFromBase64, jsonParseFromBase64 } from '../utils/bytes-utils';
+import { jsonParseFromBase64 } from '../../internal/utils/bytes-utils';
 
 export class TokenParsingError extends DialectSdkError {
   constructor() {
@@ -27,32 +21,15 @@ export class TokenUnsupportedAlgError extends DialectSdkError {
   }
 }
 
-const bodyParsers: Record<TokenHeaderAlg, (base64Body: string) => TokenBody> = {
-  ed25519: (base64Body) => {
-    return jsonParseFromBase64(base64Body);
-  },
-  'solana-tx': (base64Body) => {
-    const byteBody = bytesFromBase64(base64Body);
-    const tx = Transaction.from(byteBody);
-    const dataInstruction = tx.instructions[0];
-    if (!dataInstruction) {
-      throw new TokenStructureValidationError();
-    }
-    const [headerBase64, bodyBase64] = dataInstruction.data
-      .toString()
-      .split('.');
-
-    if (!headerBase64 || !bodyBase64) {
-      throw new TokenStructureValidationError();
-    }
-
-    return jsonParseFromBase64(bodyBase64);
-  },
-};
+export abstract class TokenBodyParser {
+  abstract parse(base64Body: string): TokenBody;
+}
 
 export class TokenParser {
-  static parse(rawToken: string): Token {
-    const parts = rawToken.split('.');
+  constructor(private readonly bodyParser: TokenBodyParser) {}
+
+  parse(token: string): Token {
+    const parts = token.split('.');
     if (parts.length !== 3) {
       throw new TokenParsingError();
     }
@@ -65,13 +42,13 @@ export class TokenParser {
       if (!header.alg) {
         throw new TokenUnsupportedAlgError();
       }
-      const body = this.parseBody(header.alg, base64Body);
+      const body = this.parseBody(base64Body);
       const signature = decodeURLSafe(base64Signature);
       return {
         base64Header,
         base64Body,
         base64Signature,
-        rawValue: rawToken,
+        rawValue: token,
         header,
         signature,
         body,
@@ -82,16 +59,12 @@ export class TokenParser {
     }
   }
 
-  private static parseHeader(base64Header: string): TokenHeader {
+  private parseHeader(base64Header: string): TokenHeader {
     return jsonParseFromBase64(base64Header);
   }
 
-  private static parseBody(alg: TokenHeaderAlg, base64Body: string): TokenBody {
-    const parser = bodyParsers[alg];
-    if (!parser) {
-      throw new TokenUnsupportedAlgError();
-    }
-    const body: TokenBody = parser(base64Body);
+  private parseBody(base64Body: string): TokenBody {
+    const body: TokenBody = this.bodyParser.parse(base64Body);
     if (!body.sub || !body.exp) {
       throw new TokenStructureValidationError();
     }

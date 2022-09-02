@@ -1,9 +1,10 @@
 import { DataServiceApi } from './data-service-api';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
-import { TokenProvider } from '../../auth/token-provider';
+import { TokenProvider } from '../../core/auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
 
 describe('Data service push notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -24,7 +25,9 @@ describe('Data service push notification subscriptions api (e2e)', () => {
     api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(userWallet),
+        new Ed25519AuthenticationFacadeFactory(
+          new DialectWalletAdapterEd25519TokenSigner(userWallet),
+        ).get(),
       ),
     ).pushNotificationSubscriptions;
   });

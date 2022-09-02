@@ -1,13 +1,7 @@
 import type { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import type { TokenSigner, TokenSignerResult } from '../auth.interface';
-
-export abstract class Ed25519TokenSigner implements TokenSigner {
-  readonly alg = 'ed25519';
-
-  abstract subject: PublicKey;
-  abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
-}
+import type { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
+import type { TokenSignerResult } from '../../../core/auth/auth.interface';
 
 export class DialectWalletAdapterEd25519TokenSigner extends Ed25519TokenSigner {
   readonly subject: PublicKey;

@@ -3,15 +3,16 @@ import type {
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from './data-service-wallets-api.v0';
-import { TokenProvider } from '../../auth/token-provider';
+import { TokenProvider } from '../../core/auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
 import type { DataServiceDappsApi } from './data-service-dapps-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../auth/signers/ed25519-token-signer';
 import type { CreateDappCommand } from '../../dapp/dapp.interface';
 import type { DappDto } from './data-service-dapps-api';
+import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -26,7 +27,9 @@ describe('Data service dapps api (e2e)', () => {
     dappsApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(
-        new DialectWalletAdapterEd25519TokenSigner(dappWallet),
+        new Ed25519AuthenticationFacadeFactory(
+          new DialectWalletAdapterEd25519TokenSigner(dappWallet),
+        ).get(),
       ),
     ).dapps;
   });
@@ -159,7 +162,9 @@ describe('Data service dapps api (e2e)', () => {
       const dataServiceApi = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(
-          new DialectWalletAdapterEd25519TokenSigner(wallet),
+          new Ed25519AuthenticationFacadeFactory(
+            new DialectWalletAdapterEd25519TokenSigner(wallet),
+          ).get(),
         ),
       );
       wallets = dataServiceApi.walletsV0;

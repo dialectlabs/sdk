@@ -1,9 +1,12 @@
-import type { AuthTokens, Token, TokenSigner } from './auth.interface';
+import type { Token, TokenSigner } from './auth.interface';
 import type { PublicKey } from '@solana/web3.js';
-import { IllegalArgumentError } from '../sdk/errors';
+import { IllegalArgumentError } from '../../sdk/errors';
 import { Duration } from 'luxon';
-import { AuthTokensImpl } from '../internal/auth/token-utils';
 import { TokenStore } from './token-store';
+import type { TokenParser } from './token-parser';
+import type { TokenValidator } from './token-validator';
+import type { AuthenticationFacade } from './authentication-facade';
+import type { TokenGenerator } from './token-generator';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -12,30 +15,28 @@ export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 
   static create(
-    signer: TokenSigner,
+    tokenAuthenticationStrategy: AuthenticationFacade,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
-    const authTokens = new AuthTokensImpl();
     const defaultTokenProvider = new DefaultTokenProvider(
-      signer,
       ttl,
-      authTokens,
+      tokenAuthenticationStrategy.tokenGenerator,
     );
     return new CachedTokenProvider(
       defaultTokenProvider,
       tokenStore,
-      authTokens,
-      signer.subject,
+      tokenAuthenticationStrategy.tokenParser,
+      tokenAuthenticationStrategy.tokenValidator,
+      tokenAuthenticationStrategy.signerAuthority(),
     );
   }
 }
 
 class DefaultTokenProvider extends TokenProvider {
   constructor(
-    private readonly signer: TokenSigner,
     private readonly ttl: Duration,
-    private readonly tokenUtils: AuthTokens,
+    private readonly tokenGenerator: TokenGenerator,
   ) {
     if (ttl.toMillis() > MAX_TOKEN_LIFETIME.toMillis()) {
       throw new IllegalArgumentError(
@@ -46,7 +47,7 @@ class DefaultTokenProvider extends TokenProvider {
   }
 
   get(): Promise<Token> {
-    return this.tokenUtils.generate(this.signer, this.ttl);
+    return this.tokenGenerator.generate(this.ttl);
   }
 }
 
@@ -54,7 +55,8 @@ class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
-    private readonly tokenUtils: AuthTokens,
+    private readonly tokenParser: TokenParser,
+    private readonly tokenValidator: TokenValidator,
     private readonly subject: PublicKey,
   ) {
     super();
@@ -63,9 +65,9 @@ class CachedTokenProvider extends TokenProvider {
   private readonly delegateGetPromises: Record<string, Promise<Token>> = {};
 
   async get(): Promise<Token> {
-    const existingToken = this.tokenStore.get(this.subject);
+    const existingToken = this.getToken();
     const subject = this.subject.toBase58();
-    if (existingToken && this.tokenUtils.isValid(existingToken)) {
+    if (existingToken && this.tokenValidator.isValid(existingToken)) {
       delete this.delegateGetPromises[subject];
       return existingToken;
     }
@@ -73,9 +75,10 @@ class CachedTokenProvider extends TokenProvider {
     if (existingDelegatePromise) {
       return existingDelegatePromise;
     }
-    const delegatePromise = this.delegate
-      .get()
-      .then((it) => this.tokenStore.save(it));
+    const delegatePromise = this.delegate.get().then((it) => {
+      this.tokenStore.save(this.subject, it.rawValue);
+      return it;
+    });
 
     // delete promise to refetch the token in case of failure
     delegatePromise.catch(() => {
@@ -84,5 +87,18 @@ class CachedTokenProvider extends TokenProvider {
 
     this.delegateGetPromises[subject] = delegatePromise;
     return delegatePromise;
+  }
+
+  private getToken(): Token | null {
+    const rawToken = this.tokenStore.get(this.subject);
+    if (!rawToken) {
+      return null;
+    }
+    try {
+      return this.tokenParser.parse(rawToken);
+    } catch (e) {
+      this.tokenStore.delete(this.subject);
+      return null;
+    }
   }
 }
