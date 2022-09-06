@@ -3,7 +3,7 @@ import type {
   DialectWalletAdapter,
 } from '../wallet-adapter/dialect-wallet-adapter.interface';
 import type { TokenProvider } from '../core/auth/token-provider';
-import type { Wallets } from '../wallet/wallet.interface';
+import type { Wallets } from '../core/wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
 import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';

@@ -16,7 +16,7 @@ import {
   DEFAULT_TOKEN_LIFETIME,
   TokenProvider,
 } from '../../core/auth/token-provider';
-import type { Wallets } from '../../wallet/wallet.interface';
+import type { Wallets } from '../../core/wallet/wallet.interface';
 import { SolanaMessaging } from '../messaging/solana-messaging';
 import type {
   DappAddresses,
