@@ -1,8 +1,8 @@
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { UnsupportedOperationError } from '../../sdk/errors';
 import type { PublicKey } from '@solana/web3.js';
-import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
-import type { DiffeHellmanKeys } from '../../encryption/encryption.interface';
+import { EncryptionKeysStore } from '../../core/encryption/encryption-keys-store';
+import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 
 export abstract class EncryptionKeysProvider {
   abstract getFailSafe(): Promise<DiffeHellmanKeys | null>;
