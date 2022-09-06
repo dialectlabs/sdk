@@ -40,7 +40,7 @@ import {
 import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { Backend } from '../../core/sdk/sdk.interface';
 import type { SolanaError } from '../errors';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';

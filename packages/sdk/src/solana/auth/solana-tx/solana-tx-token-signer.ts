@@ -3,7 +3,7 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
   TokenSigner,
   TokenSignerResult,

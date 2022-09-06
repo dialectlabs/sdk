@@ -1,4 +1,4 @@
-import type { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '../../../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 import { UnsupportedOperationError } from '../../sdk/errors';
 import type { PublicKey } from '@solana/web3.js';
 import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';

@@ -1,5 +1,5 @@
-import { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../../../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import {
   DialectWalletAdapterSolanaTxTokenSigner,
   SolanaTxTokenSigner,

@@ -3,8 +3,8 @@ import type {
   CreateNotificationTypeCommandDto,
   DataServiceDappNotificationTypesApi,
 } from './data-service-dapp-notification-types-api';
-import { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
 import type { NotificationTypeDto } from './data-service-wallet-notification-subscriptions-api';
 import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';

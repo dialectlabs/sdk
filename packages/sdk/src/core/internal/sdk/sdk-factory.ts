@@ -54,7 +54,7 @@ import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
 import { SolanaDappMessages } from '../../../solana/dapp/solana-dapp-messages';
 import type { DataServiceDialectsApi } from '../../../data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
-import { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '../../../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
 import { SolanaDappAddresses } from '../../../solana/dapp/solana-dapp-addresses';

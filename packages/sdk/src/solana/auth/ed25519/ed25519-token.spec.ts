@@ -1,9 +1,9 @@
 import { Keypair } from '@solana/web3.js';
 import { Duration } from 'luxon';
-import { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type { AuthenticationFacade } from '../../../core/auth/authentication-facade';
 import type { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
-import { NodeDialectWalletAdapter } from '../../../wallet-adapter/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from './ed25519-token-signer';
 import { Ed25519AuthenticationFacadeFactory } from '../../../core/auth/ed25519/ed25519-authentication-facade-factory';
 import type { TokenBody } from '../../../core/auth/auth.interface';
