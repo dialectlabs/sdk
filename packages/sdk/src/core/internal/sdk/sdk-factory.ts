@@ -17,7 +17,7 @@ import {
   TokenProvider,
 } from '../../auth/token-provider';
 import type { Wallets } from '../../wallet/wallet.interface';
-import { SolanaMessaging } from '../../../internal/messaging/solana-messaging';
+import { SolanaMessaging } from '../../../solana/messaging/solana-messaging';
 import type {
   DappAddresses,
   DappMessages,
@@ -26,7 +26,7 @@ import type {
 import { DataServiceDappNotificationSubscriptions } from '../dapp/data-service-dapp-notification-subscriptions';
 import type { Program } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { createDialectProgram } from '../../../internal/messaging/solana-dialect-program-factory';
+import { createDialectProgram } from '../../../solana/messaging/solana-dialect-program-factory';
 import { Duration } from 'luxon';
 import { DialectWalletAdapterSolanaTxTokenSigner } from '../../../solana/auth/solana-tx/solana-tx-token-signer';
 import { DataServiceApi } from '../../../data-service-api/data-service-api';
@@ -43,11 +43,11 @@ import {
 } from '../identity/identity-resolvers';
 import { DataServiceWallets } from '../../../internal/wallet/data-service-wallets';
 import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
-import { DataServiceMessaging } from '../../../internal/messaging/data-service-messaging';
+import { DataServiceMessaging } from '../messaging/data-service-messaging';
 import {
   MessagingBackend,
   MessagingFacade,
-} from '../../../internal/messaging/messaging-facade';
+} from '../messaging/messaging-facade';
 import { IllegalArgumentError } from '../../sdk/errors';
 import type { DataServiceDappNotificationSubscriptionsApi } from '../../../data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';

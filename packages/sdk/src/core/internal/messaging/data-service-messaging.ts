@@ -11,25 +11,25 @@ import type {
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '../../core/messaging/messaging.interface';
+} from '../../messaging/messaging.interface';
 import type {
   DataServiceDialectsApi,
   DialectAccountDto,
   DialectDto,
-} from '../../data-service-api/data-service-dialects-api';
-import { requireSingleMember } from './commons';
-import type { DataServiceApiClientError } from '../../data-service-api/data-service-api';
+} from '../../../data-service-api/data-service-dialects-api';
+import { requireSingleMember } from '../../messaging/commons';
+import type { DataServiceApiClientError } from '../../../data-service-api/data-service-api';
 import {
   IllegalStateError,
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
-} from '../../core/sdk/errors';
-import type { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
-import { MemberScopeDto } from '../../data-service-api/data-service-dialects-api';
+} from '../../sdk/errors';
+import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import { MemberScopeDto } from '../../../data-service-api/data-service-dialects-api';
 import {
   ThreadId,
   ThreadMemberScope,
-} from '../../core/messaging/messaging.interface';
+} from '../../messaging/messaging.interface';
 import {
   EncryptedTextSerde,
   EncryptionProps,
@@ -37,8 +37,8 @@ import {
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
 import { PublicKey } from '@solana/web3.js';
-import { Backend } from '../../core/sdk/sdk.interface';
-import { withErrorParsing } from '../../data-service-api/data-service-errors';
+import { Backend } from '../../sdk/sdk.interface';
+import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(

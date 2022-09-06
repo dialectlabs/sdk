@@ -4,7 +4,7 @@ import { PublicKey } from '@solana/web3.js';
 import type { DappAddresses } from '../../dapp/dapp.interface';
 import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
 import type { DappAddressDto } from '../../../data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '../../../internal/messaging/solana-messaging-errors';
+import { withErrorParsing } from '../../../solana/messaging/solana-messaging-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
   constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}
