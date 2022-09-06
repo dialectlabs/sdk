@@ -1,4 +1,4 @@
-import { AddressTypeDto } from '../../internal/data-service-api/data-service-dapps-api';
+import { AddressTypeDto } from '../../data-service-api/data-service-dapps-api';
 import { IllegalArgumentError } from '../../sdk/errors';
 import type { Wallet } from '../wallet/wallet.interface';
 

@@ -1,4 +1,4 @@
-import type { TokenProvider } from '../../core/auth/token-provider';
+import type { TokenProvider } from '../core/auth/token-provider';
 import {
   createHeaders,
   withReThrowingDataServiceError,

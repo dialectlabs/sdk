@@ -16,16 +16,16 @@ import type {
   DataServiceDialectsApi,
   DialectAccountDto,
   DialectDto,
-} from '../data-service-api/data-service-dialects-api';
+} from '../../data-service-api/data-service-dialects-api';
 import { requireSingleMember } from './commons';
-import type { DataServiceApiClientError } from '../data-service-api/data-service-api';
+import type { DataServiceApiClientError } from '../../data-service-api/data-service-api';
 import {
   IllegalStateError,
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
 } from '../../sdk/errors';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
-import { MemberScopeDto } from '../data-service-api/data-service-dialects-api';
+import { MemberScopeDto } from '../../data-service-api/data-service-dialects-api';
 import {
   ThreadId,
   ThreadMemberScope,
@@ -38,7 +38,7 @@ import {
 } from '@dialectlabs/web3';
 import { PublicKey } from '@solana/web3.js';
 import { Backend } from '../../sdk/sdk.interface';
-import { withErrorParsing } from '../data-service-api/data-service-errors';
+import { withErrorParsing } from '../../data-service-api/data-service-errors';
 
 export class DataServiceMessaging implements Messaging {
   constructor(

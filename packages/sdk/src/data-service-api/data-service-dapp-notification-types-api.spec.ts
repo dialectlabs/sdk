@@ -1,15 +1,15 @@
-import { TokenProvider } from '../../core/auth/token-provider';
+import { TokenProvider } from '../core/auth/token-provider';
 import type {
   CreateNotificationTypeCommandDto,
   DataServiceDappNotificationTypesApi,
 } from './data-service-dapp-notification-types-api';
-import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
 import type { NotificationTypeDto } from './data-service-wallet-notification-subscriptions-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
 import type { DappDto } from './data-service-dapps-api';
-import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 
 describe('Data service dapp notification types api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

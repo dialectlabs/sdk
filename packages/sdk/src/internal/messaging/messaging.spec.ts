@@ -12,7 +12,7 @@ import { TokenProvider } from '../../core/auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceMessaging } from './data-service-messaging';
-import { DataServiceApi } from '../data-service-api/data-service-api';
+import { DataServiceApi } from '../../data-service-api/data-service-api';
 import { SolanaMessaging } from './solana-messaging';
 import { programs } from '@dialectlabs/web3';
 import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
