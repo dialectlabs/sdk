@@ -5,7 +5,7 @@ import {
   NotSignedError,
   SolanaError,
   UnknownError,
-} from '../../sdk/errors';
+} from '../../core/sdk/errors';
 
 export class AccountNotFoundError extends SolanaError {
   static matchers = ['Account does not exist'];

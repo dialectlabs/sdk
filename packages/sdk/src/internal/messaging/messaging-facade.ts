@@ -7,12 +7,12 @@ import type {
   ThreadsGeneralSummary,
   ThreadSummary,
 } from '../../core/messaging/messaging.interface';
-import type { Backend } from '../../sdk/sdk.interface';
+import type { Backend } from '../../core/sdk/sdk.interface';
 import {
   DialectSdkError,
   IllegalArgumentError,
   IllegalStateError,
-} from '../../sdk/errors';
+} from '../../core/sdk/errors';
 
 export interface MessagingBackend {
   messaging: Messaging;

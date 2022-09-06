@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceApiClientError } from '../../../data-service-api/data-service-api';
 import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
-import { ResourceNotFoundError } from '../../../sdk/errors';
+import { ResourceNotFoundError } from '../../sdk/errors';
 import type {
   CreateDappCommand,
   Dapp,

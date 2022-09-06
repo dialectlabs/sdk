@@ -8,7 +8,7 @@ import {
   ResourceAlreadyExistsError,
   ResourceNotFoundError,
   UnknownError,
-} from '../sdk/errors';
+} from '../core/sdk/errors';
 import { DataServiceApiError, NetworkError } from './data-service-api';
 
 export async function withErrorParsing<T>(

@@ -1,6 +1,6 @@
 import { decodeURLSafe } from '@stablelib/base64';
 import type { Token, TokenBody, TokenHeader } from './auth.interface';
-import { DialectSdkError } from '../../sdk/errors';
+import { DialectSdkError } from '../sdk/errors';
 import { jsonParseFromBase64 } from '../../internal/utils/bytes-utils';
 
 export class TokenParsingError extends DialectSdkError {

@@ -1,5 +1,5 @@
 import type { PublicKey } from '@solana/web3.js';
-import type { Backend } from 'sdk/sdk.interface';
+import type { Backend } from 'core/sdk/sdk.interface';
 
 export interface Messaging {
   findAll(): Promise<Thread[]>;

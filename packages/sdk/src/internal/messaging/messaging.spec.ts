@@ -6,7 +6,7 @@ import type {
 import { ThreadMemberScope } from '../../core/messaging/messaging.interface';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from './solana-dialect-program-factory';
-import { ThreadAlreadyExistsError } from '../../sdk/errors';
+import { ThreadAlreadyExistsError } from '../../core/sdk/errors';
 import { DialectWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { TokenProvider } from '../../core/auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';

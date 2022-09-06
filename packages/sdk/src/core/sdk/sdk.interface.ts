@@ -1,16 +1,16 @@
 import type {
   ApiAvailability,
   DialectWalletAdapter,
-} from '../wallet-adapter/dialect-wallet-adapter.interface';
-import type { TokenProvider } from '../core/auth/token-provider';
-import type { Wallets } from '../core/wallet/wallet.interface';
+} from '../../wallet-adapter/dialect-wallet-adapter.interface';
+import type { TokenProvider } from '../auth/token-provider';
+import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
-import type { EncryptionKeysStore } from '../core/encryption/encryption-keys-store';
-import type { Messaging } from '../core/messaging/messaging.interface';
-import type { Dapps } from '../core/dapp/dapp.interface';
-import type { IdentityResolver } from '../core/identity/identity.interface';
-import type { TokenStore } from '../core/auth/token-store';
+import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
+import type { Messaging } from '../messaging/messaging.interface';
+import type { Dapps } from '../dapp/dapp.interface';
+import type { IdentityResolver } from '../identity/identity.interface';
+import type { TokenStore } from '../auth/token-store';
 import { DialectSdkFactory } from '../internal/sdk/sdk-factory';
 
 export abstract class Dialect {

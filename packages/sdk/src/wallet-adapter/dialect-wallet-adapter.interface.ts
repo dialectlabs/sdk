@@ -3,7 +3,7 @@ import type {
   SignerWalletAdapterProps,
 } from '@solana/wallet-adapter-base/lib/types/signer';
 import type { PublicKey } from '@solana/web3.js';
-import type { Backend } from '../sdk/sdk.interface';
+import type { Backend } from '../core/sdk/sdk.interface';
 
 export interface ApiAvailability {
   supportedBackends: Backend[];
