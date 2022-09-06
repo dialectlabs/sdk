@@ -3,8 +3,8 @@ import { findDialects } from '@dialectlabs/web3';
 import type { Program } from '@project-serum/anchor';
 import type { DappAddresses } from '../../dapp/dapp.interface';
 import { withErrorParsing } from '../messaging/solana-messaging-errors';
-import type { DappAddress } from '../../address/addresses.interface';
-import { AddressType } from '../../address/addresses.interface';
+import type { DappAddress } from '../../core/address/addresses.interface';
+import { AddressType } from '../../core/address/addresses.interface';
 import { IllegalStateError } from '../../sdk/errors';
 
 export class SolanaDappAddresses implements DappAddresses {

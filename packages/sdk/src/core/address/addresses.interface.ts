@@ -1,6 +1,6 @@
-import { AddressTypeDto } from '../internal/data-service-api/data-service-dapps-api';
-import { IllegalArgumentError } from '../sdk/errors';
-import type { Wallet } from '../wallet/wallet.interface';
+import { AddressTypeDto } from '../../internal/data-service-api/data-service-dapps-api';
+import { IllegalArgumentError } from '../../sdk/errors';
+import type { Wallet } from '../../wallet/wallet.interface';
 
 export interface Address {
   id: string;

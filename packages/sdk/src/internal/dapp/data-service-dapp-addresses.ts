@@ -1,5 +1,5 @@
-import type { DappAddress } from '../../address/addresses.interface';
-import { toAddressType } from '../../address/addresses.interface';
+import type { DappAddress } from '../../core/address/addresses.interface';
+import { toAddressType } from '../../core/address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
 import type { DappAddresses } from '../../dapp/dapp.interface';
 import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
