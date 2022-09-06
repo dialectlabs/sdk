@@ -28,7 +28,7 @@ import type {
   WalletPushNotificationSubscription,
   WalletPushNotificationSubscriptions,
   Wallets,
-} from '../../wallet/wallet.interface';
+} from '../../core/wallet/wallet.interface';
 import type { DataServiceWalletAddressesApi } from '../data-service-api/data-service-wallet-addresses-api';
 import type { DataServiceApiClientError } from '../data-service-api/data-service-api';
 import type { DataServiceWalletMessagesApi } from '../data-service-api/data-service-wallet-messages-api';
