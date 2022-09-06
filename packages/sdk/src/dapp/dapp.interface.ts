@@ -1,10 +1,10 @@
-import type { DappAddress } from '../address/addresses.interface';
+import type { DappAddress } from '../core/address/addresses.interface';
 import type { PublicKey } from '@solana/web3.js';
 import type {
   NotificationConfig,
   NotificationType,
 } from '../wallet/wallet.interface';
-import type { AddressType } from '../address/addresses.interface';
+import type { AddressType } from '../core/address/addresses.interface';
 import type { NotificationSubscription } from '../wallet/wallet.interface';
 
 export interface Dapps {

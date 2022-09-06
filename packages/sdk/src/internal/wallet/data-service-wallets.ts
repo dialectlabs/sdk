@@ -1,4 +1,7 @@
-import type { Address, DappAddress } from '../../address/addresses.interface';
+import type {
+  Address,
+  DappAddress,
+} from '../../core/address/addresses.interface';
 import { toDappAddress } from '../dapp/data-service-dapp-addresses';
 import type {
   CreateAddressCommand,
@@ -37,7 +40,7 @@ import type {
 import {
   toAddressType,
   toAddressTypeDto,
-} from '../../address/addresses.interface';
+} from '../../core/address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceWalletDappAddressesApi } from '../data-service-api/data-service-wallet-dapp-addresses-api';
 import type { AddressDto } from '../data-service-api/data-service-dapps-api';
