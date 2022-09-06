@@ -4,7 +4,7 @@ export * from './core/auth/ed25519/ed25519-token-signer';
 export * from './solana/auth/solana-tx/solana-tx-token-signer';
 export * from './core/auth/token-store';
 export * from './core/auth/token-provider';
-export * from './dapp/dapp.interface';
+export * from './core/dapp/dapp.interface';
 export * from './encryption/encryption.interface';
 export * from './encryption/encryption-keys-store';
 export * from './messaging/messaging.interface';

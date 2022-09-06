@@ -8,7 +8,7 @@ import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
 import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
 import type { Messaging } from '../messaging/messaging.interface';
-import type { Dapps } from '../dapp/dapp.interface';
+import type { Dapps } from '../core/dapp/dapp.interface';
 import type { IdentityResolver } from '../identity/identity.interface';
 import type { TokenStore } from '../core/auth/token-store';
 import { DialectSdkFactory } from '../internal/sdk/sdk-factory';

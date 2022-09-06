@@ -5,7 +5,7 @@ import type {
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
-} from '../../dapp/dapp.interface';
+} from '../../core/dapp/dapp.interface';
 import type { PublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '../../sdk/errors';
 import type { SolanaMessaging } from '../messaging/solana-messaging';

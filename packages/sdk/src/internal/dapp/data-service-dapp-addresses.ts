@@ -1,7 +1,7 @@
 import type { DappAddress } from '../../core/address/addresses.interface';
 import { toAddressType } from '../../core/address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
-import type { DappAddresses } from '../../dapp/dapp.interface';
+import type { DappAddresses } from '../../core/dapp/dapp.interface';
 import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
 import type { DappAddressDto } from '../data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '../messaging/solana-messaging-errors';
