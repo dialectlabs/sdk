@@ -1,7 +1,7 @@
 import type {
   ApiAvailability,
   DialectWalletAdapter,
-} from '../../wallet-adapter/dialect-wallet-adapter.interface';
+} from '../../solana/wallet-adapter/dialect-wallet-adapter.interface';
 import type { TokenProvider } from '../auth/token-provider';
 import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';

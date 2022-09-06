@@ -1,8 +1,8 @@
 import { DataServiceApi } from './data-service-api';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
 import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 

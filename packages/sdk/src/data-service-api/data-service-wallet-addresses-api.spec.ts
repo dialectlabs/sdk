@@ -1,6 +1,6 @@
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
+import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
 import type {
   CreateAddressCommandDto,

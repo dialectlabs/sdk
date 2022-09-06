@@ -1,5 +1,5 @@
 import type { PublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
 import type { TokenSignerResult } from '../../../core/auth/auth.interface';
 

@@ -5,9 +5,9 @@ import type {
   DialectDto,
   SendMessageCommand,
 } from './data-service-dialects-api';
-import { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 import { MemberScopeDto } from './data-service-dialects-api';
-import { NodeDialectWalletAdapter } from '../wallet-adapter/node-dialect-wallet-adapter';
+import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
 import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
