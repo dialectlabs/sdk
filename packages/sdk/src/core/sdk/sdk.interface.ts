@@ -1,7 +1,4 @@
-import type {
-  ApiAvailability,
-  DialectWalletAdapter,
-} from '../../solana/wallet-adapter/dialect-wallet-adapter.interface';
+import type { DialectWalletAdapter } from '../../solana/wallet-adapter/dialect-wallet-adapter.interface';
 import type { TokenProvider } from '../auth/token-provider';
 import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
@@ -17,6 +14,11 @@ export abstract class Dialect {
   static sdk(config: ConfigProps): DialectSdk {
     return new DialectSdkFactory(config).create();
   }
+}
+
+export interface ApiAvailability {
+  supportedBackends: Backend[];
+  canEncrypt: boolean;
 }
 
 export interface DialectSdk {
