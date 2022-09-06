@@ -22,7 +22,7 @@ import {
   getDialectForMembers,
   sendMessage,
 } from '@dialectlabs/web3';
-import { requireSingleMember } from './commons';
+import { requireSingleMember } from '../../core/messaging/commons';
 import {
   IllegalStateError,
   SolanaError,
