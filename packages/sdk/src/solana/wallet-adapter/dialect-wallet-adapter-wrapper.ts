@@ -1,10 +1,7 @@
 import type { PublicKey, Transaction } from '@solana/web3.js';
-import type {
-  ApiAvailability,
-  DialectWalletAdapter,
-} from './dialect-wallet-adapter.interface';
+import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../core/sdk/errors';
-import { Backend } from '../../core/sdk/sdk.interface';
+import { ApiAvailability, Backend } from '../../core/sdk/sdk.interface';
 
 export class DialectWalletAdapterWrapper
   implements DialectWalletAdapter, ApiAvailability
