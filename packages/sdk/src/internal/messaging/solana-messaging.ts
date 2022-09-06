@@ -41,7 +41,7 @@ import {
   AccountNotFoundError,
   withErrorParsing,
 } from './solana-messaging-errors';
-import type { DiffeHellmanKeys } from '../../encryption/encryption.interface';
+import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';

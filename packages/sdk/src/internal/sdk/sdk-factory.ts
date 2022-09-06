@@ -42,7 +42,7 @@ import {
   FirstFoundIdentityResolver,
 } from '../identity/identity-resolvers';
 import { DataServiceWallets } from '../wallet/data-service-wallets';
-import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
+import { EncryptionKeysStore } from '../../core/encryption/encryption-keys-store';
 import { DataServiceMessaging } from '../messaging/data-service-messaging';
 import {
   MessagingBackend,
