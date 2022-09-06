@@ -2,7 +2,6 @@ import {
   AuthenticationError,
   AuthorizationError,
   BusinessConstraintViolationError,
-  DialectCloudUnreachableError,
   DialectSdkError,
   IllegalArgumentError,
   ResourceAlreadyExistsError,
@@ -10,6 +9,7 @@ import {
   UnknownError,
 } from '../core/sdk/errors';
 import { DataServiceApiError, NetworkError } from './data-service-api';
+import { DialectCloudUnreachableError } from '../core/internal/errors';
 
 export async function withErrorParsing<T>(
   promise: Promise<T>,

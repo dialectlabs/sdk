@@ -6,7 +6,6 @@ import type {
 import { ThreadMemberScope } from '../../messaging/messaging.interface';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../../../solana/messaging/solana-dialect-program-factory';
-import { ThreadAlreadyExistsError } from '../../sdk/errors';
 import { DialectWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { TokenProvider } from '../../auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../../wallet-adapter/dialect-wallet-adapter-wrapper';
@@ -17,6 +16,7 @@ import { SolanaMessaging } from '../../../solana/messaging/solana-messaging';
 import { programs } from '@dialectlabs/web3';
 import { Ed25519AuthenticationFacadeFactory } from '../../auth/ed25519/ed25519-authentication-facade-factory';
 import { DialectWalletAdapterEd25519TokenSigner } from '../../../solana/auth/ed25519/ed25519-token-signer';
+import { ThreadAlreadyExistsError } from '../../messaging/errors';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
