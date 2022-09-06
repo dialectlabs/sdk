@@ -3,7 +3,7 @@ import type { TokenValidator } from './token-validator';
 import type { TokenParser } from './token-parser';
 import type { Duration } from 'luxon';
 import type { Token, TokenSigner } from './auth.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { PublicKey } from './auth.interface';
 
 export abstract class AuthenticationFacadeFactory {
   abstract get(): AuthenticationFacade;
@@ -21,7 +21,7 @@ export class AuthenticationFacade {
     return this.tokenSigner.alg;
   }
 
-  signerAuthority(): PublicKey {
+  signerSubject(): PublicKey {
     return this.tokenSigner.subject;
   }
 

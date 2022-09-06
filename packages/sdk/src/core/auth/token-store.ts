@@ -1,4 +1,4 @@
-import type { PublicKey } from '@solana/web3.js';
+import type { PublicKey } from './auth.interface';
 
 export abstract class TokenStore {
   abstract get(subject: PublicKey): string | null;
@@ -24,49 +24,49 @@ class InMemoryTokenStore extends TokenStore {
   private tokens: Record<string, string> = {};
 
   get(subject: PublicKey): string | null {
-    return this.tokens[subject.toBase58()] ?? null;
+    return this.tokens[subject.toString()] ?? null;
   }
 
   save(subject: PublicKey, token: string): string {
-    this.tokens[subject.toBase58()] = token;
+    this.tokens[subject.toString()] = token;
     return token;
   }
 
   delete(subject: PublicKey): void {
-    delete this.tokens[subject.toBase58()];
+    delete this.tokens[subject.toString()];
   }
 }
 
 class SessionStorageTokenStore extends TokenStore {
   get(subject: PublicKey): string | null {
-    const key = createStorageKey(subject.toBase58());
+    const key = createStorageKey(subject.toString());
     return sessionStorage.getItem(key);
   }
 
   delete(subject: PublicKey): void {
-    const key = createStorageKey(subject.toBase58());
+    const key = createStorageKey(subject.toString());
     sessionStorage.removeItem(key);
   }
 
   save(subject: PublicKey, token: string): string {
-    sessionStorage.setItem(createStorageKey(subject.toBase58()), token);
+    sessionStorage.setItem(createStorageKey(subject.toString()), token);
     return token;
   }
 }
 
 class LocalStorageTokenStore extends TokenStore {
   get(subject: PublicKey): string | null {
-    const key = createStorageKey(subject.toBase58());
+    const key = createStorageKey(subject.toString());
     return localStorage.getItem(key);
   }
 
   save(subject: PublicKey, token: string): string {
-    localStorage.setItem(createStorageKey(subject.toBase58()), token);
+    localStorage.setItem(createStorageKey(subject.toString()), token);
     return token;
   }
 
   delete(subject: PublicKey): void {
-    localStorage.removeItem(createStorageKey(subject.toBase58()));
+    localStorage.removeItem(createStorageKey(subject.toString()));
   }
 }
 

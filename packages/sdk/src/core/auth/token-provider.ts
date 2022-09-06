@@ -1,5 +1,4 @@
-import type { Token, TokenSigner } from './auth.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { Token } from './auth.interface';
 import { IllegalArgumentError } from '../sdk/errors';
 import { Duration } from 'luxon';
 import { TokenStore } from './token-store';
@@ -7,6 +6,7 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
+import type { PublicKey } from './auth.interface';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -28,7 +28,7 @@ export abstract class TokenProvider {
       tokenStore,
       tokenAuthenticationStrategy.tokenParser,
       tokenAuthenticationStrategy.tokenValidator,
-      tokenAuthenticationStrategy.signerAuthority(),
+      tokenAuthenticationStrategy.signerSubject(),
     );
   }
 }
@@ -66,7 +66,7 @@ class CachedTokenProvider extends TokenProvider {
 
   async get(): Promise<Token> {
     const existingToken = this.getToken();
-    const subject = this.subject.toBase58();
+    const subject = this.subject.toString();
     if (existingToken && this.tokenValidator.isValid(existingToken)) {
       delete this.delegateGetPromises[subject];
       return existingToken;
