@@ -22,7 +22,7 @@ export abstract class TokenGenerator {
   protected body(ttl: Duration): TokenBody {
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
-      sub: this.signer.subject.toBase58(),
+      sub: this.signer.subject.toString(),
       iat: Math.round(nowUtcSeconds),
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };

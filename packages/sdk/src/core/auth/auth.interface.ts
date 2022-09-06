@@ -1,4 +1,7 @@
-import type { PublicKey } from '@solana/web3.js';
+export abstract class PublicKey {
+  abstract toString(): string;
+  abstract toBytes(): Uint8Array;
+}
 
 export interface Token {
   rawValue: string;

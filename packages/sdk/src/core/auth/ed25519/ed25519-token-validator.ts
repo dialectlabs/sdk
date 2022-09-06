@@ -1,7 +1,7 @@
-import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 import { TokenValidator } from '../token-validator';
 import type { Token } from '../auth.interface';
+import { Ed25519PublicKey } from './ed25519-public-key';
 
 export class Ed25519TokenValidator extends TokenValidator {
   isSignatureValid(token: Token): boolean {
@@ -10,7 +10,7 @@ export class Ed25519TokenValidator extends TokenValidator {
     return nacl.sign.detached.verify(
       signingPayload,
       token.signature,
-      new PublicKey(token.body.sub).toBytes(),
+      new Ed25519PublicKey(token.body.sub).toBytes(),
     );
   }
 }
