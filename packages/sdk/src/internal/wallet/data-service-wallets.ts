@@ -2,7 +2,7 @@ import type {
   Address,
   DappAddress,
 } from '../../core/address/addresses.interface';
-import { toDappAddress } from '../dapp/data-service-dapp-addresses';
+import { toDappAddress } from '../../core/internal/dapp/data-service-dapp-addresses';
 import type {
   CreateAddressCommand,
   CreateDappAddressCommand,

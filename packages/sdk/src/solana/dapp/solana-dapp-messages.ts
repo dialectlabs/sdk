@@ -8,7 +8,7 @@ import type {
 } from '../../core/dapp/dapp.interface';
 import type { PublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '../../sdk/errors';
-import type { SolanaMessaging } from '../messaging/solana-messaging';
+import type { SolanaMessaging } from '../../internal/messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
 
 export class SolanaDappMessages implements DappMessages {

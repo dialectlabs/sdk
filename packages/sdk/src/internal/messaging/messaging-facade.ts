@@ -6,7 +6,7 @@ import type {
   Thread,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
 import type { Backend } from '../../sdk/sdk.interface';
 import {
   DialectSdkError,
