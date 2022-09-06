@@ -12,7 +12,7 @@ import type {
   Dapps,
   FindDappQuery,
   ReadOnlyDapp,
-} from '../../dapp/dapp.interface';
+} from '../../core/dapp/dapp.interface';
 import type { DappDto } from '../data-service-api/data-service-dapps-api';
 import type { DataServiceDappNotificationTypes } from './dapp-notification-types';
 import type { DataServiceDappNotificationSubscriptions } from './dapp-notification-subscriptions';

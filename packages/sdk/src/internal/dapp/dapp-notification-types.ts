@@ -3,7 +3,7 @@ import type {
   CreateNotificationTypeCommand,
   DappNotificationTypes,
   PatchNotificationTypeCommand,
-} from '../../dapp/dapp.interface';
+} from '../../core/dapp/dapp.interface';
 import type { NotificationType } from '../../wallet/wallet.interface';
 import { withErrorParsing } from '../data-service-api/data-service-errors';
 

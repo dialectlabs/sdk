@@ -9,7 +9,7 @@ import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wall
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
 import type { DataServiceDappsApi } from './data-service-dapps-api';
-import type { CreateDappCommand } from '../../dapp/dapp.interface';
+import type { CreateDappCommand } from '../../core/dapp/dapp.interface';
 import type { DappDto } from './data-service-dapps-api';
 import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
 import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';

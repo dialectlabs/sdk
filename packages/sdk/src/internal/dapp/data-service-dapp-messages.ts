@@ -4,7 +4,7 @@ import type {
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
-} from '../../dapp/dapp.interface';
+} from '../../core/dapp/dapp.interface';
 import { toAddressTypeDto } from '../../core/address/addresses.interface';
 import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
 import { withErrorParsing } from '../data-service-api/data-service-errors';

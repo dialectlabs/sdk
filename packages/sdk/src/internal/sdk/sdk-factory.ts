@@ -22,7 +22,7 @@ import type {
   DappAddresses,
   DappMessages,
   Dapps,
-} from '../../dapp/dapp.interface';
+} from '../../core/dapp/dapp.interface';
 import { DataServiceDappNotificationSubscriptions } from '../dapp/dapp-notification-subscriptions';
 import type { Program } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';

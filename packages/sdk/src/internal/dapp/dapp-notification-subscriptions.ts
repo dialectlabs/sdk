@@ -1,7 +1,7 @@
-import type { DappNotificationSubscriptions } from '../../dapp/dapp.interface';
+import type { DappNotificationSubscriptions } from '../../core/dapp/dapp.interface';
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceDappNotificationSubscriptionsApi } from '../data-service-api/data-service-dapp-notification-subscriptions-api';
-import type { DappNotificationSubscription } from '../../dapp/dapp.interface';
+import type { DappNotificationSubscription } from '../../core/dapp/dapp.interface';
 import { withErrorParsing } from '../data-service-api/data-service-errors';
 
 export class DataServiceDappNotificationSubscriptions
