@@ -23,11 +23,7 @@ import {
   sendMessage,
 } from '@dialectlabs/web3';
 import { requireSingleMember } from '../../core/messaging/commons';
-import {
-  IllegalStateError,
-  SolanaError,
-  ThreadAlreadyExistsError,
-} from '../../core/sdk/errors';
+import { IllegalStateError } from '../../core/sdk/errors';
 import {
   DialectWalletAdapterEncryptionKeysProvider,
   EncryptionKeysProvider,
@@ -46,6 +42,8 @@ import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { Backend } from '../../core/sdk/sdk.interface';
+import type { SolanaError } from '../errors';
+import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
