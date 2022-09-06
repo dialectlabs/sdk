@@ -41,7 +41,7 @@ import {
   FirstFoundFastIdentityResolver,
   FirstFoundIdentityResolver,
 } from '../identity/identity-resolvers';
-import { DataServiceWallets } from '../../../internal/wallet/data-service-wallets';
+import { DataServiceWallets } from '../wallet/data-service-wallets';
 import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
 import { DataServiceMessaging } from '../messaging/data-service-messaging';
 import {
