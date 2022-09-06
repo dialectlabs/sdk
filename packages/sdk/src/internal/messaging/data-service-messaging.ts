@@ -24,7 +24,7 @@ import {
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
 } from '../../core/sdk/errors';
-import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import type { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
 import { MemberScopeDto } from '../../data-service-api/data-service-dialects-api';
 import {
   ThreadId,

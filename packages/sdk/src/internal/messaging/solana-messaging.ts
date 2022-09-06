@@ -31,7 +31,7 @@ import {
 import {
   DialectWalletAdapterEncryptionKeysProvider,
   EncryptionKeysProvider,
-} from '../encryption/encryption-keys-provider';
+} from '../../core/internal/encryption/encryption-keys-provider';
 import {
   ThreadId,
   ThreadMemberScope,

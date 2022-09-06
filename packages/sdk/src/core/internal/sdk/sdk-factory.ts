@@ -11,7 +11,7 @@ import type {
 import { Backend } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
 import { DialectWalletAdapterEd25519TokenSigner } from '../../../solana/auth/ed25519/ed25519-token-signer';
-import { EncryptionKeysProvider } from '../../../internal/encryption/encryption-keys-provider';
+import { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import {
   DEFAULT_TOKEN_LIFETIME,
   TokenProvider,
@@ -40,7 +40,7 @@ import {
   AggregateSequentialIdentityResolver,
   FirstFoundFastIdentityResolver,
   FirstFoundIdentityResolver,
-} from '../../../internal/identity/identity-resolvers';
+} from '../identity/identity-resolvers';
 import { DataServiceWallets } from '../../../internal/wallet/data-service-wallets';
 import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
 import { DataServiceMessaging } from '../../../internal/messaging/data-service-messaging';

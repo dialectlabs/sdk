@@ -3,7 +3,7 @@ import type { Token } from '../../../core/auth/auth.interface';
 import {
   bytesToBase64,
   jsonStringifyToBase64,
-} from '../../../internal/utils/bytes-utils';
+} from '../../../core/internal/utils/bytes-utils';
 import { TokenGenerator } from '../../../core/auth/token-generator';
 
 export class SolanaTxTokenGenerator extends TokenGenerator {

@@ -1,5 +1,5 @@
 import type { Duration } from 'luxon';
-import { bytesToBase64 } from '../../internal/utils/bytes-utils';
+import { bytesToBase64 } from '../internal/utils/bytes-utils';
 import type {
   Token,
   TokenBody,
