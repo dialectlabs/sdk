@@ -27,7 +27,7 @@ import {
   IllegalStateError,
   SolanaError,
   ThreadAlreadyExistsError,
-} from '../../sdk/errors';
+} from '../../core/sdk/errors';
 import {
   DialectWalletAdapterEncryptionKeysProvider,
   EncryptionKeysProvider,
@@ -45,7 +45,7 @@ import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interfac
 import type { Program } from '@project-serum/anchor';
 import type { PublicKey } from '@solana/web3.js';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { Backend } from '../../sdk/sdk.interface';
+import { Backend } from '../../core/sdk/sdk.interface';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {

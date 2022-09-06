@@ -7,7 +7,7 @@ import type {
   UnicastDappMessageCommand,
 } from '../../core/dapp/dapp.interface';
 import type { PublicKey } from '@solana/web3.js';
-import { IllegalArgumentError } from '../../sdk/errors';
+import { IllegalArgumentError } from '../../core/sdk/errors';
 import type { SolanaMessaging } from '../../internal/messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
 

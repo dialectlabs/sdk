@@ -23,7 +23,7 @@ import {
   IllegalStateError,
   ResourceNotFoundError,
   ThreadAlreadyExistsError,
-} from '../../sdk/errors';
+} from '../../core/sdk/errors';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { MemberScopeDto } from '../../data-service-api/data-service-dialects-api';
 import {
@@ -37,7 +37,7 @@ import {
   UnencryptedTextSerde,
 } from '@dialectlabs/web3';
 import { PublicKey } from '@solana/web3.js';
-import { Backend } from '../../sdk/sdk.interface';
+import { Backend } from '../../core/sdk/sdk.interface';
 import { withErrorParsing } from '../../data-service-api/data-service-errors';
 
 export class DataServiceMessaging implements Messaging {

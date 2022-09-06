@@ -44,7 +44,7 @@ import {
 import { PublicKey } from '@solana/web3.js';
 import type { DataServiceWalletDappAddressesApi } from '../../data-service-api/data-service-wallet-dapp-addresses-api';
 import type { AddressDto } from '../../data-service-api/data-service-dapps-api';
-import { ResourceNotFoundError } from '../../sdk/errors';
+import { ResourceNotFoundError } from '../../core/sdk/errors';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../data-service-api/data-service-push-notification-subscriptions-api';
 import { withErrorParsing } from '../../data-service-api/data-service-errors';
 

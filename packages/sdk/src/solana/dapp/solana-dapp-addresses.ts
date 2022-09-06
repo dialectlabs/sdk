@@ -5,7 +5,7 @@ import type { DappAddresses } from '../../core/dapp/dapp.interface';
 import { withErrorParsing } from '../../internal/messaging/solana-messaging-errors';
 import type { DappAddress } from '../../core/address/addresses.interface';
 import { AddressType } from '../../core/address/addresses.interface';
-import { IllegalStateError } from '../../sdk/errors';
+import { IllegalStateError } from '../../core/sdk/errors';
 
 export class SolanaDappAddresses implements DappAddresses {
   constructor(private readonly program: Program) {}

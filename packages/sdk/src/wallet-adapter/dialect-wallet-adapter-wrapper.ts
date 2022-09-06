@@ -3,8 +3,8 @@ import type {
   ApiAvailability,
   DialectWalletAdapter,
 } from './dialect-wallet-adapter.interface';
-import { UnsupportedOperationError } from '../sdk/errors';
-import { Backend } from '../sdk/sdk.interface';
+import { UnsupportedOperationError } from '../core/sdk/errors';
+import { Backend } from '../core/sdk/sdk.interface';
 
 export class DialectWalletAdapterWrapper
   implements DialectWalletAdapter, ApiAvailability

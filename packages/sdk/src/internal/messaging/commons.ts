@@ -1,4 +1,7 @@
-import { IllegalStateError, UnsupportedOperationError } from '../../sdk/errors';
+import {
+  IllegalStateError,
+  UnsupportedOperationError,
+} from '../../core/sdk/errors';
 
 export function requireSingleMember<T>(members: T[]) {
   if (members.length !== 1) {

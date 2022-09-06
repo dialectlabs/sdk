@@ -1,6 +1,6 @@
 import type { DappAddress } from '../../address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
-import { DialectSdkError, IllegalArgumentError } from '../../../sdk/errors';
+import { DialectSdkError, IllegalArgumentError } from '../../sdk/errors';
 import type { DappAddresses } from '../../dapp/dapp.interface';
 import { groupBy } from '../../../internal/utils/collection-utils';
 import { AddressType } from '../../address/addresses.interface';

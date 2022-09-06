@@ -1,6 +1,6 @@
 import type { Token, TokenSigner } from './auth.interface';
 import type { PublicKey } from '@solana/web3.js';
-import { IllegalArgumentError } from '../../sdk/errors';
+import { IllegalArgumentError } from '../sdk/errors';
 import { Duration } from 'luxon';
 import { TokenStore } from './token-store';
 import type { TokenParser } from './token-parser';
