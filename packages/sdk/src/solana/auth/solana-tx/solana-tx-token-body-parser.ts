@@ -6,7 +6,7 @@ import type { TokenBody } from '../../../core/auth/auth.interface';
 import {
   bytesFromBase64,
   jsonParseFromBase64,
-} from '../../../internal/utils/bytes-utils';
+} from '../../../core/internal/utils/bytes-utils';
 import { Transaction } from '@solana/web3.js';
 
 export class SolanaTxTokenBodyParser extends TokenBodyParser {

@@ -1,6 +1,6 @@
 import type { Token } from '../auth.interface';
 import type { Duration } from 'luxon';
-import { jsonStringifyToBase64 } from '../../../internal/utils/bytes-utils';
+import { jsonStringifyToBase64 } from '../../internal/utils/bytes-utils';
 import { TokenGenerator } from '../token-generator';
 
 export class Ed25519TokenGenerator extends TokenGenerator {

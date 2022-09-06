@@ -2,7 +2,7 @@ import type { PublicKey } from '@solana/web3.js';
 import type {
   Identity,
   IdentityResolver,
-} from '../../core/identity/identity.interface';
+} from '../../identity/identity.interface';
 
 export class FirstFoundIdentityResolver implements IdentityResolver {
   constructor(private readonly resolvers: IdentityResolver[]) {}
