@@ -1,11 +1,11 @@
-import type { DataServiceDappNotificationTypesApi } from '../data-service-api/data-service-dapp-notification-types-api';
+import type { DataServiceDappNotificationTypesApi } from '../../../internal/data-service-api/data-service-dapp-notification-types-api';
 import type {
   CreateNotificationTypeCommand,
   DappNotificationTypes,
   PatchNotificationTypeCommand,
-} from '../../core/dapp/dapp.interface';
-import type { NotificationType } from '../../core/wallet/wallet.interface';
-import { withErrorParsing } from '../data-service-api/data-service-errors';
+} from '../../dapp/dapp.interface';
+import type { NotificationType } from '../../wallet/wallet.interface';
+import { withErrorParsing } from '../../../internal/data-service-api/data-service-errors';
 
 export class DataServiceDappNotificationTypes implements DappNotificationTypes {
   constructor(private readonly api: DataServiceDappNotificationTypesApi) {}

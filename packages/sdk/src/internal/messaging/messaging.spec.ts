@@ -2,8 +2,8 @@ import type {
   CreateThreadCommand,
   Messaging,
   SendMessageCommand,
-} from '../../messaging/messaging.interface';
-import { ThreadMemberScope } from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
+import { ThreadMemberScope } from '../../core/messaging/messaging.interface';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from './solana-dialect-program-factory';
 import { ThreadAlreadyExistsError } from '../../sdk/errors';

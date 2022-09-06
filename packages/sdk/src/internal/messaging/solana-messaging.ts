@@ -10,7 +10,7 @@ import type {
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
 import {
   createDialect,
   deleteDialect,
@@ -35,7 +35,7 @@ import {
 import {
   ThreadId,
   ThreadMemberScope,
-} from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
 import {
   AccountAlreadyExistsError,
   AccountNotFoundError,

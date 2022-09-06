@@ -11,7 +11,7 @@ import type {
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
 import type {
   DataServiceDialectsApi,
   DialectAccountDto,
@@ -29,7 +29,7 @@ import { MemberScopeDto } from '../data-service-api/data-service-dialects-api';
 import {
   ThreadId,
   ThreadMemberScope,
-} from '../../messaging/messaging.interface';
+} from '../../core/messaging/messaging.interface';
 import {
   EncryptedTextSerde,
   EncryptionProps,

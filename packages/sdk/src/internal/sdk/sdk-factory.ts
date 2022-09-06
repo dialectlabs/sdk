@@ -1,4 +1,4 @@
-import { DataServiceDappMessages } from '../dapp/data-service-dapp-messages';
+import { DataServiceDappMessages } from '../../core/internal/dapp/data-service-dapp-messages';
 import type {
   Config,
   ConfigProps,
@@ -23,19 +23,19 @@ import type {
   DappMessages,
   Dapps,
 } from '../../core/dapp/dapp.interface';
-import { DataServiceDappNotificationSubscriptions } from '../dapp/dapp-notification-subscriptions';
+import { DataServiceDappNotificationSubscriptions } from '../../core/internal/dapp/data-service-dapp-notification-subscriptions';
 import type { Program } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../messaging/solana-dialect-program-factory';
 import { Duration } from 'luxon';
 import { DialectWalletAdapterSolanaTxTokenSigner } from '../../solana/auth/solana-tx/solana-tx-token-signer';
 import { DataServiceApi } from '../data-service-api/data-service-api';
-import { DappMessagesFacade } from '../dapp/dapp-messages-facade';
-import { DappsImpl } from '../dapp/dapp';
+import { DappMessagesFacade } from '../../core/internal/dapp/dapp-messages-facade';
+import { DappsImpl } from '../../core/internal/dapp/dapp';
 import { programs } from '@dialectlabs/web3';
 import type { DataServiceDappNotificationTypesApi } from '../data-service-api/data-service-dapp-notification-types-api';
 import { TokenStore } from '../../core/auth/token-store';
-import { DappAddressesFacade } from '../dapp/dapp-addresses-facade';
+import { DappAddressesFacade } from '../../core/internal/dapp/dapp-addresses-facade';
 import {
   AggregateSequentialIdentityResolver,
   FirstFoundFastIdentityResolver,
@@ -50,14 +50,14 @@ import {
 } from '../messaging/messaging-facade';
 import { IllegalArgumentError } from '../../sdk/errors';
 import type { DataServiceDappNotificationSubscriptionsApi } from '../data-service-api/data-service-dapp-notification-subscriptions-api';
-import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
-import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
+import { DataServiceDappAddresses } from '../../core/internal/dapp/data-service-dapp-addresses';
+import { SolanaDappMessages } from '../../solana/dapp/solana-dapp-messages';
 import type { DataServiceDialectsApi } from '../data-service-api/data-service-dialects-api';
 import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { DataServiceDappNotificationTypes } from '../dapp/dapp-notification-types';
-import type { Messaging } from '../../messaging/messaging.interface';
-import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
+import { DataServiceDappNotificationTypes } from '../../core/internal/dapp/data-service-dapp-notification-types';
+import type { Messaging } from '../../core/messaging/messaging.interface';
+import { SolanaDappAddresses } from '../../solana/dapp/solana-dapp-addresses';
 import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
 import { SolanaTxAuthenticationFacadeFactory } from '../../solana/auth/solana-tx/solana-tx-authentication-facade-factory';
 

@@ -7,7 +7,7 @@ export * from './core/auth/token-provider';
 export * from './core/dapp/dapp.interface';
 export * from './encryption/encryption.interface';
 export * from './encryption/encryption-keys-store';
-export * from './messaging/messaging.interface';
+export * from './core/messaging/messaging.interface';
 export * from './sdk/errors';
 export * from './sdk/sdk.interface';
 export * from './core/wallet/wallet.interface';
