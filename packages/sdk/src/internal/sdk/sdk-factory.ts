@@ -29,11 +29,11 @@ import { PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../messaging/solana-dialect-program-factory';
 import { Duration } from 'luxon';
 import { DialectWalletAdapterSolanaTxTokenSigner } from '../../solana/auth/solana-tx/solana-tx-token-signer';
-import { DataServiceApi } from '../data-service-api/data-service-api';
+import { DataServiceApi } from '../../data-service-api/data-service-api';
 import { DappMessagesFacade } from '../../core/internal/dapp/dapp-messages-facade';
 import { DappsImpl } from '../../core/internal/dapp/dapp';
 import { programs } from '@dialectlabs/web3';
-import type { DataServiceDappNotificationTypesApi } from '../data-service-api/data-service-dapp-notification-types-api';
+import type { DataServiceDappNotificationTypesApi } from '../../data-service-api/data-service-dapp-notification-types-api';
 import { TokenStore } from '../../core/auth/token-store';
 import { DappAddressesFacade } from '../../core/internal/dapp/dapp-addresses-facade';
 import {
@@ -49,11 +49,11 @@ import {
   MessagingFacade,
 } from '../messaging/messaging-facade';
 import { IllegalArgumentError } from '../../sdk/errors';
-import type { DataServiceDappNotificationSubscriptionsApi } from '../data-service-api/data-service-dapp-notification-subscriptions-api';
+import type { DataServiceDappNotificationSubscriptionsApi } from '../../data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappAddresses } from '../../core/internal/dapp/data-service-dapp-addresses';
 import { SolanaDappMessages } from '../../solana/dapp/solana-dapp-messages';
-import type { DataServiceDialectsApi } from '../data-service-api/data-service-dialects-api';
-import type { DataServiceDappsApi } from '../data-service-api/data-service-dapps-api';
+import type { DataServiceDialectsApi } from '../../data-service-api/data-service-dialects-api';
+import type { DataServiceDappsApi } from '../../data-service-api/data-service-dapps-api';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { DataServiceDappNotificationTypes } from '../../core/internal/dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../core/messaging/messaging.interface';

@@ -6,8 +6,8 @@ import type {
   UnicastDappMessageCommand,
 } from '../../dapp/dapp.interface';
 import { toAddressTypeDto } from '../../address/addresses.interface';
-import type { DataServiceDappsApi } from '../../../internal/data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '../../../internal/data-service-api/data-service-errors';
+import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
+import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
   constructor(private readonly api: DataServiceDappsApi) {}

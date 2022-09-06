@@ -29,24 +29,24 @@ import type {
   WalletPushNotificationSubscriptions,
   Wallets,
 } from '../../core/wallet/wallet.interface';
-import type { DataServiceWalletAddressesApi } from '../data-service-api/data-service-wallet-addresses-api';
-import type { DataServiceApiClientError } from '../data-service-api/data-service-api';
-import type { DataServiceWalletMessagesApi } from '../data-service-api/data-service-wallet-messages-api';
+import type { DataServiceWalletAddressesApi } from '../../data-service-api/data-service-wallet-addresses-api';
+import type { DataServiceApiClientError } from '../../data-service-api/data-service-api';
+import type { DataServiceWalletMessagesApi } from '../../data-service-api/data-service-wallet-messages-api';
 import { TextSerde, UnencryptedTextSerde } from '@dialectlabs/web3';
 import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
-} from '../data-service-api/data-service-wallet-notification-subscriptions-api';
+} from '../../data-service-api/data-service-wallet-notification-subscriptions-api';
 import {
   toAddressType,
   toAddressTypeDto,
 } from '../../core/address/addresses.interface';
 import { PublicKey } from '@solana/web3.js';
-import type { DataServiceWalletDappAddressesApi } from '../data-service-api/data-service-wallet-dapp-addresses-api';
-import type { AddressDto } from '../data-service-api/data-service-dapps-api';
+import type { DataServiceWalletDappAddressesApi } from '../../data-service-api/data-service-wallet-dapp-addresses-api';
+import type { AddressDto } from '../../data-service-api/data-service-dapps-api';
 import { ResourceNotFoundError } from '../../sdk/errors';
-import type { DataServicePushNotificationSubscriptionsApi } from '../data-service-api/data-service-push-notification-subscriptions-api';
-import { withErrorParsing } from '../data-service-api/data-service-errors';
+import type { DataServicePushNotificationSubscriptionsApi } from '../../data-service-api/data-service-push-notification-subscriptions-api';
+import { withErrorParsing } from '../../data-service-api/data-service-errors';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
