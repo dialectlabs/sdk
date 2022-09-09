@@ -6,7 +6,6 @@ import type {
 import { ThreadMemberScope } from '../../core/messaging/messaging.interface';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../../solana/messaging/solana-dialect-program-factory';
-import { DialectWalletAdapterEncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
 import { TokenProvider } from '../../core/auth/token-provider';
 import { DialectWalletAdapterWrapper } from '../../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 import { NodeDialectWalletAdapter } from '../../solana/wallet-adapter/node-dialect-wallet-adapter';
@@ -17,6 +16,7 @@ import { programs } from '@dialectlabs/web3';
 import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
 import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
+import { DialectWalletAdapterEncryptionKeysProvider } from '../../solana/encryption/encryption-keys-provider';
 
 interface WalletMessagingState {
   adapter: DialectWalletAdapterWrapper;
@@ -643,7 +643,11 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
     LAMPORTS_PER_SOL * 100,
   );
   await program.provider.connection.confirmTransaction(airdropRequest);
-  const userSolanaMessaging = SolanaMessaging.create(walletAdapter, program);
+  const userSolanaMessaging = new SolanaMessaging(
+    walletAdapter,
+    program,
+    new DialectWalletAdapterEncryptionKeysProvider(walletAdapter),
+  );
   return {
     adapter: walletAdapter,
     messaging: userSolanaMessaging,
