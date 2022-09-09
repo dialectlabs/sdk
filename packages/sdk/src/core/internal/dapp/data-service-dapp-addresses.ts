@@ -1,10 +1,12 @@
 import type { DappAddress } from '../../address/addresses.interface';
 import { toAddressType } from '../../address/addresses.interface';
-import { PublicKey } from '@solana/web3.js';
 import type { DappAddresses } from '../../dapp/dapp.interface';
-import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
-import type { DappAddressDto } from '../../../data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '../../../solana/messaging/solana-messaging-errors';
+import type {
+  DappAddressDto,
+  DataServiceDappsApi,
+} from '../../../data-service-api/data-service-dapps-api';
+import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
+import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
   constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}
@@ -28,7 +30,7 @@ export function toDappAddress(dto: DappAddressDto) {
       value: dto.address.value,
       verified: dto.address.verified,
       wallet: {
-        publicKey: new PublicKey(dto.address.wallet.publicKey),
+        publicKey: new Ed25519PublicKey(dto.address.wallet.publicKey),
       },
     },
   };

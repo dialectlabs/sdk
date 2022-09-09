@@ -1,6 +1,8 @@
-import { PublicKey } from '@solana/web3.js';
 import type { DataServiceApiClientError } from '../../../data-service-api/data-service-api';
-import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
+import type {
+  DappDto,
+  DataServiceDappsApi,
+} from '../../../data-service-api/data-service-dapps-api';
 import { ResourceNotFoundError } from '../../sdk/errors';
 import type {
   CreateDappCommand,
@@ -13,10 +15,11 @@ import type {
   FindDappQuery,
   ReadOnlyDapp,
 } from '../../dapp/dapp.interface';
-import type { DappDto } from '../../../data-service-api/data-service-dapps-api';
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
 import type { DataServiceDappNotificationSubscriptions } from './data-service-dapp-notification-subscriptions';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
+import type { PublicKey } from '../../auth/auth.interface';
+import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
 
 export class DappsImpl implements Dapps {
   constructor(
@@ -40,7 +43,7 @@ export class DappsImpl implements Dapps {
 
   private toDapp(dappDto: DappDto) {
     return new DappImpl(
-      new PublicKey(dappDto.publicKey),
+      new Ed25519PublicKey(dappDto.publicKey),
       dappDto.name,
       dappDto.verified,
       dappDto.telegramBotUserName,
@@ -62,7 +65,7 @@ export class DappsImpl implements Dapps {
       }),
     );
     return dappDtos.map((it) => ({
-      publicKey: new PublicKey(it.publicKey),
+      publicKey: new Ed25519PublicKey(it.publicKey),
       name: it.name,
       description: it.description,
       websiteUrl: it.websiteUrl,
