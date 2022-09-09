@@ -1,6 +1,10 @@
 export abstract class PublicKey {
   abstract toString(): string;
   abstract toBytes(): Uint8Array;
+
+  equals(other: PublicKey) {
+    return this.toString() === other.toString();
+  }
 }
 
 export interface Token {

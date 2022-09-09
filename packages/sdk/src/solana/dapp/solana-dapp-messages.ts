@@ -6,10 +6,11 @@ import type {
   SendDappMessageCommand,
   UnicastDappMessageCommand,
 } from '../../core/dapp/dapp.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '../../core/sdk/errors';
 import type { SolanaMessaging } from '../messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
+import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaDappMessages implements DappMessages {
   constructor(

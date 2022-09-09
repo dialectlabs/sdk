@@ -30,7 +30,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.unicast({
         ...command,
         notificationTypeId: command.notificationTypeId,
-        recipientPublicKey: command.recipient.toBase58(),
+        recipientPublicKey: command.recipient.toString(),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),
@@ -46,7 +46,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.multicast({
         ...command,
         notificationTypeId: command.notificationTypeId,
-        recipientPublicKeys: command.recipients.map((it) => it.toBase58()),
+        recipientPublicKeys: command.recipients.map((it) => it.toString()),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),

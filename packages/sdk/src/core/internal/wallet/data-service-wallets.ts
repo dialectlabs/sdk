@@ -143,7 +143,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     const created = await withErrorParsing(
       this.api.create({
         addressId: command.addressId,
-        dappPublicKey: command.dappPublicKey.toBase58(),
+        dappPublicKey: command.dappPublicKey.toString(),
         enabled: command.enabled,
       }),
     );
@@ -169,7 +169,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     const found = await withErrorParsing(
       this.api.findAll({
         addressIds: query.addressIds,
-        dappPublicKey: query.dappPublicKey?.toBase58(),
+        dappPublicKey: query.dappPublicKey?.toString(),
       }),
     );
     return found.map((it) => toDappAddress(it));
@@ -230,7 +230,7 @@ export class DataServiceWalletNotificationSubscriptions
   ): Promise<WalletNotificationSubscription[]> {
     const dtos = await withErrorParsing(
       this.api.findAll({
-        dappPublicKey: query?.dappPublicKey?.toBase58(),
+        dappPublicKey: query?.dappPublicKey?.toString(),
       }),
     );
     return dtos.map(fromNotificationSubscriptionDto);

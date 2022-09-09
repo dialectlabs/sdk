@@ -1,6 +1,9 @@
-import type { PublicKey } from '@solana/web3.js';
-import type { Address, DappAddress } from '../address/addresses.interface';
-import type { AddressType } from '../address/addresses.interface';
+import type {
+  Address,
+  AddressType,
+  DappAddress,
+} from '../address/addresses.interface';
+import type { PublicKey } from '../auth/auth.interface';
 
 export interface Wallets {
   readonly publicKey: PublicKey;
