@@ -39,11 +39,12 @@ import {
 } from './solana-messaging-errors';
 import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 import type { Program } from '@project-serum/anchor';
-import type { PublicKey } from '@solana/web3.js';
+import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import type { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { Backend } from '../../core/sdk/sdk.interface';
 import type { SolanaError } from '../errors';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
+import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaMessaging implements Messaging {
   static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
@@ -87,7 +88,7 @@ export class SolanaMessaging implements Messaging {
               scopes: toProtocolScopes(command.me.scopes),
             },
             {
-              publicKey: otherMember.publicKey,
+              publicKey: new SolanaPublicKey(otherMember.publicKey.toString()),
               scopes: toProtocolScopes(otherMember.scopes),
             },
           ],
@@ -146,7 +147,11 @@ export class SolanaMessaging implements Messaging {
     encryptionProps: EncryptionProps | null,
   ) {
     return withErrorParsing(
-      getDialect(this.program, query.id.address, encryptionProps),
+      getDialect(
+        this.program,
+        new SolanaPublicKey(query.id.address),
+        encryptionProps,
+      ),
     );
   }
 
@@ -158,7 +163,10 @@ export class SolanaMessaging implements Messaging {
     return withErrorParsing(
       getDialectForMembers(
         this.program,
-        [this.walletAdapter.publicKey, otherMember],
+        [
+          this.walletAdapter.publicKey,
+          new SolanaPublicKey(otherMember.toString()),
+        ],
         encryptionProps,
       ),
     );
@@ -232,7 +240,9 @@ export class SolanaThread implements Thread {
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
     return this.dialectAccount.dialect.messages.map((it) => ({
-      author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
+      author: it.owner.equals(new SolanaPublicKey(this.me.publicKey))
+        ? this.me
+        : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: it.text,
     }));
@@ -279,11 +289,19 @@ function toProtocolScopes(scopes: ThreadMemberScope[]): [boolean, boolean] {
 }
 
 function findMember(memberPk: PublicKey, dialect: Dialect) {
-  return dialect.members.find((it) => it.publicKey.equals(memberPk)) ?? null;
+  return (
+    dialect.members.find((it) =>
+      it.publicKey.equals(new SolanaPublicKey(memberPk.toString())),
+    ) ?? null
+  );
 }
 
 function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
-  return dialect.members.find((it) => !it.publicKey.equals(memberPk)) ?? null;
+  return (
+    dialect.members.find(
+      (it) => !it.publicKey.equals(new SolanaPublicKey(memberPk.toString())),
+    ) ?? null
+  );
 }
 
 async function toSolanaThread(

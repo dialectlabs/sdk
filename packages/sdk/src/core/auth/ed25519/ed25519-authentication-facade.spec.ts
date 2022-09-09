@@ -1,16 +1,16 @@
-import { Keypair } from '@solana/web3.js';
 import { Duration } from 'luxon';
 
 import { NaclEd25519TokenSigner } from './nacl-ed25519-token-signer';
-import { randomBytes, sign } from 'tweetnacl';
 import type { AuthenticationFacade } from '../authentication-facade';
 import { Ed25519AuthenticationFacadeFactory } from './ed25519-authentication-facade-factory';
 import type { TokenBody } from '../auth.interface';
+import { Ed25519PublicKey } from './ed25519-public-key';
+import { generateEd25519Keypair } from './utils';
 
 describe('ed25519 token tests', () => {
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    const keypair = sign.keyPair.fromSeed(Uint8Array.from(randomBytes(32)));
+    const keypair = generateEd25519Keypair();
     const signer = new NaclEd25519TokenSigner(keypair);
     authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
   });
@@ -48,10 +48,13 @@ describe('ed25519 token tests', () => {
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
+    const compromisedSub = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub: new Keypair().publicKey.toBase58(),
+      sub: compromisedSub,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(

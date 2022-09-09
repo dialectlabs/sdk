@@ -57,7 +57,7 @@ export class DappAddressesFacade implements DappAddresses {
 
   private static dedupleWalletAddresses(walletAddresses: DappAddress[]) {
     const walletPublicKeyToWalletAddresses = groupBy(walletAddresses, (it) =>
-      it.address.wallet.publicKey.toBase58(),
+      it.address.wallet.publicKey.toString(),
     );
     const deduplicatedWalletAddresses: DappAddress[] = Object.entries(
       walletPublicKeyToWalletAddresses,

@@ -26,16 +26,16 @@ import { requireSingleMember } from '../../messaging/commons';
 import type { DataServiceApiClientError } from '../../../data-service-api/data-service-api';
 import { IllegalStateError, ResourceNotFoundError } from '../../sdk/errors';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
-import {
-  EncryptedTextSerde,
-  EncryptionProps,
-  TextSerde,
-  UnencryptedTextSerde,
-} from '@dialectlabs/web3';
-import { PublicKey } from '@solana/web3.js';
 import { Backend } from '../../sdk/sdk.interface';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 import { ThreadAlreadyExistsError } from '../../messaging/errors';
+import type { PublicKey } from '../../auth/auth.interface';
+import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
+import type { EncryptionProps, TextSerde } from '../../messaging/text-serde';
+import {
+  EncryptedTextSerde,
+  UnencryptedTextSerde,
+} from '../../messaging/text-serde';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -58,11 +58,11 @@ export class DataServiceMessaging implements Messaging {
         encrypted: command.encrypted,
         members: [
           {
-            publicKey: this.me.toBase58(),
+            publicKey: this.me.toString(),
             scopes: toDataServiceScopes(command.me.scopes),
           },
           ...otherMembers.map((e) => ({
-            publicKey: e.publicKey.toBase58(),
+            publicKey: e.publicKey.toString(),
             scopes: toDataServiceScopes(e.scopes),
           })),
         ],
@@ -98,12 +98,12 @@ export class DataServiceMessaging implements Messaging {
       throw new IllegalStateError(
         `Cannot resolve members from given list: ${dialect.members.map(
           (it) => it.publicKey,
-        )} and wallet public key ${this.me.toBase58()}`,
+        )} and wallet public key ${this.me.toString()}`,
       );
     }
     const { serde, canBeDecrypted } = await this.createTextSerde(dialect);
     const otherThreadMembers: ThreadMember[] = otherMembers.map((member) => ({
-      publicKey: new PublicKey(member.publicKey),
+      publicKey: new Ed25519PublicKey(member.publicKey),
       scopes: fromDataServiceScopes(member.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     }));
@@ -114,9 +114,9 @@ export class DataServiceMessaging implements Messaging {
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
-      new PublicKey(publicKey),
+      new Ed25519PublicKey(publicKey),
       {
-        publicKey: new PublicKey(meMember.publicKey),
+        publicKey: new Ed25519PublicKey(meMember.publicKey),
         scopes: fromDataServiceScopes(meMember.scopes),
         // lastReadMessageTimestamp: new Date(), // TODO: implement
       },
@@ -153,7 +153,7 @@ export class DataServiceMessaging implements Messaging {
     return {
       serde: new EncryptedTextSerde(
         encryptionProps,
-        dialect.members.map((it) => new PublicKey(it.publicKey)),
+        dialect.members.map((it) => new Ed25519PublicKey(it.publicKey)),
       ),
       canBeDecrypted: true,
     };
@@ -171,7 +171,7 @@ export class DataServiceMessaging implements Messaging {
   private async findById(query: FindThreadByIdQuery) {
     try {
       return await withErrorParsing(
-        this.dataServiceDialectsApi.find(query.id.address.toBase58()),
+        this.dataServiceDialectsApi.find(query.id.address.toString()),
       );
     } catch (e) {
       const err = e as DataServiceApiClientError;
@@ -184,7 +184,7 @@ export class DataServiceMessaging implements Messaging {
     const otherMembers = requireAtLeastOneMember(query.otherMembers);
     const dialectAccountDtos = await withErrorParsing(
       this.dataServiceDialectsApi.findAll({
-        memberPublicKeys: otherMembers.map((member) => member.toBase58()),
+        memberPublicKeys: otherMembers.map((member) => member.toString()),
       }),
     );
     if (dialectAccountDtos.length > 1) {
@@ -200,29 +200,29 @@ export class DataServiceMessaging implements Messaging {
       const dialectSummaryDto = await withErrorParsing(
         this.dataServiceDialectsApi.findSummary({
           memberPublicKeys: [
-            this.me.toBase58(),
-            ...query.otherMembers.map((it) => it.toBase58()),
+            this.me.toString(),
+            ...query.otherMembers.map((it) => it.toString()),
           ],
         }),
       );
       const meMember = dialectSummaryDto.memberSummaries.find(
-        (it) => it.publicKey === this.me.toBase58(),
+        (it) => it.publicKey === this.me.toString(),
       );
       if (!meMember) {
         throw new IllegalStateError(
           `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
             (it) => it.publicKey,
-          )} and provided member public key ${this.me.toBase58()}`,
+          )} and provided member public key ${this.me.toString()}`,
         );
       }
       const meMemberSummary: ThreadMemberSummary = {
-        publicKey: new PublicKey(meMember.publicKey),
+        publicKey: new Ed25519PublicKey(meMember.publicKey),
         hasUnreadMessages: meMember.hasUnreadMessages,
         unreadMessagesCount: meMember.unreadMessagesCount,
       };
       return {
         id: new ThreadId({
-          address: new PublicKey(dialectSummaryDto.publicKey),
+          address: new Ed25519PublicKey(dialectSummaryDto.publicKey),
           backend: Backend.DialectCloud,
         }),
         me: meMemberSummary,
@@ -237,7 +237,7 @@ export class DataServiceMessaging implements Messaging {
   async findSummaryAll(): Promise<ThreadsGeneralSummary> {
     return await withErrorParsing(
       this.dataServiceDialectsApi.findSummaryAll({
-        publicKey: this.me.toBase58(),
+        publicKey: this.me.toString(),
       }),
     );
   }
@@ -267,13 +267,13 @@ export class DataServiceThread implements Thread {
 
   async delete(): Promise<void> {
     await withErrorParsing(
-      this.dataServiceDialectsApi.delete(this.address.toBase58()),
+      this.dataServiceDialectsApi.delete(this.address.toString()),
     );
   }
 
   async messages(): Promise<ThreadMessage[]> {
     const { dialect } = await withErrorParsing(
-      this.dataServiceDialectsApi.find(this.address.toBase58()),
+      this.dataServiceDialectsApi.find(this.address.toString()),
     );
     this.updatedAt = new Date(dialect.lastMessageTimestamp);
     if (this.encryptionEnabledButCannotBeUsed()) {
@@ -281,7 +281,7 @@ export class DataServiceThread implements Thread {
     }
     return dialect.messages.map((it) => ({
       author:
-        it.owner === this.me.publicKey.toBase58()
+        it.owner === this.me.publicKey.toString()
           ? this.me
           : this.otherMembersPks[it.owner]!,
       timestamp: new Date(it.timestamp),
@@ -299,7 +299,7 @@ export class DataServiceThread implements Thread {
       await this.encryptionKeysProvider.getFailFast();
     }
     await withErrorParsing(
-      this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
+      this.dataServiceDialectsApi.sendMessage(this.address.toString(), {
         text: Array.from(this.textSerde.serialize(command.text)),
         deduplicationId: command.deduplicationId,
       }),
@@ -308,7 +308,7 @@ export class DataServiceThread implements Thread {
 
   async setLastReadMessageTime(time: Date): Promise<void> {
     await withErrorParsing(
-      this.dataServiceDialectsApi.patchMember(this.id.address.toBase58(), {
+      this.dataServiceDialectsApi.patchMember(this.id.address.toString(), {
         lastReadMessageTimestamp: time.getTime(),
       }),
     );
@@ -325,7 +325,7 @@ function toDataServiceScopes(scopes: ThreadMemberScope[]) {
 
 function findMember(memberPk: PublicKey, dialect: DialectDto) {
   return (
-    dialect.members.find((it) => memberPk.toBase58() === it.publicKey) ?? null
+    dialect.members.find((it) => memberPk.toString() === it.publicKey) ?? null
   );
 }
 

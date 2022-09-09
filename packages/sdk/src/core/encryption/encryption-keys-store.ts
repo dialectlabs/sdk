@@ -1,5 +1,5 @@
-import type { PublicKey } from '@solana/web3.js';
 import type { DiffeHellmanKeys } from './encryption.interface';
+import type { PublicKey } from '../auth/auth.interface';
 
 export abstract class EncryptionKeysStore {
   abstract get(subject: PublicKey): DiffeHellmanKeys | null;
@@ -23,18 +23,18 @@ class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
   private keys: Record<string, DiffeHellmanKeys> = {};
 
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    return this.keys[subject.toBase58()] ?? null;
+    return this.keys[subject.toString()] ?? null;
   }
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
-    this.keys[subject.toBase58()] = keys;
+    this.keys[subject.toString()] = keys;
     return keys;
   }
 }
 
 class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    const key = createStorageKey(subject.toBase58());
+    const key = createStorageKey(subject.toString());
     try {
       const keys = sessionStorage.getItem(key);
       if (!keys) {
@@ -49,7 +49,7 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     sessionStorage.setItem(
-      createStorageKey(subject.toBase58()),
+      createStorageKey(subject.toString()),
       serializeDiffeHellmanKeys(keys),
     );
     return keys;
@@ -58,7 +58,7 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
 
 class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
   get(subject: PublicKey): DiffeHellmanKeys | null {
-    const key = createStorageKey(subject.toBase58());
+    const key = createStorageKey(subject.toString());
     try {
       const keys = localStorage.getItem(key);
       if (!keys) {
@@ -73,7 +73,7 @@ class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
 
   save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     localStorage.setItem(
-      createStorageKey(subject.toBase58()),
+      createStorageKey(subject.toString()),
       serializeDiffeHellmanKeys(keys),
     );
     return keys;
