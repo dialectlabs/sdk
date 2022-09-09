@@ -24,10 +24,7 @@ import {
 } from '@dialectlabs/web3';
 import { requireSingleMember } from '../../core/messaging/commons';
 import { IllegalStateError } from '../../core/sdk/errors';
-import {
-  DialectWalletAdapterEncryptionKeysProvider,
-  EncryptionKeysProvider,
-} from '../../core/internal/encryption/encryption-keys-provider';
+import type { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
 import {
   ThreadId,
   ThreadMemberScope,
@@ -47,12 +44,6 @@ import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
 import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaMessaging implements Messaging {
-  static create(walletAdapter: DialectWalletAdapterWrapper, program: Program) {
-    const encryptionKeysProvider =
-      new DialectWalletAdapterEncryptionKeysProvider(walletAdapter);
-    return new SolanaMessaging(walletAdapter, program, encryptionKeysProvider);
-  }
-
   constructor(
     private readonly walletAdapter: DialectWalletAdapterWrapper,
     private readonly program: Program,
@@ -123,7 +114,9 @@ export class SolanaMessaging implements Messaging {
   }
 
   private async findInternal(query: FindThreadQuery) {
-    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
+    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe(
+      this.walletAdapter.publicKey,
+    );
     const encryptionProps = getEncryptionProps(
       this.walletAdapter.publicKey,
       encryptionKeys,
@@ -231,7 +224,9 @@ export class SolanaThread implements Thread {
   }
 
   async messages(): Promise<ThreadMessage[]> {
-    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe();
+    const encryptionKeys = await this.encryptionKeysProvider.getFailSafe(
+      this.walletAdapter.publicKey,
+    );
     const encryptionProps = getEncryptionProps(
       this.me.publicKey,
       encryptionKeys,
@@ -317,7 +312,8 @@ async function toSolanaThread(
     return null;
   }
   const canBeDecrypted = dialect.encrypted
-    ? (await encryptionKeysProvider.getFailSafe()) !== null
+    ? (await encryptionKeysProvider.getFailSafe(walletAdapter.publicKey)) !==
+      null
     : true;
   const otherThreadMember: ThreadMember = {
     publicKey: otherMember.publicKey,
@@ -348,7 +344,7 @@ async function getEncryptionPropsForMutation(
   walletAdapter: DialectWalletAdapterWrapper,
 ) {
   const encryptionKeys = isThreadEncrypted
-    ? await encryptionKeysProvider.getFailFast()
+    ? await encryptionKeysProvider.getFailFast(walletAdapter.publicKey)
     : null;
   return getEncryptionProps(walletAdapter.publicKey, encryptionKeys);
 }

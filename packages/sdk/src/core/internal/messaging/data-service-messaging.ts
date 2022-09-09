@@ -87,7 +87,7 @@ export class DataServiceMessaging implements Messaging {
   }
 
   private checkEncryptionSupported() {
-    return this.encryptionKeysProvider.getFailFast();
+    return this.encryptionKeysProvider.getFailFast(this.me);
   }
 
   private async toDataServiceThread(dialectAccountDto: DialectAccountDto) {
@@ -138,8 +138,9 @@ export class DataServiceMessaging implements Messaging {
         canBeDecrypted: true,
       };
     }
-    const diffieHellmanKeyPair =
-      await this.encryptionKeysProvider.getFailSafe();
+    const diffieHellmanKeyPair = await this.encryptionKeysProvider.getFailSafe(
+      this.me,
+    );
     const encryptionProps: EncryptionProps | null = diffieHellmanKeyPair && {
       diffieHellmanKeyPair,
       ed25519PublicKey: this.me.toBytes(),
@@ -296,7 +297,7 @@ export class DataServiceThread implements Thread {
 
   async send(command: SendMessageCommand): Promise<void> {
     if (this.encryptionEnabledButCannotBeUsed()) {
-      await this.encryptionKeysProvider.getFailFast();
+      await this.encryptionKeysProvider.getFailFast(this.me.publicKey);
     }
     await withErrorParsing(
       this.dataServiceDialectsApi.sendMessage(this.address.toString(), {

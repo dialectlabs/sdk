@@ -60,6 +60,7 @@ import type { Messaging } from '../../messaging/messaging.interface';
 import { SolanaDappAddresses } from '../../../solana/dapp/solana-dapp-addresses';
 import { Ed25519AuthenticationFacadeFactory } from '../../auth/ed25519/ed25519-authentication-facade-factory';
 import { SolanaTxAuthenticationFacadeFactory } from '../../../solana/auth/solana-tx/solana-tx-authentication-facade-factory';
+import { DialectWalletAdapterEncryptionKeysProvider } from '../../../solana/encryption/encryption-keys-provider';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -86,8 +87,10 @@ export class DialectSdkFactory {
       config.solana.dialectProgramAddress,
       config.solana.rpcUrl,
     );
+    const walletAdapterEncryptionKeysProvider =
+      new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
     const encryptionKeysProvider = EncryptionKeysProvider.create(
-      config.wallet,
+      walletAdapterEncryptionKeysProvider,
       config.encryptionKeysStore,
     );
     const authenticationFacadeFactory = config.wallet.canSignMessage()
