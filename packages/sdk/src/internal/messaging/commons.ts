@@ -12,3 +12,13 @@ export function requireSingleMember<T>(members: T[]) {
   }
   return member;
 }
+
+export function requireAtLeastOneMember<T>(members: T[]) {
+  if (members.length < 1) {
+    throw new UnsupportedOperationError(
+      'Unsupported operation',
+      'At least one member should be specified',
+    );
+  }
+  return members;
+}

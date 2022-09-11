@@ -196,6 +196,7 @@ export interface SendMessageCommand {
 
 export interface FindDialectQuery {
   readonly memberPublicKey?: string;
+  readonly memberPublicKeys?: string[];
 }
 
 export interface DialectSummaryDto {
