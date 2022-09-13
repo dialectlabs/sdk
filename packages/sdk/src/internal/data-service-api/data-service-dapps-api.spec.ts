@@ -50,6 +50,7 @@ describe('Data service dapps api (e2e)', () => {
       description: command.description,
       avatarUrl: command.avatarUrl,
       verified: false,
+      telegramBotUserName: expect.any(String)
     };
     expect(created).toMatchObject(dappDtoExpected);
     expect(addresses).toMatchObject([]);
@@ -74,6 +75,7 @@ describe('Data service dapps api (e2e)', () => {
       description: command.description,
       avatarUrl: command.avatarUrl,
       verified: false,
+      telegramBotUserName: expect.any(String)
     };
     expect(found).toMatchObject(dappDtoExpected);
   });
