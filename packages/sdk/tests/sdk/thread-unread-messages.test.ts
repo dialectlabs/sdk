@@ -207,9 +207,14 @@ describe('Wallet multi-thread read messages', () => {
       text: 'bar',
     });
 
-    const mainUserGeneralSummaryBefore = await mainUser.threads.findSummaryAll();
-    const mainUserThread1SummaryBefore = await mainUser.threads.findSummary({ otherMembers: [user1.wallet.publicKey] });
-    const mainUserThread2SummaryBefore = await mainUser.threads.findSummary({ otherMembers: [user2.wallet.publicKey] });
+    const mainUserGeneralSummaryBefore =
+      await mainUser.threads.findSummaryAll();
+    const mainUserThread1SummaryBefore = await mainUser.threads.findSummary({
+      otherMembers: [user1.wallet.publicKey],
+    });
+    const mainUserThread2SummaryBefore = await mainUser.threads.findSummary({
+      otherMembers: [user2.wallet.publicKey],
+    });
 
     expect(mainUserThread1SummaryBefore!.me.unreadMessagesCount).toBe(1);
     expect(mainUserThread2SummaryBefore!.me.unreadMessagesCount).toBe(1);
@@ -221,11 +226,15 @@ describe('Wallet multi-thread read messages', () => {
     await mainUserPovThread2!.setLastReadMessageTime(theOnlyMessage.timestamp);
     // then
     const mainUserGeneralSummaryAfter = await mainUser.threads.findSummaryAll();
-    const mainUserThread1SummaryAfter = await mainUser.threads.findSummary({ otherMembers: [user1.wallet.publicKey] });
-    const mainUserThread2SummaryAfter = await mainUser.threads.findSummary({ otherMembers: [user2.wallet.publicKey] });
+    const mainUserThread1SummaryAfter = await mainUser.threads.findSummary({
+      otherMembers: [user1.wallet.publicKey],
+    });
+    const mainUserThread2SummaryAfter = await mainUser.threads.findSummary({
+      otherMembers: [user2.wallet.publicKey],
+    });
 
     expect(mainUserThread1SummaryAfter!.me.unreadMessagesCount).toBe(1);
     expect(mainUserThread2SummaryAfter!.me.unreadMessagesCount).toBe(0);
     expect(mainUserGeneralSummaryAfter!.unreadMessagesCount).toBe(1);
-  })
+  });
 });

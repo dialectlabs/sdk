@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- feature: add deduplicationId to messages in order to support optimistic messages 
+
 ## [0.8.0] - 2022-08-25
 
 - feature: support dapp telegram bot configuration

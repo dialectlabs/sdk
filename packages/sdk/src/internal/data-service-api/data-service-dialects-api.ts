@@ -188,10 +188,12 @@ export interface MessageDto {
   readonly owner: string;
   readonly text: number[];
   readonly timestamp: number;
+  readonly deduplicationId?: string;
 }
 
 export interface SendMessageCommand {
   readonly text: number[];
+  readonly deduplicationId?: string;
 }
 
 export interface FindDialectQuery {

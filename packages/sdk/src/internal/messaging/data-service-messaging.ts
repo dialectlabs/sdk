@@ -275,6 +275,7 @@ export class DataServiceThread implements Thread {
         it.owner === this.me.publicKey.toBase58() ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
+      deduplicationId: it.deduplicationId,
     }));
   }
 
@@ -289,6 +290,7 @@ export class DataServiceThread implements Thread {
     await withErrorParsing(
       this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
         text: Array.from(this.textSerde.serialize(command.text)),
+        deduplicationId: command.deduplicationId,
       }),
     );
   }
