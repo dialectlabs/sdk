@@ -29,6 +29,9 @@ export class CivicIdentityResolver implements IdentityResolver {
     const profile = await CivicProfile.get(publicKey.toBase58(), {
       solana: { connection: this.connection },
     });
+    if (!profile.name) {
+      return null;
+    }
     return civicProfileToDialectIdentity(profile);
   }
 

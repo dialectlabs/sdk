@@ -32,12 +32,14 @@ export interface ThreadMemberSummary {
 
 export interface SendMessageCommand {
   text: string;
+  deduplicationId?: string;
 }
 
 export interface ThreadMessage {
   text: string;
   timestamp: Date;
   author: ThreadMember;
+  deduplicationId?: string;
 }
 
 export interface CreateThreadCommand {

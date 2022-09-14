@@ -22,6 +22,14 @@ describe('Civic tests', () => {
     });
   });
 
+  it('should return null if no identity found during direct lookup', async () => {
+    const resolver = new CivicIdentityResolver(connection);
+    const owner = PublicKey.default;
+    const identity = await resolver.resolve(owner);
+
+    expect(identity).toBeNull();
+  });
+
   it('should perform a reverse lookup from a .sol address', async () => {
     const resolver = new CivicIdentityResolver(connection);
     const owner = new PublicKey('BriW4tTAiAm541uB2Fua3dUNoGayRa8Wt7pZUshUbrPB');

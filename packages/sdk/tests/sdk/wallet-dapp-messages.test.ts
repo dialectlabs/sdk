@@ -1,7 +1,6 @@
 import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
 import { Backend, Dialect, DialectSdk } from '@sdk/sdk.interface';
 import { ThreadMemberScope } from '@messaging/messaging.interface';
-import { Keypair } from '@solana/web3.js';
 
 function createSdk() {
   return Dialect.sdk({
