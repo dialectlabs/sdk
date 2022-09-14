@@ -77,28 +77,6 @@ describe('Data service dialects api (e2e)', () => {
     ).rejects.toBeTruthy();
   });
 
-  test('wallet-adapter cannot create dialect with more than 2 members', async () => {
-    await expect(
-      wallet1Api.create({
-        encrypted: false,
-        members: [
-          {
-            publicKey: wallet1.publicKey.toBase58(),
-            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-          },
-          {
-            publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-          },
-          {
-            publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-          },
-        ],
-      }),
-    ).rejects.toBeTruthy();
-  });
-
   test('wallet-adapter cannot create dialect with duplicate member', async () => {
     await expect(
       wallet1Api.create({
