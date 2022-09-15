@@ -74,8 +74,8 @@ describe('Data service dapps api (e2e)', () => {
       name: command.name,
       description: command.description,
       avatarUrl: command.avatarUrl,
-      verified: false,
       telegramBotUserName: expect.any(String),
+      verified: false,
     };
     expect(found).toMatchObject(dappDtoExpected);
   });
