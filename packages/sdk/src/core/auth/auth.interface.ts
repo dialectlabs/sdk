@@ -24,6 +24,7 @@ export interface TokenHeader {
 
 export interface TokenBody {
   sub: string;
+  sub_jwk?: string;
   iat?: number;
   exp: number;
 }
@@ -36,6 +37,7 @@ export interface TokenSignerResult {
 export interface TokenSigner {
   alg: string;
   subject: PublicKey;
+  subjectPublicKey?: PublicKey;
 
   sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }

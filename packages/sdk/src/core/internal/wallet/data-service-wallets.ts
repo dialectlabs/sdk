@@ -1,4 +1,8 @@
 import type { Address, DappAddress } from '../../address/addresses.interface';
+import {
+  toAddressType,
+  toAddressTypeDto,
+} from '../../address/addresses.interface';
 import { toDappAddress } from '../dapp/data-service-dapp-addresses';
 import type {
   CreateAddressCommand,
@@ -34,16 +38,13 @@ import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
 } from '../../../data-service-api/data-service-wallet-notification-subscriptions-api';
-import {
-  toAddressType,
-  toAddressTypeDto,
-} from '../../address/addresses.interface';
-import { PublicKey } from '@solana/web3.js';
 import type { DataServiceWalletDappAddressesApi } from '../../../data-service-api/data-service-wallet-dapp-addresses-api';
 import type { AddressDto } from '../../../data-service-api/data-service-dapps-api';
 import { ResourceNotFoundError } from '../../sdk/errors';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../../data-service-api/data-service-push-notification-subscriptions-api';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
+import type { PublicKey } from '../../auth/auth.interface';
+import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -199,7 +200,7 @@ export class DataServiceWalletMessages implements WalletMessages {
       }),
     );
     return dappMessages.map((it) => ({
-      author: new PublicKey(it.owner),
+      author: new Ed25519PublicKey(it.owner),
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
@@ -213,7 +214,7 @@ function toAddress(addressDto: AddressDto): Address {
     verified: addressDto.verified,
     type: toAddressType(addressDto.type),
     wallet: {
-      publicKey: new PublicKey(addressDto.wallet.publicKey),
+      publicKey: new Ed25519PublicKey(addressDto.wallet.publicKey),
     },
   };
 }
@@ -251,7 +252,7 @@ function fromNotificationSubscriptionDto(
     notificationType: dto.notificationType,
     subscription: {
       wallet: {
-        publicKey: new PublicKey(dto.subscription.wallet.publicKey),
+        publicKey: new Ed25519PublicKey(dto.subscription.wallet.publicKey),
       },
       config: dto.subscription.config,
     },
@@ -268,6 +269,7 @@ export class DataServiceWalletPushNotificationSubscriptions
   async delete(physicalId: string): Promise<void> {
     await withErrorParsing(this.api.delete(physicalId));
   }
+
   async upsert(
     command: UpsertPushNotificationSubscriptionCommand,
   ): Promise<WalletPushNotificationSubscription> {

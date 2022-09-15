@@ -8,6 +8,7 @@ export class SolanaTxTokenValidator extends TokenValidator {
     const byteBody = decodeURLSafe(token.base64Body);
     const tx = Transaction.from(byteBody);
     tx.recentBlockhash = PublicKey.default.toString();
-    return tx.verifySignatures();
+    const transactionSignatureValid = tx.verifySignatures();
+    return transactionSignatureValid && token.body.sub === token.body.sub_jwk;
   }
 }
