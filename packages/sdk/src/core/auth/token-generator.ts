@@ -23,6 +23,7 @@ export abstract class TokenGenerator {
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
       sub: this.signer.subject.toString(),
+      sub_jwk: this.signer.subjectPublicKey?.toString(),
       iat: Math.round(nowUtcSeconds),
       exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
     };

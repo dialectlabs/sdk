@@ -91,4 +91,31 @@ describe('ed25519 token tests', () => {
     const isParsedTokenValid = authenticationFacade.isValid(compromisedToken);
     expect(isParsedTokenValid).toBeFalsy();
   });
+
+  test('subject and signer may be different', async () => {
+    // when
+    const signerKeypair = generateEd25519Keypair();
+    const subjectPublicKey = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    );
+    const signerPublicKey = new Ed25519PublicKey(signerKeypair.publicKey);
+    const signer = new NaclEd25519TokenSigner(
+      signerKeypair,
+      signerPublicKey,
+      subjectPublicKey,
+    );
+    authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
+    // when
+    const token = await authenticationFacade.generateToken(
+      Duration.fromObject({ seconds: 100 }),
+    );
+    // then
+    expect(token.body.sub).toBe(subjectPublicKey.toString());
+    expect(token.body.sub_jwk).toBe(signerPublicKey.toString());
+    const isValid = authenticationFacade.isValid(token);
+    expect(isValid).toBeTruthy();
+    const parsedToken = authenticationFacade.parseToken(token.rawValue);
+    const isParsedTokenValid = authenticationFacade.isValid(parsedToken);
+    expect(isParsedTokenValid).toBeTruthy();
+  });
 });

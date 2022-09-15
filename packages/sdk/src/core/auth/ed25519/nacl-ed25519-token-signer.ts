@@ -4,7 +4,13 @@ import { sign, SignKeyPair } from 'tweetnacl';
 import { Ed25519PublicKey } from './ed25519-public-key';
 
 export class NaclEd25519TokenSigner extends Ed25519TokenSigner {
-  constructor(readonly keypair: SignKeyPair) {
+  constructor(
+    readonly keypair: SignKeyPair,
+    readonly subjectPublicKey: PublicKey = new Ed25519PublicKey(
+      keypair.publicKey,
+    ),
+    readonly subject: PublicKey = new Ed25519PublicKey(keypair.publicKey),
+  ) {
     super();
   }
 
@@ -14,9 +20,5 @@ export class NaclEd25519TokenSigner extends Ed25519TokenSigner {
       signature,
       payload,
     };
-  }
-
-  get subject(): PublicKey {
-    return new Ed25519PublicKey(this.keypair.publicKey);
   }
 }

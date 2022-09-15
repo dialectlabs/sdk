@@ -9,5 +9,7 @@ export abstract class Ed25519TokenSigner implements TokenSigner {
 
   abstract subject: PublicKey;
 
+  abstract subjectPublicKey: PublicKey;
+
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }
