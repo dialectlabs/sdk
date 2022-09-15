@@ -2,7 +2,11 @@
 
 ## [UNRELEASED]
 
-## [0.8.1]
+## [0.9.0] - 2022-09-15
+
+- feature: support threads with multiple members
+
+## [0.8.1] - 2022-09-14
 
 - feature: add deduplicationId to messages in order to support optimistic messages 
 
