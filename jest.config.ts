@@ -6,6 +6,7 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
+  transformIgnorePatterns: ['<rootDir>/node_modules/'],
   moduleNameMapper: {
     '^@address(.*)$': '<rootDir>/src/address$1',
     '^@auth/internal(.*)$': '<rootDir>/src/internal/auth$1',
