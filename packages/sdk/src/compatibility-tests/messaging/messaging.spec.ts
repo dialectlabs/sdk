@@ -14,7 +14,7 @@ import { DataServiceApi } from '../../data-service-api/data-service-api';
 import { SolanaMessaging } from '../../solana/messaging/solana-messaging';
 import { programs } from '@dialectlabs/web3';
 import { Ed25519AuthenticationFacadeFactory } from '../../core/auth/ed25519/ed25519-authentication-facade-factory';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/solana-ed25519-token-signer';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
 import { DialectWalletAdapterEncryptionKeysProvider } from '../../solana/encryption/encryption-keys-provider';
 

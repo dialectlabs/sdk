@@ -10,7 +10,7 @@ import type {
 } from '../../sdk/sdk.interface';
 import { Backend } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../../../solana/auth/ed25519/solana-ed25519-token-signer';
 import { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import {
   DEFAULT_TOKEN_LIFETIME,

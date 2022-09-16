@@ -8,7 +8,7 @@ import type {
   WalletNotificationSubscriptionDto,
 } from './data-service-wallet-notification-subscriptions-api';
 import { DataServiceApi } from './data-service-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
 import type { DappDto } from './data-service-dapps-api';
 import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 

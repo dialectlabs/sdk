@@ -110,8 +110,29 @@ describe('ed25519 token tests', () => {
       Duration.fromObject({ seconds: 100 }),
     );
     // then
+    expect(token.body.sub_jwk).not.toBe(token.body.sub);
     expect(token.body.sub).toBe(subjectPublicKey.toString());
     expect(token.body.sub_jwk).toBe(signerPublicKey.toString());
+    const isValid = authenticationFacade.isValid(token);
+    expect(isValid).toBeTruthy();
+    const parsedToken = authenticationFacade.parseToken(token.rawValue);
+    const isParsedTokenValid = authenticationFacade.isValid(parsedToken);
+    expect(isParsedTokenValid).toBeTruthy();
+  });
+
+  test('sub_jwk is optional', async () => {
+    // when
+    const signerKeypair = generateEd25519Keypair();
+    const signerPublicKey = new Ed25519PublicKey(signerKeypair.publicKey);
+    const signer = new NaclEd25519TokenSigner(signerKeypair, null!);
+    authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
+    // when
+    const token = await authenticationFacade.generateToken(
+      Duration.fromObject({ seconds: 100 }),
+    );
+    // then
+    expect(token.body.sub).toBe(signerPublicKey.toString());
+    expect(token.body.sub_jwk).toBeUndefined();
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
     const parsedToken = authenticationFacade.parseToken(token.rawValue);
