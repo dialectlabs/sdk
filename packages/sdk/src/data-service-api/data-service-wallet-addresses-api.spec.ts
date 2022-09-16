@@ -8,7 +8,7 @@ import type {
   PatchAddressCommandDto,
 } from './data-service-wallet-addresses-api';
 import { AddressDto, AddressTypeDto } from './data-service-dapps-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
 import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 
 describe('Data service wallet addresses api (e2e)', () => {

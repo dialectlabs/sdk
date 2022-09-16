@@ -10,7 +10,7 @@ import { MemberScopeDto } from './data-service-dialects-api';
 import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/ed25519-token-signer';
+import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
 import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 
 describe('Data service dialects api (e2e)', () => {
