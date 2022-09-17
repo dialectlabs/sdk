@@ -1,7 +1,7 @@
 import { HexString } from 'aptos';
 import { NodeDialectWalletAdapter } from './node-dialect-wallet-adapter';
 
-describe('node dialect wallet adapter', () => {
+describe('node dialect aptos wallet adapter', () => {
   it('should sign message correctly', async () => {
     // given
     const privateKey = new HexString(
