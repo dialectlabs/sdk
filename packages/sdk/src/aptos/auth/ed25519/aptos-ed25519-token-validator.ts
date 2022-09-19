@@ -4,10 +4,11 @@ import { getAptosAccountAddress } from '../../utils/aptos-account-utils';
 import { sign } from 'tweetnacl';
 import { TokenValidator } from '../../../core/auth/token-validator';
 import { AuthenticationError } from '../../../core/sdk/errors';
+import { APTOS_ED25519_TOKEN_SIGNER_ALG } from './aptos-ed25519-token-signer';
 
 export class AptosEd25519TokenValidator extends TokenValidator {
   canValidate(tokenHeader: TokenHeader): boolean {
-    return tokenHeader.alg === 'aptos-ed25519';
+    return tokenHeader.alg === APTOS_ED25519_TOKEN_SIGNER_ALG;
   }
 
   override isSignatureValid(token: Token): boolean {
