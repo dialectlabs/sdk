@@ -1,8 +1,8 @@
-import type { PublicKey } from '../auth/auth.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Identity {
   type: string;
-  publicKey: PublicKey;
+  accountAddress: AccountAddress;
   name: string;
   additionals?: {
     avatarUrl?: string;
@@ -13,7 +13,7 @@ export interface Identity {
 }
 
 export interface IdentityResolver {
-  resolve(publicKey: PublicKey): Promise<Identity | null>;
+  resolve(accountAddress: AccountAddress): Promise<Identity | null>;
 
   resolveReverse(domainName: string): Promise<Identity | null>;
 

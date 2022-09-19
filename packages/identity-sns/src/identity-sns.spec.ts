@@ -7,13 +7,18 @@ const connection = new Connection(RPC_URL);
 describe('bonfida tests', () => {
   it('should perform direct lookup', async () => {
     const resolver = new SNSIdentityResolver(connection);
-    const owner = new PublicKey('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA');
+    const owner = new PublicKey(
+      'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
+    ).toBase58();
     const identity = await resolver.resolve(owner);
 
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: 'bonfida',
-      publicKey: owner,
+      accountAddress: owner,
+      additionals: {
+        displayName: 'bonfida.sol',
+      },
     });
   });
 
@@ -25,19 +30,29 @@ describe('bonfida tests', () => {
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: domainName,
-      publicKey: new PublicKey('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA'),
+      accountAddress: new PublicKey(
+        'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
+      ).toBase58(),
+      additionals: {
+        displayName: 'bonfida.sol',
+      },
     });
   });
 
   it('should perform reverse lookup without .sol', async () => {
     const resolver = new SNSIdentityResolver(connection);
-    const domainName = 'bonfida';
+    const domainName = 'bonfida.sol';
     const identity = await resolver.resolveReverse(domainName);
 
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: domainName,
-      publicKey: new PublicKey('HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA'),
+      accountAddress: new PublicKey(
+        'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
+      ).toBase58(),
+      additionals: {
+        displayName: 'bonfida.sol',
+      },
     });
   });
 });
