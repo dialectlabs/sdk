@@ -22,9 +22,12 @@ import type {
   DialectDto,
 } from '../../../data-service-api/data-service-dialects-api';
 import { MemberScopeDto } from '../../../data-service-api/data-service-dialects-api';
-import { requireSingleMember } from '../../messaging/commons';
 import type { DataServiceApiClientError } from '../../../data-service-api/data-service-api';
-import { IllegalStateError, ResourceNotFoundError } from '../../sdk/errors';
+import {
+  IllegalStateError,
+  ResourceNotFoundError,
+  UnsupportedOperationError,
+} from '../../sdk/errors';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { Backend } from '../../sdk/sdk.interface';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
@@ -36,6 +39,7 @@ import {
   EncryptedTextSerde,
   UnencryptedTextSerde,
 } from '../../messaging/text-serde';
+import { requireAtLeastOneMember } from '../../messaging/commons';
 
 export class DataServiceMessaging implements Messaging {
   constructor(
@@ -108,7 +112,7 @@ export class DataServiceMessaging implements Messaging {
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     }));
     const otherMembersPks = Object.fromEntries(
-      otherThreadMembers.map((member) => [member.publicKey.toBase58(), member]),
+      otherThreadMembers.map((member) => [member.publicKey.toString(), member]),
     );
     return new DataServiceThread(
       this.dataServiceDialectsApi,
@@ -331,5 +335,5 @@ function findMember(memberPk: PublicKey, dialect: DialectDto) {
 }
 
 function findOtherMembers(memberPk: PublicKey, dialect: DialectDto) {
-  return dialect.members.filter((it) => memberPk.toBase58() !== it.publicKey);
+  return dialect.members.filter((it) => memberPk.toString() !== it.publicKey);
 }
