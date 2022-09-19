@@ -15,6 +15,10 @@ export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
     return this.delegate.publicAccount;
   }
 
+  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
+    return new DialectWalletAdapterWrapper(adapter);
+  }
+
   async signMessage(message: string): Promise<string> {
     if (!this.delegate.signMessage) {
       throw new UnsupportedOperationError(
@@ -23,9 +27,5 @@ export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
       );
     }
     return this.delegate.signMessage(message);
-  }
-
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
-    return new DialectWalletAdapterWrapper(adapter);
   }
 }

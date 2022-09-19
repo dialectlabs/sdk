@@ -2,8 +2,12 @@ import type { TokenGenerator } from './token-generator';
 import type { TokenValidator } from './token-validator';
 import type { TokenParser } from './token-parser';
 import type { Duration } from 'luxon';
-import type { Token, TokenSigner } from './auth.interface';
-import type { PublicKey } from './auth.interface';
+import type {
+  PublicKey,
+  Token,
+  TokenHeader,
+  TokenSigner,
+} from './auth.interface';
 
 export abstract class AuthenticationFacadeFactory {
   abstract get(): AuthenticationFacade;
@@ -31,6 +35,10 @@ export class AuthenticationFacade {
 
   parseToken(token: string) {
     return this.tokenParser.parse(token);
+  }
+
+  canValidate(tokenHeader: TokenHeader) {
+    return this.tokenValidator.canValidate(tokenHeader);
   }
 
   isSignatureValid(token: Token) {

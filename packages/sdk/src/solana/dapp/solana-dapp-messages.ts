@@ -6,7 +6,6 @@ import type {
   SendDappMessageCommand,
   UnicastDappMessageCommand,
 } from '../../core/dapp/dapp.interface';
-import type { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import { IllegalArgumentError } from '../../core/sdk/errors';
 import type { SolanaMessaging } from '../messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
@@ -48,6 +47,35 @@ export class SolanaDappMessages implements DappMessages {
     });
   }
 
+  async getRecipients(
+    notificationTypeId?: string,
+    recipientPredicate: (recipient: PublicKey) => boolean = () => true,
+  ) {
+    const dappNotificationTypes = await this.dappNotificationTypes.findAll();
+    if (dappNotificationTypes.length > 0 && !notificationTypeId) {
+      throw new IllegalArgumentError(
+        `Dapp has non-empty notification type configuration, therefore notification type id must be supplied`,
+      );
+    }
+    const addressRecipients = await this.getRecipientsByAddressSubscription(
+      recipientPredicate,
+    );
+    if (addressRecipients.length === 0) {
+      return [];
+    }
+    if (!notificationTypeId) {
+      return addressRecipients;
+    }
+    const notificationTypeRecipients =
+      await this.getRecipientsByNotificationType(
+        notificationTypeId,
+        recipientPredicate,
+      );
+    return notificationTypeRecipients.filter((ntr) =>
+      addressRecipients.find((ar) => ar.equals(ntr)),
+    );
+  }
+
   private async multicast(command: MulticastDappMessageCommand) {
     const allSettled = await Promise.allSettled(
       command.recipients.map((it) =>
@@ -77,35 +105,6 @@ export class SolanaDappMessages implements DappMessages {
         text: command.message,
       });
     }
-  }
-
-  async getRecipients(
-    notificationTypeId?: string,
-    recipientPredicate: (recipient: PublicKey) => boolean = () => true,
-  ) {
-    const dappNotificationTypes = await this.dappNotificationTypes.findAll();
-    if (dappNotificationTypes.length > 0 && !notificationTypeId) {
-      throw new IllegalArgumentError(
-        `Dapp has non-empty notification type configuration, therefore notification type id must be supplied`,
-      );
-    }
-    const addressRecipients = await this.getRecipientsByAddressSubscription(
-      recipientPredicate,
-    );
-    if (addressRecipients.length === 0) {
-      return [];
-    }
-    if (!notificationTypeId) {
-      return addressRecipients;
-    }
-    const notificationTypeRecipients =
-      await this.getRecipientsByNotificationType(
-        notificationTypeId,
-        recipientPredicate,
-      );
-    return notificationTypeRecipients.filter((ntr) =>
-      addressRecipients.find((ar) => ar.equals(ntr)),
-    );
   }
 
   private async getRecipientsByAddressSubscription(

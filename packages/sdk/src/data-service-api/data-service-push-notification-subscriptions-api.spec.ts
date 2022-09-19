@@ -1,34 +1,27 @@
 import { DataServiceApi } from './data-service-api';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import type { PublicKey } from '../core/auth/auth.interface';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service push notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   let api: DataServicePushNotificationSubscriptionsApi;
-  let userWallet: DialectWalletAdapterWrapper;
+  let userPublicKey: PublicKey;
   const physicalId = 'dd96dec43fb81c97';
   const token1 = 'token1';
   const token2 = 'token2';
 
   beforeEach(async () => {
-    const dappWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
-    userWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    userPublicKey = authenticationFacade.signerSubject();
     api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(userWallet),
-        ).get(),
-      ),
+      TokenProvider.create(authenticationFacade),
     ).pushNotificationSubscriptions;
   });
 
@@ -44,7 +37,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert.token).toEqual(token1);
@@ -64,7 +57,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert1.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert1.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert1.token).toEqual(token1);
@@ -79,7 +72,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert2.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert2.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert2.token).toEqual(token1);
@@ -122,14 +115,14 @@ describe('Data service push notification subscriptions api (e2e)', () => {
 
     // then
     expect(pnSubscriptionUpsert1.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert1.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert1.token).toEqual(token1);
     expect(pnSubscriptionUpsert1).toEqual(pnSubscriptionUpsertGet1);
 
     expect(pnSubscriptionUpsert2.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert2.physicalId).toEqual(tempPhysicalId);
     expect(pnSubscriptionUpsert2.token).toEqual(tempToken);
@@ -146,7 +139,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert.walletPublicKey).toEqual(
-      userWallet.publicKey.toBase58(),
+      userPublicKey.toString(),
     );
     expect(pnSubscriptionUpsert.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert.token).toEqual(token1);

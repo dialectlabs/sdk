@@ -5,13 +5,15 @@ import {
 } from '@solana/web3.js';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type {
+  PublicKey,
   TokenSigner,
   TokenSignerResult,
 } from '../../../core/auth/auth.interface';
-import type { PublicKey } from '../../../core/auth/auth.interface';
+
+export const SOLANA_TX_TOKEN_SIGNER_ALG = 'solana-tx';
 
 export abstract class SolanaTxTokenSigner implements TokenSigner {
-  readonly alg = 'solana-tx';
+  readonly alg = SOLANA_TX_TOKEN_SIGNER_ALG;
 
   abstract subject: PublicKey;
   abstract subjectPublicKey: PublicKey;
@@ -22,6 +24,14 @@ export abstract class SolanaTxTokenSigner implements TokenSigner {
 export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner {
   constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
     super();
+  }
+
+  get subject(): PublicKey {
+    return this.dialectWalletAdapter.publicKey;
+  }
+
+  get subjectPublicKey(): PublicKey {
+    return this.dialectWalletAdapter.publicKey;
   }
 
   async sign(payload: Uint8Array): Promise<TokenSignerResult> {
@@ -49,13 +59,5 @@ export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner
       payload: signedTx.serialize(),
       signature: signedTx.signature!,
     };
-  }
-
-  get subject(): PublicKey {
-    return this.dialectWalletAdapter.publicKey;
-  }
-
-  get subjectPublicKey(): PublicKey {
-    return this.dialectWalletAdapter.publicKey;
   }
 }

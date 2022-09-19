@@ -1,7 +1,6 @@
 export * from './core/address/addresses.interface';
 export * from './core/auth/auth.interface';
 export * from './core/auth/ed25519/ed25519-public-key';
-export * from './core/auth/ed25519/ed25519-token-signer';
 export * from './solana/auth/solana-tx/solana-tx-token-signer';
 export * from './core/auth/token-store';
 export * from './core/auth/token-provider';

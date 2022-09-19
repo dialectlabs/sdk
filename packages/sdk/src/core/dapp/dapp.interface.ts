@@ -1,10 +1,9 @@
-import type { DappAddress } from '../address/addresses.interface';
+import type { AddressType, DappAddress } from '../address/addresses.interface';
 import type {
   NotificationConfig,
+  NotificationSubscription,
   NotificationType,
 } from '../wallet/wallet.interface';
-import type { AddressType } from '../address/addresses.interface';
-import type { NotificationSubscription } from '../wallet/wallet.interface';
 import type { PublicKey } from '../auth/auth.interface';
 
 export interface Dapps {

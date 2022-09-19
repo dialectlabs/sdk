@@ -33,33 +33,6 @@ export class MessagingFacade implements Messaging {
     return messaging.create(command);
   }
 
-  private getPreferableMessaging(backend?: Backend) {
-    if (backend) {
-      return this.lookUpMessagingBackend(backend);
-    }
-    return this.getFirstAccordingToPriority();
-  }
-
-  private lookUpMessagingBackend(backend: Backend) {
-    const messagingBackend = this.messagingBackends.find(
-      ({ backend: b }) => backend === b,
-    );
-    if (!messagingBackend) {
-      throw new IllegalArgumentError(
-        `Backend ${backend} is not configured in sdk.`,
-      );
-    }
-    return messagingBackend;
-  }
-
-  private getFirstAccordingToPriority() {
-    const messaging = this.messagingBackends[0];
-    if (!messaging) {
-      throw new IllegalStateError('Should not happen.');
-    }
-    return messaging;
-  }
-
   async find(query: FindThreadQuery): Promise<Thread | null> {
     if ('id' in query && query.id.backend) {
       const { messaging } = this.lookUpMessagingBackend(query.id.backend);
@@ -136,5 +109,32 @@ export class MessagingFacade implements Messaging {
       }
     }
     return null;
+  }
+
+  private getPreferableMessaging(backend?: Backend) {
+    if (backend) {
+      return this.lookUpMessagingBackend(backend);
+    }
+    return this.getFirstAccordingToPriority();
+  }
+
+  private lookUpMessagingBackend(backend: Backend) {
+    const messagingBackend = this.messagingBackends.find(
+      ({ backend: b }) => backend === b,
+    );
+    if (!messagingBackend) {
+      throw new IllegalArgumentError(
+        `Backend ${backend} is not configured in sdk.`,
+      );
+    }
+    return messagingBackend;
+  }
+
+  private getFirstAccordingToPriority() {
+    const messaging = this.messagingBackends[0];
+    if (!messaging) {
+      throw new IllegalStateError('Should not happen.');
+    }
+    return messaging;
   }
 }

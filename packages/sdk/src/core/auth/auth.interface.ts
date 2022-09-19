@@ -1,5 +1,6 @@
 export abstract class PublicKey {
   abstract toString(): string;
+
   abstract toBytes(): Uint8Array;
 
   equals(other: PublicKey) {
@@ -18,7 +19,7 @@ export interface Token {
 }
 
 export interface TokenHeader {
-  alg?: string;
+  alg: string;
   typ?: string;
 }
 
@@ -34,10 +35,10 @@ export interface TokenSignerResult {
   signature: Uint8Array;
 }
 
-export interface TokenSigner {
-  alg: string;
-  subject: PublicKey;
-  subjectPublicKey?: PublicKey;
+export abstract class TokenSigner {
+  abstract alg: string;
+  abstract subject: PublicKey;
+  abstract subjectPublicKey?: PublicKey;
 
-  sign(payload: Uint8Array): Promise<TokenSignerResult>;
+  abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }

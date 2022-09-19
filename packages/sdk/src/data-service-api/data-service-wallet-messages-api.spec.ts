@@ -1,28 +1,24 @@
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
 import type { DataServiceWalletMessagesApi } from './data-service-wallet-messages-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import type { PublicKey } from '../core/auth/auth.interface';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let dappWallet: DialectWalletAdapterWrapper;
+  let dappPublicKey: PublicKey;
   let dappsApi: DataServiceWalletMessagesApi;
 
   beforeEach(() => {
-    dappWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    dappPublicKey = authenticationFacade.signerSubject();
     dappsApi = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(dappWallet),
-        ).get(),
-      ),
+      TokenProvider.create(authenticationFacade),
     ).walletMessages;
   });
 

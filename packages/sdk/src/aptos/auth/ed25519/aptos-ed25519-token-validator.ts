@@ -1,21 +1,38 @@
-import { Ed25519TokenValidator } from '../../../core/auth/ed25519/ed25519-token-validator';
-import type { Token } from '../../../core/auth/auth.interface';
-import { AptosAccount, HexString } from 'aptos';
+import type { Token, TokenHeader } from '../../../core/auth/auth.interface';
+import { HexString } from 'aptos';
 import { getAptosAccountAddress } from '../../utils/aptos-account-utils';
+import { sign } from 'tweetnacl';
+import { TokenValidator } from '../../../core/auth/token-validator';
+import { AuthenticationError } from '../../../core/sdk/errors';
 
-export class AptosEd25519TokenValidator extends Ed25519TokenValidator {
-  override isValid(token: Token): boolean {
-    const isValid = super.isValid(token);
-    const accountAddress = getAptosAccountAddress(
-      HexString.fromUint8Array(this.publicKey(token)),
-    ).toString();
-    return isValid && token.body.sub === accountAddress;
+export class AptosEd25519TokenValidator extends TokenValidator {
+  canValidate(tokenHeader: TokenHeader): boolean {
+    return tokenHeader.alg === 'aptos-ed25519';
   }
 
-  protected override publicKey(token: Token): Uint8Array {
+  override isSignatureValid(token: Token): boolean {
+    const signedPayload = token.base64Header + '.' + token.base64Body;
+    const signingPayload = new TextEncoder().encode(signedPayload);
+    return sign.detached.verify(
+      signingPayload,
+      token.signature,
+      this.getPublicKey(token),
+    );
+  }
+
+  override validateCustom(token: Token): boolean {
+    const accountAddress = getAptosAccountAddress(
+      HexString.fromUint8Array(this.getPublicKey(token)),
+    ).toString();
+    return token.body.sub === accountAddress;
+  }
+
+  private getPublicKey(token: Token): Uint8Array {
     const signerPublicKey = token.body.sub_jwk;
     if (!signerPublicKey) {
-      return new AptosAccount().pubKey().toUint8Array();
+      throw new AuthenticationError(
+        'Cannot validate token without sub_jwk claim',
+      );
     }
     return HexString.ensure(signerPublicKey).toUint8Array();
   }

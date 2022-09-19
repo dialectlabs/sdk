@@ -7,9 +7,11 @@ import axios from 'axios';
 
 export interface DataServicePushNotificationSubscriptionsApi {
   delete(physicalId: string): Promise<void>;
+
   upsert(
     command: UpsertPushNotificationSubscriptionCommandDto,
   ): Promise<PushNotificationSubscriptionDto>;
+
   get(physicalId: string): Promise<PushNotificationSubscriptionDto>;
 }
 

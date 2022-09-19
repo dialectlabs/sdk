@@ -13,6 +13,7 @@ function createSdk() {
     environment: 'local-development',
   });
 }
+
 function createThread(sdk: DialectSdk, receiver: DialectSdk) {
   return sdk.threads.create({
     encrypted: false,

@@ -2,18 +2,19 @@ import { Keypair } from '@solana/web3.js';
 import { Duration } from 'luxon';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type { AuthenticationFacade } from '../../../core/auth/authentication-facade';
-import type { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from './solana-ed25519-token-signer';
-import type { TokenBody } from '../../../core/auth/auth.interface';
+import {
+  DialectWalletAdapterEd25519TokenSigner,
+  SolanaEd25519TokenSigner,
+} from './solana-ed25519-token-signer';
+import type { PublicKey, TokenBody } from '../../../core/auth/auth.interface';
 import { generateEd25519Keypair } from '../../../core/auth/ed25519/utils';
 import { Ed25519PublicKey } from '../../../core/auth/ed25519/ed25519-public-key';
 import { SolanaEd25519AuthenticationFacadeFactory } from './solana-ed25519-authentication-facade-factory';
-import type { PublicKey } from '../../../core/auth/auth.interface';
 
 describe('solana ed25519 token tests', () => {
   let wallet: DialectWalletAdapterWrapper;
-  let signer: Ed25519TokenSigner;
+  let signer: SolanaEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
@@ -97,7 +98,7 @@ describe('solana ed25519 token tests', () => {
     expect(isParsedTokenValid).toBeFalsy();
   });
 
-  test('subject and subject public key may not be different', async () => {
+  test('subject and subject public must be same if defined', async () => {
     // when
     const subjectPublicKey = new Ed25519PublicKey(
       generateEd25519Keypair().publicKey,
@@ -124,7 +125,7 @@ describe('solana ed25519 token tests', () => {
     expect(isParsedTokenValid).toBeFalsy();
   });
 
-  test('subject public key may be absent', async () => {
+  test('subject public key is optional', async () => {
     // when
     const signer = new TestDialectWalletAdapterEd25519TokenSigner(
       wallet,

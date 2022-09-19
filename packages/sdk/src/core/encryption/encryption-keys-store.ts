@@ -2,10 +2,6 @@ import type { DiffeHellmanKeys } from './encryption.interface';
 import type { PublicKey } from '../auth/auth.interface';
 
 export abstract class EncryptionKeysStore {
-  abstract get(subject: PublicKey): DiffeHellmanKeys | null;
-
-  abstract save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys;
-
   static createInMemory(): EncryptionKeysStore {
     return new InmemoryEncryptionKeysStore();
   }
@@ -17,6 +13,10 @@ export abstract class EncryptionKeysStore {
   static createLocalStorage(): EncryptionKeysStore {
     return new LocalStorageEncryptionKeysStore();
   }
+
+  abstract get(subject: PublicKey): DiffeHellmanKeys | null;
+
+  abstract save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys;
 }
 
 class InmemoryEncryptionKeysStore extends EncryptionKeysStore {

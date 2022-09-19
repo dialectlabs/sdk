@@ -1,6 +1,4 @@
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import type {
   DataServiceWalletNotificationSubscriptionsApi,
   NotificationConfigDto,
@@ -8,9 +6,10 @@ import type {
   WalletNotificationSubscriptionDto,
 } from './data-service-wallet-notification-subscriptions-api';
 import { DataServiceApi } from './data-service-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
 import type { DappDto } from './data-service-dapps-api';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import type { PublicKey } from '../core/auth/auth.interface';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service wallet notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -18,19 +17,17 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
   let api: DataServiceWalletNotificationSubscriptionsApi;
   let notificationType: NotificationTypeDto;
   let dapp: DappDto;
-  let userWallet: DialectWalletAdapterWrapper;
+  let dappPublicKey: PublicKey;
+  let userPublicKey: PublicKey;
 
   beforeEach(async () => {
-    const dappWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+    const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    dappPublicKey = dappAuthenticationFacade.signerSubject();
     const dappDataServiceApi = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(dappWallet),
-        ).get(),
-      ),
+      TokenProvider.create(dappAuthenticationFacade),
     );
     dapp = await dappDataServiceApi.dapps.create({
       name: 'test-dapp' + new Date().toString(),
@@ -44,16 +41,13 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
         enabled: true,
       },
     });
-    userWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+    const userAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    userPublicKey = userAuthenticationFacade.signerSubject();
     api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(userWallet),
-        ).get(),
-      ),
+      TokenProvider.create(userAuthenticationFacade),
     ).walletNotificationSubscriptions;
   });
 
@@ -66,7 +60,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
       subscription: {
         wallet: {
           id: expect.any(String),
-          publicKey: userWallet.publicKey.toBase58(),
+          publicKey: userPublicKey.toString(),
         },
         config: notificationType.defaultConfig,
       },
@@ -91,7 +85,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
       subscription: {
         wallet: {
           id: expect.any(String),
-          publicKey: userWallet.publicKey.toBase58(),
+          publicKey: userPublicKey.toString(),
         },
         config: upsertConfig,
       },

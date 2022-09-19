@@ -1,18 +1,30 @@
-import type { Token } from './auth.interface';
+import type { Token, TokenHeader } from './auth.interface';
 
 export abstract class TokenValidator {
   isValid(token: Token) {
+    if (!this.canValidate(token.header)) {
+      return false;
+    }
     if (!this.isSignatureValid(token)) {
       return false;
     }
-    return !this.isExpired(token);
+    if (this.isExpired(token)) {
+      return false;
+    }
+    return this.validateCustom(token);
   }
+
+  abstract canValidate(tokenHeader: TokenHeader): boolean;
 
   abstract isSignatureValid(token: Token): boolean;
 
+  protected validateCustom(token: Token): boolean {
+    return true;
+  }
+
   private isExpired(token: Token) {
     const nowUtcSeconds = new Date().getTime() / 1000;
-    const delta = 10;
+    const delta = 30;
     return nowUtcSeconds + delta > token.body.exp;
   }
 }

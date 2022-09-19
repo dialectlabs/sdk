@@ -1,13 +1,13 @@
 import { Keypair } from '@solana/web3.js';
 import {
   Backend,
+  CreateThreadCommand,
   Dialect,
+  Ed25519PublicKey,
   NodeDialectWalletAdapter,
   ResourceAlreadyExistsError,
   ThreadMemberScope,
-  Ed25519PublicKey,
 } from '../../src';
-import type { CreateThreadCommand } from '../../lib/types';
 
 function createSdk() {
   return Dialect.sdk({
