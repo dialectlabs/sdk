@@ -5,6 +5,14 @@ import { AptosAccount } from 'aptos';
 export class NodeDialectWalletAdapter implements DialectWalletAdapter {
   constructor(private readonly account: AptosAccount) {}
 
+  get publicAccount(): AccountKeys {
+    return {
+      publicKey: this.account.pubKey(),
+      address: this.account.address(),
+      authKey: this.account.authKey(),
+    };
+  }
+
   static create(privateKey?: Uint8Array) {
     if (privateKey) {
       const account = new AptosAccount(privateKey);
@@ -33,14 +41,6 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
       } using generated ${account.pubKey()} key and ${account.address()} address.`,
     );
     return new NodeDialectWalletAdapter(account);
-  }
-
-  get publicAccount(): AccountKeys {
-    return {
-      publicKey: this.account.pubKey(),
-      address: this.account.address(),
-      authKey: this.account.authKey(),
-    };
   }
 
   async signMessage(message: string): Promise<string> {

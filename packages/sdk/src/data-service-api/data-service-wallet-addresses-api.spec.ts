@@ -1,6 +1,4 @@
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
 import type {
   CreateAddressCommandDto,
@@ -8,24 +6,24 @@ import type {
   PatchAddressCommandDto,
 } from './data-service-wallet-addresses-api';
 import { AddressDto, AddressTypeDto } from './data-service-dapps-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import type { PublicKey } from '../core/auth/auth.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let wallet: DialectWalletAdapterWrapper;
+  let userPublicKey: PublicKey;
   let api: DataServiceWalletAddressesApi;
 
   beforeEach(() => {
-    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
+    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    userPublicKey = authenticationFacade.signerSubject();
     api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(wallet),
-        ).get(),
-      ),
+      TokenProvider.create(authenticationFacade),
     ).walletAddresses;
   });
 
@@ -33,7 +31,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     // when
     const command: CreateAddressCommandDto = {
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     };
     const created: AddressDto = await api.create(command);
     // then
@@ -44,7 +42,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: true,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     expect(created).toMatchObject(addressDtoExpected);
@@ -54,7 +52,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     // given
     const command: CreateAddressCommandDto = {
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     };
     const created: AddressDto = await api.create(command);
     // when
@@ -67,7 +65,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: true,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     expect(found).toMatchObject(addressDtoExpected);
@@ -77,7 +75,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     // given
     const command1: CreateAddressCommandDto = {
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     };
     await api.create(command1);
     const command2: CreateAddressCommandDto = {
@@ -95,7 +93,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: true,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     const addressDto2Expected: AddressDto = {
@@ -105,7 +103,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: false,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     expect(found).toMatchObject(
@@ -134,7 +132,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: false,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     expect(patched).toMatchObject(addressDtoExpected);
@@ -158,7 +156,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     // given
     const createCommand: CreateAddressCommandDto = {
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     };
     const createdAddressDto = await api.create(createCommand);
     // when
@@ -173,7 +171,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       verified: true,
       wallet: {
         id: expect.any(String),
-        publicKey: wallet.publicKey.toBase58(),
+        publicKey: userPublicKey.toString(),
       },
     };
     expect(verifiedAddressDto).toMatchObject(addressDtoExpected);
@@ -183,7 +181,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     // given
     const createCommand: CreateAddressCommandDto = {
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     };
     const createdAddressDto = await api.create(createCommand);
     // when

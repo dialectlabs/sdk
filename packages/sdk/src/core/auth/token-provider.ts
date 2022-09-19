@@ -1,4 +1,4 @@
-import type { Token } from './auth.interface';
+import type { PublicKey, Token } from './auth.interface';
 import { IllegalArgumentError } from '../sdk/errors';
 import { Duration } from 'luxon';
 import { TokenStore } from './token-store';
@@ -6,31 +6,30 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
-import type { PublicKey } from './auth.interface';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 
 export abstract class TokenProvider {
-  abstract get(): Promise<Token>;
-
   static create(
-    tokenAuthenticationStrategy: AuthenticationFacade,
+    authenticationFacade: AuthenticationFacade,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
     const defaultTokenProvider = new DefaultTokenProvider(
       ttl,
-      tokenAuthenticationStrategy.tokenGenerator,
+      authenticationFacade.tokenGenerator,
     );
     return new CachedTokenProvider(
       defaultTokenProvider,
       tokenStore,
-      tokenAuthenticationStrategy.tokenParser,
-      tokenAuthenticationStrategy.tokenValidator,
-      tokenAuthenticationStrategy.signerSubject(),
+      authenticationFacade.tokenParser,
+      authenticationFacade.tokenValidator,
+      authenticationFacade.signerSubject(),
     );
   }
+
+  abstract get(): Promise<Token>;
 }
 
 class DefaultTokenProvider extends TokenProvider {
@@ -52,6 +51,8 @@ class DefaultTokenProvider extends TokenProvider {
 }
 
 class CachedTokenProvider extends TokenProvider {
+  private readonly delegateGetPromises: Record<string, Promise<Token>> = {};
+
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
@@ -61,8 +62,6 @@ class CachedTokenProvider extends TokenProvider {
   ) {
     super();
   }
-
-  private readonly delegateGetPromises: Record<string, Promise<Token>> = {};
 
   async get(): Promise<Token> {
     const existingToken = this.getToken();

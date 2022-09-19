@@ -1,20 +1,22 @@
 import { Duration } from 'luxon';
 import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import type { AuthenticationFacade } from '../../../core/auth/authentication-facade';
-import type { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
 import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
-import { DialectWalletAdapterEd25519TokenSigner } from './aptos-ed25519-token-signer';
+import {
+  AptosEd25519TokenSigner,
+  DialectWalletAdapterAptosEd25519TokenSigner,
+} from './aptos-ed25519-token-signer';
 import type { TokenBody } from '../../../core/auth/auth.interface';
 import { AptosEd25519AuthenticationFacadeFactory } from './aptos-ed25519-authentication-facade-factory';
 import { AptosAccount } from 'aptos';
 
 describe('aptos ed25519 token tests', () => {
   let wallet: DialectWalletAdapterWrapper;
-  let signer: Ed25519TokenSigner;
+  let signer: AptosEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
-    signer = new DialectWalletAdapterEd25519TokenSigner(wallet);
+    signer = new DialectWalletAdapterAptosEd25519TokenSigner(wallet);
     authenticationFacade = new AptosEd25519AuthenticationFacadeFactory(
       signer,
     ).get();

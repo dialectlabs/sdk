@@ -58,9 +58,9 @@ import { DialectWalletAdapterWrapper } from '../../../solana/wallet-adapter/dial
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
 import { SolanaDappAddresses } from '../../../solana/dapp/solana-dapp-addresses';
-import { Ed25519AuthenticationFacadeFactory } from '../../auth/ed25519/ed25519-authentication-facade-factory';
 import { SolanaTxAuthenticationFacadeFactory } from '../../../solana/auth/solana-tx/solana-tx-authentication-facade-factory';
 import { DialectWalletAdapterEncryptionKeysProvider } from '../../../solana/encryption/encryption-keys-provider';
+import { SolanaEd25519AuthenticationFacadeFactory } from '../../../solana/auth/ed25519/solana-ed25519-authentication-facade-factory';
 
 interface InternalConfig extends Config {
   wallet: DialectWalletAdapterWrapper;
@@ -79,6 +79,24 @@ export class InternalDialectSdk implements DialectSdk {
 export class DialectSdkFactory {
   constructor(private readonly config: ConfigProps) {}
 
+  private static logConfiguration(config: InternalConfig) {
+    if (config.environment !== 'production') {
+      console.log(
+        `Initializing Dialect SDK using configuration:
+Wallet: 
+  Public key: ${config.wallet.publicKey}
+  Supports encryption: ${config.wallet.canEncrypt}
+Enabled backends: ${JSON.stringify(config.backends)}
+Dialect cloud settings:
+  URL: ${config.dialectCloud.url}
+Solana settings:
+  Dialect program: ${config.solana.dialectProgramAddress}
+  RPC URL: ${config.solana.rpcUrl}
+`,
+      );
+    }
+  }
+
   create(): DialectSdk {
     const config: InternalConfig = this.initializeConfig();
     DialectSdkFactory.logConfiguration(config);
@@ -94,7 +112,7 @@ export class DialectSdkFactory {
       config.encryptionKeysStore,
     );
     const authenticationFacadeFactory = config.wallet.canSignMessage()
-      ? new Ed25519AuthenticationFacadeFactory(
+      ? new SolanaEd25519AuthenticationFacadeFactory(
           new DialectWalletAdapterEd25519TokenSigner(config.wallet),
         )
       : new SolanaTxAuthenticationFacadeFactory(
@@ -153,24 +171,6 @@ export class DialectSdkFactory {
       wallet,
       identity,
     );
-  }
-
-  private static logConfiguration(config: InternalConfig) {
-    if (config.environment !== 'production') {
-      console.log(
-        `Initializing Dialect SDK using configuration:
-Wallet: 
-  Public key: ${config.wallet.publicKey}
-  Supports encryption: ${config.wallet.canEncrypt}
-Enabled backends: ${JSON.stringify(config.backends)}
-Dialect cloud settings:
-  URL: ${config.dialectCloud.url}
-Solana settings:
-  Dialect program: ${config.solana.dialectProgramAddress}
-  RPC URL: ${config.solana.rpcUrl}
-`,
-      );
-    }
   }
 
   private createMessaging(

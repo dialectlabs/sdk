@@ -11,52 +11,48 @@ import {
   DataServiceDappsApi,
 } from './data-service-dapps-api';
 import { TokenProvider } from '../core/auth/token-provider';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { DataServiceApi } from './data-service-api';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import type { PublicKey } from '../core/auth/auth.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let wallet: DialectWalletAdapterWrapper;
+  let userPublicKey: PublicKey;
   let walletDappAddressesApi: DataServiceWalletDappAddressesApi;
 
-  let dappWallet: DialectWalletAdapterWrapper;
+  let dappPublicKey: PublicKey;
   let dappApi: DataServiceDappsApi;
 
   let dappDto: DappDto;
   let walletAddress: AddressDto;
 
   beforeEach(async () => {
-    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
+    const userAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    userPublicKey = userAuthenticationFacade.signerSubject();
     const walletDataServiceApi = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(wallet),
-        ).get(),
-      ),
+      TokenProvider.create(userAuthenticationFacade),
     );
     walletDappAddressesApi = walletDataServiceApi.walletDappAddresses;
-    dappWallet = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+
+    const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      new TestEd25519TokenSigner(),
+    ).get();
+    dappPublicKey = dappAuthenticationFacade.signerSubject();
     dappApi = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(dappWallet),
-        ).get(),
-      ),
+      TokenProvider.create(dappAuthenticationFacade),
     ).dapps;
     dappDto = await dappApi.create({
       name: 'Test dapp',
     });
     walletAddress = await walletDataServiceApi.walletAddresses.create({
       type: AddressTypeDto.Wallet,
-      value: wallet.publicKey.toBase58(),
+      value: userPublicKey.toString(),
     });
   });
 

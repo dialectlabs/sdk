@@ -1,8 +1,8 @@
 import { Duration } from 'luxon';
 
-import { NaclEd25519TokenSigner } from './nacl-ed25519-token-signer';
+import { TestEd25519TokenSigner } from './test-ed25519-token-signer';
 import type { AuthenticationFacade } from '../authentication-facade';
-import { Ed25519AuthenticationFacadeFactory } from './ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from './test-ed25519-authentication-facade-factory';
 import type { TokenBody } from '../auth.interface';
 import { Ed25519PublicKey } from './ed25519-public-key';
 import { generateEd25519Keypair } from './utils';
@@ -11,8 +11,10 @@ describe('ed25519 token tests', () => {
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     const keypair = generateEd25519Keypair();
-    const signer = new NaclEd25519TokenSigner(keypair);
-    authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
+    const signer = new TestEd25519TokenSigner(keypair);
+    authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      signer,
+    ).get();
   });
 
   test('when not expired validation returns true', async () => {
@@ -99,12 +101,14 @@ describe('ed25519 token tests', () => {
       generateEd25519Keypair().publicKey,
     );
     const signerPublicKey = new Ed25519PublicKey(signerKeypair.publicKey);
-    const signer = new NaclEd25519TokenSigner(
+    const signer = new TestEd25519TokenSigner(
       signerKeypair,
       signerPublicKey,
       subjectPublicKey,
     );
-    authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
+    authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      signer,
+    ).get();
     // when
     const token = await authenticationFacade.generateToken(
       Duration.fromObject({ seconds: 100 }),
@@ -124,8 +128,10 @@ describe('ed25519 token tests', () => {
     // when
     const signerKeypair = generateEd25519Keypair();
     const signerPublicKey = new Ed25519PublicKey(signerKeypair.publicKey);
-    const signer = new NaclEd25519TokenSigner(signerKeypair, null!);
-    authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
+    const signer = new TestEd25519TokenSigner(signerKeypair, null!);
+    authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
+      signer,
+    ).get();
     // when
     const token = await authenticationFacade.generateToken(
       Duration.fromObject({ seconds: 100 }),

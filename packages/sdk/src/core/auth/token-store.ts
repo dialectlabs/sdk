@@ -1,12 +1,6 @@
 import type { PublicKey } from './auth.interface';
 
 export abstract class TokenStore {
-  abstract get(subject: PublicKey): string | null;
-
-  abstract delete(subject: PublicKey): void;
-
-  abstract save(subject: PublicKey, token: string): string;
-
   static createInMemory(): TokenStore {
     return new InMemoryTokenStore();
   }
@@ -18,6 +12,12 @@ export abstract class TokenStore {
   static createLocalStorage(): TokenStore {
     return new LocalStorageTokenStore();
   }
+
+  abstract get(subject: PublicKey): string | null;
+
+  abstract delete(subject: PublicKey): void;
+
+  abstract save(subject: PublicKey, token: string): string;
 }
 
 class InMemoryTokenStore extends TokenStore {

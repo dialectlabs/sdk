@@ -18,6 +18,21 @@ export class DialectWalletAdapterWrapper
     return this.delegate.publicKey;
   }
 
+  get canEncrypt() {
+    return Boolean(this.publicKey && this.delegate.diffieHellman);
+  }
+
+  get supportedBackends(): Backend[] {
+    return [
+      ...(this.canUseSolana() ? [Backend.Solana] : []),
+      ...(this.canUseDialectCloud() ? [Backend.DialectCloud] : []),
+    ];
+  }
+
+  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
+    return new DialectWalletAdapterWrapper(adapter);
+  }
+
   signTransaction(transaction: Transaction): Promise<Transaction> {
     if (!this.delegate.signTransaction) {
       throw new UnsupportedOperationError(
@@ -58,6 +73,14 @@ export class DialectWalletAdapterWrapper
     return this.delegate.diffieHellman(this.publicKey.toBytes());
   }
 
+  canSignMessage(): boolean {
+    return Boolean(this.delegate.signMessage);
+  }
+
+  canSignTransaction(): boolean {
+    return Boolean(this.delegate.signTransaction);
+  }
+
   private canUseSolana() {
     return Boolean(
       this.publicKey &&
@@ -71,28 +94,5 @@ export class DialectWalletAdapterWrapper
       this.publicKey &&
         (this.delegate.signMessage || this.delegate.signTransaction),
     );
-  }
-
-  canSignMessage(): boolean {
-    return Boolean(this.delegate.signMessage);
-  }
-
-  canSignTransaction(): boolean {
-    return Boolean(this.delegate.signTransaction);
-  }
-
-  get canEncrypt() {
-    return Boolean(this.publicKey && this.delegate.diffieHellman);
-  }
-
-  get supportedBackends(): Backend[] {
-    return [
-      ...(this.canUseSolana() ? [Backend.Solana] : []),
-      ...(this.canUseDialectCloud() ? [Backend.DialectCloud] : []),
-    ];
-  }
-
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
-    return new DialectWalletAdapterWrapper(adapter);
   }
 }

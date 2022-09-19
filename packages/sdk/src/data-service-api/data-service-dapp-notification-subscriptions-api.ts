@@ -4,8 +4,10 @@ import {
   withReThrowingDataServiceError,
 } from './data-service-api';
 import axios from 'axios';
-import type { NotificationTypeDto } from './data-service-wallet-notification-subscriptions-api';
-import type { NotificationSubscriptionDto } from './data-service-wallet-notification-subscriptions-api';
+import type {
+  NotificationSubscriptionDto,
+  NotificationTypeDto,
+} from './data-service-wallet-notification-subscriptions-api';
 
 export interface DataServiceDappNotificationSubscriptionsApi {
   findAll(): Promise<DappNotificationSubscriptionDto[]>;

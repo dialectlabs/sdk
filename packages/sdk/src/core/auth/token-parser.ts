@@ -39,9 +39,6 @@ export class TokenParser {
     }
     try {
       const header = this.parseHeader(base64Header);
-      if (!header.alg) {
-        throw new TokenUnsupportedAlgError();
-      }
       const body = this.parseBody(base64Body);
       const signature = decodeURLSafe(base64Signature);
       return {

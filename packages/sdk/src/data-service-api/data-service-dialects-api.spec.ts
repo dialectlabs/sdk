@@ -5,45 +5,40 @@ import type {
   DialectDto,
   SendMessageCommand,
 } from './data-service-dialects-api';
-import { DialectWalletAdapterWrapper } from '../solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 import { MemberScopeDto } from './data-service-dialects-api';
-import { NodeDialectWalletAdapter } from '../solana/wallet-adapter/node-dialect-wallet-adapter';
 import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
-import { DialectWalletAdapterEd25519TokenSigner } from '../solana/auth/ed25519/solana-ed25519-token-signer';
-import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import type { PublicKey } from '../core/auth/auth.interface';
+import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   // TODO: cleanup created resources after tests
-  let wallet1: DialectWalletAdapterWrapper;
+  let wallet1PublicKey: PublicKey;
   let wallet1Api: DataServiceDialectsApi;
-  let wallet2: DialectWalletAdapterWrapper;
+  let wallet2PublicKey: PublicKey;
   let wallet2Api: DataServiceDialectsApi;
 
   beforeEach(() => {
-    wallet1 = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
-    wallet2 = new DialectWalletAdapterWrapper(
-      NodeDialectWalletAdapter.create(),
-    );
+    const wallet1AuthenticationFacade =
+      new TestEd25519AuthenticationFacadeFactory(
+        new TestEd25519TokenSigner(),
+      ).get();
+    wallet1PublicKey = wallet1AuthenticationFacade.signerSubject();
     wallet1Api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(wallet1),
-        ).get(),
-      ),
+      TokenProvider.create(wallet1AuthenticationFacade),
     ).threads;
+    const wallet2AuthenticationFacade =
+      new TestEd25519AuthenticationFacadeFactory(
+        new TestEd25519TokenSigner(),
+      ).get();
+    wallet2PublicKey = wallet2AuthenticationFacade.signerSubject();
     wallet2Api = DataServiceApi.create(
       baseUrl,
-      TokenProvider.create(
-        new Ed25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(wallet2),
-        ).get(),
-      ),
+      TokenProvider.create(wallet2AuthenticationFacade),
     ).threads;
   });
 
@@ -78,7 +73,7 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1.publicKey.toBase58(),
+            publicKey: wallet1PublicKey.toString(),
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -92,11 +87,11 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1.publicKey.toBase58(),
+            publicKey: wallet1PublicKey.toString(),
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
           {
-            publicKey: wallet1.publicKey.toBase58(),
+            publicKey: wallet1PublicKey.toString(),
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
         ],
@@ -110,7 +105,7 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1.publicKey.toBase58(),
+            publicKey: wallet1PublicKey.toString(),
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
           {
@@ -127,7 +122,7 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
@@ -146,7 +141,7 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1.publicKey.toBase58(),
+            publicKey: wallet1PublicKey.toString(),
             scopes: [MemberScopeDto.WRITE],
           },
           {
@@ -167,7 +162,7 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
@@ -197,11 +192,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2.publicKey.toBase58(),
+          publicKey: wallet2PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -219,11 +214,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2.publicKey.toBase58(),
+          publicKey: wallet2PublicKey.toString(),
           scopes: [MemberScopeDto.WRITE],
         },
       ],
@@ -242,7 +237,7 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
@@ -255,7 +250,7 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
@@ -313,7 +308,7 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
@@ -355,11 +350,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2.publicKey.toBase58(),
+          publicKey: wallet2PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -367,7 +362,7 @@ describe('Data service dialects api (e2e)', () => {
     // when
     const { publicKey } = await wallet1Api.create(createDialectCommand);
     const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKey: wallet2.publicKey.toBase58(),
+      memberPublicKey: wallet2PublicKey.toString(),
     });
     // then
     expect(dialectAccountDtos.length).toBe(1);
@@ -390,11 +385,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: true,
       members: [
         {
-          publicKey: wallet1.publicKey.toBase58(),
+          publicKey: wallet1PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2.publicKey.toBase58(),
+          publicKey: wallet2PublicKey.toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -427,11 +422,11 @@ describe('Data service dialects api (e2e)', () => {
       new Set([
         {
           text: sendMessageCommand1.text,
-          owner: wallet1.publicKey.toBase58(),
+          owner: wallet1PublicKey.toString(),
         },
         {
           text: sendMessageCommand2.text,
-          owner: wallet2.publicKey.toBase58(),
+          owner: wallet2PublicKey.toString(),
         },
       ]),
     );

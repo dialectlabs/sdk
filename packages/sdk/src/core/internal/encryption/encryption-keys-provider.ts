@@ -4,30 +4,30 @@ import type { DiffeHellmanKeys } from '../../encryption/encryption.interface';
 import type { PublicKey } from '../../auth/auth.interface';
 
 export abstract class EncryptionKeysProvider {
-  abstract getFailSafe(subject: PublicKey): Promise<DiffeHellmanKeys | null>;
-
-  abstract getFailFast(subject: PublicKey): Promise<DiffeHellmanKeys>;
-
   static create(
     delegate: EncryptionKeysProvider,
     encryptionKeysStore: EncryptionKeysStore = EncryptionKeysStore.createInMemory(),
   ): EncryptionKeysProvider {
     return new CachedEncryptionKeysProvider(delegate, encryptionKeysStore);
   }
+
+  abstract getFailSafe(subject: PublicKey): Promise<DiffeHellmanKeys | null>;
+
+  abstract getFailFast(subject: PublicKey): Promise<DiffeHellmanKeys>;
 }
 
 class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
+  private readonly delegateGetPromises: Record<
+    string,
+    Promise<DiffeHellmanKeys | null>
+  > = {};
+
   constructor(
     private readonly delegate: EncryptionKeysProvider,
     private readonly encryptionKeysStore: EncryptionKeysStore,
   ) {
     super();
   }
-
-  private readonly delegateGetPromises: Record<
-    string,
-    Promise<DiffeHellmanKeys | null>
-  > = {};
 
   async getFailSafe(subject: PublicKey): Promise<DiffeHellmanKeys | null> {
     const existingKeys = this.encryptionKeysStore.get(subject);

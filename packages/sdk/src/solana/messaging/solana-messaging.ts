@@ -12,6 +12,10 @@ import type {
   ThreadSummary,
 } from '../../core/messaging/messaging.interface';
 import {
+  ThreadId,
+  ThreadMemberScope,
+} from '../../core/messaging/messaging.interface';
+import {
   createDialect,
   deleteDialect,
   Dialect,
@@ -25,10 +29,6 @@ import {
 import { requireSingleMember } from '../../core/messaging/commons';
 import { IllegalStateError } from '../../core/sdk/errors';
 import type { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
-import {
-  ThreadId,
-  ThreadMemberScope,
-} from '../../core/messaging/messaging.interface';
 import {
   AccountAlreadyExistsError,
   AccountNotFoundError,
@@ -66,6 +66,48 @@ export class SolanaMessaging implements Messaging {
     return solanaThread;
   }
 
+  async find(query: FindThreadQuery): Promise<Thread | null> {
+    const dialectAccount = await this.findInternal(query);
+    return (
+      dialectAccount &&
+      toSolanaThread(
+        dialectAccount,
+        this.walletAdapter,
+        this.encryptionKeysProvider,
+        this.program,
+      )
+    );
+  }
+
+  async findAll(): Promise<Thread[]> {
+    const dialects = await withErrorParsing(
+      findDialects(this.program, {
+        userPk: this.walletAdapter.publicKey,
+      }),
+    );
+    const all = await Promise.all(
+      dialects.map(async (it) =>
+        toSolanaThread(
+          it,
+          this.walletAdapter,
+          this.encryptionKeysProvider,
+          this.program,
+        ),
+      ),
+    );
+    return all.filter((it) => Boolean(it)).map((it) => it!);
+  }
+
+  async findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null> {
+    return null;
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary | null> {
+    return null;
+  }
+
   private async createInternal(command: CreateThreadCommand) {
     const otherMember = requireSingleMember(command.otherMembers);
     try {
@@ -98,19 +140,6 @@ export class SolanaMessaging implements Messaging {
       }
       throw e;
     }
-  }
-
-  async find(query: FindThreadQuery): Promise<Thread | null> {
-    const dialectAccount = await this.findInternal(query);
-    return (
-      dialectAccount &&
-      toSolanaThread(
-        dialectAccount,
-        this.walletAdapter,
-        this.encryptionKeysProvider,
-        this.program,
-      )
-    );
   }
 
   private async findInternal(query: FindThreadQuery) {
@@ -164,35 +193,6 @@ export class SolanaMessaging implements Messaging {
       ),
     );
   }
-
-  async findAll(): Promise<Thread[]> {
-    const dialects = await withErrorParsing(
-      findDialects(this.program, {
-        userPk: this.walletAdapter.publicKey,
-      }),
-    );
-    const all = await Promise.all(
-      dialects.map(async (it) =>
-        toSolanaThread(
-          it,
-          this.walletAdapter,
-          this.encryptionKeysProvider,
-          this.program,
-        ),
-      ),
-    );
-    return all.filter((it) => Boolean(it)).map((it) => it!);
-  }
-
-  async findSummary(
-    query: FindThreadByOtherMemberQuery,
-  ): Promise<ThreadSummary | null> {
-    return null;
-  }
-
-  async findSummaryAll(): Promise<ThreadsGeneralSummary | null> {
-    return null;
-  }
 }
 
 export class SolanaThread implements Thread {
@@ -215,6 +215,10 @@ export class SolanaThread implements Thread {
       backend: this.backend,
       address,
     });
+  }
+
+  get updatedAt() {
+    return new Date(this.dialectAccount.dialect.lastMessageTimestamp);
   }
 
   async delete(): Promise<void> {
@@ -258,10 +262,6 @@ export class SolanaThread implements Thread {
         encryptionProps,
       ),
     );
-  }
-
-  get updatedAt() {
-    return new Date(this.dialectAccount.dialect.lastMessageTimestamp);
   }
 
   setLastReadMessageTime(time: Date): Promise<void> {

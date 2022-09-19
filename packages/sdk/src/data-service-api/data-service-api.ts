@@ -7,11 +7,14 @@ import {
   DataServiceWalletNotificationSubscriptionsApiClient,
 } from './data-service-wallet-notification-subscriptions-api';
 import type { DataServiceWalletsApiV0 } from './data-service-wallets-api.v0';
+import { DataServiceWalletsApiClientV0 } from './data-service-wallets-api.v0';
 import type { DataServiceWalletDappAddressesApi } from './data-service-wallet-dapp-addresses-api';
-import type { DataServiceWalletAddressesApi } from './data-service-wallet-addresses-api';
 import { DataServiceWalletDappAddressesApiClient } from './data-service-wallet-dapp-addresses-api';
+import type { DataServiceWalletAddressesApi } from './data-service-wallet-addresses-api';
+import { DataServiceWalletAddressesApiClient } from './data-service-wallet-addresses-api';
 import type { Token } from '../core/auth/auth.interface';
 import type { DataServiceDappsApi } from './data-service-dapps-api';
+import { DataServiceDappsApiClient } from './data-service-dapps-api';
 import {
   DataServicePushNotificationSubscriptionsApi,
   DataServicePushNotificationSubscriptionsApiClient,
@@ -26,8 +29,6 @@ import {
   DataServiceWalletMessagesApi,
   DataServiceWalletMessagesApiClient,
 } from './data-service-wallet-messages-api';
-import { DataServiceDappsApiClient } from './data-service-dapps-api';
-import { DataServiceWalletsApiClientV0 } from './data-service-wallets-api.v0';
 import type { AxiosError } from 'axios';
 import type { DataServiceDappNotificationSubscriptionsApi } from './data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappNotificationSubscriptionsApiClient } from './data-service-dapp-notification-subscriptions-api';

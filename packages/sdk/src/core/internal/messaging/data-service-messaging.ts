@@ -90,6 +90,55 @@ export class DataServiceMessaging implements Messaging {
     );
   }
 
+  async findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null> {
+    try {
+      const dialectSummaryDto = await withErrorParsing(
+        this.dataServiceDialectsApi.findSummary({
+          memberPublicKeys: [
+            this.me.toString(),
+            ...query.otherMembers.map((it) => it.toString()),
+          ],
+        }),
+      );
+      const meMember = dialectSummaryDto.memberSummaries.find(
+        (it) => it.publicKey === this.me.toString(),
+      );
+      if (!meMember) {
+        throw new IllegalStateError(
+          `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
+            (it) => it.publicKey,
+          )} and provided member public key ${this.me.toString()}`,
+        );
+      }
+      const meMemberSummary: ThreadMemberSummary = {
+        publicKey: new Ed25519PublicKey(meMember.publicKey),
+        hasUnreadMessages: meMember.hasUnreadMessages,
+        unreadMessagesCount: meMember.unreadMessagesCount,
+      };
+      return {
+        id: new ThreadId({
+          address: new Ed25519PublicKey(dialectSummaryDto.publicKey),
+          backend: Backend.DialectCloud,
+        }),
+        me: meMemberSummary,
+      };
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary> {
+    return await withErrorParsing(
+      this.dataServiceDialectsApi.findSummaryAll({
+        publicKey: this.me.toString(),
+      }),
+    );
+  }
+
   private checkEncryptionSupported() {
     return this.encryptionKeysProvider.getFailFast(this.me);
   }
@@ -197,55 +246,6 @@ export class DataServiceMessaging implements Messaging {
     }
     return dialectAccountDtos[0] ?? null;
   }
-
-  async findSummary(
-    query: FindThreadByOtherMemberQuery,
-  ): Promise<ThreadSummary | null> {
-    try {
-      const dialectSummaryDto = await withErrorParsing(
-        this.dataServiceDialectsApi.findSummary({
-          memberPublicKeys: [
-            this.me.toString(),
-            ...query.otherMembers.map((it) => it.toString()),
-          ],
-        }),
-      );
-      const meMember = dialectSummaryDto.memberSummaries.find(
-        (it) => it.publicKey === this.me.toString(),
-      );
-      if (!meMember) {
-        throw new IllegalStateError(
-          `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
-            (it) => it.publicKey,
-          )} and provided member public key ${this.me.toString()}`,
-        );
-      }
-      const meMemberSummary: ThreadMemberSummary = {
-        publicKey: new Ed25519PublicKey(meMember.publicKey),
-        hasUnreadMessages: meMember.hasUnreadMessages,
-        unreadMessagesCount: meMember.unreadMessagesCount,
-      };
-      return {
-        id: new ThreadId({
-          address: new Ed25519PublicKey(dialectSummaryDto.publicKey),
-          backend: Backend.DialectCloud,
-        }),
-        me: meMemberSummary,
-      };
-    } catch (e) {
-      const err = e as DataServiceApiClientError;
-      if (err instanceof ResourceNotFoundError) return null;
-      throw e;
-    }
-  }
-
-  async findSummaryAll(): Promise<ThreadsGeneralSummary> {
-    return await withErrorParsing(
-      this.dataServiceDialectsApi.findSummaryAll({
-        publicKey: this.me.toString(),
-      }),
-    );
-  }
 }
 
 export class DataServiceThread implements Thread {
@@ -295,10 +295,6 @@ export class DataServiceThread implements Thread {
     }));
   }
 
-  private encryptionEnabledButCannotBeUsed() {
-    return this.encryptionEnabled && !this.canBeDecrypted;
-  }
-
   async send(command: SendMessageCommand): Promise<void> {
     if (this.encryptionEnabledButCannotBeUsed()) {
       await this.encryptionKeysProvider.getFailFast(this.me.publicKey);
@@ -317,6 +313,10 @@ export class DataServiceThread implements Thread {
         lastReadMessageTimestamp: time.getTime(),
       }),
     );
+  }
+
+  private encryptionEnabledButCannotBeUsed() {
+    return this.encryptionEnabled && !this.canBeDecrypted;
   }
 }
 

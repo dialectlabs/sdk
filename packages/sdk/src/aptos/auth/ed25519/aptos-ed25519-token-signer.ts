@@ -1,27 +1,25 @@
-import { Ed25519TokenSigner } from '../../../core/auth/ed25519/ed25519-token-signer';
 import {
   PublicKey,
+  TokenSigner,
   TokenSignerResult,
 } from '../../../core/auth/auth.interface';
 import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
 import { HexString } from 'aptos';
 
-export class DialectWalletAdapterEd25519TokenSigner extends Ed25519TokenSigner {
+export const APTOS_ED25519_TOKEN_SIGNER_ALG = 'aptos-ed25519';
+
+export abstract class AptosEd25519TokenSigner implements TokenSigner {
+  readonly alg = APTOS_ED25519_TOKEN_SIGNER_ALG;
+
+  abstract subject: PublicKey;
+  abstract subjectPublicKey: PublicKey;
+
+  abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
+}
+
+export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519TokenSigner {
   constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
     super();
-  }
-
-  async sign(payload: Uint8Array): Promise<TokenSignerResult> {
-    const stringPayload = new TextDecoder().decode(payload);
-    const signatureString = await this.dialectWalletAdapter.signMessage(
-      stringPayload,
-    );
-    const hexString = HexString.ensure(signatureString);
-    const signature = hexString.toUint8Array();
-    return {
-      payload,
-      signature,
-    };
   }
 
   // TODO: handle this better
@@ -36,6 +34,19 @@ export class DialectWalletAdapterEd25519TokenSigner extends Ed25519TokenSigner {
     const publicKey = this.dialectWalletAdapter.publicAccount.publicKey;
     const hexString = HexString.ensure(publicKey!);
     return new AptosPubKey(hexString);
+  }
+
+  async sign(payload: Uint8Array): Promise<TokenSignerResult> {
+    const stringPayload = new TextDecoder().decode(payload);
+    const signatureString = await this.dialectWalletAdapter.signMessage(
+      stringPayload,
+    );
+    const hexString = HexString.ensure(signatureString);
+    const signature = hexString.toUint8Array();
+    return {
+      payload,
+      signature,
+    };
   }
 }
 
