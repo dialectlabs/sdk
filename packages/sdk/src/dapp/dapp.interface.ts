@@ -18,7 +18,10 @@ export interface Dapp {
   publicKey: PublicKey;
   name: string;
   description?: string;
+  index?: number;
+  website?: string;
   avatarUrl?: string;
+  heroUrl?: string;
   verified: boolean;
   telegramUsername: string;
   dappAddresses: DappAddresses;
@@ -46,7 +49,10 @@ export interface DappMessages {
 export interface CreateDappCommand {
   name: string;
   description?: string;
+  index?: number;
+  website?: string;
   avatarUrl?: string;
+  heroUrl?: string;
   telegramBotConfiguration?: DappTelegramBotConfiguration;
 }
 

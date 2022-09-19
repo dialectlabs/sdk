@@ -25,9 +25,12 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
           type: this.type,
           publicKey: new PublicKey(it.publicKey),
           name: it.name,
+          index: it.index,
           additionals: {
-            avatarUrl: it.avatarUrl,
             description: it.description,
+            website: it.website,
+            avatarUrl: it.avatarUrl,
+            heroUrl: it.heroUrl,
             verified: it.verified,
           },
         };
