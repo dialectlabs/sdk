@@ -1,5 +1,5 @@
 import { AptosAccount } from 'aptos';
-import { getAptosAccountAddress } from './aptos-account-utilts';
+import { getAptosAccountAddress } from './aptos-account-utils';
 
 describe('aptos account utils', () => {
   it('should extract aptos account address from public key hex string correctly (no-rotation)', async () => {
