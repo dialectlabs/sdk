@@ -8,12 +8,12 @@ import type { NotificationTypeDto } from './data-service-wallet-notification-sub
 import type { DappDto } from './data-service-dapps-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
-import type { PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress } from '../core/auth/auth.interface';
 
 describe('Data service dapp notification types api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let walletPublicKey: PublicKey;
+  let walletAccountAddress: AccountAddress;
   let api: DataServiceDappNotificationTypesApi;
   let dapp: DappDto;
 
@@ -21,7 +21,7 @@ describe('Data service dapp notification types api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    walletPublicKey = authenticationFacade.signerSubject();
+    walletAccountAddress = authenticationFacade.signerSubject();
     const dataServiceApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

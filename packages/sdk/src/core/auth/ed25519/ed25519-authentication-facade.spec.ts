@@ -104,7 +104,7 @@ describe('ed25519 token tests', () => {
     const signer = new TestEd25519TokenSigner(
       signerKeypair,
       signerPublicKey,
-      subjectPublicKey,
+      subjectPublicKey.toString(),
     );
     authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       signer,

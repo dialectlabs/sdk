@@ -10,19 +10,19 @@ import type { DappDto, DataServiceDappsApi } from './data-service-dapps-api';
 import type { CreateDappCommand } from '../core/dapp/dapp.interface';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
-import type { PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress, PublicKey } from '../core/auth/auth.interface';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   let dappsApi: DataServiceDappsApi;
-  let dappPublicKey: PublicKey;
+  let dappAccountAddress: AccountAddress;
 
   beforeEach(() => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    dappPublicKey = authenticationFacade.signerSubject();
+    dappAccountAddress = authenticationFacade.signerSubject();
     dappsApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),
@@ -41,7 +41,7 @@ describe('Data service dapps api (e2e)', () => {
     // then
     const dappDtoExpected: DappDto = {
       id: expect.any(String),
-      publicKey: dappPublicKey.toString(),
+      publicKey: dappAccountAddress.toString(),
       name: command.name,
       description: command.description,
       avatarUrl: command.avatarUrl,
@@ -66,7 +66,7 @@ describe('Data service dapps api (e2e)', () => {
     // then
     const dappDtoExpected: DappDto = {
       id: expect.any(String),
-      publicKey: dappPublicKey.toString(),
+      publicKey: dappAccountAddress.toString(),
       name: command.name,
       description: command.description,
       avatarUrl: command.avatarUrl,
@@ -146,7 +146,7 @@ describe('Data service dapps api (e2e)', () => {
   });
 
   describe('Wallet dapp addresses v0', () => {
-    let walletPublicKey: PublicKey;
+    let walletAccountAddress: AccountAddress;
     let wallets: DataServiceWalletsApiV0;
     let dapps: DataServiceDappsApi;
 
@@ -154,7 +154,7 @@ describe('Data service dapps api (e2e)', () => {
       const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
         new TestEd25519TokenSigner(),
       ).get();
-      walletPublicKey = authenticationFacade.signerSubject();
+      walletAccountAddress = authenticationFacade.signerSubject();
       const dataServiceApi = DataServiceApi.create(
         baseUrl,
         TokenProvider.create(authenticationFacade),
@@ -172,7 +172,7 @@ describe('Data service dapps api (e2e)', () => {
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
-        value: walletPublicKey.toString(),
+        value: walletAccountAddress.toString(),
       };
       const dappAddressDtoV0 = await wallets.createDappAddress(
         createDappAddressCommand,
@@ -184,7 +184,7 @@ describe('Data service dapps api (e2e)', () => {
         enabled: true,
         dapp: dapp.publicKey,
         verified: true,
-        value: walletPublicKey.toString(),
+        value: walletAccountAddress.toString(),
       };
       expect(dappAddressDtoV0).toMatchObject(expected);
     });
@@ -197,7 +197,7 @@ describe('Data service dapps api (e2e)', () => {
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
-        value: walletPublicKey.toString(),
+        value: walletAccountAddress.toString(),
       };
       await wallets.createDappAddress(createDappAddressCommand, dapp.publicKey);
       // when
@@ -222,7 +222,7 @@ describe('Data service dapps api (e2e)', () => {
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
         enabled: true,
-        value: walletPublicKey.toString(),
+        value: walletAccountAddress.toString(),
       };
       const addressDtoV0 = await wallets.createDappAddress(
         createDappAddressCommand,

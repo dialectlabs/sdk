@@ -8,7 +8,7 @@ import type {
 import { DataServiceApi } from './data-service-api';
 import type { DappDto } from './data-service-dapps-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import type { PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress } from '../core/auth/auth.interface';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service wallet notification subscriptions api (e2e)', () => {
@@ -17,8 +17,8 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
   let api: DataServiceWalletNotificationSubscriptionsApi;
   let notificationType: NotificationTypeDto;
   let dapp: DappDto;
-  let dappPublicKey: PublicKey;
-  let userPublicKey: PublicKey;
+  let dappPublicKey: AccountAddress;
+  let userPublicKey: AccountAddress;
 
   beforeEach(async () => {
     const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(

@@ -2,14 +2,14 @@ import { DataServiceApi } from './data-service-api';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
 import { TokenProvider } from '../core/auth/token-provider';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import type { PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress, PublicKey } from '../core/auth/auth.interface';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service push notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
   let api: DataServicePushNotificationSubscriptionsApi;
-  let userPublicKey: PublicKey;
+  let userAddress: AccountAddress;
   const physicalId = 'dd96dec43fb81c97';
   const token1 = 'token1';
   const token2 = 'token2';
@@ -18,7 +18,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    userPublicKey = authenticationFacade.signerSubject();
+    userAddress = authenticationFacade.signerSubject();
     api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),
@@ -37,7 +37,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert.token).toEqual(token1);
@@ -57,7 +57,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert1.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert1.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert1.token).toEqual(token1);
@@ -72,7 +72,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert2.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert2.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert2.token).toEqual(token1);
@@ -115,14 +115,14 @@ describe('Data service push notification subscriptions api (e2e)', () => {
 
     // then
     expect(pnSubscriptionUpsert1.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert1.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert1.token).toEqual(token1);
     expect(pnSubscriptionUpsert1).toEqual(pnSubscriptionUpsertGet1);
 
     expect(pnSubscriptionUpsert2.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert2.physicalId).toEqual(tempPhysicalId);
     expect(pnSubscriptionUpsert2.token).toEqual(tempToken);
@@ -139,7 +139,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       token: token1,
     });
     expect(pnSubscriptionUpsert.walletPublicKey).toEqual(
-      userPublicKey.toString(),
+      userAddress.toString(),
     );
     expect(pnSubscriptionUpsert.physicalId).toEqual(physicalId);
     expect(pnSubscriptionUpsert.token).toEqual(token1);

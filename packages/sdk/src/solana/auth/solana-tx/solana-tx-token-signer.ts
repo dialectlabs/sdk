@@ -9,13 +9,14 @@ import type {
   TokenSigner,
   TokenSignerResult,
 } from '../../../core/auth/auth.interface';
+import type { AccountAddress } from '../../../core/auth/auth.interface';
 
 export const SOLANA_TX_TOKEN_SIGNER_ALG = 'solana-tx';
 
 export abstract class SolanaTxTokenSigner implements TokenSigner {
   readonly alg = SOLANA_TX_TOKEN_SIGNER_ALG;
 
-  abstract subject: PublicKey;
+  abstract subject: AccountAddress;
   abstract subjectPublicKey: PublicKey;
 
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
@@ -26,8 +27,8 @@ export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner
     super();
   }
 
-  get subject(): PublicKey {
-    return this.dialectWalletAdapter.publicKey;
+  get subject(): AccountAddress {
+    return this.dialectWalletAdapter.publicKey.toBase58();
   }
 
   get subjectPublicKey(): PublicKey {
