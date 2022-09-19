@@ -17,14 +17,17 @@ export class LitEncryptionProvider {
     private chain: ChainType;
     private signatureStore: LitSignatureStore;
     private readonly dialectWalletAdapter: DialectWalletAdapterWrapper;
+    private debug: boolean;
 
     constructor(
         chain: ChainType, 
         dialectWalletAdapter: DialectWalletAdapterWrapper,
         signatureStore?: LitSignatureStore,
+        debug: boolean = false
     ) {
         this.dialectWalletAdapter = dialectWalletAdapter;
         this.chain = chain;
+        this.debug = debug;
         if(signatureStore) {
             this.signatureStore = signatureStore;
         }else{
@@ -35,7 +38,7 @@ export class LitEncryptionProvider {
     async connect() {
         let client = new LitJsSdk.LitNodeClient({
             alertWhenUnauthorized: false,
-            debug: false,
+            debug: this.debug,
         });
         await client.connect()
         this.litNodeClient = client;
