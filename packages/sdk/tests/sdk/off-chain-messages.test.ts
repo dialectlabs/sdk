@@ -1,8 +1,13 @@
-import { Backend, Dialect } from '@sdk/sdk.interface';
-import { NodeDialectWalletAdapter } from '@wallet-adapter/node-dialect-wallet-adapter';
-import { ThreadMemberScope } from '@messaging/messaging.interface';
-import { ResourceAlreadyExistsError } from '@sdk/errors';
 import { Keypair } from '@solana/web3.js';
+import {
+  Backend,
+  Dialect,
+  NodeDialectWalletAdapter,
+  ResourceAlreadyExistsError,
+  ThreadMemberScope,
+  Ed25519PublicKey,
+} from '../../src';
+import type { CreateThreadCommand } from '../../lib/types';
 
 function createSdk() {
   return Dialect.sdk({
@@ -19,18 +24,18 @@ describe('Data-service-specific messaging (e2e)', () => {
 
     let member1 = new Keypair().publicKey;
     let member2 = new Keypair().publicKey;
-    let command = {
+    let command: CreateThreadCommand = {
       encrypted: false,
       me: {
         scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
       },
       otherMembers: [
         {
-          publicKey: member1,
+          publicKey: new Ed25519PublicKey(member1.toBase58()),
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
         {
-          publicKey: member2,
+          publicKey: new Ed25519PublicKey(member2.toBase58()),
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -42,7 +47,10 @@ describe('Data-service-specific messaging (e2e)', () => {
     //then
     expect(thread).not.toBeNull();
     const expectedThread = {
-      me: {...command.me, publicKey: wallet1.wallet.publicKey},
+      me: {
+        ...command.me,
+        publicKey: new Ed25519PublicKey(wallet1.wallet.publicKey.toString()),
+      },
       otherMembers: command.otherMembers,
       encryptionEnabled: command.encrypted,
     };
@@ -54,22 +62,24 @@ describe('Data-service-specific messaging (e2e)', () => {
 
     let member1 = new Keypair().publicKey;
     let member2 = new Keypair().publicKey;
-    await expect(wallet1.threads.create({
-      encrypted: true,
-      me: {
-        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-      },
-      otherMembers: [
-        {
-          publicKey: member1,
+    await expect(
+      wallet1.threads.create({
+        encrypted: true,
+        me: {
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
-        {
-          publicKey: member2,
-          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-        },
-      ],
-    })).rejects.toBeTruthy();
+        otherMembers: [
+          {
+            publicKey: member1,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+          {
+            publicKey: member2,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
   });
 
   it('cannot create group thread with same members', async () => {
@@ -97,23 +107,25 @@ describe('Data-service-specific messaging (e2e)', () => {
     expect(thread).not.toBeNull();
 
     //when
-    await expect(wallet1.threads.create({
-    encrypted: false,
-    me: {
-      scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-    },
-    otherMembers: [
-      {
-        publicKey: member1,
-        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-      },
-      {
-        publicKey: member2,
-        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-      },
-    ],
-  })).rejects.toBeTruthy();
-});
+    await expect(
+      wallet1.threads.create({
+        encrypted: false,
+        me: {
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+        otherMembers: [
+          {
+            publicKey: member1,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+          {
+            publicKey: member2,
+            scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
+  });
 
   it('cannot create group thread with repeated members', async () => {
     const wallet1 = createSdk();
@@ -192,14 +204,23 @@ describe('Data-service-specific messaging (e2e)', () => {
       ],
     };
     const groupThread = await wallet1.threads.create(command);
-    const p2p = await wallet1.threads.create({...command, otherMembers: [{
-        publicKey: member1,
-        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
-      }]});
+    const p2p = await wallet1.threads.create({
+      ...command,
+      otherMembers: [
+        {
+          publicKey: member1,
+          scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+        },
+      ],
+    });
 
     // when
-    let foundGroupThread = await wallet1.threads.find({otherMembers: [member1, member2]});
-    let foundP2pThread = await wallet1.threads.find({otherMembers: [member1]});
+    let foundGroupThread = await wallet1.threads.find({
+      otherMembers: [member1, member2],
+    });
+    let foundP2pThread = await wallet1.threads.find({
+      otherMembers: [member1],
+    });
 
     expect(foundGroupThread).not.toBeNull();
     expect(foundGroupThread).toMatchObject(groupThread);
