@@ -1,4 +1,5 @@
 import type {
+  AccountAddress,
   PublicKey,
   TokenSigner,
   TokenSignerResult,
@@ -15,7 +16,9 @@ export class TestEd25519TokenSigner implements TokenSigner {
     readonly subjectPublicKey: PublicKey = new Ed25519PublicKey(
       keypair.publicKey,
     ),
-    readonly subject: PublicKey = new Ed25519PublicKey(keypair.publicKey),
+    readonly subject: AccountAddress = new Ed25519PublicKey(
+      keypair.publicKey,
+    ).toString(),
   ) {}
 
   async sign(payload: Uint8Array): Promise<TokenSignerResult> {

@@ -1,4 +1,5 @@
 import {
+  AccountAddress,
   PublicKey,
   TokenSigner,
   TokenSignerResult,
@@ -11,7 +12,7 @@ export const APTOS_ED25519_TOKEN_SIGNER_ALG = 'aptos-ed25519';
 export abstract class AptosEd25519TokenSigner implements TokenSigner {
   readonly alg = APTOS_ED25519_TOKEN_SIGNER_ALG;
 
-  abstract subject: PublicKey;
+  abstract subject: AccountAddress;
   abstract subjectPublicKey: PublicKey;
 
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
@@ -22,11 +23,10 @@ export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519Tok
     super();
   }
 
-  // TODO: handle this better
-  get subject(): PublicKey {
+  get subject(): AccountAddress {
     const publicKey = this.dialectWalletAdapter.publicAccount.address;
     const hexString = HexString.ensure(publicKey!);
-    return new AptosPubKey(hexString);
+    return hexString.toString();
   }
 
   // TODO: handle this better

@@ -7,7 +7,11 @@ import {
   DialectWalletAdapterEd25519TokenSigner,
   SolanaEd25519TokenSigner,
 } from './solana-ed25519-token-signer';
-import type { PublicKey, TokenBody } from '../../../core/auth/auth.interface';
+import type {
+  AccountAddress,
+  PublicKey,
+  TokenBody,
+} from '../../../core/auth/auth.interface';
 import { generateEd25519Keypair } from '../../../core/auth/ed25519/utils';
 import { Ed25519PublicKey } from '../../../core/auth/ed25519/ed25519-public-key';
 import { SolanaEd25519AuthenticationFacadeFactory } from './solana-ed25519-authentication-facade-factory';
@@ -105,7 +109,7 @@ describe('solana ed25519 token tests', () => {
     );
     const signer = new TestDialectWalletAdapterEd25519TokenSigner(
       wallet,
-      subjectPublicKey,
+      subjectPublicKey.toString(),
       wallet.publicKey,
     );
     authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
@@ -129,7 +133,7 @@ describe('solana ed25519 token tests', () => {
     // when
     const signer = new TestDialectWalletAdapterEd25519TokenSigner(
       wallet,
-      wallet.publicKey,
+      wallet.publicKey.toBase58(),
       undefined!,
     );
     authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
@@ -153,13 +157,13 @@ describe('solana ed25519 token tests', () => {
 class TestDialectWalletAdapterEd25519TokenSigner extends DialectWalletAdapterEd25519TokenSigner {
   constructor(
     wallet: DialectWalletAdapterWrapper,
-    private readonly _subject: PublicKey,
+    private readonly _subject: AccountAddress,
     private readonly _subjectPublicKey: PublicKey,
   ) {
     super(wallet);
   }
 
-  override get subject(): PublicKey {
+  override get subject(): AccountAddress {
     return this._subject;
   }
 

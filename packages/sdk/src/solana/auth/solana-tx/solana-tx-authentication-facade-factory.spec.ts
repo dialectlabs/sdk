@@ -9,7 +9,10 @@ import type { AuthenticationFacade } from '../../../core/auth/authentication-fac
 import { SolanaTxAuthenticationFacadeFactory } from './solana-tx-authentication-facade-factory';
 import { generateEd25519Keypair } from '../../../core/auth/ed25519/utils';
 import { Ed25519PublicKey } from '../../../core/auth/ed25519/ed25519-public-key';
-import type { PublicKey } from '../../../core/auth/auth.interface';
+import type {
+  AccountAddress,
+  PublicKey,
+} from '../../../core/auth/auth.interface';
 
 describe('solana-tx token tests', () => {
   let wallet: DialectWalletAdapterWrapper;
@@ -54,7 +57,7 @@ describe('solana-tx token tests', () => {
     const signerKeypair = generateEd25519Keypair();
     const subjectPublicKey = new Ed25519PublicKey(
       generateEd25519Keypair().publicKey,
-    );
+    ).toString();
     const signer = new TestDialectWalletAdapterSolanaTxTokenSigner(
       wallet,
       subjectPublicKey,
@@ -80,12 +83,12 @@ describe('solana-tx token tests', () => {
 class TestDialectWalletAdapterSolanaTxTokenSigner extends DialectWalletAdapterSolanaTxTokenSigner {
   constructor(
     wallet: DialectWalletAdapterWrapper,
-    private readonly _subject: PublicKey,
+    private readonly _subject: AccountAddress,
   ) {
     super(wallet);
   }
 
-  override get subject(): PublicKey {
+  override get subject(): AccountAddress {
     return this._subject;
   }
 }

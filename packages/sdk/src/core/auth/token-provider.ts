@@ -1,4 +1,4 @@
-import type { PublicKey, Token } from './auth.interface';
+import type { AccountAddress, Token } from './auth.interface';
 import { IllegalArgumentError } from '../sdk/errors';
 import { Duration } from 'luxon';
 import { TokenStore } from './token-store';
@@ -58,7 +58,7 @@ class CachedTokenProvider extends TokenProvider {
     private readonly tokenStore: TokenStore,
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
-    private readonly subject: PublicKey,
+    private readonly subject: AccountAddress,
   ) {
     super();
   }

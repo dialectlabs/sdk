@@ -3,7 +3,7 @@ import type { TokenValidator } from './token-validator';
 import type { TokenParser } from './token-parser';
 import type { Duration } from 'luxon';
 import type {
-  PublicKey,
+  AccountAddress,
   Token,
   TokenHeader,
   TokenSigner,
@@ -25,7 +25,7 @@ export class AuthenticationFacade {
     return this.tokenSigner.alg;
   }
 
-  signerSubject(): PublicKey {
+  signerSubject(): AccountAddress {
     return this.tokenSigner.subject;
   }
 

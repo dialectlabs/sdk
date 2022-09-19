@@ -1,3 +1,5 @@
+export type AccountAddress = string;
+
 export abstract class PublicKey {
   abstract toString(): string;
 
@@ -37,7 +39,7 @@ export interface TokenSignerResult {
 
 export abstract class TokenSigner {
   abstract alg: string;
-  abstract subject: PublicKey;
+  abstract subject: AccountAddress;
   abstract subjectPublicKey?: PublicKey;
 
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
