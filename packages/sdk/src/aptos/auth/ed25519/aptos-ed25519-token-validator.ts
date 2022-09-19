@@ -1,7 +1,7 @@
 import { Ed25519TokenValidator } from '../../../core/auth/ed25519/ed25519-token-validator';
 import type { Token } from '../../../core/auth/auth.interface';
 import { AptosAccount, HexString } from 'aptos';
-import { getAptosAccountAddress } from '../../utils/aptos-account-utilts';
+import { getAptosAccountAddress } from '../../utils/aptos-account-utils';
 
 export class AptosEd25519TokenValidator extends Ed25519TokenValidator {
   override isValid(token: Token): boolean {
