@@ -14,15 +14,15 @@ import { TokenProvider } from '../core/auth/token-provider';
 import { DataServiceApi } from './data-service-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
-import type { PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress, PublicKey } from '../core/auth/auth.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
-  let userPublicKey: PublicKey;
+  let userAddress: AccountAddress;
   let walletDappAddressesApi: DataServiceWalletDappAddressesApi;
 
-  let dappPublicKey: PublicKey;
+  let dappAddress: AccountAddress;
   let dappApi: DataServiceDappsApi;
 
   let dappDto: DappDto;
@@ -32,7 +32,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     const userAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    userPublicKey = userAuthenticationFacade.signerSubject();
+    userAddress = userAuthenticationFacade.signerSubject();
     const walletDataServiceApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(userAuthenticationFacade),
@@ -42,7 +42,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    dappPublicKey = dappAuthenticationFacade.signerSubject();
+    dappAddress = dappAuthenticationFacade.signerSubject();
     dappApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(dappAuthenticationFacade),
@@ -52,7 +52,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     });
     walletAddress = await walletDataServiceApi.walletAddresses.create({
       type: AddressTypeDto.Wallet,
-      value: userPublicKey.toString(),
+      value: userAddress.toString(),
     });
   });
 
