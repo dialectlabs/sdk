@@ -3,22 +3,29 @@ import {
   getFavoriteDomain,
   NameRegistryState,
 } from '@bonfida/spl-name-service';
+import type {
+  AccountAddress,
+  Identity,
+  IdentityResolver,
+} from '@dialectlabs/sdk';
+import { Connection, PublicKey } from '@solana/web3.js';
 import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
 import { SNSIdentityError } from './identity-sns.error';
 import type { Connection, PublicKey } from '@solana/web3.js';
 
 export class SNSIdentityResolver implements IdentityResolver {
   constructor(private readonly connection: Connection) {}
+
   get type(): string {
     return 'SNS';
   }
 
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
+  async resolve(accountAddress: AccountAddress): Promise<Identity | null> {
     try {
       const res = await getFavoriteDomain(this.connection, publicKey);
       return {
         name: res.reverse,
-        publicKey,
+        accountAddress,
         type: this.type,
         additionals: {
           displayName: `${res.reverse}.sol`,
@@ -48,7 +55,7 @@ export class SNSIdentityResolver implements IdentityResolver {
     return {
       type: this.type,
       name: domainName,
-      publicKey: registry.owner,
+      accountAddress: registry.owner.toBase58(),
       additionals: {
         displayName: rawDomainName,
       },
