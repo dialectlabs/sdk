@@ -1,5 +1,5 @@
-import { withReThrowingDataServiceError } from '@data-service-api/data-service-api';
 import axios from 'axios';
+import { withReThrowingDataServiceError } from './data-service-api';
 
 export declare type HealthCheckStatusDto = 'error' | 'ok' | 'shutting_down';
 export declare type HealthIndicatorStatusDto = 'up' | 'down';

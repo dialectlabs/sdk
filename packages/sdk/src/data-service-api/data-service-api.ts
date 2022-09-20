@@ -32,9 +32,8 @@ import {
 import type { AxiosError } from 'axios';
 import type { DataServiceDappNotificationSubscriptionsApi } from './data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappNotificationSubscriptionsApiClient } from './data-service-dapp-notification-subscriptions-api';
-import { DataServiceWalletAddressesApiClient } from './data-service-wallet-addresses-api';
-import type { DataServiceHealthApi } from '@data-service-api/data-service-health-api';
-import { DataServiceHealthApiClient } from '@data-service-api/data-service-health-api';
+import type { DataServiceHealthApi } from './data-service-health-api';
+import { DataServiceHealthApiClient } from './data-service-health-api';
 
 export class DataServiceApi {
   private constructor(
