@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.10.0] - 2022-09-20
+
+- feature: add health check endpoint
+
 ## [0.9.0] - 2022-09-15
 
 - feature: support threads with multiple members
