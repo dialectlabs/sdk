@@ -3,13 +3,13 @@ import {
   AddressType,
   Backend,
   Dialect,
-  NodeDialectWalletAdapter,
+  NodeDialectSolanaWalletAdapter,
   ThreadMemberScope,
 } from '../../src';
 
 function sdkFactory(backend: Backend) {
   return async () => {
-    const wallet = NodeDialectWalletAdapter.create();
+    const wallet = NodeDialectSolanaWalletAdapter.create();
 
     const dialectSdk = Dialect.sdk({
       wallet: wallet,

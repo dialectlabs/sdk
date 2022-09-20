@@ -1,4 +1,4 @@
-import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectSolanaWalletAdapterWrapper } from '../../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type {
   AccountAddress,
   PublicKey,
@@ -20,7 +20,9 @@ export abstract class SolanaEd25519TokenSigner implements TokenSigner {
 }
 
 export class DialectWalletAdapterEd25519TokenSigner extends SolanaEd25519TokenSigner {
-  constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
+  constructor(
+    readonly dialectWalletAdapter: DialectSolanaWalletAdapterWrapper,
+  ) {
     super();
   }
 

@@ -1,9 +1,11 @@
-import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
+import type { DialectAptosWalletAdapter } from './dialect-aptos-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../core/sdk/errors';
 import type { AccountKeys } from '@manahippo/aptos-wallet-adapter/src/WalletAdapters/BaseAdapter';
 
-export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
-  constructor(private readonly delegate: DialectWalletAdapter) {}
+export class DialectAptosWalletAdapterWrapper
+  implements DialectAptosWalletAdapter
+{
+  constructor(private readonly delegate: DialectAptosWalletAdapter) {}
 
   get publicAccount(): AccountKeys {
     if (!this.delegate.publicAccount) {
@@ -15,8 +17,10 @@ export class DialectWalletAdapterWrapper implements DialectWalletAdapter {
     return this.delegate.publicAccount;
   }
 
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
-    return new DialectWalletAdapterWrapper(adapter);
+  static create(
+    adapter: DialectAptosWalletAdapter,
+  ): DialectAptosWalletAdapterWrapper {
+    return new DialectAptosWalletAdapterWrapper(adapter);
   }
 
   async signMessage(message: string): Promise<string> {

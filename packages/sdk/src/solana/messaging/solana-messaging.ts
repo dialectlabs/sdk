@@ -37,7 +37,7 @@ import {
 import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 import type { Program } from '@project-serum/anchor';
 import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import { Backend } from '../../core/sdk/sdk.interface';
 import type { SolanaError } from '../errors';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
@@ -45,7 +45,7 @@ import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaMessaging implements Messaging {
   constructor(
-    private readonly walletAdapter: DialectWalletAdapterWrapper,
+    private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
     private readonly program: Program,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
   ) {}
@@ -207,7 +207,7 @@ export class SolanaThread implements Thread {
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     private readonly program: Program,
-    private readonly walletAdapter: DialectWalletAdapterWrapper,
+    private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
     private dialectAccount: DialectAccount,
   ) {
@@ -301,7 +301,7 @@ function findOtherMember(memberPk: PublicKey, dialect: Dialect) {
 
 async function toSolanaThread(
   dialectAccount: DialectAccount,
-  walletAdapter: DialectWalletAdapterWrapper,
+  walletAdapter: DialectSolanaWalletAdapterWrapper,
   encryptionKeysProvider: EncryptionKeysProvider,
   program: Program,
 ): Promise<SolanaThread | null> {
@@ -341,7 +341,7 @@ async function toSolanaThread(
 async function getEncryptionPropsForMutation(
   isThreadEncrypted: boolean,
   encryptionKeysProvider: EncryptionKeysProvider,
-  walletAdapter: DialectWalletAdapterWrapper,
+  walletAdapter: DialectSolanaWalletAdapterWrapper,
 ) {
   const encryptionKeys = isThreadEncrypted
     ? await encryptionKeysProvider.getFailFast(walletAdapter.publicKey)

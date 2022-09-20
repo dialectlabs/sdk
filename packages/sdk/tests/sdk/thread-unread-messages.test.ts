@@ -1,13 +1,13 @@
 import {
   Backend,
   Dialect,
-  NodeDialectWalletAdapter,
+  NodeDialectSolanaWalletAdapter,
   ThreadMemberScope,
 } from '../../src';
 
 function createSdk() {
   return Dialect.sdk({
-    wallet: NodeDialectWalletAdapter.create(),
+    wallet: NodeDialectSolanaWalletAdapter.create(),
     backends: [Backend.DialectCloud],
     environment: 'local-development',
   });

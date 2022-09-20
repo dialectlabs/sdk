@@ -1,10 +1,10 @@
 import { Connection, PublicKey } from '@solana/web3.js';
 import { Idl, Program, Provider } from '@project-serum/anchor';
 import { idl } from '@dialectlabs/web3';
-import type { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 
 export function createDialectProgram(
-  walletAdapter: DialectWalletAdapterWrapper,
+  walletAdapter: DialectSolanaWalletAdapterWrapper,
   dialectProgramAddress: PublicKey,
   rpcUrl: string,
 ): Program {

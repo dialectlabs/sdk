@@ -1,9 +1,11 @@
 import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
-import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
+import type { DialectSolanaWalletAdapter } from './dialect-solana-wallet-adapter.interface';
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
 
-export class NodeDialectWalletAdapter implements DialectWalletAdapter {
+export class NodeDialectSolanaWalletAdapter
+  implements DialectSolanaWalletAdapter
+{
   constructor(private readonly keypair: Keypair) {}
 
   get publicKey(): PublicKey {
@@ -14,10 +16,10 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
     if (keypair) {
       console.log(
         `Initializing ${
-          NodeDialectWalletAdapter.name
+          NodeDialectSolanaWalletAdapter.name
         } using provided ${keypair.publicKey.toBase58()} key.`,
       );
-      return new NodeDialectWalletAdapter(keypair);
+      return new NodeDialectSolanaWalletAdapter(keypair);
     }
     if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKey = process.env.DIALECT_SDK_CREDENTIALS;
@@ -26,18 +28,18 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
       );
       console.log(
         `Initializing ${
-          NodeDialectWalletAdapter.name
+          NodeDialectSolanaWalletAdapter.name
         } using env-provided ${keypair.publicKey.toBase58()} key.`,
       );
-      return new NodeDialectWalletAdapter(keypair);
+      return new NodeDialectSolanaWalletAdapter(keypair);
     }
     const generated = Keypair.generate();
     console.log(
       `Initializing ${
-        NodeDialectWalletAdapter.name
+        NodeDialectSolanaWalletAdapter.name
       } using generated ${generated.publicKey.toBase58()} key.`,
     );
-    return new NodeDialectWalletAdapter(generated);
+    return new NodeDialectSolanaWalletAdapter(generated);
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {

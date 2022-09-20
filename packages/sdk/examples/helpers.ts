@@ -11,9 +11,9 @@ import {
   Backend,
   ConfigProps,
   Dialect,
-  DialectWalletAdapterWrapper,
+  DialectSolanaWalletAdapterWrapper,
   EncryptionKeysStore,
-  NodeDialectWalletAdapter,
+  NodeDialectSolanaWalletAdapter,
   SendMessageCommand,
   ThreadMemberScope,
   TokenStore,
@@ -35,8 +35,8 @@ export function createSdk(): DialectSdk {
     rpcUrl: 'https://api.mainnet-beta.solana.com',
   };
   // const keypair = Keypair.fromSecretKey(secretKey);
-  const wallet = DialectWalletAdapterWrapper.create(
-    NodeDialectWalletAdapter.create(),
+  const wallet = DialectSolanaWalletAdapterWrapper.create(
+    NodeDialectSolanaWalletAdapter.create(),
   );
 
   const sdk: DialectSdk = Dialect.sdk({
