@@ -28,7 +28,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
           index: it.index,
           additionals: {
             description: it.description,
-            website: it.website,
+            websiteUrl: it.websiteUrl,
             avatarUrl: it.avatarUrl,
             heroUrl: it.heroUrl,
             verified: it.verified,

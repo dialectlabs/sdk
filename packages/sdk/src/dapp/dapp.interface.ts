@@ -19,7 +19,7 @@ export interface Dapp {
   name: string;
   description?: string;
   index?: number;
-  website?: string;
+  websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;
   verified: boolean;
@@ -50,7 +50,7 @@ export interface CreateDappCommand {
   name: string;
   description?: string;
   index?: number;
-  website?: string;
+  websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;
   telegramBotConfiguration?: DappTelegramBotConfiguration;

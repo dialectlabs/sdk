@@ -3,7 +3,7 @@ export interface Dapp {
   name: string;
   description?: string;
   index?: number;
-  website?: string;
+  websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;
   verified: boolean;
