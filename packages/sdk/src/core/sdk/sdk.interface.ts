@@ -1,4 +1,4 @@
-import type { DialectWalletAdapter } from '../../solana/wallet-adapter/dialect-wallet-adapter.interface';
+import type { DialectSolanaWalletAdapter } from '../../solana/wallet-adapter/dialect-solana-wallet-adapter.interface';
 import type { TokenProvider } from '../auth/token-provider';
 import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
@@ -32,7 +32,7 @@ export interface DialectSdk {
 export interface DialectSdkInfo {
   readonly apiAvailability: ApiAvailability;
   readonly config: Config;
-  readonly wallet: DialectWalletAdapter;
+  readonly wallet: DialectSolanaWalletAdapter;
   readonly solana: SolanaInfo;
   readonly tokenProvider: TokenProvider;
 }
@@ -50,7 +50,7 @@ export type EncryptionKeysStoreType =
 
 export interface ConfigProps {
   environment?: Environment;
-  wallet: DialectWalletAdapter;
+  wallet: DialectSolanaWalletAdapter;
   solana?: SolanaConfigProps;
   dialectCloud?: DialectCloudConfigProps;
   encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
@@ -95,7 +95,7 @@ export interface IdentityConfigProps {
 
 export interface Config extends ConfigProps {
   environment: Environment;
-  wallet: DialectWalletAdapter;
+  wallet: DialectSolanaWalletAdapter;
   solana: SolanaConfig;
   dialectCloud: DialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;

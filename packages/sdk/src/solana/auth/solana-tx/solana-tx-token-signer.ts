@@ -3,7 +3,7 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
-import type { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectSolanaWalletAdapterWrapper } from '../../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type {
   PublicKey,
   TokenSigner,
@@ -23,7 +23,9 @@ export abstract class SolanaTxTokenSigner implements TokenSigner {
 }
 
 export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner {
-  constructor(readonly dialectWalletAdapter: DialectWalletAdapterWrapper) {
+  constructor(
+    readonly dialectWalletAdapter: DialectSolanaWalletAdapterWrapper,
+  ) {
     super();
   }
 

@@ -1,8 +1,8 @@
 import { Keypair } from '@solana/web3.js';
 import { Duration } from 'luxon';
-import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
+import { DialectSolanaWalletAdapterWrapper } from '../../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type { AuthenticationFacade } from '../../../core/auth/authentication-facade';
-import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { NodeDialectSolanaWalletAdapter } from '../../wallet-adapter/node-dialect-solana-wallet-adapter';
 import {
   DialectWalletAdapterEd25519TokenSigner,
   SolanaEd25519TokenSigner,
@@ -17,11 +17,13 @@ import { Ed25519PublicKey } from '../../../core/auth/ed25519/ed25519-public-key'
 import { SolanaEd25519AuthenticationFacadeFactory } from './solana-ed25519-authentication-facade-factory';
 
 describe('solana ed25519 token tests', () => {
-  let wallet: DialectWalletAdapterWrapper;
+  let wallet: DialectSolanaWalletAdapterWrapper;
   let signer: SolanaEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
+    wallet = new DialectSolanaWalletAdapterWrapper(
+      NodeDialectSolanaWalletAdapter.create(),
+    );
     signer = new DialectWalletAdapterEd25519TokenSigner(wallet);
     authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
       signer,
@@ -156,7 +158,7 @@ describe('solana ed25519 token tests', () => {
 
 class TestDialectWalletAdapterEd25519TokenSigner extends DialectWalletAdapterEd25519TokenSigner {
   constructor(
-    wallet: DialectWalletAdapterWrapper,
+    wallet: DialectSolanaWalletAdapterWrapper,
     private readonly _subject: AccountAddress,
     private readonly _subjectPublicKey: PublicKey,
   ) {

@@ -1,13 +1,15 @@
 import { HexString } from 'aptos';
-import { NodeDialectWalletAdapter } from './node-dialect-wallet-adapter';
+import { NodeDialectAptosWalletAdapter } from './node-dialect-aptos-wallet-adapter';
 
-describe('node dialect aptos wallet adapter', () => {
+describe('dialect node aptos wallet adapter', () => {
   it('should sign message correctly', async () => {
     // given
     const privateKey = new HexString(
       '0x7b2f931e339946505eeb4e61de27be5c9beba488b27de7cd90180a6a2ba5190c',
     );
-    const adapter = NodeDialectWalletAdapter.create(privateKey.toUint8Array());
+    const adapter = NodeDialectAptosWalletAdapter.create(
+      privateKey.toUint8Array(),
+    );
     // when
     const signed = await adapter.signMessage('test');
     // then

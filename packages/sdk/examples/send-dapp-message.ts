@@ -2,14 +2,14 @@ import {
   AddressType,
   Dialect,
   IllegalStateError,
-  NodeDialectWalletAdapter,
+  NodeDialectSolanaWalletAdapter,
 } from '../src';
 import { PublicKey } from '@solana/web3.js';
 
 (async () => {
   const sdk = Dialect.sdk({
     environment: 'local-development',
-    wallet: NodeDialectWalletAdapter.create(),
+    wallet: NodeDialectSolanaWalletAdapter.create(),
   });
   const dapp = await sdk.dapps.find();
   if (!dapp) {

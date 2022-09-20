@@ -1,5 +1,5 @@
-import { DialectWalletAdapterWrapper } from '../../wallet-adapter/dialect-wallet-adapter-wrapper';
-import { NodeDialectWalletAdapter } from '../../wallet-adapter/node-dialect-wallet-adapter';
+import { DialectSolanaWalletAdapterWrapper } from '../../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
+import { NodeDialectSolanaWalletAdapter } from '../../wallet-adapter/node-dialect-solana-wallet-adapter';
 import {
   DialectWalletAdapterSolanaTxTokenSigner,
   SolanaTxTokenSigner,
@@ -15,11 +15,13 @@ import type {
 } from '../../../core/auth/auth.interface';
 
 describe('solana-tx token tests', () => {
-  let wallet: DialectWalletAdapterWrapper;
+  let wallet: DialectSolanaWalletAdapterWrapper;
   let signer: SolanaTxTokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectWalletAdapterWrapper(NodeDialectWalletAdapter.create());
+    wallet = new DialectSolanaWalletAdapterWrapper(
+      NodeDialectSolanaWalletAdapter.create(),
+    );
     signer = new DialectWalletAdapterSolanaTxTokenSigner(wallet);
     authenticationFacade = new SolanaTxAuthenticationFacadeFactory(
       signer,
@@ -82,7 +84,7 @@ describe('solana-tx token tests', () => {
 
 class TestDialectWalletAdapterSolanaTxTokenSigner extends DialectWalletAdapterSolanaTxTokenSigner {
   constructor(
-    wallet: DialectWalletAdapterWrapper,
+    wallet: DialectSolanaWalletAdapterWrapper,
     private readonly _subject: AccountAddress,
   ) {
     super(wallet);

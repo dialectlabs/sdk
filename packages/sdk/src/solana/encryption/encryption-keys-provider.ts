@@ -1,10 +1,10 @@
 import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interface';
 import { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
-import type { DialectWalletAdapterWrapper } from '../wallet-adapter/dialect-wallet-adapter-wrapper';
+import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 
 export class DialectWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
   constructor(
-    private readonly dialectWalletAdapter: DialectWalletAdapterWrapper,
+    private readonly dialectWalletAdapter: DialectSolanaWalletAdapterWrapper,
   ) {
     super();
   }

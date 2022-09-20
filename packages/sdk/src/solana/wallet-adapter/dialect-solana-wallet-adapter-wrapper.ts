@@ -1,12 +1,12 @@
 import type { PublicKey, Transaction } from '@solana/web3.js';
-import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
+import type { DialectSolanaWalletAdapter } from './dialect-solana-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../core/sdk/errors';
 import { ApiAvailability, Backend } from '../../core/sdk/sdk.interface';
 
-export class DialectWalletAdapterWrapper
-  implements DialectWalletAdapter, ApiAvailability
+export class DialectSolanaWalletAdapterWrapper
+  implements DialectSolanaWalletAdapter, ApiAvailability
 {
-  constructor(private readonly delegate: DialectWalletAdapter) {}
+  constructor(private readonly delegate: DialectSolanaWalletAdapter) {}
 
   get publicKey(): PublicKey {
     if (!this.delegate.publicKey) {
@@ -29,8 +29,10 @@ export class DialectWalletAdapterWrapper
     ];
   }
 
-  static create(adapter: DialectWalletAdapter): DialectWalletAdapterWrapper {
-    return new DialectWalletAdapterWrapper(adapter);
+  static create(
+    adapter: DialectSolanaWalletAdapter,
+  ): DialectSolanaWalletAdapterWrapper {
+    return new DialectSolanaWalletAdapterWrapper(adapter);
   }
 
   signTransaction(transaction: Transaction): Promise<Transaction> {

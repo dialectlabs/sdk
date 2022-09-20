@@ -1,8 +1,10 @@
-import type { DialectWalletAdapter } from './dialect-wallet-adapter.interface';
+import type { DialectAptosWalletAdapter } from './dialect-aptos-wallet-adapter.interface';
 import type { AccountKeys } from '@manahippo/aptos-wallet-adapter/src/WalletAdapters/BaseAdapter';
 import { AptosAccount } from 'aptos';
 
-export class NodeDialectWalletAdapter implements DialectWalletAdapter {
+export class NodeDialectAptosWalletAdapter
+  implements DialectAptosWalletAdapter
+{
   constructor(private readonly account: AptosAccount) {}
 
   get publicAccount(): AccountKeys {
@@ -18,10 +20,10 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
       const account = new AptosAccount(privateKey);
       console.log(
         `Initializing ${
-          NodeDialectWalletAdapter.name
+          NodeDialectAptosWalletAdapter.name
         } using provided ${account.pubKey()} key and ${account.address()} address.`,
       );
-      return new NodeDialectWalletAdapter(account);
+      return new NodeDialectAptosWalletAdapter(account);
     }
     if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKeyRaw = process.env.DIALECT_SDK_CREDENTIALS;
@@ -29,18 +31,18 @@ export class NodeDialectWalletAdapter implements DialectWalletAdapter {
       const account = new AptosAccount(privateKey);
       console.log(
         `Initializing ${
-          NodeDialectWalletAdapter.name
+          NodeDialectAptosWalletAdapter.name
         } using provided ${account.pubKey()} key and ${account.address()} address.`,
       );
-      return new NodeDialectWalletAdapter(account);
+      return new NodeDialectAptosWalletAdapter(account);
     }
     const account = new AptosAccount();
     console.log(
       `Initializing ${
-        NodeDialectWalletAdapter.name
+        NodeDialectAptosWalletAdapter.name
       } using generated ${account.pubKey()} key and ${account.address()} address.`,
     );
-    return new NodeDialectWalletAdapter(account);
+    return new NodeDialectAptosWalletAdapter(account);
   }
 
   async signMessage(message: string): Promise<string> {
