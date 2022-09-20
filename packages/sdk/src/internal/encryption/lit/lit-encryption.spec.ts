@@ -24,6 +24,20 @@ describe('lit encryption tests', () => {
     provider2 = new LitEncryptionProvider(ChainType.Solana, wallet2, LitSignatureStore.createInMemory());
   });
 
+  test('test access control conditions', () => {
+    // when
+    const singleKey = Keypair.generate().publicKey;
+    const multiKey = [Keypair.generate().publicKey, Keypair.generate().publicKey];
+    const conditions = provider1.getSolanaAccessControlConditionForWallets([singleKey]);
+    const conditions2 = provider1.getSolanaAccessControlConditionForWallets(multiKey);
+
+    // then
+    // the length of the conditions should be 1
+    expect(conditions.length).toBe(1);
+    expect(conditions2.length).toBe(3); // A or B is 3 conditions
+
+  });
+
   test('deterministic access control conditions', () => {
     // when
     const keys = (new Array(10)).fill(0).map(() => Keypair.generate().publicKey); // randomly generate 30 pubkeys
@@ -45,8 +59,18 @@ describe('lit encryption tests', () => {
     console.log("original message: ", originalMessage);
 
     // then
-    const decryptedString = await provider1.decrypt(encryptedString, encryptedSymmetricKey, otherMembers);
+    const decryptedString = await provider1.decrypt(encryptedString, otherMembers, encryptedSymmetricKey);
     console.log("decrypted string: ", decryptedString);
+    expect(decryptedString).toEqual(originalMessage);
+  });
+
+  test('encrypt/decrypt dual member', async () => {
+    // given
+    const originalMessage = `Hey it's ${wallet1.publicKey.toBase58()}`;
+    const { encryptedString, encryptedSymmetricKey }  = await provider1.encrypt(originalMessage, [wallet2.publicKey]);
+
+    // then
+    const decryptedString = await provider2.decrypt(encryptedString,  [wallet1.publicKey], encryptedSymmetricKey);
     expect(decryptedString).toEqual(originalMessage);
   });
 
@@ -64,26 +88,26 @@ describe('lit encryption tests', () => {
      const otherMembers: PublicKey[] = [];
 
      // when
-     const { encryptedString, encryptedSymmetricKey } = await provider1.encrypt(originalMessage, otherMembers);
+     const encryptionKey = await provider1.createEncryptedSymmetricKey(otherMembers);
+     const { encryptedString } = await provider1.encrypt(originalMessage, otherMembers, encryptionKey);
 
      // then
-     const decryptedString = await provider1.decrypt(encryptedString, encryptedSymmetricKey, otherMembers);
+     const decryptedString = await provider1.decrypt(encryptedString, otherMembers, encryptionKey);
      expect(decryptedString).toEqual(originalMessage);
    });
 
-    test('create key, encrypt/decrypt dual member', async () => {
+   test('create key, encrypt/decrypt dual member', async () => {
         // given
         const originalMessage = `Hey it's ${wallet1.publicKey.toBase58()}`;
-        const otherMembers1: PublicKey[] = [wallet2.publicKey];
-        const otherMembers2: PublicKey[] = [wallet1.publicKey];
 
         // when
-        const { encryptedString, encryptedSymmetricKey } = await provider1.encrypt(originalMessage, otherMembers1);
+        const encryptionKey = await provider1.createEncryptedSymmetricKey([wallet2.publicKey]);
+        const { encryptedString } = await provider1.encrypt(originalMessage, [wallet2.publicKey], encryptionKey);
 
         // then
-        const decryptedString = await provider2.decrypt(encryptedString, encryptedSymmetricKey, otherMembers2);
+        const decryptedString = await provider2.decrypt(encryptedString, [wallet1.publicKey], encryptionKey);
         expect(decryptedString).toEqual(originalMessage);
-    });
+     });
 });
   
 

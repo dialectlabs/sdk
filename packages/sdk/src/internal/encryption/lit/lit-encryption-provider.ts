@@ -55,8 +55,13 @@ export class LitEncryptionProvider {
         publicKey: PublicKey,
       ): SolanaAccessControlConditionType {
         return {
-            chain: this.chain,
+            chain: ChainType.Solana,
             method: '',
+            //Experimental
+            pdaParams: [],
+            pdaInterface: { offset: 0, fields: {} },
+            pdaKey: "",
+            // Experimental
             params: [':userAddress'],
             returnValueTest: {
                 key: '',
@@ -71,14 +76,17 @@ export class LitEncryptionProvider {
     ): SolanaAccessControlConditionType[] {
         // set and sort to preserve conditions hash
         const membersWithAccessSorted = [...new Set(membersWithAccess)].sort();
+
         // for each wallet access control condition, add an or operator condition
         const accessControlStackedArray = membersWithAccessSorted.map((item) => [
             AccessControlOrConditionType,
             this.getSolanaAccessControlConditionForWallet(item),
         ]);
+
         // flatten the array
         const conditions = ([] as SolanaAccessControlConditionType[])
             .concat(...accessControlStackedArray);
+
         // remove the first or operator condition
         conditions.splice(0,1);
         return conditions;
@@ -97,7 +105,9 @@ export class LitEncryptionProvider {
         }
         const authSig = await this.checkAndSignAuthMessage();
         const symmetricKey = await this.generateSymmetricKey();
+        // TODO: If chain type is not solana then we need to specify different conditions here
         const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        // Save the key with conditions that members must meet to decrypt
         const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
           solRpcConditions: accessControlConditions,
           symmetricKey: symmetricKey,
@@ -107,11 +117,17 @@ export class LitEncryptionProvider {
         return encryptedSymmetricKey;
       }
 
-    async encrypt(data: string, membersWithAccess: Array<PublicKey>): Promise<EncryptStringResult> {
+    async encrypt(data: string, membersWithAccess: Array<PublicKey>, encryptionKey?: EncryptedSymmetricKey): Promise<EncryptStringResult> {
         // Guard condition
         if (!this.litNodeClient) {
             await this.connect()
         }
+        if(encryptionKey) {
+            return await this.encryptWithKey(encryptionKey, data, membersWithAccess);
+        }else {
+            return await this.encryptWithoutKey(data, membersWithAccess);
+        }
+        /*
         const authSig = await this.checkAndSignAuthMessage();
         const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(data);
         // TODO: If chain type is not solana then we need to specify different conditions here
@@ -128,12 +144,58 @@ export class LitEncryptionProvider {
             encryptedSymmetricKey: encryptedSymmetricKey,
         };
         return result;
+        */
+    }
+
+    private async encryptWithKey(encryptionKey: EncryptedSymmetricKey, data: string, membersWithAccess: Array<PublicKey>): Promise<EncryptStringResult> {
+        const authSig = await this.checkAndSignAuthMessage();
+        // TODO: If chain type is not solana then we need to specify different conditions here
+        const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        const symmetricKey = await this.litNodeClient.getEncryptionKey({
+            solRpcConditions: accessControlConditions,
+            toDecrypt: LitJsSdk.uint8arrayToString(
+                encryptionKey,
+                "base16"
+              ),
+            authSig: authSig,
+            chain: this.chain,
+        });
+        const importedSymmetricKey = await LitJsSdk.importSymmetricKey(symmetricKey);
+        const encodedString = LitJsSdk.uint8arrayFromString(data, "utf8");
+        const encryptedString = await LitJsSdk.encryptWithSymmetricKey(
+        importedSymmetricKey,
+        encodedString.buffer
+        )
+        let result: EncryptStringResult = {
+            encryptedString: encryptedString,
+            encryptedSymmetricKey: encryptionKey,
+        };
+        return result;
+    }
+
+    private async encryptWithoutKey(data: string, membersWithAccess: Array<PublicKey>): Promise<EncryptStringResult> {
+        const authSig = await this.checkAndSignAuthMessage();
+        const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(data);
+        // TODO: If chain type is not solana then we need to specify different conditions here
+        const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        // Save the key with conditions that members must meet to decrypt
+        const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
+             solRpcConditions: accessControlConditions,
+             symmetricKey: symmetricKey,
+             authSig: authSig,
+             chain: this.chain,
+         });
+         let result: EncryptStringResult = {
+             encryptedString: encryptedString,
+             encryptedSymmetricKey: encryptedSymmetricKey,
+         };
+         return result;
     }
 
     async decrypt(
         encryptedString: string, 
+        membersWithAccess: Array<PublicKey>,
         encryptedSymmetricKey: EncryptedSymmetricKey, 
-        membersWithAccess: Array<PublicKey>
     ): Promise<string> {
         // Guard condition
         if (!this.litNodeClient) {
@@ -223,6 +285,11 @@ export type SolanaAccessControlConditionType =
       method: string;
       params: string[];
       chain: string;
+      // Experimental
+      pdaParams: [],
+      pdaInterface: { offset: 0, fields: {} },
+      pdaKey: "",
+      // Experimental
       returnValueTest: {
         key: string;
         comparator: string;
