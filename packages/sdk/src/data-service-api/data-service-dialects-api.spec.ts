@@ -6,7 +6,6 @@ import type {
   SendMessageCommand,
 } from './data-service-dialects-api';
 import { MemberScopeDto } from './data-service-dialects-api';
-import { Keypair } from '@solana/web3.js';
 import { DataServiceApi } from './data-service-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../core/auth/auth.interface';
@@ -131,7 +130,9 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Keypair().publicKey.toBase58(),
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
