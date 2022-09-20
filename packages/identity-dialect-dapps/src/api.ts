@@ -2,7 +2,6 @@ export interface Dapp {
   publicKey: string;
   name: string;
   description?: string;
-  index?: number;
   websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;

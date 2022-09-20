@@ -132,7 +132,6 @@ export class DappDto {
   readonly publicKey!: string;
   readonly name!: string;
   readonly description?: string;
-  readonly index?: number;
   readonly websiteUrl?: string;
   readonly avatarUrl?: string;
   readonly heroUrl?: string;
@@ -144,7 +143,6 @@ export class CreateDappCommandDto {
   readonly name!: string;
   readonly publicKey!: string;
   readonly description?: string;
-  readonly index?: number;
   readonly websiteUrl?: string;
   readonly avatarUrl?: string;
   readonly heroUrl?: string;

@@ -18,7 +18,6 @@ export interface Dapp {
   publicKey: PublicKey;
   name: string;
   description?: string;
-  index?: number;
   websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;
@@ -49,7 +48,6 @@ export interface DappMessages {
 export interface CreateDappCommand {
   name: string;
   description?: string;
-  index?: number;
   websiteUrl?: string;
   avatarUrl?: string;
   heroUrl?: string;
