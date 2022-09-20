@@ -16,7 +16,7 @@ const civicProfileToDialectIdentity = (
 ): Identity => {
   return {
     name: profile?.name?.value || defaultName,
-    accountAddress: profile.address,
+    address: profile.address,
     type: civicType,
     additionals: {
       avatarUrl: profile.image?.url,
@@ -33,10 +33,10 @@ export class CivicIdentityResolver implements IdentityResolver {
     return civicType;
   }
 
-  async resolve(accountAddress: AccountAddress): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     try {
       const profile = await CivicProfile.get(
-        new PublicKey(accountAddress).toBase58(),
+        new PublicKey(address).toBase58(),
         {
           solana: { connection: this.connection },
         },

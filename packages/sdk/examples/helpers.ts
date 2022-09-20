@@ -62,7 +62,7 @@ export async function createThread(
     },
     otherMembers: [
       {
-        publicKey: recipient,
+        address: recipient,
         scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
       },
     ],

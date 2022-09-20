@@ -2,7 +2,7 @@ import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Identity {
   type: string;
-  accountAddress: AccountAddress;
+  address: AccountAddress;
   name: string;
   additionals?: {
     avatarUrl?: string;
@@ -13,7 +13,7 @@ export interface Identity {
 }
 
 export interface IdentityResolver {
-  resolve(accountAddress: AccountAddress): Promise<Identity | null>;
+  resolve(address: AccountAddress): Promise<Identity | null>;
 
   resolveReverse(domainName: string): Promise<Identity | null>;
 

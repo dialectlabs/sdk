@@ -15,7 +15,7 @@ describe('Civic tests', () => {
     expect(identity).toStrictEqual({
       type: 'CIVIC',
       name: 'my.nfts',
-      accountAddress: owner,
+      address: owner,
       additionals: {
         avatarUrl:
           'https://arweave.net/C3oH-InR6fqeqN62TQOI5LnQqNXDmboRK75xFIIT3fU',
@@ -43,7 +43,7 @@ describe('Civic tests', () => {
     expect(identity).toStrictEqual({
       type: 'CIVIC',
       name: '',
-      accountAddress: owner,
+      address: owner,
       additionals: {
         avatarUrl: undefined,
         link: `https://www.civic.me/${owner}`,

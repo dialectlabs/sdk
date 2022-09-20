@@ -12,7 +12,7 @@ import { generateEd25519Keypair } from '../auth/ed25519/utils';
 function generateKeypair() {
   const { publicKey, secretKey } = generateEd25519Keypair();
   const curve25519: Curve25519KeyPair = ed2curve.convertKeyPair({
-    publicKey: publicKey,
+    publicKey,
     secretKey,
   })!;
   return {

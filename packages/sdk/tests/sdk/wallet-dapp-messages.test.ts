@@ -22,7 +22,7 @@ function createThread(sdk: DialectSdk, receiver: DialectSdk) {
     },
     otherMembers: [
       {
-        publicKey: receiver.info.wallet.publicKey!,
+        address: receiver.wallet.address,
         scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
       },
     ],

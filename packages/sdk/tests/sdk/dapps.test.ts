@@ -21,18 +21,18 @@ describe('Dapps (e2e)', () => {
       await sdk.dapps.findAll({
         verified: true,
       })
-    ).map((it) => it.publicKey);
+    ).map((it) => it.address);
     const allNotVerifiedDapps = (
       await sdk.dapps.findAll({
         verified: false,
       })
-    ).map((it) => it.publicKey);
+    ).map((it) => it.address);
     // then
     expect(allNotVerifiedDapps).toMatchObject(
-      expect.arrayContaining([dapp.publicKey]),
+      expect.arrayContaining([dapp.address]),
     );
     expect(allVerifiedDapps).toMatchObject(
-      expect.not.arrayContaining([dapp.publicKey]),
+      expect.not.arrayContaining([dapp.address]),
     );
   });
 });

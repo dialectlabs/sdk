@@ -3,7 +3,6 @@ import { AddressType } from '../../address/addresses.interface';
 import { DialectSdkError, IllegalArgumentError } from '../../sdk/errors';
 import type { DappAddresses } from '../../dapp/dapp.interface';
 import { groupBy } from '../utils/collection-utils';
-import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
 
 export class DappAddressesFacade implements DappAddresses {
   constructor(private readonly dappAddressesBackends: DappAddresses[]) {
@@ -16,7 +15,7 @@ export class DappAddressesFacade implements DappAddresses {
 
   private static dedupleWalletAddresses(walletAddresses: DappAddress[]) {
     const walletPublicKeyToWalletAddresses = groupBy(walletAddresses, (it) =>
-      it.address.wallet.publicKey.toString(),
+      it.address.wallet.address.toString(),
     );
     const deduplicatedWalletAddresses: DappAddress[] = Object.entries(
       walletPublicKeyToWalletAddresses,
@@ -30,7 +29,7 @@ export class DappAddressesFacade implements DappAddresses {
           verified: true,
           type: prev.address.type,
           wallet: {
-            publicKey: new Ed25519PublicKey(walletPublicKey),
+            address: walletPublicKey,
           },
         },
       })),

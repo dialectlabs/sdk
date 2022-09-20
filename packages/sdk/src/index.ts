@@ -15,3 +15,4 @@ export * from './solana/wallet-adapter/dialect-wallet-adapter.interface';
 export * from './solana/wallet-adapter/dialect-wallet-adapter-wrapper';
 export * from './solana/wallet-adapter/node-dialect-wallet-adapter';
 export * from './core/identity/identity.interface';
+export * from './core/auth/ed25519/utils';

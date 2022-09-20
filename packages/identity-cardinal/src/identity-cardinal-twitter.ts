@@ -16,11 +16,8 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     return 'CARDINAL_TWITTER';
   }
 
-  async resolve(accountAddress: AccountAddress): Promise<Identity | null> {
-    const name = await tryGetName(
-      this.connection,
-      new PublicKey(accountAddress),
-    );
+  async resolve(address: AccountAddress): Promise<Identity | null> {
+    const name = await tryGetName(this.connection, new PublicKey(address));
     if (!name || !name[0]) {
       return null;
     }
@@ -28,7 +25,7 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     const avatar = (await tryGetImageUrl(realName)) || undefined;
     return {
       type: this.type,
-      accountAddress,
+      address: address,
       name: realName,
       additionals: {
         displayName: name[0],
@@ -55,7 +52,7 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     return {
       type: this.type,
       name: domainName,
-      accountAddress: parsed.data.toBase58(),
+      address: parsed.data.toBase58(),
       additionals: {
         displayName: rawDomainName,
         avatarUrl: avatar,

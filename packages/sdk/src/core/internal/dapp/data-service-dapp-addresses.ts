@@ -5,7 +5,6 @@ import type {
   DappAddressDto,
   DataServiceDappsApi,
 } from '../../../data-service-api/data-service-dapps-api';
-import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
@@ -30,7 +29,7 @@ export function toDappAddress(dto: DappAddressDto) {
       value: dto.address.value,
       verified: dto.address.verified,
       wallet: {
-        publicKey: new Ed25519PublicKey(dto.address.wallet.publicKey),
+        address: dto.address.wallet.publicKey,
       },
     },
   };

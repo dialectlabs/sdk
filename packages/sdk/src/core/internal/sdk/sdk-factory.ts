@@ -147,7 +147,7 @@ Solana settings:
       dataServiceApi.dappNotificationSubscriptions,
     );
     const wallet = new DataServiceWallets(
-      config.wallet.publicKey,
+      config.wallet.publicKey.toBase58(),
       dataServiceApi.walletAddresses,
       dataServiceApi.walletDappAddresses,
       dataServiceApi.walletMessages,
@@ -195,7 +195,7 @@ Solana settings:
             return {
               backend,
               messaging: new DataServiceMessaging(
-                config.wallet.publicKey,
+                config.wallet.publicKey.toBase58(),
                 dataServiceDialectsApi,
                 encryptionKeysProvider,
               ),

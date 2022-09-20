@@ -45,7 +45,7 @@ describe('Dapp messages (e2e)', () => {
       value: sdk.info.config.wallet.publicKey?.toBase58()!,
     });
     await sdk.wallet.dappAddresses.create({
-      dappPublicKey: dapp.publicKey,
+      address: dapp.address,
       addressId: address.id,
       enabled: true,
     });
@@ -55,7 +55,7 @@ describe('Dapp messages (e2e)', () => {
       },
       otherMembers: [
         {
-          publicKey: dapp.publicKey,
+          address: dapp.address,
           scopes: [ThreadMemberScope.WRITE, ThreadMemberScope.ADMIN],
         },
       ],
@@ -65,12 +65,12 @@ describe('Dapp messages (e2e)', () => {
     await dapp.messages.send({
       title: 'Test',
       message: 'Multicast',
-      recipients: [sdk.info.wallet.publicKey!],
+      recipients: [sdk.wallet.address],
     });
     await dapp.messages.send({
       title: 'Test',
       message: 'Unicast',
-      recipient: sdk.info.wallet.publicKey!,
+      recipient: sdk.wallet.address,
     });
     await dapp.messages.send({
       title: 'Test',

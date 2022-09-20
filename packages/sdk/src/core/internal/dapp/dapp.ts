@@ -18,8 +18,7 @@ import type {
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
 import type { DataServiceDappNotificationSubscriptions } from './data-service-dapp-notification-subscriptions';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
-import type { PublicKey } from '../../auth/auth.interface';
-import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
+import type { AccountAddress } from '../../auth/auth.interface';
 
 export class DappsImpl implements Dapps {
   constructor(
@@ -43,7 +42,7 @@ export class DappsImpl implements Dapps {
 
   private toDapp(dappDto: DappDto) {
     return new DappImpl(
-      new Ed25519PublicKey(dappDto.publicKey),
+      dappDto.publicKey,
       dappDto.name,
       dappDto.verified,
       dappDto.telegramBotUserName,
@@ -65,7 +64,7 @@ export class DappsImpl implements Dapps {
       }),
     );
     return dappDtos.map((it) => ({
-      publicKey: new Ed25519PublicKey(it.publicKey),
+      address: it.publicKey,
       name: it.name,
       description: it.description,
       websiteUrl: it.websiteUrl,
@@ -93,7 +92,7 @@ export class DappsImpl implements Dapps {
 
 export class DappImpl implements Dapp {
   constructor(
-    readonly publicKey: PublicKey,
+    readonly address: AccountAddress,
     readonly name: string,
     readonly verified: boolean,
     readonly telegramUsername: string,
