@@ -11,6 +11,8 @@ import { DataServiceApi } from './data-service-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../core/auth/auth.interface';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519PublicKey } from '../core/auth/ed25519/ed25519-public-key';
+import { generateEd25519Keypair } from '../core/auth/ed25519/utils';
 
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -50,21 +52,24 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('wallet-adapter cannot crate dialect not being a member ', async () => {
-    await expect(
-      wallet1Api.create({
-        encrypted: false,
-        members: [
-          {
-            publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-          },
-          {
-            publicKey: new Keypair().publicKey.toBase58(),
-            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-          },
-        ],
-      }),
-    ).rejects.toBeTruthy();
+    const command1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    await expect(wallet1Api.create(command1)).rejects.toBeTruthy();
   });
 
   test('wallet-adapter canon create dialect with less than 2 members', async () => {
@@ -145,7 +150,9 @@ describe('Data service dialects api (e2e)', () => {
             scopes: [MemberScopeDto.WRITE],
           },
           {
-            publicKey: new Keypair().publicKey.toBase58(),
+            publicKey: new Ed25519PublicKey(
+              generateEd25519Keypair().publicKey,
+            ).toString(),
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -166,7 +173,9 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Keypair().publicKey.toBase58(),
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -241,7 +250,9 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Keypair().publicKey.toBase58(),
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -254,7 +265,9 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Keypair().publicKey.toBase58(),
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -312,7 +325,9 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Keypair().publicKey.toBase58(),
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],

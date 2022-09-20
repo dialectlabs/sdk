@@ -15,7 +15,7 @@ describe('bonfida tests', () => {
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: 'bonfida',
-      accountAddress: owner,
+      address: owner,
       additionals: {
         displayName: 'bonfida.sol',
       },
@@ -30,7 +30,7 @@ describe('bonfida tests', () => {
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: domainName,
-      accountAddress: new PublicKey(
+      address: new PublicKey(
         'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
       ).toBase58(),
       additionals: {
@@ -47,7 +47,7 @@ describe('bonfida tests', () => {
     expect(identity).toStrictEqual({
       type: 'SNS',
       name: domainName,
-      accountAddress: new PublicKey(
+      address: new PublicKey(
         'HKKp49qGWXd639QsuH7JiLijfVW5UtCVY4s1n2HANwEA',
       ).toBase58(),
       additionals: {

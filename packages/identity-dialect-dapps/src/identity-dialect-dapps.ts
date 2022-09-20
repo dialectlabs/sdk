@@ -3,7 +3,6 @@ import type {
   Identity,
   IdentityResolver,
 } from '@dialectlabs/sdk';
-import { PublicKey } from '@solana/web3.js';
 import { Dapp, fetchAllDapps } from './api';
 
 export class DialectDappsIdentityResolver implements IdentityResolver {
@@ -17,7 +16,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
     return 'DIALECT_DAPPS';
   }
 
-  async resolve(accountAddress: AccountAddress): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     if (!this.dappsCached) {
       if (this.dappsData) {
         await this.dappsData;
@@ -27,7 +26,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
       this.dappsCached = (await this.dappsData).reduce((acc, it) => {
         acc[it.publicKey] = {
           type: this.type,
-          accountAddress: it.publicKey,
+          address: it.publicKey,
           name: it.name,
           additionals: {
             description: it.description,
@@ -40,7 +39,7 @@ export class DialectDappsIdentityResolver implements IdentityResolver {
         return acc;
       }, {} as Record<string, Identity>);
     }
-    return this.dappsCached[accountAddress] || null;
+    return this.dappsCached[address] || null;
   }
 
   async resolveReverse(domainName: string): Promise<Identity | null> {

@@ -3,10 +3,10 @@ import type {
   AddressType,
   DappAddress,
 } from '../address/addresses.interface';
-import type { PublicKey } from '../auth/auth.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Wallets {
-  readonly publicKey: PublicKey;
+  readonly address: AccountAddress;
   readonly addresses: WalletAddresses;
   readonly dappAddresses: WalletDappAddresses;
   readonly messages: WalletMessages;
@@ -15,7 +15,7 @@ export interface Wallets {
 }
 
 export interface Wallet {
-  readonly publicKey: PublicKey;
+  readonly address: AccountAddress;
 }
 
 export interface WalletAddresses {
@@ -74,7 +74,7 @@ export interface WalletDappAddresses {
 }
 
 export interface CreateDappAddressCommand {
-  readonly dappPublicKey: PublicKey;
+  readonly address: AccountAddress;
   readonly addressId: string;
   readonly enabled: boolean;
 }
@@ -90,7 +90,7 @@ export interface FindDappAddressQuery {
 
 export interface FindDappAddressesQuery {
   readonly addressIds?: string[];
-  readonly dappPublicKey?: PublicKey;
+  readonly dappAddress?: AccountAddress;
 }
 
 export interface DeleteDappAddressCommand {
@@ -104,7 +104,7 @@ export interface WalletMessages {
 export interface DappMessage {
   text: string;
   timestamp: Date;
-  author: PublicKey;
+  author: AccountAddress;
 }
 
 export interface FindDappMessageQuery {
@@ -134,7 +134,7 @@ export interface WalletPushNotificationSubscriptions {
 }
 
 export interface FindNotificationSubscriptionQuery {
-  readonly dappPublicKey: PublicKey;
+  readonly dappAddress: AccountAddress;
 }
 
 export interface WalletNotificationSubscription {
@@ -143,7 +143,7 @@ export interface WalletNotificationSubscription {
 }
 
 export interface WalletPushNotificationSubscription {
-  walletPublicKey: string;
+  walletAddress: string;
   physicalId: string;
   token: string;
 }

@@ -121,7 +121,7 @@ export class SolanaMessaging implements Messaging {
               scopes: toProtocolScopes(command.me.scopes),
             },
             {
-              publicKey: new SolanaPublicKey(otherMember.publicKey.toString()),
+              publicKey: new SolanaPublicKey(otherMember.address.toString()),
               scopes: toProtocolScopes(otherMember.scopes),
             },
           ],
@@ -213,7 +213,7 @@ export class SolanaThread implements Thread {
   ) {
     this.id = new ThreadId({
       backend: this.backend,
-      address,
+      address: address.toString(),
     });
   }
 
@@ -232,14 +232,14 @@ export class SolanaThread implements Thread {
       this.walletAdapter.publicKey,
     );
     const encryptionProps = getEncryptionProps(
-      this.me.publicKey,
+      new SolanaPublicKey(this.me.address),
       encryptionKeys,
     );
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
     return this.dialectAccount.dialect.messages.map((it) => ({
-      author: it.owner.equals(new SolanaPublicKey(this.me.publicKey))
+      author: it.owner.equals(new SolanaPublicKey(this.me.address))
         ? this.me
         : this.otherMember,
       timestamp: new Date(it.timestamp),
@@ -316,14 +316,14 @@ async function toSolanaThread(
       null
     : true;
   const otherThreadMember: ThreadMember = {
-    publicKey: otherMember.publicKey,
+    address: otherMember.publicKey.toBase58(),
     scopes: fromProtocolScopes(otherMember.scopes),
     // lastReadMessageTimestamp: new Date(), // TODO: implement
   };
   return new SolanaThread(
     publicKey,
     {
-      publicKey: meMember.publicKey,
+      address: meMember.publicKey.toBase58(),
       scopes: fromProtocolScopes(meMember.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     },

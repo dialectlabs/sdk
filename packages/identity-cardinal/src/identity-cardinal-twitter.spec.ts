@@ -20,7 +20,7 @@ describe('cardinal twitter tests', () => {
         link: `https://twitter.com/aliquotchris`,
         avatarUrl: undefined,
       },
-      accountAddress: owner,
+      address: owner,
     });
   });
 
@@ -32,7 +32,7 @@ describe('cardinal twitter tests', () => {
     expect(identity).toEqual({
       type: 'CARDINAL_TWITTER',
       name: 'aliquotchris',
-      accountAddress: '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
+      address: '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
       additionals: {
         displayName: '@aliquotchris',
         link: `https://twitter.com/aliquotchris`,
@@ -49,7 +49,7 @@ describe('cardinal twitter tests', () => {
     expect(identity).toEqual({
       type: 'CARDINAL_TWITTER',
       name: 'aliquotchris',
-      accountAddress: '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
+      address: '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
       additionals: {
         displayName: '@aliquotchris',
         link: `https://twitter.com/aliquotchris`,

@@ -43,8 +43,7 @@ import type { AddressDto } from '../../../data-service-api/data-service-dapps-ap
 import { ResourceNotFoundError } from '../../sdk/errors';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../../data-service-api/data-service-push-notification-subscriptions-api';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
-import type { PublicKey } from '../../auth/auth.interface';
-import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
+import type { AccountAddress } from '../../auth/auth.interface';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -54,7 +53,7 @@ export class DataServiceWallets implements Wallets {
   pushNotificationSubscriptions: WalletPushNotificationSubscriptions;
 
   constructor(
-    readonly publicKey: PublicKey,
+    readonly address: AccountAddress,
     private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
     private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
@@ -144,7 +143,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     const created = await withErrorParsing(
       this.api.create({
         addressId: command.addressId,
-        dappPublicKey: command.dappPublicKey.toString(),
+        dappPublicKey: command.address.toString(),
         enabled: command.enabled,
       }),
     );
@@ -170,7 +169,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     const found = await withErrorParsing(
       this.api.findAll({
         addressIds: query.addressIds,
-        dappPublicKey: query.dappPublicKey?.toString(),
+        dappPublicKey: query.dappAddress?.toString(),
       }),
     );
     return found.map((it) => toDappAddress(it));
@@ -200,7 +199,7 @@ export class DataServiceWalletMessages implements WalletMessages {
       }),
     );
     return dappMessages.map((it) => ({
-      author: new Ed25519PublicKey(it.owner),
+      author: it.owner,
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
@@ -214,7 +213,7 @@ function toAddress(addressDto: AddressDto): Address {
     verified: addressDto.verified,
     type: toAddressType(addressDto.type),
     wallet: {
-      publicKey: new Ed25519PublicKey(addressDto.wallet.publicKey),
+      address: addressDto.wallet.publicKey,
     },
   };
 }
@@ -231,7 +230,7 @@ export class DataServiceWalletNotificationSubscriptions
   ): Promise<WalletNotificationSubscription[]> {
     const dtos = await withErrorParsing(
       this.api.findAll({
-        dappPublicKey: query?.dappPublicKey?.toString(),
+        dappPublicKey: query?.dappAddress?.toString(),
       }),
     );
     return dtos.map(fromNotificationSubscriptionDto);
@@ -252,7 +251,7 @@ function fromNotificationSubscriptionDto(
     notificationType: dto.notificationType,
     subscription: {
       wallet: {
-        publicKey: new Ed25519PublicKey(dto.subscription.wallet.publicKey),
+        address: dto.subscription.wallet.publicKey,
       },
       config: dto.subscription.config,
     },
@@ -276,6 +275,7 @@ export class DataServiceWalletPushNotificationSubscriptions
     const dto = await this.api.upsert(command);
     return {
       ...dto,
+      walletAddress: dto.walletPublicKey,
     };
   }
 
@@ -283,6 +283,7 @@ export class DataServiceWalletPushNotificationSubscriptions
     const dto = await this.api.get(physicalId);
     return {
       ...dto,
+      walletAddress: dto.walletPublicKey,
     };
   }
 }

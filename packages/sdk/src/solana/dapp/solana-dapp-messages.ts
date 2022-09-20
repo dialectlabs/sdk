@@ -9,7 +9,7 @@ import type {
 import { IllegalArgumentError } from '../../core/sdk/errors';
 import type { SolanaMessaging } from '../messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
-import type { PublicKey } from '../../core/auth/auth.interface';
+import type { AccountAddress } from '../../core/auth/auth.interface';
 
 export class SolanaDappMessages implements DappMessages {
   constructor(
@@ -23,7 +23,7 @@ export class SolanaDappMessages implements DappMessages {
     if ('recipient' in command) {
       const recipients = await this.getRecipients(
         command.notificationTypeId,
-        (it) => it.equals(command.recipient),
+        (it) => it === command.recipient,
       );
       return this.multicast({
         ...command,
@@ -33,7 +33,7 @@ export class SolanaDappMessages implements DappMessages {
     if ('recipients' in command) {
       const recipients = await this.getRecipients(
         command.notificationTypeId,
-        (r) => Boolean(command.recipients.find((it) => it.equals(r))),
+        (r) => Boolean(command.recipients.find((it) => it === r)),
       );
       return this.multicast({
         ...command,
@@ -49,7 +49,7 @@ export class SolanaDappMessages implements DappMessages {
 
   async getRecipients(
     notificationTypeId?: string,
-    recipientPredicate: (recipient: PublicKey) => boolean = () => true,
+    recipientPredicate: (recipient: AccountAddress) => boolean = () => true,
   ) {
     const dappNotificationTypes = await this.dappNotificationTypes.findAll();
     if (dappNotificationTypes.length > 0 && !notificationTypeId) {
@@ -72,7 +72,7 @@ export class SolanaDappMessages implements DappMessages {
         recipientPredicate,
       );
     return notificationTypeRecipients.filter((ntr) =>
-      addressRecipients.find((ar) => ar.equals(ntr)),
+      addressRecipients.find((ar) => ar === ntr),
     );
   }
 
@@ -108,18 +108,18 @@ export class SolanaDappMessages implements DappMessages {
   }
 
   private async getRecipientsByAddressSubscription(
-    recipientPredicate: (recipient: PublicKey) => boolean,
+    recipientPredicate: (recipient: AccountAddress) => boolean,
   ) {
     const addressSubscriptions = await this.dappAddresses.findAll();
     return addressSubscriptions
       .filter((it) => it.address.verified && it.enabled)
-      .map((it) => it.address.wallet.publicKey)
+      .map((it) => it.address.wallet.address)
       .filter(recipientPredicate);
   }
 
   private async getRecipientsByNotificationType(
     notificationTypeId: string,
-    recipientPredicate: (recipient: PublicKey) => boolean,
+    recipientPredicate: (recipient: AccountAddress) => boolean,
   ) {
     const notificationSubscriptions =
       await this.notificationSubscriptions.findAll();
@@ -132,7 +132,7 @@ export class SolanaDappMessages implements DappMessages {
       )
       .flatMap((it) => it.subscriptions)
       .filter((it) => it.config.enabled)
-      .map((it) => it.wallet.publicKey)
+      .map((it) => it.wallet.address)
       .filter(recipientPredicate);
   }
 }

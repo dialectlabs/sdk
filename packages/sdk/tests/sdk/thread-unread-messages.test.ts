@@ -25,17 +25,17 @@ describe('Wallet messages read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: user2.info.wallet.publicKey!,
+          address: user2.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
     });
     // when
     const user1Summary = await user1.threads.findSummary({
-      otherMembers: [user2.wallet.publicKey],
+      otherMembers: [user2.wallet.address],
     });
     const user2Summary = await user2.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const user1GeneralSummary = await user1.threads.findSummaryAll();
     const user2GeneralSummary = await user2.threads.findSummaryAll();
@@ -59,7 +59,7 @@ describe('Wallet messages read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: user2.info.wallet.publicKey!,
+          address: user2.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -69,10 +69,10 @@ describe('Wallet messages read messages', () => {
       text: 'foo',
     });
     const user1Summary = await user1.threads.findSummary({
-      otherMembers: [user2.wallet.publicKey],
+      otherMembers: [user2.wallet.address],
     });
     const user2Summary = await user2.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const user1GeneralSummary = await user1.threads.findSummaryAll();
     const user2GeneralSummary = await user2.threads.findSummaryAll();
@@ -96,7 +96,7 @@ describe('Wallet messages read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: user2.info.wallet.publicKey!,
+          address: user2.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -110,10 +110,10 @@ describe('Wallet messages read messages', () => {
       text: 'bar',
     });
     const user1Summary = await user1.threads.findSummary({
-      otherMembers: [user2.wallet.publicKey],
+      otherMembers: [user2.wallet.address],
     });
     const user2Summary = await user2.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const user1GeneralSummary = await user1.threads.findSummaryAll();
     const user2GeneralSummary = await user2.threads.findSummaryAll();
@@ -137,7 +137,7 @@ describe('Wallet messages read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: user2.info.wallet.publicKey!,
+          address: user2.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -146,7 +146,7 @@ describe('Wallet messages read messages', () => {
       text: 'foo',
     });
     const user2SummaryBefore = await user2.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const user2GeneralSummaryBefore = await user2.threads.findSummaryAll();
     expect(user2SummaryBefore!.me.hasUnreadMessages).toBeTruthy();
@@ -158,7 +158,7 @@ describe('Wallet messages read messages', () => {
     const theOnlyMessage = messages[0]!;
     await user2Thread!.setLastReadMessageTime(theOnlyMessage.timestamp);
     const user2SummaryAfter = await user2.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const user2GeneralSummaryAfter = await user2.threads.findSummaryAll();
     // then
@@ -183,7 +183,7 @@ describe('Wallet multi-thread read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: mainUser.info.wallet.publicKey!,
+          address: mainUser.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -196,7 +196,7 @@ describe('Wallet multi-thread read messages', () => {
       },
       otherMembers: [
         {
-          publicKey: mainUser.info.wallet.publicKey!,
+          address: mainUser.wallet.address,
           scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
         },
       ],
@@ -213,10 +213,10 @@ describe('Wallet multi-thread read messages', () => {
     const mainUserGeneralSummaryBefore =
       await mainUser.threads.findSummaryAll();
     const mainUserThread1SummaryBefore = await mainUser.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const mainUserThread2SummaryBefore = await mainUser.threads.findSummary({
-      otherMembers: [user2.wallet.publicKey],
+      otherMembers: [user2.wallet.address],
     });
 
     expect(mainUserThread1SummaryBefore!.me.unreadMessagesCount).toBe(1);
@@ -230,10 +230,10 @@ describe('Wallet multi-thread read messages', () => {
     // then
     const mainUserGeneralSummaryAfter = await mainUser.threads.findSummaryAll();
     const mainUserThread1SummaryAfter = await mainUser.threads.findSummary({
-      otherMembers: [user1.wallet.publicKey],
+      otherMembers: [user1.wallet.address],
     });
     const mainUserThread2SummaryAfter = await mainUser.threads.findSummary({
-      otherMembers: [user2.wallet.publicKey],
+      otherMembers: [user2.wallet.address],
     });
 
     expect(mainUserThread1SummaryAfter!.me.unreadMessagesCount).toBe(1);

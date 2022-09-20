@@ -1,5 +1,5 @@
 import type { Backend } from 'core/sdk/sdk.interface';
-import type { PublicKey } from '../auth/auth.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Messaging {
   findAll(): Promise<Thread[]>;
@@ -25,7 +25,7 @@ export interface ThreadSummary {
 }
 
 export interface ThreadMemberSummary {
-  publicKey: PublicKey;
+  address: AccountAddress;
   hasUnreadMessages: boolean;
   unreadMessagesCount: number;
 }
@@ -43,7 +43,7 @@ export interface ThreadMessage {
 }
 
 export interface CreateThreadCommand {
-  me: Omit<ThreadMember, 'publicKey' | 'lastReadMessageTimestamp'>;
+  me: Omit<ThreadMember, 'address' | 'lastReadMessageTimestamp'>;
   otherMembers: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
   encrypted: boolean;
   backend?: Backend;
@@ -58,21 +58,21 @@ export interface FindThreadByIdQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
-  otherMembers: PublicKey[];
+  otherMembers: AccountAddress[];
 }
 
 export interface FindThreadSummaryByMembers {
-  me: PublicKey;
-  otherMembers: PublicKey[];
+  me: AccountAddress;
+  otherMembers: AccountAddress[];
 }
 
 export interface ThreadIdProps {
-  address: PublicKey;
+  address: AccountAddress;
   backend?: Backend;
 }
 
 export class ThreadId {
-  readonly address!: PublicKey;
+  readonly address!: AccountAddress;
   readonly backend?: Backend;
 
   constructor({ address, backend }: ThreadIdProps) {
@@ -81,7 +81,7 @@ export class ThreadId {
   }
 
   public equals(other: ThreadId): boolean {
-    return this.address.equals(other.address) && this.backend === other.backend;
+    return this.address == other.address && this.backend === other.backend;
   }
 
   public toString(): string {
@@ -111,7 +111,7 @@ export interface Thread {
 }
 
 export interface ThreadMember {
-  publicKey: PublicKey;
+  address: AccountAddress;
   scopes: ThreadMemberScope[];
   // lastReadMessageTimestamp: Date;
 }

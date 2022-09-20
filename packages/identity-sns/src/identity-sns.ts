@@ -20,12 +20,12 @@ export class SNSIdentityResolver implements IdentityResolver {
     return 'SNS';
   }
 
-  async resolve(accountAddress: AccountAddress): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     try {
       const res = await getFavoriteDomain(this.connection, publicKey);
       return {
         name: res.reverse,
-        accountAddress,
+        address,
         type: this.type,
         additionals: {
           displayName: `${res.reverse}.sol`,
@@ -55,7 +55,7 @@ export class SNSIdentityResolver implements IdentityResolver {
     return {
       type: this.type,
       name: domainName,
-      accountAddress: registry.owner.toBase58(),
+      address: registry.owner.toBase58(),
       additionals: {
         displayName: rawDomainName,
       },

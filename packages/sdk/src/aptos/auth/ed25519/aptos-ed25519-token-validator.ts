@@ -22,10 +22,10 @@ export class AptosEd25519TokenValidator extends TokenValidator {
   }
 
   override validateCustom(token: Token): boolean {
-    const accountAddress = getAptosAccountAddress(
+    const address = getAptosAccountAddress(
       HexString.fromUint8Array(this.getPublicKey(token)),
     ).toString();
-    return token.body.sub === accountAddress;
+    return token.body.sub === address;
   }
 
   private getPublicKey(token: Token): Uint8Array {
