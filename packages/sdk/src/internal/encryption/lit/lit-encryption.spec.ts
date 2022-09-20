@@ -27,7 +27,7 @@ describe('lit encryption tests', () => {
   test('deterministic access control conditions', () => {
     // when
     const keys = (new Array(10)).fill(0).map(() => Keypair.generate().publicKey); // randomly generate 30 pubkeys
-    const shuffledConditions = (new Array(10)).fill(0).map(() => provider1.getAccessControlConditionForWallets(shuffle(keys))); // shuffle each 10 times and get access control conditions
+    const shuffledConditions = (new Array(10)).fill(0).map(() => provider1.getSolanaAccessControlConditionForWallets(shuffle(keys))); // shuffle each 10 times and get access control conditions
 
     // then
     for (var i = 0; i < shuffledConditions.length - 1; i++) { // checking entire equality of nested array

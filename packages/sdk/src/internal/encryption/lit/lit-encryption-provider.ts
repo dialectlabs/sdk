@@ -44,9 +44,16 @@ export class LitEncryptionProvider {
         this.litNodeClient = client;
     }
 
-    private getAccessControlConditionForWallet(
+    private getEtheriumAccessControlConditionForWallet(
+        walletAddress: string,
+    ): EthereumAccessControlConditionType {
+        // TODO: Unimplemented
+        return {};
+    }
+
+    private getSolanaAccessControlConditionForWallet(
         publicKey: PublicKey,
-      ): AccessControlConditionType {
+      ): SolanaAccessControlConditionType {
         return {
             chain: this.chain,
             method: '',
@@ -59,18 +66,18 @@ export class LitEncryptionProvider {
         };
     }
 
-    getAccessControlConditionForWallets(
+    getSolanaAccessControlConditionForWallets(
         membersWithAccess: PublicKey[],
-    ): AccessControlConditionType[] {
+    ): SolanaAccessControlConditionType[] {
         // set and sort to preserve conditions hash
         const membersWithAccessSorted = [...new Set(membersWithAccess)].sort();
         // for each wallet access control condition, add an or operator condition
         const accessControlStackedArray = membersWithAccessSorted.map((item) => [
             AccessControlOrConditionType,
-            this.getAccessControlConditionForWallet(item),
+            this.getSolanaAccessControlConditionForWallet(item),
         ]);
         // flatten the array
-        const conditions = ([] as AccessControlConditionType[])
+        const conditions = ([] as SolanaAccessControlConditionType[])
             .concat(...accessControlStackedArray);
         // remove the first or operator condition
         conditions.splice(0,1);
@@ -90,7 +97,7 @@ export class LitEncryptionProvider {
         }
         const authSig = await this.checkAndSignAuthMessage();
         const symmetricKey = await this.generateSymmetricKey();
-        const accessControlConditions = this.getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
         const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
           solRpcConditions: accessControlConditions,
           symmetricKey: symmetricKey,
@@ -107,7 +114,8 @@ export class LitEncryptionProvider {
         }
         const authSig = await this.checkAndSignAuthMessage();
         const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(data);
-        const accessControlConditions = this.getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        // TODO: If chain type is not solana then we need to specify different conditions here
+        const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
         // Save the key with conditions that members must meet to decrypt
         const encryptedSymmetricKey = await this.litNodeClient.saveEncryptionKey({
             solRpcConditions: accessControlConditions,
@@ -132,7 +140,8 @@ export class LitEncryptionProvider {
             await this.connect()
         }
         const authSig = await this.checkAndSignAuthMessage();
-        const accessControlConditions = this.getAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
+        // TODO: If chain type is not solana then we need to specify different conditions here
+        const accessControlConditions = this.getSolanaAccessControlConditionForWallets([this.dialectWalletAdapter.publicKey, ...membersWithAccess]);
         const symmetricKey = await this.litNodeClient.getEncryptionKey({
             solRpcConditions: accessControlConditions,
             toDecrypt: LitJsSdk.uint8arrayToString(
@@ -207,7 +216,9 @@ export enum ChainType {
     Solana = 'solana',
 }
 
-export type AccessControlConditionType =
+export type EthereumAccessControlConditionType = {};
+
+export type SolanaAccessControlConditionType =
   | {
       method: string;
       params: string[];
