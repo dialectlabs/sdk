@@ -7,21 +7,18 @@ import type {
   ThreadsGeneralSummary,
   ThreadSummary,
 } from '../../messaging/messaging.interface';
-import type { Backend } from '../../sdk/sdk.interface';
+import { Backend } from '../../sdk/sdk.interface';
 import {
   DialectSdkError,
   IllegalArgumentError,
   IllegalStateError,
 } from '../../sdk/errors';
 
-export interface MessagingBackend {
-  messaging: Messaging;
-  backend: Backend;
-}
-
 export class MessagingFacade implements Messaging {
-  constructor(private readonly messagingBackends: MessagingBackend[]) {
-    if (messagingBackends.length < 1) {
+  readonly backend: Backend = Backend.Facade;
+
+  constructor(private readonly delegates: Messaging[]) {
+    if (delegates.length < 1) {
       throw new IllegalArgumentError(
         'Expected to have at least on messaging backend.',
       );
@@ -29,16 +26,16 @@ export class MessagingFacade implements Messaging {
   }
 
   create(command: CreateThreadCommand): Promise<Thread> {
-    const { messaging } = this.getPreferableMessaging(command.backend);
+    const messaging = this.getPreferableMessaging(command.backend);
     return messaging.create(command);
   }
 
   async find(query: FindThreadQuery): Promise<Thread | null> {
-    if ('id' in query && query.id.backend) {
-      const { messaging } = this.lookUpMessagingBackend(query.id.backend);
+    if ('id' in query && query.id.type) {
+      const messaging = this.lookUpMessagingBackend(query.id.type);
       return messaging.find(query);
     }
-    for (const { messaging } of this.messagingBackends) {
+    for (const messaging of this.delegates) {
       try {
         const thread = await messaging.find(query);
         if (thread) {
@@ -53,7 +50,7 @@ export class MessagingFacade implements Messaging {
 
   async findAll(): Promise<Thread[]> {
     const allSettled = await Promise.allSettled(
-      this.messagingBackends.map(({ messaging }) => messaging.findAll()),
+      this.delegates.map((messaging) => messaging.findAll()),
     );
     const errors = allSettled
       .filter((it) => it.status === 'rejected')
@@ -84,7 +81,7 @@ export class MessagingFacade implements Messaging {
   async findSummary(
     query: FindThreadByOtherMemberQuery,
   ): Promise<ThreadSummary | null> {
-    for (const { messaging } of this.messagingBackends) {
+    for (const messaging of this.delegates) {
       try {
         const thread = await messaging.findSummary(query);
         if (thread) {
@@ -98,7 +95,7 @@ export class MessagingFacade implements Messaging {
   }
 
   async findSummaryAll(): Promise<ThreadsGeneralSummary | null> {
-    for (const { messaging } of this.messagingBackends) {
+    for (const messaging of this.delegates) {
       try {
         const summary = await messaging.findSummaryAll();
         if (summary) {
@@ -119,7 +116,7 @@ export class MessagingFacade implements Messaging {
   }
 
   private lookUpMessagingBackend(backend: Backend) {
-    const messagingBackend = this.messagingBackends.find(
+    const messagingBackend = this.delegates.find(
       ({ backend: b }) => backend === b,
     );
     if (!messagingBackend) {
@@ -131,7 +128,7 @@ export class MessagingFacade implements Messaging {
   }
 
   private getFirstAccordingToPriority() {
-    const messaging = this.messagingBackends[0];
+    const messaging = this.delegates[0];
     if (!messaging) {
       throw new IllegalStateError('Should not happen.');
     }

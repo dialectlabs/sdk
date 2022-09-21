@@ -14,7 +14,7 @@ describe('Data service health api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    walletAddress = authenticationFacade.signerSubject();
+    walletAddress = authenticationFacade.subject();
     healthApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

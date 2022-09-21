@@ -18,7 +18,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    userAddress = authenticationFacade.signerSubject();
+    userAddress = authenticationFacade.subject();
     api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

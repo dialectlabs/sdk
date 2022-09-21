@@ -44,6 +44,8 @@ import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
 import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaMessaging implements Messaging {
+  readonly backend: Backend = Backend.Solana;
+
   constructor(
     private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
     private readonly program: Program,

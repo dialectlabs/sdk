@@ -20,7 +20,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    userAccountAddress = authenticationFacade.signerSubject();
+    userAccountAddress = authenticationFacade.subject();
     api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

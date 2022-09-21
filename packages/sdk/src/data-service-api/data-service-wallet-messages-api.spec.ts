@@ -15,7 +15,7 @@ describe('Data service dapps api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    dappAccountAddress = authenticationFacade.signerSubject();
+    dappAccountAddress = authenticationFacade.subject();
     dappsApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

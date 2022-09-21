@@ -21,7 +21,7 @@ describe('Data service dapp notification types api (e2e)', () => {
     const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    walletAccountAddress = authenticationFacade.signerSubject();
+    walletAccountAddress = authenticationFacade.subject();
     const dataServiceApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),

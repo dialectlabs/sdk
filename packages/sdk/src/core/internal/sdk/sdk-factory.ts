@@ -1,39 +1,30 @@
 import { DataServiceDappMessages } from '../dapp/data-service-dapp-messages';
 import type {
-  Config,
+  BlockchainFactory,
+  BlockchainSdk,
   ConfigProps,
   DialectCloudConfig,
   DialectSdk,
   DialectSdkInfo,
   IdentityConfig,
-  SolanaConfig,
 } from '../../sdk/sdk.interface';
-import { Backend } from '../../sdk/sdk.interface';
+import type { Config } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../../solana/auth/ed25519/solana-ed25519-token-signer';
-import { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import {
   DEFAULT_TOKEN_LIFETIME,
   TokenProvider,
 } from '../../auth/token-provider';
 import type { Wallets } from '../../wallet/wallet.interface';
-import { SolanaMessaging } from '../../../solana/messaging/solana-messaging';
 import type {
   DappAddresses,
   DappMessages,
   Dapps,
 } from '../../dapp/dapp.interface';
 import { DataServiceDappNotificationSubscriptions } from '../dapp/data-service-dapp-notification-subscriptions';
-import type { Program } from '@project-serum/anchor';
-import { PublicKey } from '@solana/web3.js';
-import { createDialectProgram } from '../../../solana/messaging/solana-dialect-program-factory';
 import { Duration } from 'luxon';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '../../../solana/auth/solana-tx/solana-tx-token-signer';
 import { DataServiceApi } from '../../../data-service-api/data-service-api';
 import { DappMessagesFacade } from '../dapp/dapp-messages-facade';
 import { DappsImpl } from '../dapp/dapp';
-import { programs } from '@dialectlabs/web3';
-import type { DataServiceDappNotificationTypesApi } from '../../../data-service-api/data-service-dapp-notification-types-api';
 import { TokenStore } from '../../auth/token-store';
 import { DappAddressesFacade } from '../dapp/dapp-addresses-facade';
 import {
@@ -44,27 +35,11 @@ import {
 import { DataServiceWallets } from '../wallet/data-service-wallets';
 import { EncryptionKeysStore } from '../../encryption/encryption-keys-store';
 import { DataServiceMessaging } from '../messaging/data-service-messaging';
-import {
-  MessagingBackend,
-  MessagingFacade,
-} from '../messaging/messaging-facade';
+import { MessagingFacade } from '../messaging/messaging-facade';
 import { IllegalArgumentError } from '../../sdk/errors';
-import type { DataServiceDappNotificationSubscriptionsApi } from '../../../data-service-api/data-service-dapp-notification-subscriptions-api';
 import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
-import { SolanaDappMessages } from '../../../solana/dapp/solana-dapp-messages';
-import type { DataServiceDialectsApi } from '../../../data-service-api/data-service-dialects-api';
-import type { DataServiceDappsApi } from '../../../data-service-api/data-service-dapps-api';
-import { DialectSolanaWalletAdapterWrapper } from '../../../solana/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
-import { SolanaDappAddresses } from '../../../solana/dapp/solana-dapp-addresses';
-import { SolanaTxAuthenticationFacadeFactory } from '../../../solana/auth/solana-tx/solana-tx-authentication-facade-factory';
-import { DialectWalletAdapterEncryptionKeysProvider } from '../../../solana/encryption/encryption-keys-provider';
-import { SolanaEd25519AuthenticationFacadeFactory } from '../../../solana/auth/ed25519/solana-ed25519-authentication-facade-factory';
-
-interface InternalConfig extends Config {
-  wallet: DialectSolanaWalletAdapterWrapper;
-}
 
 export class InternalDialectSdk implements DialectSdk {
   constructor(
@@ -77,77 +52,38 @@ export class InternalDialectSdk implements DialectSdk {
 }
 
 export class DialectSdkFactory {
-  constructor(private readonly config: ConfigProps) {}
+  constructor(
+    private readonly config: ConfigProps,
+    private readonly blockchainFactory: BlockchainFactory,
+  ) {}
 
-  private static logConfiguration(config: InternalConfig) {
+  private static logConfiguration(config: Config) {
     if (config.environment !== 'production') {
       console.log(
         `Initializing Dialect SDK using configuration:
-Wallet: 
-  Public key: ${config.wallet.publicKey}
-  Supports encryption: ${config.wallet.canEncrypt}
-Enabled backends: ${JSON.stringify(config.backends)}
-Dialect cloud settings:
-  URL: ${config.dialectCloud.url}
-Solana settings:
-  Dialect program: ${config.solana.dialectProgramAddress}
-  RPC URL: ${config.solana.rpcUrl}
-`,
+  Dialect cloud settings:
+    URL: ${config.dialectCloud.url}
+  `,
       );
     }
   }
 
   create(): DialectSdk {
-    const config: InternalConfig = this.initializeConfig();
+    const config: Config = this.initializeConfig();
     DialectSdkFactory.logConfiguration(config);
-    const dialectProgram: Program = createDialectProgram(
-      config.wallet,
-      config.solana.dialectProgramAddress,
-      config.solana.rpcUrl,
-    );
-    const walletAdapterEncryptionKeysProvider =
-      new DialectWalletAdapterEncryptionKeysProvider(config.wallet);
-    const encryptionKeysProvider = EncryptionKeysProvider.create(
-      walletAdapterEncryptionKeysProvider,
-      config.encryptionKeysStore,
-    );
-    const authenticationFacadeFactory = config.wallet.canSignMessage()
-      ? new SolanaEd25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(config.wallet),
-        )
-      : new SolanaTxAuthenticationFacadeFactory(
-          new DialectWalletAdapterSolanaTxTokenSigner(config.wallet),
-        );
-
-    const authenticationFacade = authenticationFacadeFactory.get();
-
-    const tokenProvider: TokenProvider = TokenProvider.create(
-      authenticationFacade,
-      Duration.fromObject({
-        minutes: config.dialectCloud.tokenLifetimeMinutes,
-      }),
-      config.dialectCloud.tokenStore,
-    );
-    const dataServiceApi: DataServiceApi = DataServiceApi.create(
-      config.dialectCloud.url,
+    const blockchainSdk = this.blockchainFactory.create(config);
+    const tokenProvider = this.initializeTokenProvider(config, blockchainSdk);
+    const dataServiceApi = this.initializeDataServiceApi(
+      config.dialectCloud,
       tokenProvider,
     );
-    const messaging = this.createMessaging(
-      config,
-      encryptionKeysProvider,
-      dialectProgram,
-      dataServiceApi.threads,
+    const messaging = this.initializeMessagingApi(
+      dataServiceApi,
+      blockchainSdk,
     );
-    const dapps = this.createDapps(
-      config,
-      encryptionKeysProvider,
-      dialectProgram,
-      dataServiceApi.dapps,
-      dataServiceApi.dappNotificationTypes,
-      dataServiceApi.dappNotificationSubscriptions,
-    );
+    const dapps = this.initializeDappApi(dataServiceApi, blockchainSdk);
     const wallet = new DataServiceWallets(
-      config.wallet.publicKey.toBase58(),
+      blockchainSdk.authenticationFacade.subject(),
       dataServiceApi.walletAddresses,
       dataServiceApi.walletDappAddresses,
       dataServiceApi.walletMessages,
@@ -155,15 +91,9 @@ Solana settings:
       dataServiceApi.pushNotificationSubscriptions,
     );
     const identity = this.createIdentityResolver(config.identity);
-
     return new InternalDialectSdk(
       {
-        apiAvailability: config.wallet,
         config,
-        wallet: config.wallet,
-        solana: {
-          dialectProgram,
-        },
         tokenProvider,
       },
       messaging,
@@ -173,98 +103,96 @@ Solana settings:
     );
   }
 
-  private createMessaging(
-    config: InternalConfig,
-    encryptionKeysProvider: EncryptionKeysProvider,
-    program: Program,
-    dataServiceDialectsApi: DataServiceDialectsApi,
+  private initializeTokenProvider(
+    config: Config,
+    blockchainSdk: BlockchainSdk,
   ) {
-    const messagingBackends: MessagingBackend[] = config.backends.map(
-      (backend) => {
-        switch (backend) {
-          case Backend.Solana:
-            return {
-              backend,
-              messaging: new SolanaMessaging(
-                config.wallet,
-                program,
-                encryptionKeysProvider,
-              ),
-            };
-          case Backend.DialectCloud:
-            return {
-              backend,
-              messaging: new DataServiceMessaging(
-                config.wallet.publicKey.toBase58(),
-                dataServiceDialectsApi,
-                encryptionKeysProvider,
-              ),
-            };
-          default:
-            throw new IllegalArgumentError(`Unknown backend ${backend}`);
-        }
-      },
+    return TokenProvider.create(
+      blockchainSdk.authenticationFacade,
+      Duration.fromObject({
+        minutes: config.dialectCloud.tokenLifetimeMinutes,
+      }),
+      config.dialectCloud.tokenStore,
     );
-    return new MessagingFacade(messagingBackends);
   }
 
-  private createDapps(
-    config: InternalConfig,
-    encryptionKeysProvider: EncryptionKeysProvider,
-    program: Program,
-    dataServiceDappsApi: DataServiceDappsApi,
-    dataServiceDappNotificationTypesApi: DataServiceDappNotificationTypesApi,
-    dappNotificationSubscriptionsApi: DataServiceDappNotificationSubscriptionsApi,
+  private initializeDataServiceApi(
+    config: DialectCloudConfig,
+    tokenProvider: TokenProvider,
   ) {
-    const dappAddressesBackends: DappAddresses[] = config.backends.map(
-      (backend) => {
-        switch (backend) {
-          case Backend.Solana:
-            return new SolanaDappAddresses(program);
-          case Backend.DialectCloud:
-            return new DataServiceDappAddresses(dataServiceDappsApi);
-          default:
-            throw new IllegalArgumentError(`Unknown backend ${backend}`);
-        }
-      },
+    return DataServiceApi.create(config.url, tokenProvider);
+  }
+
+  private initializeMessagingApi(
+    dataServiceApi: DataServiceApi,
+    blockchainSdk: BlockchainSdk,
+  ): Messaging {
+    const messagings: Messaging[] = [];
+    const dataServiceMessaging = new DataServiceMessaging(
+      blockchainSdk.authenticationFacade.subject(),
+      dataServiceApi.threads,
+      blockchainSdk.encryptionKeysProvider,
+    );
+    messagings.push(dataServiceMessaging);
+    if (blockchainSdk.messaging) {
+      messagings.push(blockchainSdk.messaging);
+    }
+    return new MessagingFacade(messagings);
+  }
+
+  private initializeDappApi(
+    dataServiceApi: DataServiceApi,
+    blockchainSdk: BlockchainSdk,
+  ): Dapps {
+    const dappAddresses = this.createDappAddresses(
+      dataServiceApi,
+      blockchainSdk,
     );
     const dappNotificationTypes = new DataServiceDappNotificationTypes(
-      dataServiceDappNotificationTypesApi,
+      dataServiceApi.dappNotificationTypes,
     );
     const dappNotificationSubscriptions =
       new DataServiceDappNotificationSubscriptions(
-        dappNotificationSubscriptionsApi,
+        dataServiceApi.dappNotificationSubscriptions,
       );
-    const dappAddressesFacade = new DappAddressesFacade(dappAddressesBackends);
-    const dappMessageBackends: DappMessages[] = config.backends.map(
-      (backend) => {
-        switch (backend) {
-          case Backend.Solana:
-            return new SolanaDappMessages(
-              new SolanaMessaging(
-                config.wallet,
-                program,
-                encryptionKeysProvider,
-              ),
-              new SolanaDappAddresses(program),
-              dappNotificationTypes,
-              dappNotificationSubscriptions,
-            );
-          case Backend.DialectCloud:
-            return new DataServiceDappMessages(dataServiceDappsApi);
-          default:
-            throw new IllegalArgumentError(`Unknown backend ${backend}`);
-        }
-      },
-    );
-    const dappMessagesFacade = new DappMessagesFacade(dappMessageBackends);
+    const dappMessages = this.createDappMessages(dataServiceApi, blockchainSdk);
     return new DappsImpl(
-      dappAddressesFacade,
-      dappMessagesFacade,
+      dappAddresses,
+      dappMessages,
       dappNotificationTypes,
       dappNotificationSubscriptions,
-      dataServiceDappsApi,
+      dataServiceApi.dapps,
     );
+  }
+
+  private createDappAddresses(
+    dataServiceApi: DataServiceApi,
+    blockchainSdk: BlockchainSdk,
+  ): DappAddresses {
+    const dappAddresses: DappAddresses[] = [];
+    const dataServiceDappAddresses = new DataServiceDappAddresses(
+      dataServiceApi.dapps,
+    );
+    dappAddresses.push(dataServiceDappAddresses);
+    if (blockchainSdk.dappAddresses) {
+      dappAddresses.push(blockchainSdk.dappAddresses);
+    }
+    return new DappAddressesFacade(dappAddresses);
+  }
+
+  private createDappMessages(
+    dataServiceApi: DataServiceApi,
+    blockchainSdk: BlockchainSdk,
+  ): DappMessages {
+    const dappMessages: DappMessages[] = [];
+    const dataServiceDappMessages = new DataServiceDappMessages(
+      dataServiceApi.dapps,
+    );
+    dappMessages.push(dataServiceDappMessages);
+    if (blockchainSdk.dappMessages) {
+      dappMessages.push(blockchainSdk.dappMessages);
+    }
+    return new DappMessagesFacade(dappMessages);
   }
 
   private createIdentityResolver(config: IdentityConfig): IdentityResolver {
@@ -283,19 +211,14 @@ Solana settings:
     );
   }
 
-  private initializeConfig(): InternalConfig {
+  private initializeConfig(): Config {
     const environment = this.config.environment ?? 'production';
-    const wallet = DialectSolanaWalletAdapterWrapper.create(this.config.wallet);
-    const backends = this.initializeBackends();
     const encryptionKeysStore = this.createEncryptionKeysStore();
     const identity = this.createIdentityConfig();
     return {
       environment,
-      wallet,
       dialectCloud: this.initializeDialectCloudConfig(),
-      solana: this.initializeSolanaConfig(),
       encryptionKeysStore,
-      backends,
       identity,
     };
   }
@@ -318,17 +241,6 @@ Solana settings:
       return EncryptionKeysStore.createLocalStorage();
     }
     return EncryptionKeysStore.createInMemory();
-  }
-
-  private initializeBackends() {
-    const backends = this.config.backends;
-    if (!backends) {
-      return [Backend.DialectCloud, Backend.Solana];
-    }
-    if (backends.length < 1) {
-      throw new IllegalArgumentError('Please specify at least one backend.');
-    }
-    return backends;
   }
 
   private initializeDialectCloudConfig(): DialectCloudConfig {
@@ -392,73 +304,6 @@ Solana settings:
       return TokenStore.createLocalStorage();
     }
     return TokenStore.createInMemory();
-  }
-
-  private initializeSolanaConfig(): SolanaConfig {
-    let internalConfig: SolanaConfig = {
-      network: 'mainnet-beta',
-      dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-      rpcUrl: programs.mainnet.clusterAddress,
-    };
-    const environment = this.config.environment;
-    if (environment === 'production') {
-      const network = 'mainnet-beta';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-        rpcUrl: programs.mainnet.clusterAddress,
-      };
-    }
-    if (environment === 'development') {
-      const network = 'devnet';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
-    }
-    if (environment === 'local-development') {
-      const network = 'localnet';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
-    }
-    const solanaNetwork = this.config.solana?.network;
-    if (solanaNetwork === 'mainnet-beta') {
-      const network = 'mainnet-beta';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-        rpcUrl: programs.mainnet.clusterAddress,
-      };
-    }
-    if (solanaNetwork === 'devnet') {
-      const network = 'devnet';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
-    }
-    if (solanaNetwork === 'localnet') {
-      const network = 'localnet';
-      internalConfig = {
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
-    }
-
-    if (this.config.solana?.dialectProgramAddress) {
-      internalConfig.dialectProgramAddress =
-        this.config.solana.dialectProgramAddress;
-    }
-    if (this.config.solana?.rpcUrl) {
-      internalConfig.rpcUrl = this.config.solana.rpcUrl;
-    }
-    return internalConfig;
   }
 
   private createIdentityConfig(): IdentityConfig {

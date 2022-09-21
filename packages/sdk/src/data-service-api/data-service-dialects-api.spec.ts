@@ -27,7 +27,7 @@ describe('Data service dialects api (e2e)', () => {
       new TestEd25519AuthenticationFacadeFactory(
         new TestEd25519TokenSigner(),
       ).get();
-    wallet1Address = wallet1AuthenticationFacade.signerSubject();
+    wallet1Address = wallet1AuthenticationFacade.subject();
     wallet1Api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(wallet1AuthenticationFacade),
@@ -36,7 +36,7 @@ describe('Data service dialects api (e2e)', () => {
       new TestEd25519AuthenticationFacadeFactory(
         new TestEd25519TokenSigner(),
       ).get();
-    wallet2Address = wallet2AuthenticationFacade.signerSubject();
+    wallet2Address = wallet2AuthenticationFacade.subject();
     wallet2Api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(wallet2AuthenticationFacade),
