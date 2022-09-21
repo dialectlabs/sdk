@@ -29,7 +29,6 @@ export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519Tok
     return hexString.toString();
   }
 
-  // TODO: handle this better
   get subjectPublicKey(): PublicKey {
     const publicKey = this.dialectWalletAdapter.publicAccount.publicKey;
     const hexString = HexString.ensure(publicKey!);
