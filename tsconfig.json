@@ -1,10 +1,17 @@
 {
-  "exclude": ["node_modules", "lib", "examples"],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "examples"
+  ],
   "compilerOptions": {
     // target
     "target": "ES2019",
     // DOM is not really valid here, but TextEncoder available only in DOM lib
-    "lib": ["ESNext", "DOM"],
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
     "module": "commonjs",
     "moduleResolution": "node",
     // build
@@ -17,8 +24,8 @@
     "isolatedModules": true,
     // linting
     "strict": true,
-    //    "noUnusedLocals": true,
-    //    "noUnusedParameters": true,
+//    "noUnusedLocals": true,
+//    "noUnusedParameters": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
     "noFallthroughCasesInSwitch": true,
