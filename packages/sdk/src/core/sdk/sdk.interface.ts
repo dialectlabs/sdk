@@ -15,11 +15,11 @@ import type { AuthenticationFacade } from '../auth/authentication-facade';
 import type { EncryptionKeysProvider } from '../internal/encryption/encryption-keys-provider';
 
 export abstract class Dialect {
-  static sdk(
-    config: ConfigProps,
-    blockchainFactory: BlockchainFactory,
-  ): DialectSdk {
-    return new DialectSdkFactory(config, blockchainFactory).create();
+  static sdk<ChainSdk extends BlockchainSdk>(
+    configProps: ConfigProps,
+    blockchainSdkFactory: BlockchainSdkFactory<ChainSdk>,
+  ): DialectSdk<ChainSdk> {
+    return new DialectSdkFactory(configProps, blockchainSdkFactory).create();
   }
 }
 
@@ -30,8 +30,8 @@ export interface ConfigProps {
   identity?: IdentityConfigProps;
 }
 
-export interface BlockchainFactory {
-  create(globalConfig: ConfigProps): BlockchainSdk;
+export interface BlockchainSdkFactory<ChainSdk extends BlockchainSdk> {
+  create(config: Config): ChainSdk;
 }
 
 export interface BlockchainSdk {
@@ -43,28 +43,14 @@ export interface BlockchainSdk {
   readonly dappAddresses?: DappAddresses;
 }
 
-export interface ApiAvailability {
-  supportedBackends: Backend[];
-  canEncrypt: boolean;
-}
-
-export interface DialectSdk {
-  readonly info: DialectSdkInfo;
+export interface DialectSdk<ChainSdk extends BlockchainSdk> {
+  readonly config: Config;
   readonly threads: Messaging;
   readonly dapps: Dapps;
   readonly wallet: Wallets;
   readonly identity: IdentityResolver;
-}
-
-export interface DialectSdkInfo {
-  // readonly apiAvailability: ApiAvailability; // TODO
-  readonly config: Config;
-  // readonly solana: SolanaInfo; // TODO
   readonly tokenProvider: TokenProvider;
-}
-
-export interface SolanaInfo {
-  dialectProgram: Program;
+  readonly blockchainSdk: ChainSdk;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';
@@ -87,12 +73,6 @@ export type DialectCloudEnvironment =
   | 'production'
   | 'development'
   | 'local-development';
-
-export enum Backend {
-  Solana = 'SOLANA',
-  DialectCloud = 'DIALECT_CLOUD',
-  Facade = 'FACADE',
-}
 
 type IdentityResolveStrategy =
   | 'first-found'

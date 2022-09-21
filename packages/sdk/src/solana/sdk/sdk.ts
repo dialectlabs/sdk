@@ -4,8 +4,8 @@ import { createDialectProgram } from '../messaging/solana-dialect-program-factor
 import { PublicKey } from '@solana/web3.js';
 import { programs } from '@dialectlabs/web3';
 import type {
-  BlockchainFactory,
   BlockchainSdk,
+  BlockchainSdkFactory,
   Config,
   Environment,
   SolanaNetwork,
@@ -26,6 +26,7 @@ export interface SolanaConfigProps {
   network?: SolanaNetwork;
   dialectProgramAddress?: PublicKey;
   rpcUrl?: string;
+  enableOnChainMessaging?: boolean;
 }
 
 export interface SolanaConfig extends SolanaConfigProps {
@@ -33,10 +34,16 @@ export interface SolanaConfig extends SolanaConfigProps {
   network: SolanaNetwork;
   dialectProgramAddress: PublicKey;
   rpcUrl: string;
+  enableOnChainMessaging: boolean;
 }
 
-export class SolanaBlockchainFactory implements BlockchainFactory {
-  constructor(private readonly solanaConfigProps: SolanaConfigProps) {}
+export interface Solana extends BlockchainSdk {
+  readonly config: SolanaConfig;
+  readonly dialectProgram: Program;
+}
+
+export class SolanaSdkFactory implements BlockchainSdkFactory<Solana> {
+  private constructor(readonly solanaConfigProps: SolanaConfigProps) {}
 
   private static logConfiguration(
     config: SolanaConfig,
@@ -46,6 +53,7 @@ export class SolanaBlockchainFactory implements BlockchainFactory {
       console.log(
         `Initializing Dialect Solana SDK using configuration:
 Solana settings:
+  On-chain messaging enabled: ${config.enableOnChainMessaging}
   Wallet public key: ${config.wallet.publicKey}
   Wallet supports encryption: ${config.wallet.canEncrypt}
   Wallet supports authentication: ${
@@ -58,13 +66,13 @@ Solana settings:
     }
   }
 
-  create(config: Config): BlockchainSdk {
+  create(config: Config): Solana {
     const solanaConfig = this.initializeSolanaConfig(
       config.environment,
       this.solanaConfigProps,
     );
     const wallet = solanaConfig.wallet;
-    SolanaBlockchainFactory.logConfiguration(solanaConfig, config.environment);
+    SolanaSdkFactory.logConfiguration(solanaConfig, config.environment);
     const dialectProgram: Program = createDialectProgram(
       wallet,
       solanaConfig.dialectProgramAddress,
@@ -83,32 +91,36 @@ Solana settings:
       : new SolanaTxAuthenticationFacadeFactory(
           new DialectWalletAdapterSolanaTxTokenSigner(wallet),
         );
-
-    const solanaDappAddresses = new SolanaDappAddresses(dialectProgram);
-    const dappMessages = new SolanaDappMessages(
-      new SolanaMessaging(wallet, dialectProgram, encryptionKeysProvider),
-      solanaDappAddresses,
-    );
-    const dappAddresses = new SolanaDappAddresses(dialectProgram);
     const authenticationFacade = authenticationFacadeFactory.get();
-    const messaging = new SolanaMessaging(
-      wallet,
-      dialectProgram,
-      encryptionKeysProvider,
-    );
 
+    const onChainMessagingFactory = () => {
+      const dappAddresses = new SolanaDappAddresses(dialectProgram);
+      const messaging = new SolanaMessaging(
+        wallet,
+        dialectProgram,
+        encryptionKeysProvider,
+      );
+      return {
+        messaging,
+        dappMessages: new SolanaDappMessages(
+          new SolanaMessaging(wallet, dialectProgram, encryptionKeysProvider),
+          dappAddresses,
+        ),
+        dappAddresses,
+      };
+    };
     return {
       type: 'solana',
-      messaging,
       encryptionKeysProvider,
-      dappMessages,
-      dappAddresses,
       authenticationFacade,
+      config: solanaConfig,
+      dialectProgram,
+      ...(solanaConfig.enableOnChainMessaging && onChainMessagingFactory()),
     };
   }
 
   static create(props: SolanaConfigProps) {
-    return new SolanaBlockchainFactory(props);
+    return new SolanaSdkFactory(props);
   }
 
   private initializeSolanaConfig(
@@ -118,74 +130,70 @@ Solana settings:
     const wallet = new DialectSolanaWalletAdapterWrapper(
       this.solanaConfigProps.wallet,
     );
-    let config: SolanaConfig = {
+    let base: SolanaConfig = {
       wallet,
       network: 'mainnet-beta',
       dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
       rpcUrl: programs.mainnet.clusterAddress,
+      enableOnChainMessaging: false,
     };
     if (environment === 'production') {
-      const network = 'mainnet-beta';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-        rpcUrl: programs.mainnet.clusterAddress,
-      };
+      base.network = 'mainnet-beta';
+      base.dialectProgramAddress = new PublicKey(
+        programs.mainnet.programAddress,
+      );
+      base.rpcUrl = programs.mainnet.clusterAddress;
     }
     if (environment === 'development') {
       const network = 'devnet';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
+      base.network = network;
+      base.dialectProgramAddress = new PublicKey(
+        programs[network].programAddress,
+      );
+      base.rpcUrl = programs[network].clusterAddress;
     }
     if (environment === 'local-development') {
       const network = 'localnet';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
+      base.network = network;
+      base.dialectProgramAddress = new PublicKey(
+        programs[network].programAddress,
+      );
+      base.rpcUrl = programs[network].clusterAddress;
     }
     const solanaNetwork = solanaConfigProps?.network;
     if (solanaNetwork === 'mainnet-beta') {
-      const network = 'mainnet-beta';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),
-        rpcUrl: programs.mainnet.clusterAddress,
-      };
+      base.network = 'mainnet-beta';
+      base.dialectProgramAddress = new PublicKey(
+        programs.mainnet.programAddress,
+      );
+      base.rpcUrl = programs.mainnet.clusterAddress;
     }
     if (solanaNetwork === 'devnet') {
       const network = 'devnet';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
+      base.network = network;
+      base.dialectProgramAddress = new PublicKey(
+        programs[network].programAddress,
+      );
+      base.rpcUrl = programs[network].clusterAddress;
     }
     if (solanaNetwork === 'localnet') {
       const network = 'localnet';
-      config = {
-        wallet,
-        network,
-        dialectProgramAddress: new PublicKey(programs[network].programAddress),
-        rpcUrl: programs[network].clusterAddress,
-      };
+      base.network = network;
+      base.dialectProgramAddress = new PublicKey(
+        programs[network].programAddress,
+      );
+      base.rpcUrl = programs[network].clusterAddress;
     }
 
     if (solanaConfigProps?.dialectProgramAddress) {
-      config.dialectProgramAddress = solanaConfigProps.dialectProgramAddress;
+      base.dialectProgramAddress = solanaConfigProps.dialectProgramAddress;
     }
     if (solanaConfigProps?.rpcUrl) {
-      config.rpcUrl = solanaConfigProps.rpcUrl;
+      base.rpcUrl = solanaConfigProps.rpcUrl;
     }
-    return config;
+    if (solanaConfigProps?.enableOnChainMessaging) {
+      base.enableOnChainMessaging = solanaConfigProps.enableOnChainMessaging;
+    }
+    return base;
   }
 }

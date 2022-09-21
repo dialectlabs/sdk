@@ -1,11 +1,10 @@
 import { DataServiceDappMessages } from '../dapp/data-service-dapp-messages';
 import type {
-  BlockchainFactory,
+  BlockchainSdkFactory,
   BlockchainSdk,
   ConfigProps,
   DialectCloudConfig,
   DialectSdk,
-  DialectSdkInfo,
   IdentityConfig,
 } from '../../sdk/sdk.interface';
 import type { Config } from '../../sdk/sdk.interface';
@@ -41,20 +40,24 @@ import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
 
-export class InternalDialectSdk implements DialectSdk {
+export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
+  implements DialectSdk<ChainSdk>
+{
   constructor(
-    readonly info: DialectSdkInfo,
+    readonly config: Config,
     readonly threads: Messaging,
     readonly dapps: Dapps,
     readonly wallet: Wallets,
     readonly identity: IdentityResolver,
+    readonly tokenProvider: TokenProvider,
+    readonly blockchainSdk: ChainSdk,
   ) {}
 }
 
-export class DialectSdkFactory {
+export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
   constructor(
     private readonly config: ConfigProps,
-    private readonly blockchainFactory: BlockchainFactory,
+    private readonly blockchainFactory: BlockchainSdkFactory<ChainSdk>,
   ) {}
 
   private static logConfiguration(config: Config) {
@@ -68,7 +71,7 @@ export class DialectSdkFactory {
     }
   }
 
-  create(): DialectSdk {
+  create(): DialectSdk<ChainSdk> {
     const config: Config = this.initializeConfig();
     DialectSdkFactory.logConfiguration(config);
     const blockchainSdk = this.blockchainFactory.create(config);
@@ -92,14 +95,13 @@ export class DialectSdkFactory {
     );
     const identity = this.createIdentityResolver(config.identity);
     return new InternalDialectSdk(
-      {
-        config,
-        tokenProvider,
-      },
+      config,
       messaging,
       dapps,
       wallet,
       identity,
+      tokenProvider,
+      blockchainSdk,
     );
   }
 
