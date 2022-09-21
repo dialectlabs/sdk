@@ -21,7 +21,7 @@ export class AptosEd25519TokenValidator extends TokenValidator {
     );
   }
 
-  override validateCustom(token: Token): boolean {
+  override performExtraValidation(token: Token): boolean {
     const address = getAptosAccountAddress(
       HexString.fromUint8Array(this.getPublicKey(token)),
     ).toString();
