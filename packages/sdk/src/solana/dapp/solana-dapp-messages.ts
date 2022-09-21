@@ -15,14 +15,16 @@ export class SolanaDappMessages implements DappMessages {
   constructor(
     private readonly messaging: SolanaMessaging,
     private readonly dappAddresses: SolanaDappAddresses,
-    private readonly dappNotificationTypes: DappNotificationTypes,
-    private readonly notificationSubscriptions: DappNotificationSubscriptions,
   ) {}
 
   async send(command: SendDappMessageCommand): Promise<void> {
+    if (Boolean(command.notificationTypeId)) {
+      console.warn(
+        `Ignoring notificationTypeId: ${command.notificationTypeId}, not implemented`,
+      );
+    }
     if ('recipient' in command) {
       const recipients = await this.getRecipients(
-        command.notificationTypeId,
         (it) => it === command.recipient,
       );
       return this.multicast({
@@ -31,16 +33,15 @@ export class SolanaDappMessages implements DappMessages {
       });
     }
     if ('recipients' in command) {
-      const recipients = await this.getRecipients(
-        command.notificationTypeId,
-        (r) => Boolean(command.recipients.find((it) => it === r)),
+      const recipients = await this.getRecipients((r) =>
+        Boolean(command.recipients.find((it) => it === r)),
       );
       return this.multicast({
         ...command,
         recipients,
       });
     }
-    const recipients = await this.getRecipients(command.notificationTypeId);
+    const recipients = await this.getRecipients();
     return this.multicast({
       ...command,
       recipients,
@@ -48,32 +49,15 @@ export class SolanaDappMessages implements DappMessages {
   }
 
   async getRecipients(
-    notificationTypeId?: string,
     recipientPredicate: (recipient: AccountAddress) => boolean = () => true,
   ) {
-    const dappNotificationTypes = await this.dappNotificationTypes.findAll();
-    if (dappNotificationTypes.length > 0 && !notificationTypeId) {
-      throw new IllegalArgumentError(
-        `Dapp has non-empty notification type configuration, therefore notification type id must be supplied`,
-      );
-    }
     const addressRecipients = await this.getRecipientsByAddressSubscription(
       recipientPredicate,
     );
     if (addressRecipients.length === 0) {
       return [];
     }
-    if (!notificationTypeId) {
-      return addressRecipients;
-    }
-    const notificationTypeRecipients =
-      await this.getRecipientsByNotificationType(
-        notificationTypeId,
-        recipientPredicate,
-      );
-    return notificationTypeRecipients.filter((ntr) =>
-      addressRecipients.find((ar) => ar === ntr),
-    );
+    return addressRecipients;
   }
 
   private async multicast(command: MulticastDappMessageCommand) {
@@ -114,25 +98,6 @@ export class SolanaDappMessages implements DappMessages {
     return addressSubscriptions
       .filter((it) => it.address.verified && it.enabled)
       .map((it) => it.address.wallet.address)
-      .filter(recipientPredicate);
-  }
-
-  private async getRecipientsByNotificationType(
-    notificationTypeId: string,
-    recipientPredicate: (recipient: AccountAddress) => boolean,
-  ) {
-    const notificationSubscriptions =
-      await this.notificationSubscriptions.findAll();
-    return notificationSubscriptions
-      .filter(
-        (it) =>
-          it.notificationType.id === notificationTypeId ||
-          it.notificationType.humanReadableId.toLowerCase() ===
-            notificationTypeId.toLowerCase(),
-      )
-      .flatMap((it) => it.subscriptions)
-      .filter((it) => it.config.enabled)
-      .map((it) => it.wallet.address)
       .filter(recipientPredicate);
   }
 }
