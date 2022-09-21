@@ -2,6 +2,8 @@ import type { Backend } from 'core/sdk/sdk.interface';
 import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Messaging {
+  backend: Backend;
+
   findAll(): Promise<Thread[]>;
 
   create(command: CreateThreadCommand): Promise<Thread>;
@@ -73,20 +75,20 @@ export interface ThreadIdProps {
 
 export class ThreadId {
   readonly address!: AccountAddress;
-  readonly backend?: Backend;
+  readonly type?: Backend;
 
   constructor({ address, backend }: ThreadIdProps) {
     this.address = address;
-    this.backend = backend;
+    this.type = backend;
   }
 
   public equals(other: ThreadId): boolean {
-    return this.address == other.address && this.backend === other.backend;
+    return this.address == other.address && this.type === other.type;
   }
 
   public toString(): string {
-    return this.backend
-      ? this.backend.toString() + ':' + this.address.toString()
+    return this.type
+      ? this.type.toString() + ':' + this.address.toString()
       : this.address.toString();
   }
 }

@@ -1,19 +1,46 @@
-import type { DialectSolanaWalletAdapter } from '../../solana/wallet-adapter/dialect-solana-wallet-adapter.interface';
 import type { TokenProvider } from '../auth/token-provider';
 import type { Wallets } from '../wallet/wallet.interface';
 import type { Program } from '@project-serum/anchor';
-import type { PublicKey } from '@solana/web3.js';
 import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
 import type { Messaging } from '../messaging/messaging.interface';
-import type { Dapps } from '../dapp/dapp.interface';
+import type {
+  DappAddresses,
+  DappMessages,
+  Dapps,
+} from '../dapp/dapp.interface';
 import type { IdentityResolver } from '../identity/identity.interface';
 import type { TokenStore } from '../auth/token-store';
 import { DialectSdkFactory } from '../internal/sdk/sdk-factory';
+import type { AuthenticationFacade } from '../auth/authentication-facade';
+import type { EncryptionKeysProvider } from '../internal/encryption/encryption-keys-provider';
 
 export abstract class Dialect {
-  static sdk(config: ConfigProps): DialectSdk {
-    return new DialectSdkFactory(config).create();
+  static sdk(
+    config: ConfigProps,
+    blockchainFactory: BlockchainFactory,
+  ): DialectSdk {
+    return new DialectSdkFactory(config, blockchainFactory).create();
   }
+}
+
+export interface ConfigProps {
+  environment?: Environment;
+  dialectCloud?: DialectCloudConfigProps;
+  encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
+  identity?: IdentityConfigProps;
+}
+
+export interface BlockchainFactory {
+  create(globalConfig: ConfigProps): BlockchainSdk;
+}
+
+export interface BlockchainSdk {
+  readonly type: string;
+  readonly authenticationFacade: AuthenticationFacade;
+  readonly encryptionKeysProvider: EncryptionKeysProvider;
+  readonly messaging?: Messaging;
+  readonly dappMessages?: DappMessages;
+  readonly dappAddresses?: DappAddresses;
 }
 
 export interface ApiAvailability {
@@ -30,10 +57,9 @@ export interface DialectSdk {
 }
 
 export interface DialectSdkInfo {
-  readonly apiAvailability: ApiAvailability;
+  // readonly apiAvailability: ApiAvailability; // TODO
   readonly config: Config;
-  readonly wallet: DialectSolanaWalletAdapter;
-  readonly solana: SolanaInfo;
+  // readonly solana: SolanaInfo; // TODO
   readonly tokenProvider: TokenProvider;
 }
 
@@ -47,22 +73,6 @@ export type EncryptionKeysStoreType =
   | 'in-memory'
   | 'session-storage'
   | 'local-storage';
-
-export interface ConfigProps {
-  environment?: Environment;
-  wallet: DialectSolanaWalletAdapter;
-  solana?: SolanaConfigProps;
-  dialectCloud?: DialectCloudConfigProps;
-  encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
-  backends?: Backend[];
-  identity?: IdentityConfigProps;
-}
-
-export interface SolanaConfigProps {
-  network?: SolanaNetwork;
-  dialectProgramAddress?: PublicKey;
-  rpcUrl?: string;
-}
 
 export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
@@ -81,6 +91,7 @@ export type DialectCloudEnvironment =
 export enum Backend {
   Solana = 'SOLANA',
   DialectCloud = 'DIALECT_CLOUD',
+  Facade = 'FACADE',
 }
 
 type IdentityResolveStrategy =
@@ -95,18 +106,9 @@ export interface IdentityConfigProps {
 
 export interface Config extends ConfigProps {
   environment: Environment;
-  wallet: DialectSolanaWalletAdapter;
-  solana: SolanaConfig;
   dialectCloud: DialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;
-  backends: Backend[];
   identity: IdentityConfig;
-}
-
-export interface SolanaConfig extends SolanaConfigProps {
-  network: SolanaNetwork;
-  dialectProgramAddress: PublicKey;
-  rpcUrl: string;
 }
 
 export interface DialectCloudConfig extends DialectCloudConfigProps {

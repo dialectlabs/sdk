@@ -25,7 +25,7 @@ export abstract class TokenProvider {
       tokenStore,
       authenticationFacade.tokenParser,
       authenticationFacade.tokenValidator,
-      authenticationFacade.signerSubject(),
+      authenticationFacade.subject(),
     );
   }
 

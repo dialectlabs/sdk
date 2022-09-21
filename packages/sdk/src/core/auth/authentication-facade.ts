@@ -25,7 +25,7 @@ export class AuthenticationFacade {
     return this.tokenSigner.alg;
   }
 
-  signerSubject(): AccountAddress {
+  subject(): AccountAddress {
     return this.tokenSigner.subject;
   }
 

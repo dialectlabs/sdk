@@ -42,6 +42,7 @@ import {
 import { requireAtLeastOneMember } from '../../messaging/commons';
 
 export class DataServiceMessaging implements Messaging {
+  readonly backend: Backend = Backend.DialectCloud;
   constructor(
     private readonly me: AccountAddress,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,

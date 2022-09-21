@@ -24,7 +24,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
     const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    dappPublicKey = dappAuthenticationFacade.signerSubject();
+    dappPublicKey = dappAuthenticationFacade.subject();
     const dappDataServiceApi = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(dappAuthenticationFacade),
@@ -44,7 +44,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
     const userAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
       new TestEd25519TokenSigner(),
     ).get();
-    userPublicKey = userAuthenticationFacade.signerSubject();
+    userPublicKey = userAuthenticationFacade.subject();
     api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(userAuthenticationFacade),
