@@ -8,10 +8,9 @@ import type {
   BlockchainSdkFactory,
   Config,
   Environment,
-  SolanaNetwork,
 } from '../../core/sdk/sdk.interface';
 import type { DialectSolanaWalletAdapter } from '../wallet-adapter/dialect-solana-wallet-adapter.interface';
-import { DialectWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { EncryptionKeysProvider } from '../../core/internal/encryption/encryption-keys-provider';
 import { SolanaEd25519AuthenticationFacadeFactory } from '../auth/ed25519/solana-ed25519-authentication-facade-factory';
 import { DialectWalletAdapterEd25519TokenSigner } from '../auth/ed25519/solana-ed25519-token-signer';
@@ -36,6 +35,8 @@ export interface SolanaConfig extends SolanaConfigProps {
   rpcUrl: string;
   enableOnChainMessaging: boolean;
 }
+
+export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
 
 export interface Solana extends BlockchainSdk {
   readonly config: SolanaConfig;
@@ -79,7 +80,7 @@ Solana settings:
       solanaConfig.rpcUrl,
     );
     const walletAdapterEncryptionKeysProvider =
-      new DialectWalletAdapterEncryptionKeysProvider(wallet);
+      new DialectSolanaWalletAdapterEncryptionKeysProvider(wallet);
     const encryptionKeysProvider = EncryptionKeysProvider.create(
       walletAdapterEncryptionKeysProvider,
       config.encryptionKeysStore,
