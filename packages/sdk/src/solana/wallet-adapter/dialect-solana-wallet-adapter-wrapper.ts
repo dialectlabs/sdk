@@ -1,10 +1,9 @@
 import type { PublicKey, Transaction } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapter } from './dialect-solana-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../core/sdk/errors';
-import { ApiAvailability, Backend } from '../../core/sdk/sdk.interface';
 
 export class DialectSolanaWalletAdapterWrapper
-  implements DialectSolanaWalletAdapter, ApiAvailability
+  implements DialectSolanaWalletAdapter
 {
   constructor(private readonly delegate: DialectSolanaWalletAdapter) {}
 
@@ -20,19 +19,6 @@ export class DialectSolanaWalletAdapterWrapper
 
   get canEncrypt() {
     return Boolean(this.publicKey && this.delegate.diffieHellman);
-  }
-
-  get supportedBackends(): Backend[] {
-    return [
-      ...(this.canUseSolana() ? [Backend.Solana] : []),
-      ...(this.canUseDialectCloud() ? [Backend.DialectCloud] : []),
-    ];
-  }
-
-  static create(
-    adapter: DialectSolanaWalletAdapter,
-  ): DialectSolanaWalletAdapterWrapper {
-    return new DialectSolanaWalletAdapterWrapper(adapter);
   }
 
   signTransaction(transaction: Transaction): Promise<Transaction> {
@@ -83,18 +69,9 @@ export class DialectSolanaWalletAdapterWrapper
     return Boolean(this.delegate.signTransaction);
   }
 
-  private canUseSolana() {
-    return Boolean(
-      this.publicKey &&
-        this.delegate.signTransaction &&
-        this.delegate.signAllTransactions,
-    );
-  }
-
-  private canUseDialectCloud() {
-    return Boolean(
-      this.publicKey &&
-        (this.delegate.signMessage || this.delegate.signTransaction),
-    );
+  static create(
+    adapter: DialectSolanaWalletAdapter,
+  ): DialectSolanaWalletAdapterWrapper {
+    return new DialectSolanaWalletAdapterWrapper(adapter);
   }
 }

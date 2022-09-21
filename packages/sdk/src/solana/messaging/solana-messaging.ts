@@ -38,13 +38,12 @@ import type { DiffeHellmanKeys } from '../../core/encryption/encryption.interfac
 import type { Program } from '@project-serum/anchor';
 import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
-import { Backend } from '../../core/sdk/sdk.interface';
 import type { SolanaError } from '../errors';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
 import type { PublicKey } from '../../core/auth/auth.interface';
 
 export class SolanaMessaging implements Messaging {
-  readonly backend: Backend = Backend.Solana;
+  readonly type: string = 'solana';
 
   constructor(
     private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
@@ -198,7 +197,7 @@ export class SolanaMessaging implements Messaging {
 }
 
 export class SolanaThread implements Thread {
-  readonly backend: Backend = Backend.Solana;
+  readonly type = 'solana';
   readonly id: ThreadId;
 
   constructor(
@@ -214,7 +213,7 @@ export class SolanaThread implements Thread {
     private dialectAccount: DialectAccount,
   ) {
     this.id = new ThreadId({
-      backend: this.backend,
+      type: this.type,
       address: address.toString(),
     });
   }

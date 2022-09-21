@@ -1,11 +1,15 @@
-import { Backend, Dialect, NodeDialectSolanaWalletAdapter } from '../../src';
+import { Dialect, NodeDialectSolanaWalletAdapter } from '../../src';
+import { SolanaSdkFactory } from '../../src/solana/sdk/sdk';
 
 function createSdk() {
-  return Dialect.sdk({
-    wallet: NodeDialectSolanaWalletAdapter.create(),
-    backends: [Backend.DialectCloud],
-    environment: 'local-development',
-  });
+  return Dialect.sdk(
+    {
+      environment: 'local-development',
+    },
+    SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(),
+    }),
+  );
 }
 
 describe('Dapps (e2e)', () => {

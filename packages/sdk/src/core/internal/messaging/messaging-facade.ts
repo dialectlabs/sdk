@@ -7,7 +7,6 @@ import type {
   ThreadsGeneralSummary,
   ThreadSummary,
 } from '../../messaging/messaging.interface';
-import { Backend } from '../../sdk/sdk.interface';
 import {
   DialectSdkError,
   IllegalArgumentError,
@@ -15,7 +14,7 @@ import {
 } from '../../sdk/errors';
 
 export class MessagingFacade implements Messaging {
-  readonly backend: Backend = Backend.Facade;
+  readonly type = 'messaging-facade';
 
   constructor(private readonly delegates: Messaging[]) {
     if (delegates.length < 1) {
@@ -26,7 +25,7 @@ export class MessagingFacade implements Messaging {
   }
 
   create(command: CreateThreadCommand): Promise<Thread> {
-    const messaging = this.getPreferableMessaging(command.backend);
+    const messaging = this.getPreferableMessaging(command.type);
     return messaging.create(command);
   }
 
@@ -108,20 +107,18 @@ export class MessagingFacade implements Messaging {
     return null;
   }
 
-  private getPreferableMessaging(backend?: Backend) {
-    if (backend) {
-      return this.lookUpMessagingBackend(backend);
+  private getPreferableMessaging(type?: string) {
+    if (type) {
+      return this.lookUpMessagingBackend(type);
     }
     return this.getFirstAccordingToPriority();
   }
 
-  private lookUpMessagingBackend(backend: Backend) {
-    const messagingBackend = this.delegates.find(
-      ({ backend: b }) => backend === b,
-    );
+  private lookUpMessagingBackend(type: string) {
+    const messagingBackend = this.delegates.find(({ type: t }) => type === t);
     if (!messagingBackend) {
       throw new IllegalArgumentError(
-        `Backend ${backend} is not configured in sdk.`,
+        `Backend ${type} is not configured in sdk.`,
       );
     }
     return messagingBackend;

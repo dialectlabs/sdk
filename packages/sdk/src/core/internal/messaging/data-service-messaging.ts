@@ -29,7 +29,6 @@ import {
   UnsupportedOperationError,
 } from '../../sdk/errors';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
-import { Backend } from '../../sdk/sdk.interface';
 import { withErrorParsing } from '../../../data-service-api/data-service-errors';
 import { ThreadAlreadyExistsError } from '../../messaging/errors';
 import type { AccountAddress } from '../../auth/auth.interface';
@@ -42,7 +41,8 @@ import {
 import { requireAtLeastOneMember } from '../../messaging/commons';
 
 export class DataServiceMessaging implements Messaging {
-  readonly backend: Backend = Backend.DialectCloud;
+  readonly type = 'dialect-cloud';
+
   constructor(
     private readonly me: AccountAddress,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
@@ -121,7 +121,7 @@ export class DataServiceMessaging implements Messaging {
       return {
         id: new ThreadId({
           address: dialectSummaryDto.publicKey,
-          backend: Backend.DialectCloud,
+          type: this.type,
         }),
         me: meMemberSummary,
       };
@@ -252,7 +252,7 @@ export class DataServiceMessaging implements Messaging {
 }
 
 export class DataServiceThread implements Thread {
-  readonly backend: Backend = Backend.DialectCloud;
+  readonly type = 'dialect-cloud';
   readonly id: ThreadId;
 
   constructor(
@@ -268,7 +268,7 @@ export class DataServiceThread implements Thread {
     public updatedAt: Date,
   ) {
     this.id = new ThreadId({
-      backend: this.backend,
+      type: this.type,
       address,
     });
   }

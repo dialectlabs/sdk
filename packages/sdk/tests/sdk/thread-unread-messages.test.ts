@@ -1,16 +1,19 @@
 import {
-  Backend,
   Dialect,
   NodeDialectSolanaWalletAdapter,
   ThreadMemberScope,
 } from '../../src';
+import { SolanaSdkFactory } from '../../src/solana/sdk/sdk';
 
 function createSdk() {
-  return Dialect.sdk({
-    wallet: NodeDialectSolanaWalletAdapter.create(),
-    backends: [Backend.DialectCloud],
-    environment: 'local-development',
-  });
+  return Dialect.sdk(
+    {
+      environment: 'local-development',
+    },
+    SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(),
+    }),
+  );
 }
 
 describe('Wallet messages read messages', () => {

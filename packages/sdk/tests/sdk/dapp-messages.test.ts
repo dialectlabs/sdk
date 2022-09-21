@@ -1,23 +1,27 @@
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import {
   AddressType,
-  Backend,
   Dialect,
   NodeDialectSolanaWalletAdapter,
   ThreadMemberScope,
 } from '../../src';
+import { SolanaSdkFactory } from '../../src/solana/sdk/sdk';
 
-function sdkFactory(backend: Backend) {
+function sdkFactory(backend: 'solana' | 'dialect-cloud') {
   return async () => {
     const wallet = NodeDialectSolanaWalletAdapter.create();
 
-    const dialectSdk = Dialect.sdk({
-      wallet: wallet,
-      backends: [backend],
-      environment: 'local-development',
+    const solanaSdkFactory = SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(),
     });
-    if (backend === Backend.Solana) {
-      const program = dialectSdk.info.solana.dialectProgram;
+    const dialectSdk = Dialect.sdk(
+      {
+        environment: 'local-development',
+      },
+      solanaSdkFactory,
+    );
+    if (backend === 'solana') {
+      const program = dialectSdk.blockchainSdk.dialectProgram;
       const airdropRequest = await program.provider.connection.requestAirdrop(
         wallet.publicKey,
         LAMPORTS_PER_SOL * 100,
@@ -30,8 +34,8 @@ function sdkFactory(backend: Backend) {
 
 describe('Dapp messages (e2e)', () => {
   it.each([
-    [Backend.Solana, sdkFactory(Backend.Solana)],
-    [Backend.DialectCloud, sdkFactory(Backend.DialectCloud)],
+    ['solana', sdkFactory('solana')],
+    ['dialect-cloud', sdkFactory('dialect-cloud')],
   ])('%p can get messages', async (backend, createSdk) => {
     // given
     const dappSdk = await createSdk();
@@ -42,7 +46,7 @@ describe('Dapp messages (e2e)', () => {
     const sdk = await createSdk();
     const address = await sdk.wallet.addresses.create({
       type: AddressType.Wallet,
-      value: sdk.info.config.wallet.publicKey?.toBase58()!,
+      value: sdk.blockchainSdk.authenticationFacade.subject(),
     });
     await sdk.wallet.dappAddresses.create({
       address: dapp.address,

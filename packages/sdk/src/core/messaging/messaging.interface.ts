@@ -1,8 +1,7 @@
-import type { Backend } from 'core/sdk/sdk.interface';
 import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Messaging {
-  backend: Backend;
+  type: string;
 
   findAll(): Promise<Thread[]>;
 
@@ -48,7 +47,7 @@ export interface CreateThreadCommand {
   me: Omit<ThreadMember, 'address' | 'lastReadMessageTimestamp'>;
   otherMembers: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
   encrypted: boolean;
-  backend?: Backend;
+  type?: string;
 }
 
 export type FindThreadQuery =
@@ -70,16 +69,16 @@ export interface FindThreadSummaryByMembers {
 
 export interface ThreadIdProps {
   address: AccountAddress;
-  backend?: Backend;
+  type?: string;
 }
 
 export class ThreadId {
   readonly address!: AccountAddress;
-  readonly type?: Backend;
+  readonly type?: string;
 
-  constructor({ address, backend }: ThreadIdProps) {
+  constructor({ address, type }: ThreadIdProps) {
     this.address = address;
-    this.type = backend;
+    this.type = type;
   }
 
   public equals(other: ThreadId): boolean {
@@ -99,7 +98,7 @@ export interface Thread {
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
-  backend: Backend;
+  type: string;
   updatedAt: Date;
   lastMessage: ThreadMessage | null;
 
