@@ -25,7 +25,7 @@ export class SolanaEd25519TokenValidator extends TokenValidator {
     );
   }
 
-  protected override validateCustom(token: Token): boolean {
+  protected override performExtraValidation(token: Token): boolean {
     if (!token.body.sub_jwk) {
       return true;
     }

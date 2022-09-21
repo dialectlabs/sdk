@@ -11,14 +11,14 @@ export abstract class TokenValidator {
     if (this.isExpired(token)) {
       return false;
     }
-    return this.validateCustom(token);
+    return this.performExtraValidation(token);
   }
 
   abstract canValidate(tokenHeader: TokenHeader): boolean;
 
   abstract isSignatureValid(token: Token): boolean;
 
-  protected validateCustom(token: Token): boolean {
+  protected performExtraValidation(token: Token): boolean {
     return true;
   }
 
