@@ -13,7 +13,7 @@ import { SolanaMessaging } from '../../solana/messaging/solana-messaging';
 import { programs } from '@dialectlabs/web3';
 import { DialectWalletAdapterEd25519TokenSigner } from '../../solana/auth/ed25519/solana-ed25519-token-signer';
 import { ThreadAlreadyExistsError } from '../../core/messaging/errors';
-import { DialectWalletAdapterEncryptionKeysProvider } from '../../solana/encryption/encryption-keys-provider';
+import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../../solana/encryption/encryption-keys-provider';
 import { DialectSolanaWalletAdapterWrapper } from '../../solana/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import { NodeDialectSolanaWalletAdapter } from '../../solana/wallet-adapter/node-dialect-solana-wallet-adapter';
 import { SolanaEd25519AuthenticationFacadeFactory } from '../../solana/auth/ed25519/solana-ed25519-authentication-facade-factory';
@@ -646,7 +646,7 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
   const userSolanaMessaging = new SolanaMessaging(
     walletAdapter,
     program,
-    new DialectWalletAdapterEncryptionKeysProvider(walletAdapter),
+    new DialectSolanaWalletAdapterEncryptionKeysProvider(walletAdapter),
   );
   return {
     adapter: walletAdapter,
@@ -667,7 +667,7 @@ function createDataServiceWalletMessagingState(): WalletMessagingState {
         ).get(),
       ),
     ).threads,
-    new DialectWalletAdapterEncryptionKeysProvider(adapter),
+    new DialectSolanaWalletAdapterEncryptionKeysProvider(adapter),
   );
   return {
     adapter: adapter,

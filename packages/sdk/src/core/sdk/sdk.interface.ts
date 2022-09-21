@@ -67,8 +67,6 @@ export interface DialectCloudConfigProps {
   tokenLifetimeMinutes?: number;
 }
 
-export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
-
 export type DialectCloudEnvironment =
   | 'production'
   | 'development'
