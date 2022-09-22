@@ -1,6 +1,7 @@
 import type { WalletAdapterProps } from '@manahippo/aptos-wallet-adapter';
 
 export interface DialectAptosWalletAdapter {
-  publicAccount?: WalletAdapterProps['publicAccount'];
+  publicKey?: WalletAdapterProps['publicAccount']['publicKey'];
+  address?: WalletAdapterProps['publicAccount']['address'];
   signMessage?: WalletAdapterProps['signMessage'];
 }
