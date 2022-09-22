@@ -23,8 +23,8 @@ export abstract class TokenProvider {
     return new CachedTokenProvider(
       defaultTokenProvider,
       tokenStore,
-      authenticationFacade.tokenParser,
-      authenticationFacade.tokenValidator,
+      authenticationFacade.authenticator.parser,
+      authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
     );
   }

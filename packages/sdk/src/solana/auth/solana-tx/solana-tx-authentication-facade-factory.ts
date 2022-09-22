@@ -1,6 +1,7 @@
 import {
   AuthenticationFacade,
   AuthenticationFacadeFactory,
+  Authenticator,
 } from '../../../core/auth/authentication-facade';
 import { TokenParser } from '../../../core/auth/token-parser';
 import { SolanaTxTokenBodyParser } from './solana-tx-token-body-parser';
@@ -14,11 +15,16 @@ export class SolanaTxAuthenticationFacadeFactory extends AuthenticationFacadeFac
   }
 
   get(): AuthenticationFacade {
-    const tokenBodyParser = new SolanaTxTokenBodyParser();
     return new AuthenticationFacade(
       this.tokenSigner,
       new SolanaTxTokenGenerator(this.tokenSigner),
-      new TokenParser(tokenBodyParser),
+      SolanaTxAuthenticationFacadeFactory.createAuthenticator(),
+    );
+  }
+
+  static createAuthenticator(): Authenticator {
+    return new Authenticator(
+      new TokenParser(new SolanaTxTokenBodyParser()),
       new SolanaTxTokenValidator(),
     );
   }

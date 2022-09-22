@@ -25,7 +25,20 @@ export abstract class TokenBodyParser {
   abstract parse(base64Body: string): TokenBody;
 }
 
+export class TokenHeaderParser {
+  parse(token: string): TokenHeader {
+    const parts = token.split('.');
+    const header = parts[0];
+    if (!header) {
+      throw new TokenParsingError();
+    }
+    return jsonParseFromBase64(header);
+  }
+}
+
 export class TokenParser {
+  private readonly tokenHeaderParser = new TokenHeaderParser();
+
   constructor(private readonly bodyParser: TokenBodyParser) {}
 
   parse(token: string): Token {
@@ -38,7 +51,7 @@ export class TokenParser {
       throw new TokenParsingError();
     }
     try {
-      const header = this.parseHeader(base64Header);
+      const header = this.parseHeader(token);
       const body = this.parseBody(base64Body);
       const signature = decodeURLSafe(base64Signature);
       return {
@@ -56,8 +69,8 @@ export class TokenParser {
     }
   }
 
-  private parseHeader(base64Header: string): TokenHeader {
-    return jsonParseFromBase64(base64Header);
+  parseHeader(token: string) {
+    return this.tokenHeaderParser.parse(token);
   }
 
   private parseBody(base64Body: string): TokenBody {
