@@ -11,7 +11,7 @@ export const SOLANA_ED25519_TOKEN_SIGNER_ALG_BACKWARD_COMPATIBLE = 'ed25519';
 
 export abstract class SolanaEd25519TokenSigner implements TokenSigner {
   // TODO: change after data service is updated
-  readonly alg = SOLANA_ED25519_TOKEN_SIGNER_ALG_BACKWARD_COMPATIBLE;
+  readonly alg = SOLANA_ED25519_TOKEN_SIGNER_ALG;
 
   abstract subject: AccountAddress;
   abstract subjectPublicKey: PublicKey;
