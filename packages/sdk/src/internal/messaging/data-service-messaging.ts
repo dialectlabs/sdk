@@ -291,6 +291,25 @@ export class DataServiceThread implements Thread {
     }));
   }
 
+  async lastMessage(): Promise<ThreadMessage | null> {
+    const { dialect } = await withErrorParsing(
+      this.dataServiceDialectsApi.find(this.address.toBase58()),
+    );
+    this.updatedAt = new Date(dialect.lastMessageTimestamp);
+    if (this.encryptionEnabledButCannotBeUsed()) {
+      return null;
+    }
+    return dialect.messages.map((it) => ({
+      author:
+        it.owner === this.me.publicKey.toBase58()
+          ? this.me
+          : this.otherMembersPks[it.owner]!,
+      timestamp: new Date(it.timestamp),
+      text: this.textSerde.deserialize(new Uint8Array(it.text)),
+      deduplicationId: it.deduplicationId,
+    })).pop() ?? null;
+  }
+
   private encryptionEnabledButCannotBeUsed() {
     return this.encryptionEnabled && !this.canBeDecrypted;
   }

@@ -100,6 +100,8 @@ export interface Thread {
   backend: Backend;
   updatedAt: Date;
 
+  lastMessage(): Promise<ThreadMessage | null>;
+
   messages(): Promise<ThreadMessage[]>;
 
   send(command: SendMessageCommand): Promise<void>;
