@@ -34,8 +34,8 @@ export class AptosSdkFactory implements BlockchainSdkFactory<Aptos> {
       console.log(
         `Initializing Dialect Aptos SDK using configuration:
 Aptos settings:
-  Wallet public key: ${config.wallet.publicAccount.publicKey}
-  Wallet address: ${config.wallet.publicAccount.address}
+  Wallet public key: ${config.wallet.publicKey}
+  Wallet address: ${config.wallet.address}
 `,
       );
     }
