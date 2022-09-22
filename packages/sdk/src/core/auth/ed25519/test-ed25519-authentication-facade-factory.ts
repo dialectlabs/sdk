@@ -1,6 +1,7 @@
 import {
   AuthenticationFacade,
   AuthenticationFacadeFactory,
+  Authenticator,
 } from '../authentication-facade';
 import { DefaultTokenGenerator } from './default-token-generator';
 import { TokenParser } from '../token-parser';
@@ -14,11 +15,16 @@ export class TestEd25519AuthenticationFacadeFactory extends AuthenticationFacade
   }
 
   get(): AuthenticationFacade {
-    const tokenBodyParser = new Ed25519TokenBodyParser();
     return new AuthenticationFacade(
       this.tokenSigner,
       new DefaultTokenGenerator(this.tokenSigner),
-      new TokenParser(tokenBodyParser),
+      TestEd25519AuthenticationFacadeFactory.createAuthenticator(),
+    );
+  }
+
+  static createAuthenticator(): Authenticator {
+    return new Authenticator(
+      new TokenParser(new Ed25519TokenBodyParser()),
       new TestEd25519TokenValidator(),
     );
   }
