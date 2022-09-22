@@ -24,14 +24,14 @@ export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519Tok
   }
 
   get subject(): AccountAddress {
-    const publicKey = this.dialectWalletAdapter.publicAccount.address;
-    const hexString = HexString.ensure(publicKey!);
+    const address = this.dialectWalletAdapter.address;
+    const hexString = HexString.ensure(address.toString());
     return hexString.toString();
   }
 
   get subjectPublicKey(): PublicKey {
-    const publicKey = this.dialectWalletAdapter.publicAccount.publicKey;
-    const hexString = HexString.ensure(publicKey!);
+    const publicKey = this.dialectWalletAdapter.publicKey;
+    const hexString = HexString.ensure(publicKey.toString());
     return new AptosPubKey(hexString);
   }
 

@@ -1,18 +1,18 @@
 import type { DialectAptosWalletAdapter } from './dialect-aptos-wallet-adapter.interface';
-import type { AccountKeys } from '@manahippo/aptos-wallet-adapter/src/WalletAdapters/BaseAdapter';
 import { AptosAccount } from 'aptos';
+import type { Address, PublicKey } from '@manahippo/aptos-wallet-adapter';
 
 export class NodeDialectAptosWalletAdapter
   implements DialectAptosWalletAdapter
 {
   constructor(private readonly account: AptosAccount) {}
 
-  get publicAccount(): AccountKeys {
-    return {
-      publicKey: this.account.pubKey(),
-      address: this.account.address(),
-      authKey: this.account.authKey(),
-    };
+  get address(): Address {
+    return this.account.address().toString();
+  }
+
+  get publicKey(): PublicKey {
+    return this.account.pubKey().toString();
   }
 
   static create(privateKey?: Uint8Array) {

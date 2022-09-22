@@ -1,20 +1,30 @@
 import type { DialectAptosWalletAdapter } from './dialect-aptos-wallet-adapter.interface';
 import { UnsupportedOperationError } from '../../core/sdk/errors';
-import type { AccountKeys } from '@manahippo/aptos-wallet-adapter/src/WalletAdapters/BaseAdapter';
+import type { Address, PublicKey } from '@manahippo/aptos-wallet-adapter';
 
 export class DialectAptosWalletAdapterWrapper
   implements DialectAptosWalletAdapter
 {
   constructor(private readonly delegate: DialectAptosWalletAdapter) {}
 
-  get publicAccount(): AccountKeys {
-    if (!this.delegate.publicAccount) {
+  get publicKey(): PublicKey {
+    if (!this.delegate.publicKey) {
       throw new UnsupportedOperationError(
-        'Public account not available',
-        'Wallet does not have public account, please provide a valid public account.',
+        'Account public key not available',
+        'Wallet does not have account public key, please provide a valid account public key.',
       );
     }
-    return this.delegate.publicAccount;
+    return this.delegate.publicKey;
+  }
+
+  get address(): Address {
+    if (!this.delegate.address) {
+      throw new UnsupportedOperationError(
+        'Account address not available',
+        'Wallet does not have account address, please provide a valid account address.',
+      );
+    }
+    return this.delegate.address;
   }
 
   static create(
