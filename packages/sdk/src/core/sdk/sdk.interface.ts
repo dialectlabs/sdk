@@ -1,6 +1,5 @@
 import type { TokenProvider } from '../auth/token-provider';
 import type { Wallets } from '../wallet/wallet.interface';
-import type { Program } from '@project-serum/anchor';
 import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
 import type { Messaging } from '../messaging/messaging.interface';
 import type {
