@@ -75,6 +75,10 @@ export class SolanaMessaging implements Messaging {
     return solanaThread;
   }
 
+  async lastMessage(query: FindThreadQuery): Promise<Thread | null> {
+    return null;
+  }
+
   private async createInternal(command: CreateThreadCommand) {
     const otherMember = requireSingleMember(command.otherMembers);
     try {
@@ -221,6 +225,11 @@ export class SolanaThread implements Thread {
     await withErrorParsing(
       deleteDialect(this.program, this.dialectAccount, this.walletAdapter),
     );
+  }
+
+  async lastMessage(): Promise<ThreadMessage | null> {
+    let messages = await this.messages();
+    return messages.pop() ?? null;
   }
 
   async messages(): Promise<ThreadMessage[]> {
