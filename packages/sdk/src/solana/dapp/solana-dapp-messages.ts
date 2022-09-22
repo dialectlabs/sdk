@@ -1,12 +1,9 @@
 import type {
   DappMessages,
-  DappNotificationSubscriptions,
-  DappNotificationTypes,
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
 } from '../../core/dapp/dapp.interface';
-import { IllegalArgumentError } from '../../core/sdk/errors';
 import type { SolanaMessaging } from '../messaging/solana-messaging';
 import type { SolanaDappAddresses } from './solana-dapp-addresses';
 import type { AccountAddress } from '../../core/auth/auth.interface';

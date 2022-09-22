@@ -5,11 +5,11 @@ import {
 } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapterWrapper } from '../../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type {
+  AccountAddress,
   PublicKey,
   TokenSigner,
   TokenSignerResult,
 } from '../../../core/auth/auth.interface';
-import type { AccountAddress } from '../../../core/auth/auth.interface';
 
 export const SOLANA_TX_TOKEN_SIGNER_ALG = 'solana-tx';
 

@@ -2,7 +2,7 @@ import { DataServiceApi } from './data-service-api';
 import type { DataServicePushNotificationSubscriptionsApi } from './data-service-push-notification-subscriptions-api';
 import { TokenProvider } from '../core/auth/token-provider';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import type { AccountAddress, PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress } from '../core/auth/auth.interface';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
 
 describe('Data service push notification subscriptions api (e2e)', () => {

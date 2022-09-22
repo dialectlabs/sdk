@@ -1,13 +1,13 @@
 import { DataServiceDappMessages } from '../dapp/data-service-dapp-messages';
 import type {
-  BlockchainSdkFactory,
   BlockchainSdk,
+  BlockchainSdkFactory,
+  Config,
   ConfigProps,
   DialectCloudConfig,
   DialectSdk,
   IdentityConfig,
 } from '../../sdk/sdk.interface';
-import type { Config } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
 import {
   DEFAULT_TOKEN_LIFETIME,

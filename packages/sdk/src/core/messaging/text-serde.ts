@@ -85,27 +85,7 @@ export class UnencryptedTextSerde implements TextSerde {
   }
 }
 
-export type DialectAttributes = {
-  encrypted: boolean;
-  memberPubKeys: PublicKey[];
-};
-
 export interface EncryptionProps {
   diffieHellmanKeyPair: Curve25519KeyPair;
   ed25519PublicKey: Ed25519Key;
-}
-
-export class TextSerdeFactory {
-  static create(
-    { encrypted, memberPubKeys }: DialectAttributes,
-    encryptionProps?: EncryptionProps | null,
-  ): TextSerde {
-    if (!encrypted) {
-      return new UnencryptedTextSerde();
-    }
-    if (encrypted && encryptionProps) {
-      return new EncryptedTextSerde(encryptionProps, memberPubKeys);
-    }
-    throw new Error('Cannot proceed without encryptionProps');
-  }
 }

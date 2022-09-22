@@ -14,7 +14,7 @@ import { TokenProvider } from '../core/auth/token-provider';
 import { DataServiceApi } from './data-service-api';
 import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
 import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
-import type { AccountAddress, PublicKey } from '../core/auth/auth.interface';
+import type { AccountAddress } from '../core/auth/auth.interface';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
