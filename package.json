@@ -13,7 +13,7 @@
     "build:all": "yarn workspaces run build"
   },
   "devDependencies": {
-    "@types/jest": "^28.1.7",
+    "@types/jest": "^29.0.3",
     "@typescript-eslint/eslint-plugin": "^5.33.1",
     "@typescript-eslint/parser": "^5.33.1",
     "concurrently": "^7.3.0",

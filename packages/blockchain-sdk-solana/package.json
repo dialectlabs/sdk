@@ -1,0 +1,35 @@
+{
+  "name": "@dialectlabs/blockchain-sdk-solana",
+  "version": "0.1.0",
+  "repository": "git@github.com:dialectlabs/sdk.git",
+  "author": "dialectlabs",
+  "license": "Apache-2.0",
+  "main": "./lib/cjs/index.js",
+  "module": "./lib/esm/index.js",
+  "types": "./lib/types/index.d.ts",
+  "exports": {
+    "import": "./lib/esm/index.js",
+    "require": "./lib/cjs/index.js"
+  },
+  "scripts": {
+    "clean": "rm -rf lib",
+    "build": "npm run clean && npm run build:cjs; npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:cjs:watch": "concurrently \"tsc --project tsconfig.cjs.json --watch\"",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\"",
+    "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\""
+  },
+  "devDependencies": {
+    "@solana/wallet-adapter-base": "^0.9.15",
+    "@solana/web3.js": "^1.53.0"
+  },
+  "peerDependencies": {
+    "@solana/wallet-adapter-base": "0.x",
+    "@solana/web3.js": "1.x"
+  },
+  "dependencies": {
+    "@dialectlabs/web3": "^0.3.2",
+    "@project-serum/anchor": "0.23.0"
+  }
+}
