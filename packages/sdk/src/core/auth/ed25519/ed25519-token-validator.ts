@@ -3,7 +3,7 @@ import { TokenValidator } from '../token-validator';
 import type { Token, TokenHeader } from '../auth.interface';
 import { Ed25519PublicKey } from './ed25519-public-key';
 
-export class TestEd25519TokenValidator extends TokenValidator {
+export class Ed25519TokenValidator extends TokenValidator {
   canValidate(tokenHeader: TokenHeader): boolean {
     return tokenHeader.alg === 'ed25519';
   }

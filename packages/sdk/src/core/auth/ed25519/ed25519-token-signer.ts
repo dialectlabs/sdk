@@ -8,7 +8,7 @@ import { sign, SignKeyPair } from 'tweetnacl';
 import { Ed25519PublicKey } from './ed25519-public-key';
 import { generateEd25519Keypair } from './utils';
 
-export class TestEd25519TokenSigner implements TokenSigner {
+export class Ed25519TokenSigner implements TokenSigner {
   readonly alg = 'ed25519';
 
   constructor(

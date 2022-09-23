@@ -1,8 +1,8 @@
 import type { DataServiceHealthApi } from './data-service-health-api';
 import { DataServiceApi } from './data-service-api';
 import { TokenProvider } from '../core/auth/token-provider';
-import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { Ed25519TokenSigner } from '../core/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../core/auth/auth.interface';
 
 describe('Data service health api (e2e)', () => {
@@ -11,8 +11,8 @@ describe('Data service health api (e2e)', () => {
   let walletAddress: AccountAddress;
 
   beforeEach(() => {
-    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-      new TestEd25519TokenSigner(),
+    const authenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
     ).get();
     walletAddress = authenticationFacade.subject();
     healthApi = DataServiceApi.create(

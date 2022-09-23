@@ -7,9 +7,9 @@ import type {
 } from './data-service-dialects-api';
 import { MemberScopeDto } from './data-service-dialects-api';
 import { DataServiceApi } from './data-service-api';
-import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../core/auth/auth.interface';
-import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519TokenSigner } from '../core/auth/ed25519/ed25519-token-signer';
 import { Ed25519PublicKey } from '../core/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../core/auth/ed25519/utils';
 
@@ -23,19 +23,17 @@ describe('Data service dialects api (e2e)', () => {
   let wallet2Api: DataServiceDialectsApi;
 
   beforeEach(() => {
-    const wallet1AuthenticationFacade =
-      new TestEd25519AuthenticationFacadeFactory(
-        new TestEd25519TokenSigner(),
-      ).get();
+    const wallet1AuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
+    ).get();
     wallet1Address = wallet1AuthenticationFacade.subject();
     wallet1Api = DataServiceApi.create(
       baseUrl,
       TokenProvider.create(wallet1AuthenticationFacade),
     ).threads;
-    const wallet2AuthenticationFacade =
-      new TestEd25519AuthenticationFacadeFactory(
-        new TestEd25519TokenSigner(),
-      ).get();
+    const wallet2AuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
+    ).get();
     wallet2Address = wallet2AuthenticationFacade.subject();
     wallet2Api = DataServiceApi.create(
       baseUrl,

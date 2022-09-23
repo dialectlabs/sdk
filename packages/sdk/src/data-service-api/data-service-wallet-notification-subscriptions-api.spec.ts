@@ -7,9 +7,9 @@ import type {
 } from './data-service-wallet-notification-subscriptions-api';
 import { DataServiceApi } from './data-service-api';
 import type { DappDto } from './data-service-dapps-api';
-import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../core/auth/auth.interface';
-import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519TokenSigner } from '../core/auth/ed25519/ed25519-token-signer';
 
 describe('Data service wallet notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -21,8 +21,8 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
   let userPublicKey: AccountAddress;
 
   beforeEach(async () => {
-    const dappAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-      new TestEd25519TokenSigner(),
+    const dappAuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
     ).get();
     dappPublicKey = dappAuthenticationFacade.subject();
     const dappDataServiceApi = DataServiceApi.create(
@@ -41,8 +41,8 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
         enabled: true,
       },
     });
-    const userAuthenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-      new TestEd25519TokenSigner(),
+    const userAuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
     ).get();
     userPublicKey = userAuthenticationFacade.subject();
     api = DataServiceApi.create(

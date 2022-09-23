@@ -6,8 +6,8 @@ import type {
 import { DataServiceApi } from './data-service-api';
 import type { NotificationTypeDto } from './data-service-wallet-notification-subscriptions-api';
 import type { DappDto } from './data-service-dapps-api';
-import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { Ed25519TokenSigner } from '../core/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../core/auth/auth.interface';
 
 describe('Data service dapp notification types api (e2e)', () => {
@@ -18,8 +18,8 @@ describe('Data service dapp notification types api (e2e)', () => {
   let dapp: DappDto;
 
   beforeEach(async () => {
-    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-      new TestEd25519TokenSigner(),
+    const authenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
     ).get();
     walletAccountAddress = authenticationFacade.subject();
     const dataServiceApi = DataServiceApi.create(

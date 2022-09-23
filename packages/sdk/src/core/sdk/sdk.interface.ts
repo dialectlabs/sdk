@@ -42,14 +42,14 @@ export interface BlockchainSdk {
   readonly dappAddresses?: DappAddresses;
 }
 
-export interface DialectSdk<ChainSdk extends BlockchainSdk> {
-  readonly config: Config;
-  readonly threads: Messaging;
-  readonly dapps: Dapps;
-  readonly wallet: Wallets;
-  readonly identity: IdentityResolver;
-  readonly tokenProvider: TokenProvider;
-  readonly blockchainSdk: ChainSdk;
+export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
+  readonly config!: Config;
+  readonly threads!: Messaging;
+  readonly dapps!: Dapps;
+  readonly wallet!: Wallets;
+  readonly identity!: IdentityResolver;
+  readonly tokenProvider!: TokenProvider;
+  readonly blockchainSdk!: ChainSdk;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';
