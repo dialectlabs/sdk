@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.11.0] - 2022-09-20
+
+- feature: add website, heroUrl and index fields for dapp model
+
 ## [0.10.0] - 2022-09-20
 
 - feature: add health check endpoint
@@ -12,7 +16,7 @@
 
 ## [0.8.1] - 2022-09-14
 
-- feature: add deduplicationId to messages in order to support optimistic messages 
+- feature: add deduplicationId to messages in order to support optimistic messages
 
 ## [0.8.0] - 2022-08-25
 
@@ -31,7 +35,7 @@
 ## [0.6.5] - 2022-08-15
 
 - fix: recover after signing message/tx failed during authentication
-- feature: select channels for broadcast/multicast/unicast 
+- feature: select channels for broadcast/multicast/unicast
 
 ## [0.6.4] - 2022-08-11
 
