@@ -18,7 +18,7 @@ export interface DataServiceWalletDappAddressesApi {
 
   find(dappAddressId: string): Promise<DappAddressDto>;
 
-  findAll(query?: FindDappAddressesQuery): Promise<DappAddressDto[]>;
+  findAll(query?: FindDappAddressesQuery, limit?: number): Promise<DappAddressDto[]>;
 }
 
 export interface CreateDappAddressCommandDto {

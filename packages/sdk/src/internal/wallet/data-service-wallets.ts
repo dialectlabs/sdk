@@ -163,12 +163,12 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     }
   }
 
-  async findAll(query: FindDappAddressesQuery): Promise<DappAddress[]> {
+  async findAll(query: FindDappAddressesQuery, limit?: number): Promise<DappAddress[]> {
     const found = await withErrorParsing(
       this.api.findAll({
         addressIds: query.addressIds,
         dappPublicKey: query.dappPublicKey?.toBase58(),
-      }),
+      }, limit),
     );
     return found.map((it) => toDappAddress(it));
   }

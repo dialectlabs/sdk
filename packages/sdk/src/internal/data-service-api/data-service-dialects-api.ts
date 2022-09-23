@@ -66,13 +66,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  async findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]> {
+  async findAll(query?: FindDialectQuery, limit?: number): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/api/v1/dialects`, {
           headers: createHeaders(token),
-          ...(query && { params: query }),
+          ...(query && { params: query, limit }),
         })
         .then((it) => it.data),
     );

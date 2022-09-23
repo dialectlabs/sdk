@@ -111,6 +111,9 @@ export class DataServiceMessaging implements Messaging {
     const otherMembersPks = Object.fromEntries(
       otherThreadMembers.map((member) => [member.publicKey.toBase58(), member]),
     );
+    let messages = dialect.messages.map((message) => (
+      serde.deserialize(new Uint8Array(message.text))
+    ));
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
@@ -126,6 +129,7 @@ export class DataServiceMessaging implements Messaging {
       dialect.encrypted,
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
+      messages.pop() || "",
     );
   }
 
@@ -259,6 +263,7 @@ export class DataServiceThread implements Thread {
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
+    public lastMessage: string,
   ) {
     this.id = new ThreadId({
       backend: this.backend,
@@ -289,11 +294,6 @@ export class DataServiceThread implements Thread {
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
       deduplicationId: it.deduplicationId,
     }));
-  }
-
-  async lastMessage(): Promise<ThreadMessage | null> {
-   // TODO: this is not efficient. We should have the data service return a single message
-   return this.messages().then((messages) => messages.pop() ?? null);
   }
 
   private encryptionEnabledButCannotBeUsed() {

@@ -75,10 +75,6 @@ export class SolanaMessaging implements Messaging {
     return solanaThread;
   }
 
-  async lastMessage(query: FindThreadQuery): Promise<Thread | null> {
-    return null;
-  }
-
   private async createInternal(command: CreateThreadCommand) {
     const otherMember = requireSingleMember(command.otherMembers);
     try {
@@ -202,6 +198,7 @@ export class SolanaMessaging implements Messaging {
 export class SolanaThread implements Thread {
   readonly backend: Backend = Backend.Solana;
   readonly id: ThreadId;
+  lastMessage: string | null;
 
   constructor(
     address: PublicKey,
@@ -219,17 +216,13 @@ export class SolanaThread implements Thread {
       backend: this.backend,
       address,
     });
+    this.lastMessage = null;
   }
 
   async delete(): Promise<void> {
     await withErrorParsing(
       deleteDialect(this.program, this.dialectAccount, this.walletAdapter),
     );
-  }
-
-  async lastMessage(): Promise<ThreadMessage | null> {
-    let messages = await this.messages();
-    return messages.pop() ?? null;
   }
 
   async messages(): Promise<ThreadMessage[]> {
@@ -241,6 +234,7 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
+    this.lastMessage = this.dialectAccount.dialect.messages[0]!.text;
     return this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
