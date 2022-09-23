@@ -12,10 +12,10 @@ export interface Identity {
   };
 }
 
-export interface IdentityResolver {
-  resolve(address: AccountAddress): Promise<Identity | null>;
+export abstract class IdentityResolver {
+  abstract resolve(address: AccountAddress): Promise<Identity | null>;
 
-  resolveReverse(domainName: string): Promise<Identity | null>;
+  abstract resolveReverse(domainName: string): Promise<Identity | null>;
 
-  get type(): string;
+  abstract get type(): string;
 }

@@ -1,11 +1,10 @@
-import type {
-  Identity,
-  IdentityResolver,
-} from '../../identity/identity.interface';
+import { Identity, IdentityResolver } from '../../identity/identity.interface';
 import type { AccountAddress } from '../../auth/auth.interface';
 
-export class FirstFoundIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class FirstFoundIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_FIRST_FOUND_IDENTITY_RESOLVER';
@@ -52,8 +51,10 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
   }
 }
 
-export class FirstFoundFastIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class FirstFoundFastIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_FIRST_FOUND_FAST_IDENTITY_RESOLVER';
@@ -95,8 +96,10 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
   }
 }
 
-export class AggregateSequentialIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class AggregateSequentialIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_AGGREGATED_SEQUENTIAL_IDENTITY_RESOLVER';

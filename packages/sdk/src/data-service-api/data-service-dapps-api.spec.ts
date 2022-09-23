@@ -7,8 +7,8 @@ import { TokenProvider } from '../core/auth/token-provider';
 import { DataServiceApi } from './data-service-api';
 import type { DappDto, DataServiceDappsApi } from './data-service-dapps-api';
 import type { CreateDappCommand } from '../core/dapp/dapp.interface';
-import { TestEd25519AuthenticationFacadeFactory } from '../core/auth/ed25519/test-ed25519-authentication-facade-factory';
-import { TestEd25519TokenSigner } from '../core/auth/ed25519/test-ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../core/auth/ed25519/ed25519-authentication-facade-factory';
+import { Ed25519TokenSigner } from '../core/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../core/auth/auth.interface';
 import { Ed25519PublicKey } from '../core/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../core/auth/ed25519/utils';
@@ -20,8 +20,8 @@ describe('Data service dapps api (e2e)', () => {
   let dappAccountAddress: AccountAddress;
 
   beforeEach(() => {
-    const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-      new TestEd25519TokenSigner(),
+    const authenticationFacade = new Ed25519AuthenticationFacadeFactory(
+      new Ed25519TokenSigner(),
     ).get();
     dappAccountAddress = authenticationFacade.subject();
     dappsApi = DataServiceApi.create(
@@ -154,8 +154,8 @@ describe('Data service dapps api (e2e)', () => {
     let dapps: DataServiceDappsApi;
 
     beforeEach(() => {
-      const authenticationFacade = new TestEd25519AuthenticationFacadeFactory(
-        new TestEd25519TokenSigner(),
+      const authenticationFacade = new Ed25519AuthenticationFacadeFactory(
+        new Ed25519TokenSigner(),
       ).get();
       walletAccountAddress = authenticationFacade.subject();
       const dataServiceApi = DataServiceApi.create(
