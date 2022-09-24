@@ -2,6 +2,8 @@ import type {
   Address,
   DialectAptosWalletAdapter,
   PublicKey,
+  SignMessagePayload,
+  SignMessageResponse,
 } from './dialect-aptos-wallet-adapter.interface';
 import { AptosAccount } from 'aptos';
 
@@ -24,7 +26,7 @@ export class NodeDialectAptosWalletAdapter
       console.log(
         `Initializing ${
           NodeDialectAptosWalletAdapter.name
-        } using provided ${account.pubKey()} key and ${account.address()} address.`,
+        } using provided ${account.pubKey()} public key and ${account.address()} address.`,
       );
       return new NodeDialectAptosWalletAdapter(account);
     }
@@ -35,7 +37,7 @@ export class NodeDialectAptosWalletAdapter
       console.log(
         `Initializing ${
           NodeDialectAptosWalletAdapter.name
-        } using provided ${account.pubKey()} key and ${account.address()} address.`,
+        } using provided ${account.pubKey()} public key and ${account.address()} address.`,
       );
       return new NodeDialectAptosWalletAdapter(account);
     }
@@ -43,7 +45,7 @@ export class NodeDialectAptosWalletAdapter
     console.log(
       `Initializing ${
         NodeDialectAptosWalletAdapter.name
-      } using generated ${account.pubKey()} key and ${account.address()} address.`,
+      } using generated ${account.pubKey()} public key and ${account.address()} address.`,
     );
     return new NodeDialectAptosWalletAdapter(account);
   }
@@ -52,5 +54,22 @@ export class NodeDialectAptosWalletAdapter
     return this.account
       .signBuffer(new TextEncoder().encode(message))
       .toString();
+  }
+
+  async signMessagePayload(
+    payload: SignMessagePayload,
+  ): Promise<SignMessageResponse> {
+    const prefix = `APTOS`;
+    const fullMessage = `${prefix}\nmessage: ${payload.message}\nnonce: ${payload.nonce}`;
+    const signature = this.account
+      .signBuffer(new TextEncoder().encode(fullMessage))
+      .toString();
+    return {
+      prefix: 'APTOS',
+      message: payload.message,
+      nonce: payload.nonce,
+      fullMessage,
+      signature,
+    };
   }
 }
