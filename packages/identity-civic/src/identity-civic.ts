@@ -1,5 +1,6 @@
 import { CivicProfile, ProfileResult } from '@civic/profile';
 import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
+import { CivicIdentityError } from '@dialectlabs/sdk/src';
 import type { Connection } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
 
@@ -26,13 +27,20 @@ export class CivicIdentityResolver implements IdentityResolver {
   }
 
   async resolve(publicKey: PublicKey): Promise<Identity | null> {
-    const profile = await CivicProfile.get(publicKey.toBase58(), {
-      solana: { connection: this.connection },
-    });
-    if (!profile.name) {
-      return null;
+    try {
+      const profile = await CivicProfile.get(publicKey.toBase58(), {
+        solana: { connection: this.connection },
+      });
+      if (!profile.name) {
+        return null;
+      }
+      return civicProfileToDialectIdentity(profile);
+    } catch (e: any) {
+      if (!CivicIdentityError.ignoreMatcher.some((it) => e.message.match(it))) {
+        throw new CivicIdentityError(e.message);
+      }
     }
-    return civicProfileToDialectIdentity(profile);
+    return null;
   }
 
   async resolveReverse(_rawDomainName: string): Promise<Identity | null> {
