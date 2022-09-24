@@ -42,6 +42,6 @@ export abstract class TokenGenerator {
       signingPayload,
     );
     const base64Signature = bytesToBase64(signature);
-    return { signedBody: signedPayload, signature, base64Signature };
+    return { signedPayload, signature, base64Signature };
   }
 }

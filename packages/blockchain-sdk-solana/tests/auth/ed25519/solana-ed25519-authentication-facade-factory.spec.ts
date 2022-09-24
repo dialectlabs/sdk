@@ -13,7 +13,7 @@ import {
   SolanaEd25519AuthenticationFacadeFactory,
 } from '../../../src';
 import {
-  DialectWalletAdapterEd25519TokenSigner,
+  DialectWalletAdapterSolanaEd25519TokenSigner,
   SolanaEd25519TokenSigner,
 } from '../../../src/auth/ed25519/solana-ed25519-token-signer';
 
@@ -25,7 +25,7 @@ describe('solana ed25519 token tests', () => {
     wallet = new DialectSolanaWalletAdapterWrapper(
       NodeDialectSolanaWalletAdapter.create(),
     );
-    signer = new DialectWalletAdapterEd25519TokenSigner(wallet);
+    signer = new DialectWalletAdapterSolanaEd25519TokenSigner(wallet);
     authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
       signer,
     ).get();
@@ -110,7 +110,7 @@ describe('solana ed25519 token tests', () => {
     const subjectPublicKey = new Ed25519PublicKey(
       generateEd25519Keypair().publicKey,
     );
-    const signer = new TestDialectWalletAdapterEd25519TokenSigner(
+    const signer = new TestDialectWalletAdapterSolanaEd25519TokenSigner(
       wallet,
       subjectPublicKey.toString(),
       wallet.publicKey,
@@ -134,7 +134,7 @@ describe('solana ed25519 token tests', () => {
 
   test('subject public key is optional', async () => {
     // when
-    const signer = new TestDialectWalletAdapterEd25519TokenSigner(
+    const signer = new TestDialectWalletAdapterSolanaEd25519TokenSigner(
       wallet,
       wallet.publicKey.toBase58(),
       undefined!,
@@ -157,7 +157,7 @@ describe('solana ed25519 token tests', () => {
   });
 });
 
-class TestDialectWalletAdapterEd25519TokenSigner extends DialectWalletAdapterEd25519TokenSigner {
+class TestDialectWalletAdapterSolanaEd25519TokenSigner extends DialectWalletAdapterSolanaEd25519TokenSigner {
   constructor(
     wallet: DialectSolanaWalletAdapterWrapper,
     private readonly _subject: AccountAddress,

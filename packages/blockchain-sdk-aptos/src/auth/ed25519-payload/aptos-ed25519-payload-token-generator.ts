@@ -6,7 +6,7 @@ import {
   TokenGenerator,
 } from '@dialectlabs/sdk';
 
-export class SolanaTxTokenGenerator extends TokenGenerator {
+export class AptosEd25519PayloadTokenGenerator extends TokenGenerator {
   override async generate(ttl: Duration): Promise<Token> {
     const header = this.header();
     const base64Header = jsonStringifyToBase64(header);
