@@ -4,12 +4,14 @@ import type {
   Config,
   Environment,
 } from '@dialectlabs/sdk';
-import { EncryptionKeysProvider } from '@dialectlabs/sdk';
+import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
 import type { DialectAptosWalletAdapter } from '../wallet-adapter/dialect-aptos-wallet-adapter.interface';
 import { DialectAptosWalletAdapterWrapper } from '../wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
 import { DialectAptosWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { AptosEd25519AuthenticationFacadeFactory } from '../auth/ed25519/aptos-ed25519-authentication-facade-factory';
 import { DialectWalletAdapterAptosEd25519TokenSigner } from '../auth/ed25519/aptos-ed25519-token-signer';
+import { AptosEd25519PayloadAuthenticationFacadeFactory } from '../auth/ed25519-payload/aptos-ed25519-payload-authentication-facade-factory';
+import { DialectWalletAdapterAptosEd25519PayloadTokenSigner } from '../auth/ed25519-payload/aptos-ed25519-payload-token-signer';
 
 export interface AptosConfigProps {
   wallet: DialectAptosWalletAdapter;
@@ -55,17 +57,32 @@ Aptos settings:
       walletAdapterEncryptionKeysProvider,
       config.encryptionKeysStore,
     );
-    const authenticationFacadeFactory =
-      new AptosEd25519AuthenticationFacadeFactory(
-        new DialectWalletAdapterAptosEd25519TokenSigner(wallet),
-      );
-    const authenticationFacade = authenticationFacadeFactory.get();
+    const authenticationFacade = this.initializeAuthenticationFacade(wallet);
     return {
       type: 'aptos',
       encryptionKeysProvider,
       authenticationFacade,
       config: aptosConfig,
     };
+  }
+
+  private initializeAuthenticationFacade(
+    wallet: DialectAptosWalletAdapterWrapper,
+  ) {
+    if (wallet.canSignMessage()) {
+      return new AptosEd25519AuthenticationFacadeFactory(
+        new DialectWalletAdapterAptosEd25519TokenSigner(wallet),
+      ).get();
+    }
+    if (wallet.canSignMessagePayload()) {
+      return new AptosEd25519PayloadAuthenticationFacadeFactory(
+        new DialectWalletAdapterAptosEd25519PayloadTokenSigner(wallet),
+      ).get();
+    }
+    throw new IllegalArgumentError(
+      'Wallet does not support signing',
+      'Wallet does not support signing',
+    );
   }
 
   private initializeAptosConfig(): AptosConfig {
