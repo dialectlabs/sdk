@@ -1,12 +1,11 @@
 import { DialectSolanaWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
-import {
-  NodeDialectSolanaWalletAdapter,
-  SolanaTxAuthenticationFacadeFactory,
-} from '../../../src';
+import { NodeDialectSolanaWalletAdapter } from '../../../src';
 import {
   DialectWalletAdapterSolanaTxTokenSigner,
   SolanaTxTokenSigner,
-} from '../../../src/auth/solana-tx/solana-tx-token-signer';
+} from '../../../src/auth/tx/solana-tx-token-signer';
+
+import { SolanaTxAuthenticationFacadeFactory } from '../../../src/auth/tx/solana-tx-authentication-facade-factory';
 import { Duration } from 'luxon';
 import type { AuthenticationFacade } from '@dialectlabs/sdk';
 import {

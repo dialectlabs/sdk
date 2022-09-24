@@ -14,8 +14,8 @@ import type { DialectSolanaWalletAdapter } from '../wallet-adapter/dialect-solan
 import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { SolanaEd25519AuthenticationFacadeFactory } from '../auth/ed25519/solana-ed25519-authentication-facade-factory';
 import { DialectWalletAdapterEd25519TokenSigner } from '../auth/ed25519/solana-ed25519-token-signer';
-import { SolanaTxAuthenticationFacadeFactory } from '../auth/solana-tx/solana-tx-authentication-facade-factory';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '../auth/solana-tx/solana-tx-token-signer';
+import { SolanaTxAuthenticationFacadeFactory } from '../auth/tx/solana-tx-authentication-facade-factory';
+import { DialectWalletAdapterSolanaTxTokenSigner } from '../auth/tx/solana-tx-token-signer';
 import { SolanaMessaging } from '../messaging/solana-messaging';
 import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
 import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
