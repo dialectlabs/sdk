@@ -2,6 +2,8 @@ import type {
   Address,
   DialectAptosWalletAdapter,
   PublicKey,
+  SignMessagePayload,
+  SignMessageResponse,
 } from './dialect-aptos-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@dialectlabs/sdk';
 
@@ -36,6 +38,10 @@ export class DialectAptosWalletAdapterWrapper
     return new DialectAptosWalletAdapterWrapper(adapter);
   }
 
+  canSignMessage(): boolean {
+    return Boolean(this.delegate.signMessage);
+  }
+
   async signMessage(message: string): Promise<string> {
     if (!this.delegate.signMessage) {
       throw new UnsupportedOperationError(
@@ -44,5 +50,21 @@ export class DialectAptosWalletAdapterWrapper
       );
     }
     return this.delegate.signMessage(message);
+  }
+
+  canSignMessagePayload(): boolean {
+    return Boolean(this.delegate.signMessagePayload);
+  }
+
+  async signMessagePayload(
+    payload: SignMessagePayload,
+  ): Promise<SignMessageResponse> {
+    if (!this.delegate.signMessagePayload) {
+      throw new UnsupportedOperationError(
+        'Message signing not supported',
+        'Wallet does not support message signing, please use wallet-adapter that supports signMessage() operation.',
+      );
+    }
+    return this.delegate.signMessagePayload(payload);
   }
 }
