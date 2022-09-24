@@ -3,18 +3,18 @@ import type {
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from '../../src/dialect-cloud-api/data-service-wallets-api.v0';
-import { TokenProvider } from 'auth/token-provider';
+import { TokenProvider } from '../../src/auth/token-provider';
 import { DataServiceApi } from '../../src/dialect-cloud-api/data-service-api';
 import type {
   DappDto,
   DataServiceDappsApi,
 } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import type { CreateDappCommand } from 'dapp/dapp.interface';
-import { Ed25519AuthenticationFacadeFactory } from 'auth/ed25519/ed25519-authentication-facade-factory';
-import { Ed25519TokenSigner } from 'auth/ed25519/ed25519-token-signer';
-import type { AccountAddress } from 'auth/auth.interface';
-import { Ed25519PublicKey } from 'auth/ed25519/ed25519-public-key';
-import { generateEd25519Keypair } from 'auth/ed25519/utils';
+import type { CreateDappCommand } from '../../src/dapp/dapp.interface';
+import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
+import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
+import type { AccountAddress } from '../../src/auth/auth.interface';
+import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
+import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

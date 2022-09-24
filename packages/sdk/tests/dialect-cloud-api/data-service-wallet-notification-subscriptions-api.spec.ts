@@ -1,4 +1,4 @@
-import { TokenProvider } from 'auth/token-provider';
+import { TokenProvider } from '../../src/auth/token-provider';
 import type {
   DataServiceWalletNotificationSubscriptionsApi,
   NotificationConfigDto,
@@ -7,9 +7,9 @@ import type {
 } from '../../src/dialect-cloud-api/data-service-wallet-notification-subscriptions-api';
 import { DataServiceApi } from '../../src/dialect-cloud-api/data-service-api';
 import type { DappDto } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import { Ed25519AuthenticationFacadeFactory } from 'auth/ed25519/ed25519-authentication-facade-factory';
-import type { AccountAddress } from 'auth/auth.interface';
-import { Ed25519TokenSigner } from 'auth/ed25519/ed25519-token-signer';
+import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
+import type { AccountAddress } from '../../src/auth/auth.interface';
+import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
 
 describe('Data service wallet notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
