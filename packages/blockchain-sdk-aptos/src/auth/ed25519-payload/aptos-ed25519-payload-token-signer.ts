@@ -9,10 +9,10 @@ import type { DialectAptosWalletAdapterWrapper } from '../../wallet-adapter/dial
 import { HexString } from 'aptos';
 import { AptosPubKey } from '../aptos-public-key';
 
-export const APTOS_ED25519_TOKEN_SIGNER_ALG = 'aptos-ed25519';
+export const APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG = 'aptos-ed25519-payload';
 
-export abstract class AptosEd25519TokenSigner implements TokenSigner {
-  readonly alg = APTOS_ED25519_TOKEN_SIGNER_ALG;
+export abstract class AptosEd25519PayloadTokenSigner implements TokenSigner {
+  readonly alg = APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG;
 
   abstract subject: AccountAddress;
   abstract subjectPublicKey: PublicKey;
@@ -20,7 +20,7 @@ export abstract class AptosEd25519TokenSigner implements TokenSigner {
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }
 
-export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519TokenSigner {
+export class DialectWalletAdapterAptosEd25519PayloadTokenSigner extends AptosEd25519PayloadTokenSigner {
   constructor(readonly dialectWalletAdapter: DialectAptosWalletAdapterWrapper) {
     super();
   }
@@ -38,14 +38,16 @@ export class DialectWalletAdapterAptosEd25519TokenSigner extends AptosEd25519Tok
   }
 
   async sign(payload: Uint8Array): Promise<TokenSignerResult> {
-    const stringPayload = new TextDecoder().decode(payload);
-    const signatureString = await this.dialectWalletAdapter.signMessage(
-      stringPayload,
-    );
-    const hexString = HexString.ensure(signatureString);
-    const signature = hexString.toUint8Array();
+    const message = new TextDecoder().decode(payload);
+    const { fullMessage, signature: rawSignature } =
+      await this.dialectWalletAdapter.signMessagePayload({
+        message,
+        nonce: 'encoded_in_message',
+      });
+    const hexSignature = HexString.ensure(rawSignature);
+    const signature = hexSignature.toUint8Array();
     return {
-      payload,
+      payload: new TextEncoder().encode(fullMessage),
       signature,
     };
   }

@@ -13,7 +13,7 @@ import { EncryptionKeysProvider } from '@dialectlabs/sdk';
 import type { DialectSolanaWalletAdapter } from '../wallet-adapter/dialect-solana-wallet-adapter.interface';
 import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 import { SolanaEd25519AuthenticationFacadeFactory } from '../auth/ed25519/solana-ed25519-authentication-facade-factory';
-import { DialectWalletAdapterEd25519TokenSigner } from '../auth/ed25519/solana-ed25519-token-signer';
+import { DialectWalletAdapterSolanaEd25519TokenSigner } from '../auth/ed25519/solana-ed25519-token-signer';
 import { SolanaTxAuthenticationFacadeFactory } from '../auth/tx/solana-tx-authentication-facade-factory';
 import { DialectWalletAdapterSolanaTxTokenSigner } from '../auth/tx/solana-tx-token-signer';
 import { SolanaMessaging } from '../messaging/solana-messaging';
@@ -91,7 +91,7 @@ Solana settings:
     );
     const authenticationFacadeFactory = wallet.canSignMessage()
       ? new SolanaEd25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(wallet),
+          new DialectWalletAdapterSolanaEd25519TokenSigner(wallet),
         )
       : new SolanaTxAuthenticationFacadeFactory(
           new DialectWalletAdapterSolanaTxTokenSigner(wallet),

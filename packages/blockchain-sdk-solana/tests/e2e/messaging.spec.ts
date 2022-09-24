@@ -12,7 +12,7 @@ import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../../src/messaging/solana-dialect-program-factory';
 import { SolanaMessaging } from '../../src/messaging/solana-messaging';
 import { programs } from '@dialectlabs/web3';
-import { DialectWalletAdapterEd25519TokenSigner } from '../../src/auth/ed25519/solana-ed25519-token-signer';
+import { DialectWalletAdapterSolanaEd25519TokenSigner } from '../../src/auth/ed25519/solana-ed25519-token-signer';
 import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../../src/encryption/encryption-keys-provider';
 import { DialectSolanaWalletAdapterWrapper } from '../../src/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import {
@@ -665,7 +665,7 @@ function createDataServiceWalletMessagingState(): WalletMessagingState {
       baseUrl,
       TokenProvider.create(
         new SolanaEd25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterEd25519TokenSigner(adapter),
+          new DialectWalletAdapterSolanaEd25519TokenSigner(adapter),
         ).get(),
       ),
     ).threads,
