@@ -114,6 +114,7 @@ export class DataServiceMessaging implements Messaging {
     let messages = dialect.messages.map((message) => (
       serde.deserialize(new Uint8Array(message.text))
     ));
+    let lastMessage = messages[messages.length - 1] || "";
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
@@ -129,7 +130,7 @@ export class DataServiceMessaging implements Messaging {
       dialect.encrypted,
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
-      messages.pop() || "",
+      lastMessage,
     );
   }
 
