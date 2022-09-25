@@ -1,16 +1,14 @@
 import {
   AddressType,
-  Dialect,
+  CreateDappCommand,
   IllegalStateError,
-  NodeDialectSolanaWalletAdapter,
 } from '../src';
 import { PublicKey } from '@solana/web3.js';
+import { createSolanaSdk } from './helpers';
 
 (async () => {
-  const sdk = Dialect.sdk({
-    environment: 'local-development',
-    wallet: NodeDialectSolanaWalletAdapter.create(),
-  });
+  const sdk = createSolanaSdk();
+  await sdk.dapps.create({ name: "Kevin's dapp" })
   const dapp = await sdk.dapps.find();
   if (!dapp) {
     throw new IllegalStateError(
@@ -19,10 +17,10 @@ import { PublicKey } from '@solana/web3.js';
   }
   const recipient = new PublicKey(
     '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
-  );
+  ).toBase58();
   const recipient2 = new PublicKey(
     'AV4t7jLvLrVxHCqTGrfWaGz3zoNdSCuWjbqd3i9hSkD7',
-  );
+  ).toBase58();
   // Unicast
   await dapp.messages.send({
     title: 'Hello',
