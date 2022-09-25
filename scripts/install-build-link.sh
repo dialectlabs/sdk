@@ -3,49 +3,49 @@
 pushd ../packages
 
 pushd identity-cardinal
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd identity-dialect-dapps
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd identity-sns
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd identity-sns
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd sdk
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd blockchain-sdk-solana
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
 popd
 
 pushd blockchain-sdk-aptos
-rm -rf node_modules yarn.lock
+rm -rf node_modules yarn.lock lib
 yarn --force
 yarn build
 yarn link
