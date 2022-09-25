@@ -8,7 +8,7 @@ import type { TokenProvider } from '@auth/token-provider';
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
-  findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]>;
+  findAll(query?: FindDialectQuery, limit?: number): Promise<DialectAccountDto[]>;
 
   find(publicKey: string): Promise<DialectAccountDto>;
 

@@ -111,26 +111,43 @@ export class DataServiceMessaging implements Messaging {
     const otherMembersPks = Object.fromEntries(
       otherThreadMembers.map((member) => [member.publicKey.toBase58(), member]),
     );
+    
+    let thisThreadMember = {
+      publicKey: new PublicKey(meMember.publicKey),
+      scopes: fromDataServiceScopes(meMember.scopes),
+      // lastReadMessageTimestamp: new Date(), // TODO: implement
+    };
     let messages = dialect.messages.map((message) => (
+      message
+    ));
+    let lastMessage = messages[messages.length - 1] || null;
+    let messageText = dialect.messages.map((message) => (
       serde.deserialize(new Uint8Array(message.text))
     ));
-    let lastMessage = messages[messages.length - 1] || "";
+    let lastMessageThread = null;
+    if (lastMessage != null) {
+      lastMessageThread = {
+        text: messageText[messageText.length - 1] || "",
+        timestamp: new Date(lastMessage.timestamp),
+        author: lastMessage.owner === this.me.toBase58()
+        ? thisThreadMember
+        : otherMembersPks[lastMessage.owner]!,
+        deduplicationId: lastMessage.deduplicationId ,
+      }
+    };
+    messages[messages.length - 1] || "";
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
       new PublicKey(publicKey),
-      {
-        publicKey: new PublicKey(meMember.publicKey),
-        scopes: fromDataServiceScopes(meMember.scopes),
-        // lastReadMessageTimestamp: new Date(), // TODO: implement
-      },
+      thisThreadMember,
       otherThreadMembers,
       otherMembersPks,
       dialect.encrypted,
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
-      lastMessage,
+      lastMessageThread,
     );
   }
 
@@ -264,7 +281,7 @@ export class DataServiceThread implements Thread {
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
-    public lastMessage: string,
+    public lastMessage: ThreadMessage | null,
   ) {
     this.id = new ThreadId({
       backend: this.backend,
