@@ -171,7 +171,7 @@ export class DataServiceMessaging implements Messaging {
       this.encryptionKeysProvider,
       new Ed25519PublicKey(publicKey).toString(),
       {
-        address: new Ed25519PublicKey(meMember.publicKey).toString(),
+        address: meMember.publicKey, // TODO: Consider enforcing Ed25519PublicKey for Solana, sth else for Aptos?
         scopes: fromDataServiceScopes(meMember.scopes),
         // lastReadMessageTimestamp: new Date(), // TODO: implement
       },
