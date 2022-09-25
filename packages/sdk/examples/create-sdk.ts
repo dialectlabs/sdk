@@ -1,3 +1,3 @@
-import { createSdk } from './helpers';
+import { createSolanaSdk } from './helpers';
 
-createSdk();
+createSolanaSdk();
