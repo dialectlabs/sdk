@@ -1,9 +1,15 @@
+import { PublicKey } from '@solana/web3.js';
 import type { Thread } from '../src';
-import { createSdk, getMessages, getThreads } from './helpers';
+import { createSolanaSdk, createSolanaThread, getSolanaMessages, getSolanaThreads, sendSolanaMessage } from './helpers';
 
 (async () => {
-  const sdk = createSdk();
-  const threads = await getThreads(sdk);
+  const sdk = createSolanaSdk();
+  const recipient = new PublicKey(
+    '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
+  ); // Make this arbitrary
+  const thread_ = await createSolanaThread(sdk, recipient);
+  await sendSolanaMessage(thread_, 'gm');
+  const threads = await getSolanaThreads(sdk);
   console.log({ threads });
   if (threads.length < 1 || !threads[0]) {
     console.log(
@@ -12,5 +18,5 @@ import { createSdk, getMessages, getThreads } from './helpers';
     return;
   }
   const thread: Thread = threads[0];
-  await getMessages(sdk, thread.id);
+  await getSolanaMessages(sdk, thread.id);
 })();

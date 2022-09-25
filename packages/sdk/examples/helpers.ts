@@ -1,58 +1,38 @@
-import { PublicKey } from '@solana/web3.js';
-import type {
+import type { PublicKey } from '@solana/web3.js';
+import {
   CreateThreadCommand,
-  DialectSdk,
   FindThreadByIdQuery,
   Thread,
   ThreadId,
   ThreadMessage,
-} from '../src';
-import {
-  Backend,
-  ConfigProps,
   Dialect,
-  DialectSolanaWalletAdapterWrapper,
-  EncryptionKeysStore,
-  NodeDialectSolanaWalletAdapter,
+  DialectCloudEnvironment,
+} from '@dialectlabs/sdk';
+import {
+  DialectSdk,
   SendMessageCommand,
   ThreadMemberScope,
-  TokenStore,
-} from '../src';
+} from '@dialectlabs/sdk';
+import { Solana, SolanaSdkFactory, NodeDialectSolanaWalletAdapter } from '@dialectlabs/blockchain-sdk-solana';
+import type {  } from '@dialectlabs/blockchain-sdk-solana';
 
-export function createSdk(): DialectSdk {
-  let secretKey: Uint8Array;
-  // secretKey = new Uint8Array([]);
-  // console.log({secretKey});
+export function createSolanaSdk(): DialectSdk<Solana> {
+  const environment: DialectCloudEnvironment = 'local-development';
 
-  const backends = [Backend.DialectCloud, Backend.Solana];
-  const dialectCloud = {
-    url: 'https://dialectapi.to',
-    tokenStore: TokenStore.createInMemory(),
-  };
-  const environment = 'production';
-  const encryptionKeysStore = EncryptionKeysStore.createInMemory();
-  const solana = {
-    rpcUrl: 'https://api.mainnet-beta.solana.com',
-  };
-  // const keypair = Keypair.fromSecretKey(secretKey);
-  const wallet = DialectSolanaWalletAdapterWrapper.create(
-    NodeDialectSolanaWalletAdapter.create(),
+  const sdk = Dialect.sdk(
+    {
+      environment,
+    },
+    SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(),
+    }),
   );
-
-  const sdk: DialectSdk = Dialect.sdk({
-    backends,
-    dialectCloud,
-    environment,
-    encryptionKeysStore,
-    solana,
-    wallet,
-  } as ConfigProps);
 
   return sdk;
 }
 
-export async function createThread(
-  sdk: DialectSdk,
+export async function createSolanaThread(
+  sdk: DialectSdk<Solana>,
   recipient: PublicKey,
 ): Promise<Thread> {
   const command: CreateThreadCommand = {
@@ -62,7 +42,7 @@ export async function createThread(
     },
     otherMembers: [
       {
-        address: recipient,
+        address: recipient.toBase58(),
         scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
       },
     ],
@@ -72,20 +52,20 @@ export async function createThread(
   return thread;
 }
 
-export async function sendMessage(thread: Thread, text: string): Promise<void> {
+export async function sendSolanaMessage(thread: Thread, text: string): Promise<void> {
   const command: SendMessageCommand = {
     text,
   };
   return await thread.send(command);
 }
 
-export async function getThreads(sdk: DialectSdk): Promise<Thread[]> {
+export async function getSolanaThreads(sdk: DialectSdk<Solana>): Promise<Thread[]> {
   const threads: Thread[] = await sdk.threads.findAll();
   return threads;
 }
 
-export async function getMessages(
-  sdk: DialectSdk,
+export async function getSolanaMessages(
+  sdk: DialectSdk<Solana>,
   threadId: ThreadId,
 ): Promise<ThreadMessage[]> {
   const query: FindThreadByIdQuery = {

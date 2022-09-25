@@ -1,10 +1,10 @@
 import { PublicKey } from '@solana/web3.js';
-import { createSdk, createThread } from './helpers';
+import { createSolanaSdk, createSolanaThread } from './helpers';
 
 (async () => {
-  const sdk = createSdk();
+  const sdk = createSolanaSdk();
   const recipient = new PublicKey(
     '3vuCFLbVWsNeWgyxkb2xiLQuxKDW83HWiTMmodT8gmtk',
   ); // Make this arbitrary
-  await createThread(sdk, recipient);
+  await createSolanaThread(sdk, recipient);
 })();
