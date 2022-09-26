@@ -109,7 +109,9 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
       const allSettled = await Promise.allSettled(
         this.resolvers.map((it) => it.resolve(publicKey)),
       );
-      const resolved = allSettled.filter((it) => it.status === 'fulfilled');
+      const resolved = allSettled.filter(
+        (it) => it.status === 'fulfilled' && it.value !== null,
+      );
       const aggregated = resolved
         .map((it) => it as PromiseFulfilledResult<Identity>)
         .map((it) => it.value)
