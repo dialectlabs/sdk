@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/blockchain-sdk-solana",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
