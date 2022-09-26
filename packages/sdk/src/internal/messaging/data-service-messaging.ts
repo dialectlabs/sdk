@@ -140,9 +140,7 @@ export class DataServiceMessaging implements Messaging {
   }
 
   private checkEncryptionSupported() {
-    return this.encryptionKeysProvider.getFailFast(
-      new Ed25519PublicKey(this.me),
-    );
+    return this.encryptionKeysProvider.getFailFast(this.me);
   }
 
   private async toDataServiceThread(dialectAccountDto: DialectAccountDto) {
@@ -169,9 +167,9 @@ export class DataServiceMessaging implements Messaging {
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
-      new Ed25519PublicKey(publicKey).toString(),
+      publicKey,
       {
-        address: meMember.publicKey, // TODO: Consider enforcing Ed25519PublicKey for Solana, sth else for Aptos?
+        address: meMember.publicKey,
         scopes: fromDataServiceScopes(meMember.scopes),
         // lastReadMessageTimestamp: new Date(), // TODO: implement
       },
@@ -194,7 +192,7 @@ export class DataServiceMessaging implements Messaging {
       };
     }
     const diffieHellmanKeyPair = await this.encryptionKeysProvider.getFailSafe(
-      new Ed25519PublicKey(this.me),
+      this.me,
     );
     const encryptionProps: EncryptionProps | null = diffieHellmanKeyPair && {
       diffieHellmanKeyPair,
@@ -299,8 +297,9 @@ export class DataServiceThread implements Thread {
 
   async send(command: SendMessageCommand): Promise<void> {
     if (this.encryptionEnabledButCannotBeUsed()) {
-      await this.encryptionKeysProvider.getFailFast(
-        new Ed25519PublicKey(this.me.address),
+      throw new UnsupportedOperationError(
+        'Encryption not supported',
+        'Please use encryption keys provider that supports encryption.',
       );
     }
     await withErrorParsing(

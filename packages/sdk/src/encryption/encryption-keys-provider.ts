@@ -1,7 +1,7 @@
 import { UnsupportedOperationError } from '../sdk/errors';
 import { EncryptionKeysStore } from './encryption-keys-store';
 import type { DiffeHellmanKeys } from './encryption.interface';
-import type { PublicKey } from '../auth/auth.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export abstract class EncryptionKeysProvider {
   static create(
@@ -11,14 +11,16 @@ export abstract class EncryptionKeysProvider {
     return new CachedEncryptionKeysProvider(delegate, encryptionKeysStore);
   }
 
-  abstract getFailSafe(subject: PublicKey): Promise<DiffeHellmanKeys | null>;
+  abstract getFailSafe(
+    subject: AccountAddress,
+  ): Promise<DiffeHellmanKeys | null>;
 
-  abstract getFailFast(subject: PublicKey): Promise<DiffeHellmanKeys>;
+  abstract getFailFast(subject: AccountAddress): Promise<DiffeHellmanKeys>;
 }
 
 class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
   private readonly delegateGetPromises: Record<
-    string,
+    AccountAddress,
     Promise<DiffeHellmanKeys | null>
   > = {};
 
@@ -29,7 +31,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     super();
   }
 
-  async getFailSafe(subject: PublicKey): Promise<DiffeHellmanKeys | null> {
+  async getFailSafe(subject: AccountAddress): Promise<DiffeHellmanKeys | null> {
     const existingKeys = this.encryptionKeysStore.get(subject);
     if (existingKeys) {
       delete this.delegateGetPromises[subject.toString()];
@@ -53,7 +55,7 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     return delegatePromise;
   }
 
-  async getFailFast(subject: PublicKey): Promise<DiffeHellmanKeys> {
+  async getFailFast(subject: AccountAddress): Promise<DiffeHellmanKeys> {
     return this.getFailSafe(subject).then((keys) => {
       if (!keys) {
         throw new UnsupportedOperationError(
