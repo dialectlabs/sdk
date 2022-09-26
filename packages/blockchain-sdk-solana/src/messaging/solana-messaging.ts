@@ -145,7 +145,7 @@ export class SolanaMessaging implements Messaging {
 
   private async findInternal(query: FindThreadQuery) {
     const encryptionKeys = await this.encryptionKeysProvider.getFailSafe(
-      this.walletAdapter.publicKey,
+      this.walletAdapter.publicKey.toBase58(),
     );
     const encryptionProps = getEncryptionProps(
       this.walletAdapter.publicKey,
@@ -230,7 +230,7 @@ export class SolanaThread implements Thread {
 
   async messages(): Promise<ThreadMessage[]> {
     const encryptionKeys = await this.encryptionKeysProvider.getFailSafe(
-      this.walletAdapter.publicKey,
+      this.walletAdapter.publicKey.toBase58(),
     );
     const encryptionProps = getEncryptionProps(
       new SolanaPublicKey(this.me.address),
@@ -313,8 +313,9 @@ async function toSolanaThread(
     return null;
   }
   const canBeDecrypted = dialect.encrypted
-    ? (await encryptionKeysProvider.getFailSafe(walletAdapter.publicKey)) !==
-      null
+    ? (await encryptionKeysProvider.getFailSafe(
+        walletAdapter.publicKey.toBase58(),
+      )) !== null
     : true;
   const otherThreadMember: ThreadMember = {
     address: otherMember.publicKey.toBase58(),
@@ -345,7 +346,9 @@ async function getEncryptionPropsForMutation(
   walletAdapter: DialectSolanaWalletAdapterWrapper,
 ) {
   const encryptionKeys = isThreadEncrypted
-    ? await encryptionKeysProvider.getFailFast(walletAdapter.publicKey)
+    ? await encryptionKeysProvider.getFailFast(
+        walletAdapter.publicKey.toBase58(),
+      )
     : null;
   return getEncryptionProps(walletAdapter.publicKey, encryptionKeys);
 }

@@ -2,8 +2,6 @@ import {
   AuthenticationFacade,
   AuthenticationFacadeFactory,
   Authenticator,
-  DefaultTokenGenerator,
-  Ed25519TokenBodyParser,
   TokenParser,
 } from '@dialectlabs/sdk';
 
