@@ -22,7 +22,7 @@
     "test": "jest --passWithNoTests"
   },
   "peerDependencies": {
-    "@dialectlabs/sdk": "*"
+    "@dialectlabs/sdk": "1.x"
   },
   "dependencies": {}
 }
