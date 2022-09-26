@@ -2,6 +2,9 @@
 lib/
 node_modules/
 
+# Version
+/packages/**/version.ts
+
 # Logs
 logs
 *.log

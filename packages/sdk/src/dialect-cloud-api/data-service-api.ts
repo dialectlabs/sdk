@@ -34,6 +34,7 @@ import type { DataServiceDappNotificationSubscriptionsApi } from './data-service
 import { DataServiceDappNotificationSubscriptionsApiClient } from './data-service-dapp-notification-subscriptions-api';
 import type { DataServiceHealthApi } from './data-service-health-api';
 import { DataServiceHealthApiClient } from './data-service-health-api';
+import { SDK_VERSION } from '../version';
 
 export class DataServiceApi {
   private constructor(
@@ -130,6 +131,8 @@ export class DataServiceApiError {
 }
 
 const XRequestIdHeader = 'x-request-id';
+const XClientNameHeader = 'x-client-name';
+const XClientVersionHeader = 'x-client-version';
 
 export function createHeaders(token?: Token) {
   return {
@@ -137,6 +140,8 @@ export function createHeaders(token?: Token) {
       Authorization: `Bearer ${token.rawValue}`,
     }),
     [XRequestIdHeader]: nanoid(),
+    [XClientNameHeader]: 'dialect-sdk',
+    [XClientVersionHeader]: SDK_VERSION,
   };
 }
 
