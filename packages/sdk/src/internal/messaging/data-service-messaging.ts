@@ -117,25 +117,18 @@ export class DataServiceMessaging implements Messaging {
       scopes: fromDataServiceScopes(meMember.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     };
-    let messages = dialect.messages.map((message) => (
-      message
-    ));
-    let lastMessage = messages[messages.length - 1] || null;
-    let messageText = dialect.messages.map((message) => (
-      serde.deserialize(new Uint8Array(message.text))
-    ));
-    let lastMessageThread = null;
+    let lastMessage = dialect.messages[0] ?? null;
+    let lastThreadMessage: ThreadMessage | null = null;
     if (lastMessage != null) {
-      lastMessageThread = {
-        text: messageText[messageText.length - 1] || "",
+      lastThreadMessage = {
+        text: serde.deserialize(new Uint8Array(lastMessage.text)),
         timestamp: new Date(lastMessage.timestamp),
         author: lastMessage.owner === this.me.toBase58()
-        ? thisThreadMember
-        : otherMembersPks[lastMessage.owner]!,
+          ? thisThreadMember
+          : otherMembersPks[lastMessage.owner]!,
         deduplicationId: lastMessage.deduplicationId ,
       }
     };
-    messages[messages.length - 1] || "";
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
@@ -147,7 +140,7 @@ export class DataServiceMessaging implements Messaging {
       dialect.encrypted,
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
-      lastMessageThread,
+      lastThreadMessage,
     );
   }
 

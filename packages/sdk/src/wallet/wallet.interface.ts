@@ -71,7 +71,7 @@ export interface WalletDappAddresses {
 
   find(query: FindDappAddressQuery): Promise<DappAddress | null>;
 
-  findAll(query?: FindDappAddressesQuery, limit?: number): Promise<DappAddress[]>;
+  findAll(query?: FindDappAddressesQuery): Promise<DappAddress[]>;
 }
 
 export interface CreateDappAddressCommand {

@@ -8,7 +8,7 @@ import type { TokenProvider } from '@auth/token-provider';
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
-  findAll(query?: FindDialectQuery, limit?: number): Promise<DialectAccountDto[]>;
+  findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]>;
 
   find(publicKey: string): Promise<DialectAccountDto>;
 
@@ -66,13 +66,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  async findAll(query?: FindDialectQuery, limit?: number): Promise<DialectAccountDto[]> {
+  async findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto[]>(`${this.baseUrl}/api/v1/dialects`, {
           headers: createHeaders(token),
-          ...(query && { params: query, limit }),
+          ...(query && { params: query }),
         })
         .then((it) => it.data),
     );

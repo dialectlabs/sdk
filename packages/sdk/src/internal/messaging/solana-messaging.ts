@@ -234,14 +234,12 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
-    let messages = this.dialectAccount.dialect.messages;
-    let threadMessages = messages.map((it) => ({
+    let threadMessages = this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: it.text,
     }));
-    this.lastMessage = threadMessages[threadMessages.length - 1] || null;
-    this.dialectAccount.dialect.messages[0]!.text;
+    this.lastMessage = threadMessages[0] || null;
     return threadMessages;
   }
 
