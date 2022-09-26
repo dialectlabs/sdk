@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "@dialectlabs/sdk": "*",
+    "@dialectlabs/sdk": "1.x",
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
