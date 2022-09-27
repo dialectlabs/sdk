@@ -140,3 +140,29 @@ export class ThreadAlreadyExistsError extends MessagingError {
     );
   }
 }
+
+export abstract class IdentityError extends DialectSdkError {}
+
+export class SNSIdentityError extends IdentityError {
+  static ignoreMatcher = ['Favourite domain not found']; // warning, not error
+
+  constructor(msg?: string) {
+    super(SNSIdentityError.name, 'SNS Identity Error', msg);
+  }
+}
+
+export class CardinalIdentityError extends IdentityError {
+  static ignoreMatcher = ['Account does not exist']; // warning, not error
+
+  constructor(msg?: string) {
+    super(CardinalIdentityError.name, 'Cardinal Identity Error', msg);
+  }
+}
+
+export class CivicIdentityError extends IdentityError {
+  static ignoreMatcher = ['unsupported storage location']; // warning, not error
+
+  constructor(msg?: string) {
+    super(CivicIdentityError.name, 'Civic Identity Error', msg);
+  }
+}
