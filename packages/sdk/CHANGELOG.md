@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.12.0] - 2022-09-27
+
+- feature: error models for identities created
+
 ## [0.11.0] - 2022-09-20
 
 - feature: add website, heroUrl and index fields for dapp model
