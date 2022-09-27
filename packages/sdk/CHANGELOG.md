@@ -2,7 +2,7 @@
 
 ## [UNRELEASED]
 
-## [0.12.0] - 2022-09-20
+## [0.12.0] - 2022-09-27
 
 - refactor: aggregate strategy null errors
 
