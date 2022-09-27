@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.12.0] - 2022-09-20
+
+- refactor: aggregate strategy null errors
+
 ## [0.11.0] - 2022-09-20
 
 - feature: add website, heroUrl and index fields for dapp model
