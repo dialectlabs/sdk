@@ -1,6 +1,6 @@
 import { CivicProfile, ProfileResult } from '@civic/profile';
 import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
-import { CivicIdentityError } from '@dialectlabs/sdk';
+import { CivicIdentityError } from './identity-civic.error';
 import type { Connection } from '@solana/web3.js';
 import { PublicKey } from '@solana/web3.js';
 

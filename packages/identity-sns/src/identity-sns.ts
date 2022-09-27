@@ -4,7 +4,7 @@ import {
   NameRegistryState,
 } from '@bonfida/spl-name-service';
 import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
-import { SNSIdentityError } from '@dialectlabs/sdk';
+import { SNSIdentityError } from './identity-sns.error';
 import type { Connection, PublicKey } from '@solana/web3.js';
 
 export class SNSIdentityResolver implements IdentityResolver {
