@@ -140,3 +140,5 @@ export class ThreadAlreadyExistsError extends MessagingError {
     );
   }
 }
+
+export abstract class IdentityError extends DialectSdkError {}
