@@ -1,5 +1,11 @@
 import type { Thread } from '../src';
-import { createSolanaSdk, createSolanaThread, getSolanaMessages, getSolanaThreads, sendMessage } from './helpers';
+import {
+  createSolanaSdk,
+  createSolanaThread,
+  getSolanaMessages,
+  getSolanaThreads,
+  sendMessage,
+} from './helpers';
 
 (async () => {
   const sdk = createSolanaSdk();

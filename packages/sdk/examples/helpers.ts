@@ -1,21 +1,25 @@
-import type { PublicKey } from '@solana/web3.js';
 import {
   CreateThreadCommand,
-  FindThreadByIdQuery,
-  Thread,
-  ThreadId,
-  ThreadMessage,
   Dialect,
   DialectCloudEnvironment,
+  DialectSdk,
+  FindThreadByIdQuery,
+  SendMessageCommand,
+  Thread,
+  ThreadId,
+  ThreadMemberScope,
+  ThreadMessage,
 } from '@dialectlabs/sdk';
 import {
-  DialectSdk,
-  SendMessageCommand,
-  ThreadMemberScope,
-} from '@dialectlabs/sdk';
-import { Solana, SolanaSdkFactory, NodeDialectSolanaWalletAdapter } from '@dialectlabs/blockchain-sdk-solana';
-import { Aptos, AptosSdkFactory, NodeDialectAptosWalletAdapter } from '@dialectlabs/blockchain-sdk-aptos';
-import type {  } from '@dialectlabs/blockchain-sdk-solana';
+  NodeDialectSolanaWalletAdapter,
+  Solana,
+  SolanaSdkFactory,
+} from '@dialectlabs/blockchain-sdk-solana';
+import {
+  Aptos,
+  AptosSdkFactory,
+  NodeDialectAptosWalletAdapter,
+} from '@dialectlabs/blockchain-sdk-aptos';
 
 /*
   Solana
@@ -64,7 +68,9 @@ export async function sendMessage(thread: Thread, text: string): Promise<void> {
   return await thread.send(command);
 }
 
-export async function getSolanaThreads(sdk: DialectSdk<Solana>): Promise<Thread[]> {
+export async function getSolanaThreads(
+  sdk: DialectSdk<Solana>,
+): Promise<Thread[]> {
   const threads: Thread[] = await sdk.threads.findAll();
   return threads;
 }
@@ -130,7 +136,9 @@ export async function createAptosThread(
   return thread;
 }
 
-export async function getAptosThreads(sdk: DialectSdk<Aptos>): Promise<Thread[]> {
+export async function getAptosThreads(
+  sdk: DialectSdk<Aptos>,
+): Promise<Thread[]> {
   const threads: Thread[] = await sdk.threads.findAll();
   return threads;
 }

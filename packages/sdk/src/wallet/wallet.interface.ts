@@ -74,7 +74,7 @@ export interface WalletDappAddresses {
 }
 
 export interface CreateDappAddressCommand {
-  readonly address: AccountAddress;
+  readonly dappAccountAddress: AccountAddress;
   readonly addressId: string;
   readonly enabled: boolean;
 }
@@ -90,7 +90,7 @@ export interface FindDappAddressQuery {
 
 export interface FindDappAddressesQuery {
   readonly addressIds?: string[];
-  readonly dappAddress?: AccountAddress;
+  readonly dappAccountAddress?: AccountAddress;
 }
 
 export interface DeleteDappAddressCommand {
@@ -134,7 +134,7 @@ export interface WalletPushNotificationSubscriptions {
 }
 
 export interface FindNotificationSubscriptionQuery {
-  readonly dappAddress: AccountAddress;
+  readonly dappAccountAddress: AccountAddress;
 }
 
 export interface WalletNotificationSubscription {

@@ -1,14 +1,10 @@
-import {
-  AddressType,
-  CreateDappCommand,
-  IllegalStateError,
-} from '../src';
+import { AddressType, IllegalStateError } from '../src';
 import { PublicKey } from '@solana/web3.js';
 import { createSolanaSdk } from './helpers';
 
 (async () => {
   const sdk = createSolanaSdk();
-  await sdk.dapps.create({ name: "Kevin's dapp" })
+  await sdk.dapps.create({ name: "Kevin's dapp" });
   const dapp = await sdk.dapps.find();
   if (!dapp) {
     throw new IllegalStateError(
