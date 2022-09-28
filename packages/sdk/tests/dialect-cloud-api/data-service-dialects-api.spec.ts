@@ -179,9 +179,9 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    const { dialect, publicKey } = await wallet1Api.create(command);
+    const { dialect, id } = await wallet1Api.create(command);
     // then
-    expect(publicKey).not.toBeNull();
+    expect(id).not.toBeNull();
     const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
       messages: [],
       members: command.members.map((it) => ({
@@ -192,6 +192,98 @@ describe('Data service dialects api (e2e)', () => {
       nextMessageIdx: 0,
     };
     expect(dialect).toMatchObject(expectedDialect);
+  });
+
+  test('can create group dialect', async () => {
+    // given
+    const before = await wallet1Api.findAll();
+    expect(before).toMatchObject([]);
+    // when
+    const command: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { dialect, id } = await wallet1Api.create(command);
+    // then
+    expect(id).not.toBeNull();
+    const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
+      messages: [],
+      members: command.members.map((it) => ({
+        ...it,
+        lastReadMessageTimestamp: 0,
+      })),
+      encrypted: command.encrypted,
+      nextMessageIdx: 0,
+    };
+    expect(dialect).toMatchObject(expectedDialect);
+  });
+
+  test('cannot create encrypted group dialect', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: true,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
+  });
+
+  test('cannot create second group dialect with same members', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
+    await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
   });
 
   test('admin can delete dialect', async () => {
@@ -209,11 +301,11 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    const { publicKey } = await wallet1Api.create(command);
-    await expect(wallet2Api.find(publicKey)).resolves.toBeTruthy();
+    const { id } = await wallet1Api.create(command);
+    await expect(wallet2Api.find(id)).resolves.toBeTruthy();
     // when
-    await wallet2Api.delete(publicKey);
-    await expect(wallet2Api.find(publicKey)).rejects.toBeTruthy();
+    await wallet2Api.delete(id);
+    await expect(wallet2Api.find(id)).rejects.toBeTruthy();
   });
 
   test('non admin cannot delete dialect', async () => {
@@ -231,10 +323,10 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    const { publicKey } = await wallet1Api.create(command);
-    await expect(wallet2Api.find(publicKey)).resolves.toBeTruthy();
+    const { id } = await wallet1Api.create(command);
+    await expect(wallet2Api.find(id)).resolves.toBeTruthy();
     // when
-    await expect(wallet2Api.delete(publicKey)).rejects.toBeTruthy();
+    await expect(wallet2Api.delete(id)).rejects.toBeTruthy();
   });
 
   test('can list all dialects after creating', async () => {
@@ -281,7 +373,7 @@ describe('Data service dialects api (e2e)', () => {
     expect(dialectAccountDtos.length).toBe(2);
     const dialectAccountDto1 = dialectAccountDtos[0]!;
     const dialectAccountDto2 = dialectAccountDtos[1]!;
-    expect(dialectAccountDto1.publicKey).not.toBe(dialectAccountDto2.publicKey);
+    expect(dialectAccountDto1.id).not.toBe(dialectAccountDto2.id);
     const actualDialects = new Set(
       dialectAccountDtos.map((it) => ({
         ...it.dialect,
@@ -312,7 +404,7 @@ describe('Data service dialects api (e2e)', () => {
     expect(actualDialects).toMatchObject(expectedDialects);
   });
 
-  test('can get dialect by address key after creating', async () => {
+  test('can get dialect by id after creating', async () => {
     // given
     const before = await wallet1Api.findAll();
     expect(before).toMatchObject([]);
@@ -332,13 +424,13 @@ describe('Data service dialects api (e2e)', () => {
       ],
     };
     // when
-    const { publicKey } = await wallet1Api.create(createDialectCommand);
-    const dialectAccountDto = await wallet1Api.find(publicKey);
+    const { id } = await wallet1Api.create(createDialectCommand);
+    const dialectAccountDto = await wallet1Api.find(id);
     // then
     expect(dialectAccountDto).not.toBeNull();
-    const actualDialectPublicKey = dialectAccountDto?.publicKey!;
+    const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
-    expect(actualDialectPublicKey).toBe(publicKey);
+    expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
       messages: [],
       members: createDialectCommand.members,
@@ -374,23 +466,513 @@ describe('Data service dialects api (e2e)', () => {
       ],
     };
     // when
-    const { publicKey } = await wallet1Api.create(createDialectCommand);
+    const { id } = await wallet1Api.create(createDialectCommand);
     const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKey: wallet2Address,
+      memberPublicKeys: [wallet2Address],
     });
     // then
     expect(dialectAccountDtos.length).toBe(1);
     const dialectAccountDto = dialectAccountDtos[0];
     expect(dialectAccountDto).not.toBeUndefined();
-    const actualDialectPublicKey = dialectAccountDto?.publicKey!;
+    const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
-    expect(actualDialectPublicKey).toBe(publicKey);
+    expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
       messages: [],
       members: createDialectCommand.members,
       encrypted: createDialectCommand.encrypted,
       nextMessageIdx: 0,
     });
+  });
+
+  test('when two dialects with overlapping members exist, find only dialect with exactly given members', async () => {
+    // given
+    const before = await wallet1Api.findAll();
+    expect(before).toMatchObject([]);
+
+    const member3 = {
+      publicKey: new Ed25519PublicKey(
+        generateEd25519Keypair().publicKey,
+      ).toString(),
+      scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+    };
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    // when
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    const createGroupDialectCommand = {
+      ...createDialectCommand,
+      members: [...createDialectCommand.members, member3],
+    };
+    await wallet1Api.create(createGroupDialectCommand);
+    const dialectAccountDtos = await wallet1Api.findAll({
+      memberPublicKeys: [wallet2Address],
+    });
+    // then
+    expect(dialectAccountDtos.length).toBe(1);
+    const dialectAccountDto = dialectAccountDtos[0];
+    expect(dialectAccountDto).not.toBeUndefined();
+    const actualDialectId = dialectAccountDto?.id!;
+    const actualDialect = dialectAccountDto?.dialect!;
+    expect(actualDialectId).toBe(id);
+    expect(actualDialect).toMatchObject({
+      messages: [],
+      members: createDialectCommand.members,
+      encrypted: createDialectCommand.encrypted,
+      nextMessageIdx: 0,
+    });
+  });
+
+  test('can add members to group dialect', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member4 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member5 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    // when
+    await wallet1Api.addMembers(id, {
+      members: [
+        {
+          publicKey: member4,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member5,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    });
+    const dialectAccountDtos = await wallet1Api.findAll({
+      memberPublicKeys: [wallet2Address, member3, member4, member5],
+    });
+    // then
+    expect(dialectAccountDtos.length).toBe(1);
+    const dialectAccountDto = dialectAccountDtos[0];
+    expect(dialectAccountDto).not.toBeUndefined();
+    const actualDialectId = dialectAccountDto?.id!;
+    const actualDialect = dialectAccountDto?.dialect!;
+    expect(actualDialectId).toBe(id);
+    expect(actualDialect).toMatchObject({
+      messages: [],
+      members: [
+        ...createDialectCommand.members,
+        {
+          publicKey: member4,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member5,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+      encrypted: createDialectCommand.encrypted,
+      nextMessageIdx: 0,
+    });
+  });
+
+  test('can remove member from group dialect', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member4 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member4,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    // when
+    await wallet1Api.removeMember(id, member4);
+    const dialectAccountDtos = await wallet1Api.findAll({
+      memberPublicKeys: [wallet2Address, member3],
+    });
+    // then
+    expect(dialectAccountDtos.length).toBe(1);
+    const dialectAccountDto = dialectAccountDtos[0];
+    expect(dialectAccountDto).not.toBeUndefined();
+    const actualDialectId = dialectAccountDto?.id!;
+    const actualDialect = dialectAccountDto?.dialect!;
+    expect(actualDialectId).toBe(id);
+    expect(actualDialect).toMatchObject({
+      messages: [],
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+      encrypted: createDialectCommand.encrypted,
+      nextMessageIdx: 0,
+    });
+  });
+
+  test('cannot add member to p2p dialect', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    // when
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    await expect(
+      wallet1Api.addMembers(id, {
+        members: [
+          {
+            publicKey: member3,
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot add member if not admin', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    await expect(
+      wallet2Api.addMembers(id, {
+        members: [
+          {
+            publicKey: new Ed25519PublicKey(
+              generateEd25519Keypair().publicKey,
+            ).toString(),
+            scopes: [MemberScopeDto.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot remove member if not admin', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(createDialectCommand);
+
+    await expect(
+      wallet2Api.addMembers(id, {
+        members: [
+          {
+            publicKey: new Ed25519PublicKey(
+              generateEd25519Keypair().publicKey,
+            ).toString(),
+            scopes: [MemberScopeDto.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot add member to match existing group dialect', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member4 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member4,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect1 = await wallet1Api.create(createDialectCommand1);
+
+    const createDialectCommand2: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect2 = await wallet1Api.create(createDialectCommand2);
+
+    await expect(
+      wallet1Api.addMembers(dialect2.id, {
+        members: [
+          {
+            publicKey: member4,
+            scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+          },
+        ],
+      }),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot remove member to match existing group dialect', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member4 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member4,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect1 = await wallet1Api.create(createDialectCommand1);
+
+    const createDialectCommand2: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect2 = await wallet1Api.create(createDialectCommand2);
+
+    await expect(
+      wallet1Api.removeMember(dialect1.id, member4),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot remove address which is not a member', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const member4 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect1 = await wallet1Api.create(createDialectCommand1);
+
+    await expect(
+      wallet1Api.removeMember(dialect1.id, member4),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot remove oneself', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+
+    const createDialectCommand1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const dialect1 = await wallet1Api.create(createDialectCommand1);
+
+    await expect(
+      wallet1Api.removeMember(dialect1.id, wallet1Address),
+    ).rejects.toBeTruthy();
+  });
+
+  test('cannot remove member to leave p2p dialect', async () => {
+    const member3 = new Ed25519PublicKey(
+      generateEd25519Keypair().publicKey,
+    ).toString();
+    const createDialectCommand1: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: member3,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(createDialectCommand1);
+
+    await expect(wallet1Api.removeMember(id, member3)).rejects.toBeTruthy();
   });
 
   test('can send message to dialect', async () => {
@@ -409,22 +991,22 @@ describe('Data service dialects api (e2e)', () => {
       ],
     };
     // when
-    const { publicKey } = await wallet1Api.create(createDialectCommand);
+    const { id } = await wallet1Api.create(createDialectCommand);
     const sendMessageCommand1: SendMessageCommand = {
       text: Array.from(new TextEncoder().encode('Hello world 💬')),
     };
-    await wallet1Api.sendMessage(publicKey, sendMessageCommand1);
+    await wallet1Api.sendMessage(id, sendMessageCommand1);
     const sendMessageCommand2: SendMessageCommand = {
       text: Array.from(new TextEncoder().encode('Hello')),
     };
     const dialectAccountDto = (await wallet2Api.sendMessage(
-      publicKey,
+      id,
       sendMessageCommand2,
     ))!;
     // then
-    const actualDialectPublicKey = dialectAccountDto?.publicKey!;
+    const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
-    expect(actualDialectPublicKey).toBe(publicKey);
+    expect(actualDialectId).toBe(id);
 
     const messages = new Set(
       actualDialect.messages.map((it) => ({
