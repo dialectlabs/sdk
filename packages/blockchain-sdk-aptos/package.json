@@ -29,6 +29,7 @@
     "aptos": "1.3.x"
   },
   "devDependencies": {
-    "aptos": "1.3.12"
+    "aptos": "1.3.12",
+    "@dialectlabs/sdk": "^1.0.0-beta.1"
   }
 }
