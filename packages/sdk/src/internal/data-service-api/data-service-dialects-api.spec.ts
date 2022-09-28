@@ -329,6 +329,15 @@ describe('Data service dialects api (e2e)', () => {
     });
   });
 
+  test('can limit the number of messages returned', async() => {
+    // when
+    const dialects = await wallet1Api.findAll({
+      takeMessages: 1,
+    });
+    // then
+    expect(dialects).toMatchObject([]);
+  });
+
   test('can get dialect by member key after creating', async () => {
     // given
     const before = await wallet1Api.findAll();

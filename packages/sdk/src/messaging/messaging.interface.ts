@@ -99,6 +99,7 @@ export interface Thread {
   canBeDecrypted: boolean;
   backend: Backend;
   updatedAt: Date;
+  lastMessage: ThreadMessage | null;
 
   messages(): Promise<ThreadMessage[]>;
 

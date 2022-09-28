@@ -198,6 +198,7 @@ export class SolanaMessaging implements Messaging {
 export class SolanaThread implements Thread {
   readonly backend: Backend = Backend.Solana;
   readonly id: ThreadId;
+  lastMessage: ThreadMessage | null;
 
   constructor(
     address: PublicKey,
@@ -215,6 +216,7 @@ export class SolanaThread implements Thread {
       backend: this.backend,
       address,
     });
+    this.lastMessage = null;
   }
 
   async delete(): Promise<void> {
@@ -232,11 +234,13 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
-    return this.dialectAccount.dialect.messages.map((it) => ({
+    let threadMessages = this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(this.me.publicKey) ? this.me : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: it.text,
     }));
+    this.lastMessage = threadMessages[0] || null;
+    return threadMessages;
   }
 
   async send(command: SendMessageCommand): Promise<void> {

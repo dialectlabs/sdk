@@ -111,21 +111,36 @@ export class DataServiceMessaging implements Messaging {
     const otherMembersPks = Object.fromEntries(
       otherThreadMembers.map((member) => [member.publicKey.toBase58(), member]),
     );
+    
+    let thisThreadMember = {
+      publicKey: new PublicKey(meMember.publicKey),
+      scopes: fromDataServiceScopes(meMember.scopes),
+      // lastReadMessageTimestamp: new Date(), // TODO: implement
+    };
+    let lastMessage = dialect.messages[0] ?? null;
+    let lastThreadMessage: ThreadMessage | null = null;
+    if (lastMessage != null) {
+      lastThreadMessage = {
+        text: serde.deserialize(new Uint8Array(lastMessage.text)),
+        timestamp: new Date(lastMessage.timestamp),
+        author: lastMessage.owner === this.me.toBase58()
+          ? thisThreadMember
+          : otherMembersPks[lastMessage.owner]!,
+        deduplicationId: lastMessage.deduplicationId ,
+      }
+    };
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
       new PublicKey(publicKey),
-      {
-        publicKey: new PublicKey(meMember.publicKey),
-        scopes: fromDataServiceScopes(meMember.scopes),
-        // lastReadMessageTimestamp: new Date(), // TODO: implement
-      },
+      thisThreadMember,
       otherThreadMembers,
       otherMembersPks,
       dialect.encrypted,
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
+      lastThreadMessage,
     );
   }
 
@@ -259,6 +274,7 @@ export class DataServiceThread implements Thread {
     readonly encryptionEnabled: boolean,
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
+    public lastMessage: ThreadMessage | null,
   ) {
     this.id = new ThreadId({
       backend: this.backend,
