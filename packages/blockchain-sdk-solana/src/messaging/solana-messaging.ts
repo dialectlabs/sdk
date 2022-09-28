@@ -41,9 +41,10 @@ import type { Program } from '@project-serum/anchor';
 import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type { SolanaError } from '../errors';
+import { BLOCKCHAIN_SDK_TYPE_SOLANA } from '../sdk/sdk';
 
 export class SolanaMessaging implements Messaging {
-  readonly type: string = 'solana';
+  readonly type: string = BLOCKCHAIN_SDK_TYPE_SOLANA;
 
   constructor(
     private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
@@ -197,7 +198,7 @@ export class SolanaMessaging implements Messaging {
 }
 
 export class SolanaThread implements Thread {
-  readonly type = 'solana';
+  readonly type = BLOCKCHAIN_SDK_TYPE_SOLANA;
   readonly id: ThreadId;
 
   constructor(
