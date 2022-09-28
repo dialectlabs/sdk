@@ -1,3 +1,9 @@
+/*
+  This is one of two files for testing end-to-end user subscriptions and notifications.
+  This file manages the "client" — where the user wishing to subscribe for notifications
+  would manage that.
+*/
+
 import { HexString } from 'aptos';
 import {
   Address,
