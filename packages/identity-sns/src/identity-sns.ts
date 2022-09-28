@@ -8,10 +8,9 @@ import type {
   Identity,
   IdentityResolver,
 } from '@dialectlabs/sdk';
-import { Connection, PublicKey } from '@solana/web3.js';
-import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
+import type { Connection } from '@solana/web3.js';
+import { PublicKey } from '@solana/web3.js';
 import { SNSIdentityError } from './identity-sns.error';
-import type { Connection, PublicKey } from '@solana/web3.js';
 
 export class SNSIdentityResolver implements IdentityResolver {
   constructor(private readonly connection: Connection) {}
@@ -22,7 +21,10 @@ export class SNSIdentityResolver implements IdentityResolver {
 
   async resolve(address: AccountAddress): Promise<Identity | null> {
     try {
-      const res = await getFavoriteDomain(this.connection, publicKey);
+      const res = await getFavoriteDomain(
+        this.connection,
+        new PublicKey(address),
+      );
       return {
         name: res.reverse,
         address,
