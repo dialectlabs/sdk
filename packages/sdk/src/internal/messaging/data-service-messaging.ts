@@ -119,7 +119,7 @@ export class DataServiceMessaging implements Messaging {
       };
       return {
         id: new ThreadId({
-          address: dialectSummaryDto.publicKey,
+          address: dialectSummaryDto.id,
           type: this.type,
         }),
         me: meMemberSummary,
@@ -144,7 +144,7 @@ export class DataServiceMessaging implements Messaging {
   }
 
   private async toDataServiceThread(dialectAccountDto: DialectAccountDto) {
-    const { publicKey, dialect } = dialectAccountDto;
+    const { id, dialect } = dialectAccountDto;
     const meMember = findMember(this.me, dialect);
     const otherMembers = findOtherMembers(this.me, dialect);
     if (!meMember || !otherMembers.length) {
@@ -167,7 +167,7 @@ export class DataServiceMessaging implements Messaging {
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
-      publicKey,
+      id,
       {
         address: meMember.publicKey,
         scopes: fromDataServiceScopes(meMember.scopes),
