@@ -1,4 +1,3 @@
-
 import { createAptosSdk, createAptosThread, sendMessage } from './helpers';
 import { AptosAccount } from 'aptos';
 
