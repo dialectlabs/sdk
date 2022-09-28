@@ -44,7 +44,7 @@ describe('Dapp messages (e2e)', () => {
       value: sdk.blockchainSdk.authenticationFacade.subject(),
     });
     await sdk.wallet.dappAddresses.create({
-      address: dapp.address,
+      dappAccountAddress: dapp.address,
       addressId: address.id,
       enabled: true,
     });
