@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [0.13.0] - 2022-09-27
+
+- refactor: aggregate strategy null errors
+
 ## [0.12.0] - 2022-09-27
 
 - feature: error models for identities created
