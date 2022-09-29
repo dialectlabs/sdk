@@ -364,7 +364,7 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('can not patch dialect with empty group name', async () => {
-    // when
+    // given
     const command: CreateDialectCommand = {
       encrypted: false,
       members: [
