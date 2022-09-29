@@ -1,7 +1,7 @@
 import type { Token, TokenHeader } from './auth.interface';
 
 export abstract class TokenValidator {
-  isValid(token: Token) {
+  isValid(token: Token): boolean {
     if (!this.canValidate(token.header)) {
       return false;
     }

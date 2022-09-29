@@ -17,7 +17,7 @@ export class DialectSolanaWalletAdapterWrapper
     return this.delegate.publicKey;
   }
 
-  get canEncrypt() {
+  get canEncrypt(): boolean {
     return Boolean(this.publicKey && this.delegate.diffieHellman);
   }
 

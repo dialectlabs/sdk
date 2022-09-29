@@ -65,7 +65,7 @@ export class NodeDialectAptosWalletAdapter
       .signBuffer(new TextEncoder().encode(fullMessage))
       .toString();
     return {
-      prefix: 'APTOS',
+      prefix,
       message: payload.message,
       nonce: payload.nonce,
       fullMessage,
