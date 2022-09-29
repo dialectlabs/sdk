@@ -25,6 +25,8 @@ export interface DataServiceDialectsApi {
 
   findSummaryAll(query: FindDialectsSummaryDto): Promise<DialectsSummaryDto>;
 
+  patch(id: string, command: PatchDialectCommand): Promise<DialectAccountDto>;
+
   patchMember(
     dialectId: string,
     command: PatchMemberCommandDto,
