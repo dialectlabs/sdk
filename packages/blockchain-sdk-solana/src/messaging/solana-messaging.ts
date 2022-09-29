@@ -200,6 +200,7 @@ export class SolanaMessaging implements Messaging {
 export class SolanaThread implements Thread {
   readonly type = BLOCKCHAIN_SDK_TYPE_SOLANA;
   readonly id: ThreadId;
+  lastMessage: ThreadMessage | null;
 
   constructor(
     address: PublicKey,
@@ -217,6 +218,7 @@ export class SolanaThread implements Thread {
       type: this.type,
       address: address.toString(),
     });
+    this.lastMessage = null;
   }
 
   get updatedAt() {
@@ -240,13 +242,15 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
-    return this.dialectAccount.dialect.messages.map((it) => ({
+    let threadMessages = this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(new SolanaPublicKey(this.me.address))
         ? this.me
         : this.otherMember,
       timestamp: new Date(it.timestamp),
       text: it.text,
     }));
+    this.lastMessage = threadMessages[0] || null;
+    return threadMessages;
   }
 
   async send(command: SendMessageCommand): Promise<void> {
