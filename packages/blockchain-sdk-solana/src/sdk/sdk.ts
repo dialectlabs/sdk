@@ -140,54 +140,63 @@ Solana settings:
       rpcUrl: programs.mainnet.clusterAddress,
       enableOnChainMessaging: false,
     };
-    if (environment === 'production') {
-      base.network = 'mainnet-beta';
-      base.dialectProgramAddress = new PublicKey(
-        programs.mainnet.programAddress,
-      );
-      base.rpcUrl = programs.mainnet.clusterAddress;
-    }
-    if (environment === 'development') {
-      const network = 'devnet';
-      base.network = network;
-      base.dialectProgramAddress = new PublicKey(
-        programs[network].programAddress,
-      );
-      base.rpcUrl = programs[network].clusterAddress;
-    }
-    if (environment === 'local-development') {
-      const network = 'localnet';
-      base.network = network;
-      base.dialectProgramAddress = new PublicKey(
-        programs[network].programAddress,
-      );
-      base.rpcUrl = programs[network].clusterAddress;
+    switch (environment) {
+      case 'production': {
+        base.network = 'mainnet-beta';
+        base.dialectProgramAddress = new PublicKey(
+          programs.mainnet.programAddress,
+        );
+        base.rpcUrl = programs.mainnet.clusterAddress;
+        break;
+      }
+      case 'development': {
+        const network = 'devnet';
+        base.network = network;
+        base.dialectProgramAddress = new PublicKey(
+          programs[network].programAddress,
+        );
+        base.rpcUrl = programs[network].clusterAddress;
+        break;
+      }
+      case 'local-development': {
+        const network = 'localnet';
+        base.network = network;
+        base.dialectProgramAddress = new PublicKey(
+          programs[network].programAddress,
+        );
+        base.rpcUrl = programs[network].clusterAddress;
+        break;
+      }
     }
     const solanaNetwork = solanaConfigProps?.network;
-    if (solanaNetwork === 'mainnet-beta') {
-      base.network = 'mainnet-beta';
-      base.dialectProgramAddress = new PublicKey(
-        programs.mainnet.programAddress,
-      );
-      base.rpcUrl = programs.mainnet.clusterAddress;
+    switch (solanaNetwork) {
+      case 'mainnet-beta': {
+        base.network = 'mainnet-beta';
+        base.dialectProgramAddress = new PublicKey(
+          programs.mainnet.programAddress,
+        );
+        base.rpcUrl = programs.mainnet.clusterAddress;
+        break;
+      }
+      case 'devnet': {
+        const network = 'devnet';
+        base.network = network;
+        base.dialectProgramAddress = new PublicKey(
+          programs[network].programAddress,
+        );
+        base.rpcUrl = programs[network].clusterAddress;
+        break;
+      }
+      case 'localnet': {
+        const network = 'localnet';
+        base.network = network;
+        base.dialectProgramAddress = new PublicKey(
+          programs[network].programAddress,
+        );
+        base.rpcUrl = programs[network].clusterAddress;
+        break;
+      }
     }
-    if (solanaNetwork === 'devnet') {
-      const network = 'devnet';
-      base.network = network;
-      base.dialectProgramAddress = new PublicKey(
-        programs[network].programAddress,
-      );
-      base.rpcUrl = programs[network].clusterAddress;
-    }
-    if (solanaNetwork === 'localnet') {
-      const network = 'localnet';
-      base.network = network;
-      base.dialectProgramAddress = new PublicKey(
-        programs[network].programAddress,
-      );
-      base.rpcUrl = programs[network].clusterAddress;
-    }
-
     if (solanaConfigProps?.dialectProgramAddress) {
       base.dialectProgramAddress = solanaConfigProps.dialectProgramAddress;
     }
