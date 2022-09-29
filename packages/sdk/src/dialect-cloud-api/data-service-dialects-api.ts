@@ -104,6 +104,24 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
+  async patch(
+    id: string,
+    command: PatchDialectCommand,
+  ): Promise<DialectAccountDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .patch<DialectAccountDto>(
+          `${this.baseUrl}/api/v2/dialects/${id}`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
+
   async sendMessage(
     id: string,
     command: SendMessageCommand,
@@ -211,6 +229,7 @@ export interface DialectDto {
   readonly nextMessageIdx: number;
   readonly lastMessageTimestamp: number;
   readonly encrypted: boolean;
+  readonly groupName?: string;
 }
 
 export interface MemberDto {
@@ -234,6 +253,10 @@ export interface MessageDto {
 export interface SendMessageCommand {
   readonly text: number[];
   readonly deduplicationId?: string;
+}
+
+export interface PatchDialectCommand {
+  readonly groupName: string;
 }
 
 export interface FindDialectQuery {
