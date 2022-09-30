@@ -231,6 +231,7 @@ describe('Data service dialects api (e2e)', () => {
       })),
       encrypted: command.encrypted,
       nextMessageIdx: 0,
+      groupName: id,
     };
     expect(dialect).toMatchObject(expectedDialect);
   });
@@ -284,6 +285,116 @@ describe('Data service dialects api (e2e)', () => {
     };
     await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
     await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
+  });
+
+  test('admin can patch dialect', async () => {
+    // when
+    const command: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(command);
+    const testGroupName = 'test group name';
+    const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
+      messages: [],
+      members: command.members.map((it) => ({
+        ...it,
+        lastReadMessageTimestamp: 0,
+      })),
+      encrypted: command.encrypted,
+      nextMessageIdx: 0,
+      groupName: testGroupName,
+    };
+
+    const { dialect: patchedDialect } = await wallet1Api.patch(id, {
+      groupName: testGroupName,
+    });
+
+    expect(patchedDialect).toMatchObject(expectedDialect);
+  });
+
+  test('not admin can not patch dialect', async () => {
+    // given
+    const command: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
+        },
+        {
+          publicKey: wallet2Address,
+          scopes: [MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(command);
+    const testGroupName = 'test group name';
+
+    await expect(wallet1Api.find(id)).resolves.toBeTruthy();
+    // when
+    await expect(
+      wallet2Api.patch(id, {
+        groupName: testGroupName,
+      }),
+    ).rejects.toBeTruthy();
+  });
+
+  test('can not patch dialect with empty group name', async () => {
+    // given
+    const command: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          publicKey: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.WRITE],
+        },
+        {
+          publicKey: new Ed25519PublicKey(
+            generateEd25519Keypair().publicKey,
+          ).toString(),
+          scopes: [MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    const { id } = await wallet1Api.create(command);
+    const testGroupName = '';
+    await expect(wallet1Api.find(id)).resolves.toBeTruthy();
+    // when
+    await expect(
+      wallet2Api.patch(id, {
+        groupName: testGroupName,
+      }),
+    ).rejects.toBeTruthy();
   });
 
   test('admin can delete dialect', async () => {
@@ -802,8 +913,7 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    const dialect1 = await wallet1Api.create(createDialectCommand1);
-
+    await wallet1Api.create(createDialectCommand1);
     const createDialectCommand2: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -882,8 +992,7 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    const dialect2 = await wallet1Api.create(createDialectCommand2);
-
+    await wallet1Api.create(createDialectCommand2);
     await expect(
       wallet1Api.removeMember(dialect1.id, member4),
     ).rejects.toBeTruthy();
