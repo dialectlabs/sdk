@@ -39,6 +39,7 @@ import { IllegalArgumentError } from '../../sdk/errors';
 import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
+import type { EncryptionKeysProvider } from '../../encryption/encryption-keys-provider';
 
 export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
   implements DialectSdk<ChainSdk>
@@ -50,6 +51,7 @@ export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
     readonly wallet: Wallets,
     readonly identity: IdentityResolver,
     readonly tokenProvider: TokenProvider,
+    readonly encryptionKeysProvider: EncryptionKeysProvider,
     readonly blockchainSdk: ChainSdk,
   ) {}
 }
@@ -101,6 +103,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       wallet,
       identity,
       tokenProvider,
+      blockchainSdk.encryptionKeysProvider,
       blockchainSdk,
     );
   }

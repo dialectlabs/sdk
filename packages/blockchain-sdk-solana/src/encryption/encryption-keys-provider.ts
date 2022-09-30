@@ -9,6 +9,10 @@ export class DialectSolanaWalletAdapterEncryptionKeysProvider extends Encryption
     super();
   }
 
+  isAvailable(): boolean {
+    return this.dialectWalletAdapter.canEncrypt;
+  }
+
   getFailSafe(): Promise<DiffeHellmanKeys | null> {
     return this.dialectWalletAdapter.canEncrypt
       ? this.dialectWalletAdapter.diffieHellman()

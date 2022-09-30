@@ -49,6 +49,7 @@ export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
   readonly wallet!: Wallets;
   readonly identity!: IdentityResolver;
   readonly tokenProvider!: TokenProvider;
+  readonly encryptionKeysProvider!: EncryptionKeysProvider;
   readonly blockchainSdk!: ChainSdk;
 }
 

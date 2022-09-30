@@ -11,6 +11,8 @@ export abstract class EncryptionKeysProvider {
     return new CachedEncryptionKeysProvider(delegate, encryptionKeysStore);
   }
 
+  abstract isAvailable(): boolean;
+
   abstract getFailSafe(
     subject: AccountAddress,
   ): Promise<DiffeHellmanKeys | null>;
@@ -29,6 +31,10 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     private readonly encryptionKeysStore: EncryptionKeysStore,
   ) {
     super();
+  }
+
+  isAvailable(): boolean {
+    return this.delegate.isAvailable();
   }
 
   async getFailSafe(subject: AccountAddress): Promise<DiffeHellmanKeys | null> {

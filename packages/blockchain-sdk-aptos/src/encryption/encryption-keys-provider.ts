@@ -22,4 +22,8 @@ export class DialectAptosWalletAdapterEncryptionKeysProvider extends EncryptionK
       'Wallet does not support encryption yet',
     );
   }
+
+  isAvailable(): boolean {
+    return false;
+  }
 }
