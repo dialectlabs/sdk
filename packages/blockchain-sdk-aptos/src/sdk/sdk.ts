@@ -12,8 +12,7 @@ import { AptosEd25519AuthenticationFacadeFactory } from '../auth/ed25519/aptos-e
 import { DialectWalletAdapterAptosEd25519TokenSigner } from '../auth/ed25519/aptos-ed25519-token-signer';
 import { AptosEd25519PayloadAuthenticationFacadeFactory } from '../auth/ed25519-payload/aptos-ed25519-payload-authentication-facade-factory';
 import { DialectWalletAdapterAptosEd25519PayloadTokenSigner } from '../auth/ed25519-payload/aptos-ed25519-payload-token-signer';
-
-export const DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS = 'aptos';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS } from './constants';
 
 export interface AptosConfigProps {
   wallet: DialectAptosWalletAdapter;

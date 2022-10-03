@@ -1,6 +1,6 @@
 import {
   CreateThreadCommand,
-  DataServiceApi,
+  DataServiceApiFactory,
   DataServiceMessaging,
   Messaging,
   SendMessageCommand,
@@ -661,7 +661,7 @@ function createDataServiceWalletMessagingState(): WalletMessagingState {
   const adapter = new DialectSolanaWalletAdapterWrapper(wallet);
   const messaging = new DataServiceMessaging(
     adapter.publicKey.toBase58(),
-    DataServiceApi.create(
+    DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(
         new SolanaEd25519AuthenticationFacadeFactory(
