@@ -33,7 +33,6 @@ import type {
 import type { DataServiceWalletAddressesApi } from '../../dialect-cloud-api/data-service-wallet-addresses-api';
 import type { DataServiceApiClientError } from '../../dialect-cloud-api/data-service-api';
 import type { DataServiceWalletMessagesApi } from '../../dialect-cloud-api/data-service-wallet-messages-api';
-import { TextSerde, UnencryptedTextSerde } from '@dialectlabs/web3';
 import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
@@ -44,6 +43,8 @@ import { ResourceNotFoundError } from '../../sdk/errors';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../dialect-cloud-api/data-service-push-notification-subscriptions-api';
 import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 import type { AccountAddress } from '../../auth/auth.interface';
+import type { TextSerde } from '../../messaging/text-serde';
+import { UnencryptedTextSerde } from '../../messaging/text-serde';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
