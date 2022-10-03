@@ -13,7 +13,7 @@ import { DialectWalletAdapterAptosEd25519TokenSigner } from '../auth/ed25519/apt
 import { AptosEd25519PayloadAuthenticationFacadeFactory } from '../auth/ed25519-payload/aptos-ed25519-payload-authentication-facade-factory';
 import { DialectWalletAdapterAptosEd25519PayloadTokenSigner } from '../auth/ed25519-payload/aptos-ed25519-payload-token-signer';
 
-export const BLOCKCHAIN_SDK_TYPE_APTOS = 'aptos';
+export const DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS = 'aptos';
 
 export interface AptosConfigProps {
   wallet: DialectAptosWalletAdapter;
@@ -61,13 +61,13 @@ Aptos settings:
     );
     const authenticationFacade = this.initializeAuthenticationFacade(wallet);
     return {
-      type: BLOCKCHAIN_SDK_TYPE_APTOS,
-      encryptionKeysProvider,
-      authenticationFacade,
-      config: aptosConfig,
+      type: DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS,
       info: {
         supportsOnChainMessaging: false,
       },
+      encryptionKeysProvider,
+      authenticationFacade,
+      config: aptosConfig,
     };
   }
 

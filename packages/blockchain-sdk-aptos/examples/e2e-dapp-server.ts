@@ -64,7 +64,11 @@ async function getOrRegisterDapp() {
       name: 'Example dapp',
       description: 'Example dapp description.',
     });
-    console.log(`Dapp created. Name: ${dapp!.name}; description: ${dapp!.description}; messaging address: ${dapp!.address})`);
+    console.log(
+      `Dapp created. Name: ${dapp!.name}; description: ${
+        dapp!.description
+      }; messaging address: ${dapp!.address})`,
+    );
   }
   return dapp;
 }

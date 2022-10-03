@@ -20,7 +20,7 @@ import { SolanaMessaging } from '../messaging/solana-messaging';
 import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
 import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
 
-export const BLOCKCHAIN_SDK_TYPE_SOLANA = 'solana';
+export const DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA = 'solana';
 
 export interface SolanaConfigProps {
   wallet: DialectSolanaWalletAdapter;
@@ -117,7 +117,7 @@ Solana settings:
       };
     };
     return {
-      type: BLOCKCHAIN_SDK_TYPE_SOLANA,
+      type: DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA,
       encryptionKeysProvider,
       authenticationFacade,
       config: solanaConfig,

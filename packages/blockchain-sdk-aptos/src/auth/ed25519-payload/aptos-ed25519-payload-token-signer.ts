@@ -8,9 +8,9 @@ import type {
 import type { DialectAptosWalletAdapterWrapper } from '../../wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
 import { HexString } from 'aptos';
 import { AptosPubKey } from '../aptos-public-key';
-import { BLOCKCHAIN_SDK_TYPE_APTOS } from '../../sdk/sdk';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS } from '../../sdk/sdk';
 
-export const APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG = `${BLOCKCHAIN_SDK_TYPE_APTOS}-ed25519-payload`;
+export const APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_APTOS}-ed25519-payload`;
 
 export abstract class AptosEd25519PayloadTokenSigner implements TokenSigner {
   readonly alg = APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG;

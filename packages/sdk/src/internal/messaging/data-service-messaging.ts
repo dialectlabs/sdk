@@ -38,9 +38,10 @@ import {
   EncryptedTextSerde,
   UnencryptedTextSerde,
 } from '../../messaging/text-serde';
+import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/sdk.interface';
 
 export class DataServiceMessaging implements Messaging {
-  readonly type = 'dialect-cloud';
+  readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;
 
   constructor(
     private readonly me: AccountAddress,
@@ -266,7 +267,7 @@ export class DataServiceMessaging implements Messaging {
 }
 
 export class DataServiceThread implements Thread {
-  readonly type = 'dialect-cloud';
+  readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;
   readonly id: ThreadId;
 
   constructor(
