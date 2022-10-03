@@ -88,8 +88,12 @@ export class CachedTokenProvider extends TokenProvider {
     return delegatePromise;
   }
 
-  hasCachedToken() {
-    return Boolean(this.getCachedToken());
+  hasValidCachedToken() {
+    const cachedToken = this.getCachedToken();
+    if (!cachedToken) {
+      return false;
+    }
+    return this.tokenValidator.isValid(cachedToken);
   }
 
   private getCachedToken(): Token | null {

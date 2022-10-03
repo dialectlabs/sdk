@@ -61,7 +61,7 @@ export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
   get info(): DialectSdkInfo {
     return {
       supportsEndToEndEncryption: this.encryptionKeysProvider.isAvailable(),
-      hasValidAuthentication: this.tokenProvider.hasCachedToken(),
+      hasValidAuthentication: this.tokenProvider.hasValidCachedToken(),
     };
   }
 }
