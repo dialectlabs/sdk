@@ -60,7 +60,7 @@ export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
 }
 
 export interface DialectSdkInfo {
-  supportsEncryption: boolean;
+  supportsEndToEndEncryption: boolean;
   hasValidAuthentication: boolean;
 }
 
