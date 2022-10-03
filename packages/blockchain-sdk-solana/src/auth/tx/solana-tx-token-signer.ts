@@ -10,8 +10,9 @@ import type {
   TokenSigner,
   TokenSignerResult,
 } from '@dialectlabs/sdk';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA } from '../../sdk/constants';
 
-export const SOLANA_TX_TOKEN_SIGNER_ALG = 'solana-tx';
+export const SOLANA_TX_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA}-tx`;
 
 export abstract class SolanaTxTokenSigner implements TokenSigner {
   readonly alg = SOLANA_TX_TOKEN_SIGNER_ALG;

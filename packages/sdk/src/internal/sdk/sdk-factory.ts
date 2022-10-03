@@ -24,7 +24,6 @@ import type {
 } from '../../dapp/dapp.interface';
 import { DataServiceDappNotificationSubscriptions } from '../dapp/data-service-dapp-notification-subscriptions';
 import { Duration } from 'luxon';
-import { DataServiceApi } from '../../dialect-cloud-api/data-service-api';
 import { DappMessagesFacade } from '../dapp/dapp-messages-facade';
 import { DappsImpl } from '../dapp/dapp';
 import { TokenStore } from '../../auth/token-store';
@@ -43,6 +42,8 @@ import { DataServiceDappAddresses } from '../dapp/data-service-dapp-addresses';
 import { DataServiceDappNotificationTypes } from '../dapp/data-service-dapp-notification-types';
 import type { Messaging } from '../../messaging/messaging.interface';
 import type { EncryptionKeysProvider } from '../../encryption/encryption-keys-provider';
+import { DataServiceApiFactory } from '../../dialect-cloud-api/data-service-api-factory';
+import type { DataServiceApi } from '../../dialect-cloud-api/data-service-api';
 
 export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
   implements DialectSdk<ChainSdk>
@@ -141,7 +142,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
     config: DialectCloudConfig,
     tokenProvider: TokenProvider,
   ) {
-    return DataServiceApi.create(config.url, tokenProvider);
+    return DataServiceApiFactory.create(config.url, tokenProvider);
   }
 
   private initializeMessagingApi(

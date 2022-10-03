@@ -38,7 +38,7 @@ import {
   EncryptedTextSerde,
   UnencryptedTextSerde,
 } from '../../messaging/text-serde';
-import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/sdk.interface';
+import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/constants';
 
 export class DataServiceMessaging implements Messaging {
   readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;

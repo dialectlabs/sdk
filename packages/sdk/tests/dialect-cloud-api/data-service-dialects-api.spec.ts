@@ -6,12 +6,12 @@ import type {
   SendMessageCommand,
 } from '../../src/dialect-cloud-api/data-service-dialects-api';
 import { MemberScopeDto } from '../../src/dialect-cloud-api/data-service-dialects-api';
-import { DataServiceApi } from '../../src/dialect-cloud-api/data-service-api';
 import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../../src/auth/auth.interface';
 import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
 import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
+import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
 
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -27,7 +27,7 @@ describe('Data service dialects api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     wallet1Address = wallet1AuthenticationFacade.subject();
-    wallet1Api = DataServiceApi.create(
+    wallet1Api = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(wallet1AuthenticationFacade),
     ).threads;
@@ -35,7 +35,7 @@ describe('Data service dialects api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     wallet2Address = wallet2AuthenticationFacade.subject();
-    wallet2Api = DataServiceApi.create(
+    wallet2Api = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(wallet2AuthenticationFacade),
     ).threads;
@@ -347,7 +347,7 @@ describe('Data service dialects api (e2e)', () => {
     });
   });
 
-  test('can limit the number of messages returned', async() => {
+  test('can limit the number of messages returned', async () => {
     // when
     const dialects = await wallet1Api.findAll({
       takeMessages: 1,

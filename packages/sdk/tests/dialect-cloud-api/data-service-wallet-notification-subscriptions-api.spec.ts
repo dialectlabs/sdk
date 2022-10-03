@@ -10,6 +10,7 @@ import type { DappDto } from '../../src/dialect-cloud-api/data-service-dapps-api
 import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
 import type { AccountAddress } from '../../src/auth/auth.interface';
 import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
+import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
 
 describe('Data service wallet notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -25,7 +26,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     dappPublicKey = dappAuthenticationFacade.subject();
-    const dappDataServiceApi = DataServiceApi.create(
+    const dappDataServiceApi = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(dappAuthenticationFacade),
     );
@@ -45,7 +46,7 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     userPublicKey = userAuthenticationFacade.subject();
-    api = DataServiceApi.create(
+    api = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(userAuthenticationFacade),
     ).walletNotificationSubscriptions;

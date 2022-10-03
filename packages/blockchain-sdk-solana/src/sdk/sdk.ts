@@ -19,8 +19,7 @@ import { DialectWalletAdapterSolanaTxTokenSigner } from '../auth/tx/solana-tx-to
 import { SolanaMessaging } from '../messaging/solana-messaging';
 import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
 import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
-
-export const DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA = 'solana';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA } from './constants';
 
 export interface SolanaConfigProps {
   wallet: DialectSolanaWalletAdapter;

@@ -13,8 +13,6 @@ import { DialectSdkFactory } from '../internal/sdk/sdk-factory';
 import type { AuthenticationFacade } from '../auth/authentication-facade';
 import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 
-export const DIALECT_API_TYPE_DIALECT_CLOUD = 'dialect-cloud';
-
 export abstract class Dialect {
   static sdk<ChainSdk extends BlockchainSdk>(
     configProps: ConfigProps,

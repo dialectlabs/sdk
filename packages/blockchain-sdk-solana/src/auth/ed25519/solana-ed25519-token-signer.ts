@@ -5,8 +5,9 @@ import type {
   TokenSigner,
   TokenSignerResult,
 } from '@dialectlabs/sdk';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA } from '../../sdk/constants';
 
-export const SOLANA_ED25519_TOKEN_SIGNER_ALG = 'solana-ed25519';
+export const SOLANA_ED25519_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA}-ed25519`;
 export const SOLANA_ED25519_TOKEN_SIGNER_ALG_BACKWARD_COMPATIBLE = 'ed25519';
 
 export abstract class SolanaEd25519TokenSigner implements TokenSigner {

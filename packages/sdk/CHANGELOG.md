@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.0-beta.4] - 2022-10-03
+
+- fix: eliminate cyclic dependencies
+
 ## [1.0.0-beta.3] - 2022-10-03
 
 - feature: make sdk blockchain agnostic

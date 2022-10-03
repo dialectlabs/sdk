@@ -15,6 +15,7 @@ import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer'
 import type { AccountAddress } from '../../src/auth/auth.interface';
 import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
+import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -27,7 +28,7 @@ describe('Data service dapps api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     dappAccountAddress = authenticationFacade.subject();
-    dappsApi = DataServiceApi.create(
+    dappsApi = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(authenticationFacade),
     ).dapps;
@@ -161,7 +162,7 @@ describe('Data service dapps api (e2e)', () => {
         new Ed25519TokenSigner(),
       ).get();
       walletAccountAddress = authenticationFacade.subject();
-      const dataServiceApi = DataServiceApi.create(
+      const dataServiceApi = DataServiceApiFactory.create(
         baseUrl,
         TokenProvider.create(authenticationFacade),
       );
