@@ -26,6 +26,6 @@
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
-    "@cardinal/namespaces": "^4.1.55"
+    "@cardinal/namespaces": "^4.1.57"
   }
 }
