@@ -1,7 +1,8 @@
-import type { PublicKey } from '@solana/web3.js';
-import type { Backend } from '@sdk/sdk.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Messaging {
+  type: string;
+
   findAll(): Promise<Thread[]>;
 
   create(command: CreateThreadCommand): Promise<Thread>;
@@ -25,7 +26,7 @@ export interface ThreadSummary {
 }
 
 export interface ThreadMemberSummary {
-  publicKey: PublicKey;
+  address: AccountAddress;
   hasUnreadMessages: boolean;
   unreadMessagesCount: number;
 }
@@ -43,10 +44,10 @@ export interface ThreadMessage {
 }
 
 export interface CreateThreadCommand {
-  me: Omit<ThreadMember, 'publicKey' | 'lastReadMessageTimestamp'>;
+  me: Omit<ThreadMember, 'address' | 'lastReadMessageTimestamp'>;
   otherMembers: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
   encrypted: boolean;
-  backend?: Backend;
+  type?: string;
 }
 
 export type FindThreadQuery =
@@ -58,35 +59,35 @@ export interface FindThreadByIdQuery {
 }
 
 export interface FindThreadByOtherMemberQuery {
-  otherMembers: PublicKey[];
+  otherMembers: AccountAddress[];
 }
 
 export interface FindThreadSummaryByMembers {
-  me: PublicKey;
-  otherMembers: PublicKey[];
+  me: AccountAddress;
+  otherMembers: AccountAddress[];
 }
 
 export interface ThreadIdProps {
-  address: PublicKey;
-  backend?: Backend;
+  address: AccountAddress;
+  type?: string;
 }
 
 export class ThreadId {
-  readonly address!: PublicKey;
-  readonly backend?: Backend;
+  readonly address!: AccountAddress;
+  readonly type?: string;
 
-  constructor({ address, backend }: ThreadIdProps) {
+  constructor({ address, type }: ThreadIdProps) {
     this.address = address;
-    this.backend = backend;
+    this.type = type;
   }
 
   public equals(other: ThreadId): boolean {
-    return this.address.equals(other.address) && this.backend === other.backend;
+    return this.address == other.address && this.type === other.type;
   }
 
   public toString(): string {
-    return this.backend
-      ? this.backend.toString() + ':' + this.address.toString()
+    return this.type
+      ? this.type.toString() + ':' + this.address.toString()
       : this.address.toString();
   }
 }
@@ -97,7 +98,7 @@ export interface Thread {
   otherMembers: ThreadMember[];
   encryptionEnabled: boolean;
   canBeDecrypted: boolean;
-  backend: Backend;
+  type: string;
   updatedAt: Date;
   lastMessage: ThreadMessage | null;
 
@@ -111,7 +112,7 @@ export interface Thread {
 }
 
 export interface ThreadMember {
-  publicKey: PublicKey;
+  address: AccountAddress;
   scopes: ThreadMemberScope[];
   // lastReadMessageTimestamp: Date;
 }

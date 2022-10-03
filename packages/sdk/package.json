@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/sdk",
-  "version": "0.13.0",
+  "version": "1.0.0-beta.3",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
@@ -14,31 +14,31 @@
   "scripts": {
     "clean": "rm -rf lib",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
-    "build": "npm run clean && npm run build:cjs; npm run build:esm",
+    "generate-version": "node ./prebuild.js",
+    "postinstall": "chmod +x ./postinstall.sh && ./postinstall.sh",
+    "build": "yarn generate-version && yarn clean && yarn build:cjs; yarn build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json && tsc-alias --project tsconfig.cjs.json --verbose",
     "build:cjs:watch": "concurrently \"tsc --project tsconfig.cjs.json --watch\" \"tsc-alias --project tsconfig.cjs.json --verbose --watch\"",
     "build:esm": "tsc --project tsconfig.esm.json && tsc-alias --project tsconfig.esm.json --verbose",
     "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\" \"tsc-alias --project tsconfig.esm.json --verbose --watch\"",
     "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\"",
-    "token:generate": "ts-node -r tsconfig-paths/register examples/generate-token.ts",
+    "token:generate": "ts-node examples/generate-token.ts",
     "test": "jest"
   },
   "devDependencies": {
     "@solana/wallet-adapter-base": "^0.9.15",
     "@solana/web3.js": "^1.53.0",
+    "@types/bs58": "^4.0.1",
     "@types/ed2curve": "^0.2.2",
     "@types/luxon": "^2.3.2"
   },
-  "peerDependencies": {
-    "@solana/wallet-adapter-base": "0.x",
-    "@solana/web3.js": "1.x"
-  },
+
   "dependencies": {
-    "@dialectlabs/web3": "^0.3.2",
-    "@project-serum/anchor": "0.23.0",
     "@stablelib/base64": "^1.0.1",
     "axios": "^0.27.2",
+    "bs58": "^5.0.0",
     "ed2curve": "^0.3.0",
+    "js-sha3": "^0.8.0",
     "luxon": "^2.4.0",
     "nanoid": "^3.3.4",
     "tweetnacl": "^1.0.3"

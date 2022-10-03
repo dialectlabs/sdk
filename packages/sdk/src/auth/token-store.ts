@@ -1,12 +1,6 @@
-import type { Token } from '@auth/auth.interface';
-import type { PublicKey } from '@solana/web3.js';
-import { TokenParser } from '../internal/auth/token-parser';
+import type { AccountAddress } from './auth.interface';
 
 export abstract class TokenStore {
-  abstract get(subject: PublicKey): Token | null;
-
-  abstract save(token: Token): Token;
-
   static createInMemory(): TokenStore {
     return new InMemoryTokenStore();
   }
@@ -18,60 +12,61 @@ export abstract class TokenStore {
   static createLocalStorage(): TokenStore {
     return new LocalStorageTokenStore();
   }
+
+  abstract get(subject: AccountAddress): string | null;
+
+  abstract delete(subject: AccountAddress): void;
+
+  abstract save(subject: AccountAddress, token: string): string;
 }
 
 class InMemoryTokenStore extends TokenStore {
-  private tokens: Record<string, Token> = {};
+  private tokens: Record<string, string> = {};
 
-  get(subject: PublicKey): Token | null {
-    return this.tokens[subject.toBase58()] ?? null;
+  get(subject: AccountAddress): string | null {
+    return this.tokens[subject.toString()] ?? null;
   }
 
-  save(token: Token): Token {
-    this.tokens[token.body.sub] = token;
+  save(subject: AccountAddress, token: string): string {
+    this.tokens[subject.toString()] = token;
     return token;
+  }
+
+  delete(subject: AccountAddress): void {
+    delete this.tokens[subject.toString()];
   }
 }
 
 class SessionStorageTokenStore extends TokenStore {
-  get(subject: PublicKey): Token | null {
-    const key = createStorageKey(subject.toBase58());
-    try {
-      const token = sessionStorage.getItem(key);
-      if (!token) {
-        return null;
-      }
-      return TokenParser.parse(token) as Token;
-    } catch {
-      sessionStorage.removeItem(key);
-      return null;
-    }
+  get(subject: AccountAddress): string | null {
+    const key = createStorageKey(subject.toString());
+    return sessionStorage.getItem(key);
   }
 
-  save(token: Token): Token {
-    sessionStorage.setItem(createStorageKey(token.body.sub), token.rawValue);
+  delete(subject: AccountAddress): void {
+    const key = createStorageKey(subject.toString());
+    sessionStorage.removeItem(key);
+  }
+
+  save(subject: AccountAddress, token: string): string {
+    sessionStorage.setItem(createStorageKey(subject.toString()), token);
     return token;
   }
 }
 
 class LocalStorageTokenStore extends TokenStore {
-  get(subject: PublicKey): Token | null {
-    const key = createStorageKey(subject.toBase58());
-    try {
-      const token = localStorage.getItem(key);
-      if (!token) {
-        return null;
-      }
-      return TokenParser.parse(token) as Token;
-    } catch {
-      localStorage.removeItem(key);
-      return null;
-    }
+  get(subject: AccountAddress): string | null {
+    const key = createStorageKey(subject.toString());
+    return localStorage.getItem(key);
   }
 
-  save(token: Token): Token {
-    localStorage.setItem(createStorageKey(token.body.sub), token.rawValue);
+  save(subject: AccountAddress, token: string): string {
+    localStorage.setItem(createStorageKey(subject.toString()), token);
     return token;
+  }
+
+  delete(subject: AccountAddress): void {
+    localStorage.removeItem(createStorageKey(subject.toString()));
   }
 }
 

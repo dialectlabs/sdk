@@ -1,13 +1,13 @@
-import { toAddressTypeDto } from '@address/addresses.interface';
 import type {
   BroadcastDappMessageCommand,
   DappMessages,
   MulticastDappMessageCommand,
   SendDappMessageCommand,
   UnicastDappMessageCommand,
-} from '@dapp/dapp.interface';
-import type { DataServiceDappsApi } from '@data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
+} from '../../dapp/dapp.interface';
+import { toAddressTypeDto } from '../../address/addresses.interface';
+import type { DataServiceDappsApi } from '../../dialect-cloud-api/data-service-dapps-api';
+import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
   constructor(private readonly api: DataServiceDappsApi) {}
@@ -30,7 +30,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.unicast({
         ...command,
         notificationTypeId: command.notificationTypeId,
-        recipientPublicKey: command.recipient.toBase58(),
+        recipientPublicKey: command.recipient.toString(),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),
@@ -46,7 +46,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.multicast({
         ...command,
         notificationTypeId: command.notificationTypeId,
-        recipientPublicKeys: command.recipients.map((it) => it.toBase58()),
+        recipientPublicKeys: command.recipients.map((it) => it.toString()),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),

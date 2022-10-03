@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/identity-civic",
-  "version": "0.0.4",
+  "version": "1.0.0-beta.3",
   "description": "Civic Identity Resolver",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "Kevin Colgan",
@@ -23,7 +23,7 @@
     "test": "jest"
   },
   "peerDependencies": {
-    "@dialectlabs/sdk": "*",
+    "@dialectlabs/sdk": "1.x",
     "@solana/web3.js": "1.x"
   },
   "dependencies": {

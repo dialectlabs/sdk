@@ -1,6 +1,10 @@
 import { getNameEntry, tryGetName } from '@cardinal/namespaces';
-import type { Identity, IdentityResolver } from '@dialectlabs/sdk';
-import type { Connection, PublicKey } from '@solana/web3.js';
+import type {
+  AccountAddress,
+  Identity,
+  IdentityResolver,
+} from '@dialectlabs/sdk';
+import { Connection, PublicKey } from '@solana/web3.js';
 import { tryGetImageUrl } from './utils';
 
 const TWITTER_NAMESPACE = 'twitter';
@@ -12,8 +16,8 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     return 'CARDINAL_TWITTER';
   }
 
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
-    const name = await tryGetName(this.connection, publicKey);
+  async resolve(address: AccountAddress): Promise<Identity | null> {
+    const name = await tryGetName(this.connection, new PublicKey(address));
     if (!name || !name[0]) {
       return null;
     }
@@ -21,7 +25,7 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     const avatar = (await tryGetImageUrl(realName)) || undefined;
     return {
       type: this.type,
-      publicKey,
+      address: address,
       name: realName,
       additionals: {
         displayName: name[0],
@@ -48,7 +52,7 @@ export class CardinalTwitterIdentityResolver implements IdentityResolver {
     return {
       type: this.type,
       name: domainName,
-      publicKey: parsed.data,
+      address: parsed.data.toBase58(),
       additionals: {
         displayName: rawDomainName,
         avatarUrl: avatar,

@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.0-beta.3] - 2022-10-03
+
+- feature: make sdk blockchain agnostic
+
 ## [0.13.0] - 2022-09-27
 
 - refactor: aggregate strategy null errors

@@ -1,3 +1,9 @@
+import type { Address, DappAddress } from '../../address/addresses.interface';
+import {
+  toAddressType,
+  toAddressTypeDto,
+} from '../../address/addresses.interface';
+import { toDappAddress } from '../dapp/data-service-dapp-addresses';
 import type {
   CreateAddressCommand,
   CreateDappAddressCommand,
@@ -23,25 +29,22 @@ import type {
   WalletPushNotificationSubscription,
   WalletPushNotificationSubscriptions,
   Wallets,
-} from '@wallet/wallet.interface';
-import { PublicKey } from '@solana/web3.js';
-import type { Address, DappAddress } from '@address/addresses.interface';
-import { toAddressType, toAddressTypeDto } from '@address/addresses.interface';
-import { ResourceNotFoundError } from '@sdk/errors';
-import type { DataServiceWalletAddressesApi } from '@data-service-api/data-service-wallet-addresses-api';
-import type { DataServiceWalletDappAddressesApi } from '@data-service-api/data-service-wallet-dapp-addresses-api';
-import type { AddressDto } from '@data-service-api/data-service-dapps-api';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
-import type { DataServiceWalletMessagesApi } from '@data-service-api/data-service-wallet-messages-api';
-import type { TextSerde } from '@dialectlabs/web3';
-import { UnencryptedTextSerde } from '@dialectlabs/web3';
-import { toDappAddress } from '@dapp/internal/data-service-dapp-addresses';
+} from '../../wallet/wallet.interface';
+import type { DataServiceWalletAddressesApi } from '../../dialect-cloud-api/data-service-wallet-addresses-api';
+import type { DataServiceApiClientError } from '../../dialect-cloud-api/data-service-api';
+import type { DataServiceWalletMessagesApi } from '../../dialect-cloud-api/data-service-wallet-messages-api';
 import type {
   DataServiceWalletNotificationSubscriptionsApi,
   WalletNotificationSubscriptionDto,
-} from '@data-service-api/data-service-wallet-notification-subscriptions-api';
-import type { DataServicePushNotificationSubscriptionsApi } from '@data-service-api/data-service-push-notification-subscriptions-api';
+} from '../../dialect-cloud-api/data-service-wallet-notification-subscriptions-api';
+import type { DataServiceWalletDappAddressesApi } from '../../dialect-cloud-api/data-service-wallet-dapp-addresses-api';
+import type { AddressDto } from '../../dialect-cloud-api/data-service-dapps-api';
+import { ResourceNotFoundError } from '../../sdk/errors';
+import type { DataServicePushNotificationSubscriptionsApi } from '../../dialect-cloud-api/data-service-push-notification-subscriptions-api';
+import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
+import type { AccountAddress } from '../../auth/auth.interface';
+import type { TextSerde } from '../../messaging/text-serde';
+import { UnencryptedTextSerde } from '../../messaging/text-serde';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -51,7 +54,7 @@ export class DataServiceWallets implements Wallets {
   pushNotificationSubscriptions: WalletPushNotificationSubscriptions;
 
   constructor(
-    readonly publicKey: PublicKey,
+    readonly address: AccountAddress,
     private readonly dataServiceWalletAddressesApi: DataServiceWalletAddressesApi,
     private readonly dataServiceWalletDappAddressesApi: DataServiceWalletDappAddressesApi,
     private readonly dataServiceWalletMessagesApi: DataServiceWalletMessagesApi,
@@ -141,7 +144,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     const created = await withErrorParsing(
       this.api.create({
         addressId: command.addressId,
-        dappPublicKey: command.dappPublicKey.toBase58(),
+        dappPublicKey: command.dappAccountAddress.toString(),
         enabled: command.enabled,
       }),
     );
@@ -163,12 +166,14 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
     }
   }
 
-  async findAll(query: FindDappAddressesQuery): Promise<DappAddress[]> {
+  async findAll(query?: FindDappAddressesQuery): Promise<DappAddress[]> {
     const found = await withErrorParsing(
-      this.api.findAll({
-        addressIds: query.addressIds,
-        dappPublicKey: query.dappPublicKey?.toBase58(),
-      }),
+      this.api.findAll(
+        query && {
+          addressIds: query.addressIds,
+          dappPublicKey: query.dappAccountAddress?.toString(),
+        },
+      ),
     );
     return found.map((it) => toDappAddress(it));
   }
@@ -197,7 +202,7 @@ export class DataServiceWalletMessages implements WalletMessages {
       }),
     );
     return dappMessages.map((it) => ({
-      author: new PublicKey(it.owner),
+      author: it.owner,
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
@@ -211,7 +216,7 @@ function toAddress(addressDto: AddressDto): Address {
     verified: addressDto.verified,
     type: toAddressType(addressDto.type),
     wallet: {
-      publicKey: new PublicKey(addressDto.wallet.publicKey),
+      address: addressDto.wallet.publicKey,
     },
   };
 }
@@ -228,7 +233,7 @@ export class DataServiceWalletNotificationSubscriptions
   ): Promise<WalletNotificationSubscription[]> {
     const dtos = await withErrorParsing(
       this.api.findAll({
-        dappPublicKey: query?.dappPublicKey?.toBase58(),
+        dappPublicKey: query?.dappAccountAddress?.toString(),
       }),
     );
     return dtos.map(fromNotificationSubscriptionDto);
@@ -249,7 +254,7 @@ function fromNotificationSubscriptionDto(
     notificationType: dto.notificationType,
     subscription: {
       wallet: {
-        publicKey: new PublicKey(dto.subscription.wallet.publicKey),
+        address: dto.subscription.wallet.publicKey,
       },
       config: dto.subscription.config,
     },
@@ -266,12 +271,14 @@ export class DataServiceWalletPushNotificationSubscriptions
   async delete(physicalId: string): Promise<void> {
     await withErrorParsing(this.api.delete(physicalId));
   }
+
   async upsert(
     command: UpsertPushNotificationSubscriptionCommand,
   ): Promise<WalletPushNotificationSubscription> {
     const dto = await this.api.upsert(command);
     return {
       ...dto,
+      walletAddress: dto.walletPublicKey,
     };
   }
 
@@ -279,6 +286,7 @@ export class DataServiceWalletPushNotificationSubscriptions
     const dto = await this.api.get(physicalId);
     return {
       ...dto,
+      walletAddress: dto.walletPublicKey,
     };
   }
 }

@@ -1,8 +1,8 @@
 import type {
   DappMessages,
   SendDappMessageCommand,
-} from '@dapp/dapp.interface';
-import { DialectSdkError, IllegalArgumentError } from '@sdk/errors';
+} from '../../dapp/dapp.interface';
+import { DialectSdkError, IllegalArgumentError } from '../../sdk/errors';
 
 export class DappMessagesFacade implements DappMessages {
   constructor(private readonly dappMessageBackends: DappMessages[]) {

@@ -1,11 +1,7 @@
-import type { DiffeHellmanKeys } from '@encryption/encryption.interface';
-import type { PublicKey } from '@solana/web3.js';
+import type { DiffeHellmanKeys } from './encryption.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export abstract class EncryptionKeysStore {
-  abstract get(subject: PublicKey): DiffeHellmanKeys | null;
-
-  abstract save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys;
-
   static createInMemory(): EncryptionKeysStore {
     return new InmemoryEncryptionKeysStore();
   }
@@ -17,24 +13,31 @@ export abstract class EncryptionKeysStore {
   static createLocalStorage(): EncryptionKeysStore {
     return new LocalStorageEncryptionKeysStore();
   }
+
+  abstract get(subject: AccountAddress): DiffeHellmanKeys | null;
+
+  abstract save(
+    subject: AccountAddress,
+    keys: DiffeHellmanKeys,
+  ): DiffeHellmanKeys;
 }
 
 class InmemoryEncryptionKeysStore extends EncryptionKeysStore {
-  private keys: Record<string, DiffeHellmanKeys> = {};
+  private keys: Record<AccountAddress, DiffeHellmanKeys> = {};
 
-  get(subject: PublicKey): DiffeHellmanKeys | null {
-    return this.keys[subject.toBase58()] ?? null;
+  get(subject: AccountAddress): DiffeHellmanKeys | null {
+    return this.keys[subject.toString()] ?? null;
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
-    this.keys[subject.toBase58()] = keys;
+  save(subject: AccountAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+    this.keys[subject.toString()] = keys;
     return keys;
   }
 }
 
 class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
-  get(subject: PublicKey): DiffeHellmanKeys | null {
-    const key = createStorageKey(subject.toBase58());
+  get(subject: AccountAddress): DiffeHellmanKeys | null {
+    const key = createStorageKey(subject.toString());
     try {
       const keys = sessionStorage.getItem(key);
       if (!keys) {
@@ -47,9 +50,9 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
     }
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+  save(subject: AccountAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     sessionStorage.setItem(
-      createStorageKey(subject.toBase58()),
+      createStorageKey(subject.toString()),
       serializeDiffeHellmanKeys(keys),
     );
     return keys;
@@ -57,8 +60,8 @@ class SessionStorageEncryptionKeysStore extends EncryptionKeysStore {
 }
 
 class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
-  get(subject: PublicKey): DiffeHellmanKeys | null {
-    const key = createStorageKey(subject.toBase58());
+  get(subject: AccountAddress): DiffeHellmanKeys | null {
+    const key = createStorageKey(subject.toString());
     try {
       const keys = localStorage.getItem(key);
       if (!keys) {
@@ -71,9 +74,9 @@ class LocalStorageEncryptionKeysStore extends EncryptionKeysStore {
     }
   }
 
-  save(subject: PublicKey, keys: DiffeHellmanKeys): DiffeHellmanKeys {
+  save(subject: AccountAddress, keys: DiffeHellmanKeys): DiffeHellmanKeys {
     localStorage.setItem(
-      createStorageKey(subject.toBase58()),
+      createStorageKey(subject.toString()),
       serializeDiffeHellmanKeys(keys),
     );
     return keys;

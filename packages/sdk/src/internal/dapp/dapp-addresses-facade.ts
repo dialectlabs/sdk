@@ -1,9 +1,8 @@
-import type { DappAddresses } from '@dapp/dapp.interface';
-import { PublicKey } from '@solana/web3.js';
-import { DialectSdkError, IllegalArgumentError } from '@sdk/errors';
-import { groupBy } from '@utils/internal/collection-utils';
-import type { DappAddress } from '@address/addresses.interface';
-import { AddressType } from '@address/addresses.interface';
+import type { DappAddress } from '../../address/addresses.interface';
+import { AddressType } from '../../address/addresses.interface';
+import { DialectSdkError, IllegalArgumentError } from '../../sdk/errors';
+import type { DappAddresses } from '../../dapp/dapp.interface';
+import { groupBy } from '../../utils/collection-utils';
 
 export class DappAddressesFacade implements DappAddresses {
   constructor(private readonly dappAddressesBackends: DappAddresses[]) {
@@ -12,6 +11,30 @@ export class DappAddressesFacade implements DappAddresses {
         'Expected to have at least one dapp addresses backend.',
       );
     }
+  }
+
+  private static dedupleWalletAddresses(walletAddresses: DappAddress[]) {
+    const walletPublicKeyToWalletAddresses = groupBy(walletAddresses, (it) =>
+      it.address.wallet.address.toString(),
+    );
+    const deduplicatedWalletAddresses: DappAddress[] = Object.entries(
+      walletPublicKeyToWalletAddresses,
+    ).map(([walletPublicKey, walletDappAddresses]) =>
+      walletDappAddresses.reduce((prev, curr) => ({
+        id: prev.id,
+        enabled: prev.enabled && curr.enabled,
+        address: {
+          id: prev.id,
+          value: walletPublicKey,
+          verified: true,
+          type: prev.address.type,
+          wallet: {
+            address: walletPublicKey,
+          },
+        },
+      })),
+    );
+    return deduplicatedWalletAddresses;
   }
 
   async findAll(): Promise<DappAddress[]> {
@@ -53,29 +76,5 @@ export class DappAddressesFacade implements DappAddresses {
       ...nonWalletAddresses,
       ...deduplicatedWalletAddresses,
     ]);
-  }
-
-  private static dedupleWalletAddresses(walletAddresses: DappAddress[]) {
-    const walletPublicKeyToWalletAddresses = groupBy(walletAddresses, (it) =>
-      it.address.wallet.publicKey.toBase58(),
-    );
-    const deduplicatedWalletAddresses: DappAddress[] = Object.entries(
-      walletPublicKeyToWalletAddresses,
-    ).map(([walletPublicKey, walletDappAddresses]) =>
-      walletDappAddresses.reduce((prev, curr) => ({
-        id: prev.id,
-        enabled: prev.enabled && curr.enabled,
-        address: {
-          id: prev.id,
-          value: walletPublicKey,
-          verified: true,
-          type: prev.address.type,
-          wallet: {
-            publicKey: new PublicKey(walletPublicKey),
-          },
-        },
-      })),
-    );
-    return deduplicatedWalletAddresses;
   }
 }

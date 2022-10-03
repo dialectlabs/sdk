@@ -40,9 +40,9 @@ import {
   Backend,
   ConfigProps,
   Dialect,
-  DialectWalletAdapterWrapper,
+  DialectSolanaWalletAdapterWrapper,
   EncryptionKeysStore,
-  NodeDialectWalletAdapter,
+  NodeDialectSolanaWalletAdapter,
   TokenStore,
 } from '@dialectlabs/sdk';
 import type {
@@ -66,8 +66,8 @@ const solana = {
   rpcUrl: 'https://api.mainnet-beta.solana.com',
 };
 // A node wallet for running in a node environment. N.b. this would be a mobile or web wallet object instead. The Wrapper class handles conversion to the API expected by the Dialect SDK, but is mostly consistent with expected wallet APIs.
-const wallet = DialectWalletAdapterWrapper.create(
-  NodeDialectWalletAdapter.create(),
+const wallet = DialectSolanaWalletAdapterWrapper.create(
+  NodeDialectSolanaWalletAdapter.create(),
 );
 
 // Now construct the SDK client from all of the above

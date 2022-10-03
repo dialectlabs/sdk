@@ -1,59 +1,48 @@
-import { PublicKey } from '@solana/web3.js';
-import type {
+import {
   CreateThreadCommand,
+  Dialect,
+  DialectCloudEnvironment,
   DialectSdk,
   FindThreadByIdQuery,
+  SendMessageCommand,
   Thread,
   ThreadId,
-  ThreadMessage,
-} from '../src';
-import {
-  Backend,
-  ConfigProps,
-  Dialect,
-  DialectWalletAdapterWrapper,
-  EncryptionKeysStore,
-  NodeDialectWalletAdapter,
-  SendMessageCommand,
   ThreadMemberScope,
-  TokenStore,
-} from '../src';
+  ThreadMessage,
+} from '@dialectlabs/sdk';
+import {
+  NodeDialectSolanaWalletAdapter,
+  Solana,
+  SolanaSdkFactory,
+} from '@dialectlabs/blockchain-sdk-solana';
+import {
+  Aptos,
+  AptosSdkFactory,
+  NodeDialectAptosWalletAdapter,
+} from '@dialectlabs/blockchain-sdk-aptos';
 
-export function createSdk(): DialectSdk {
-  let secretKey: Uint8Array;
-  // secretKey = new Uint8Array([]);
-  // console.log({secretKey});
+/*
+  Solana
+*/
 
-  const backends = [Backend.DialectCloud, Backend.Solana];
-  const dialectCloud = {
-    url: 'https://dialectapi.to',
-    tokenStore: TokenStore.createInMemory(),
-  };
-  const environment = 'production';
-  const encryptionKeysStore = EncryptionKeysStore.createInMemory();
-  const solana = {
-    rpcUrl: 'https://api.mainnet-beta.solana.com',
-  };
-  // const keypair = Keypair.fromSecretKey(secretKey);
-  const wallet = DialectWalletAdapterWrapper.create(
-    NodeDialectWalletAdapter.create(),
+export function createSolanaSdk(): DialectSdk<Solana> {
+  const environment: DialectCloudEnvironment = 'local-development';
+
+  const sdk = Dialect.sdk(
+    {
+      environment,
+    },
+    SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(),
+    }),
   );
-
-  const sdk: DialectSdk = Dialect.sdk({
-    backends,
-    dialectCloud,
-    environment,
-    encryptionKeysStore,
-    solana,
-    wallet,
-  } as ConfigProps);
 
   return sdk;
 }
 
-export async function createThread(
-  sdk: DialectSdk,
-  recipient: PublicKey,
+export async function createSolanaThread(
+  sdk: DialectSdk<Solana>,
+  recipient: string,
 ): Promise<Thread> {
   const command: CreateThreadCommand = {
     encrypted: false,
@@ -62,7 +51,7 @@ export async function createThread(
     },
     otherMembers: [
       {
-        publicKey: recipient,
+        address: recipient,
         scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
       },
     ],
@@ -79,13 +68,83 @@ export async function sendMessage(thread: Thread, text: string): Promise<void> {
   return await thread.send(command);
 }
 
-export async function getThreads(sdk: DialectSdk): Promise<Thread[]> {
+export async function getSolanaThreads(
+  sdk: DialectSdk<Solana>,
+): Promise<Thread[]> {
   const threads: Thread[] = await sdk.threads.findAll();
   return threads;
 }
 
-export async function getMessages(
-  sdk: DialectSdk,
+export async function getSolanaMessages(
+  sdk: DialectSdk<Solana>,
+  threadId: ThreadId,
+): Promise<ThreadMessage[]> {
+  const query: FindThreadByIdQuery = {
+    id: threadId,
+  };
+  const thread = await sdk.threads.find(query);
+  if (!thread) {
+    console.log('No thread found with id', threadId);
+    return [];
+  }
+  console.log({ thread });
+  const messages = await thread.messages();
+  console.log({ messages });
+  return messages;
+}
+
+/*
+  Aptos
+*/
+
+export function createAptosSdk(): DialectSdk<Aptos> {
+  const environment: DialectCloudEnvironment = 'local-development';
+
+  const sdk = Dialect.sdk(
+    {
+      environment,
+    },
+    AptosSdkFactory.create({
+      wallet: NodeDialectAptosWalletAdapter.create(),
+    }),
+  );
+
+  return sdk;
+}
+
+export async function createAptosThread(
+  sdk: DialectSdk<Aptos>,
+  recipient: string,
+): Promise<Thread> {
+  // console.log({recipient: recipient.slice(2)});
+  // const decoded = bs58.decode(recipient.slice(2));
+  // console.log({decoded});
+  const command: CreateThreadCommand = {
+    encrypted: false,
+    me: {
+      scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+    },
+    otherMembers: [
+      {
+        address: recipient,
+        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+      },
+    ],
+  };
+  const thread = await sdk.threads.create(command);
+  console.log({ thread });
+  return thread;
+}
+
+export async function getAptosThreads(
+  sdk: DialectSdk<Aptos>,
+): Promise<Thread[]> {
+  const threads: Thread[] = await sdk.threads.findAll();
+  return threads;
+}
+
+export async function getAptosMessages(
+  sdk: DialectSdk<Aptos>,
   threadId: ThreadId,
 ): Promise<ThreadMessage[]> {
   const query: FindThreadByIdQuery = {

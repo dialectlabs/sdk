@@ -1,28 +1,28 @@
-import type { PublicKey } from '@solana/web3.js';
-import type { Identity, IdentityResolver } from '@identity/identity.interface';
+import { Identity, IdentityResolver } from '../../identity/identity.interface';
+import type { AccountAddress } from '../../auth/auth.interface';
 
-export class FirstFoundIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class FirstFoundIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_FIRST_FOUND_IDENTITY_RESOLVER';
   }
 
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
     for await (const resolver of this.resolvers) {
       try {
-        const identity = await resolver.resolve(publicKey);
+        const identity = await resolver.resolve(address);
         if (identity) {
           return identity;
         }
       } catch (e) {
         console.error(
-          `error resolving identity at ${
-            resolver.type
-          } for public key ${publicKey.toString()}`,
+          `error resolving identity at ${resolver.type} for account address ${address}`,
           e,
         );
       }
@@ -51,25 +51,27 @@ export class FirstFoundIdentityResolver implements IdentityResolver {
   }
 }
 
-export class FirstFoundFastIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class FirstFoundFastIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_FIRST_FOUND_FAST_IDENTITY_RESOLVER';
   }
 
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
     try {
       const any = await Promise.any(
-        this.resolvers.map((it) => it.resolve(publicKey)),
+        this.resolvers.map((it) => it.resolve(address)),
       );
       return any;
     } catch (e) {
       console.error(
-        `error resolving identity for public key ${publicKey.toString()}`,
+        `error resolving identity for account address ${address.toString()}`,
         e,
       );
     }
@@ -94,20 +96,22 @@ export class FirstFoundFastIdentityResolver implements IdentityResolver {
   }
 }
 
-export class AggregateSequentialIdentityResolver implements IdentityResolver {
-  constructor(private readonly resolvers: IdentityResolver[]) {}
+export class AggregateSequentialIdentityResolver extends IdentityResolver {
+  constructor(private readonly resolvers: IdentityResolver[]) {
+    super();
+  }
 
   get type(): string {
     return 'DIALECT_AGGREGATED_SEQUENTIAL_IDENTITY_RESOLVER';
   }
 
-  async resolve(publicKey: PublicKey): Promise<Identity | null> {
+  async resolve(address: AccountAddress): Promise<Identity | null> {
     if (!this.resolvers.length) {
       return null;
     }
     try {
       const allSettled = await Promise.allSettled(
-        this.resolvers.map((it) => it.resolve(publicKey)),
+        this.resolvers.map((it) => it.resolve(address)),
       );
       const resolved = allSettled.filter(
         (it) => it.status === 'fulfilled' && it.value !== null,
@@ -125,7 +129,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
           },
           {
             type: this.type,
-            publicKey: publicKey,
+            address: address,
           } as Identity,
         );
 
@@ -136,7 +140,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
       return aggregated;
     } catch (e) {
       console.error(
-        `error resolving identity for public key ${publicKey.toString()}`,
+        `error resolving identity for account address ${address.toString()}`,
         e,
       );
     }
@@ -166,7 +170,7 @@ export class AggregateSequentialIdentityResolver implements IdentityResolver {
           } as Identity,
         );
 
-      if (!aggregated || !aggregated.publicKey) {
+      if (!aggregated || !aggregated.address) {
         return null;
       }
 

@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/identity-sns",
-  "version": "0.0.3",
+  "version": "1.0.0-beta.3",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
@@ -18,10 +18,11 @@
     "build:cjs:watch": "concurrently \"tsc --project tsconfig.cjs.json --watch\"",
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\"",
-    "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\""
+    "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\"",
+    "test": "jest"
   },
   "peerDependencies": {
-    "@dialectlabs/sdk": "*",
+    "@dialectlabs/sdk": "1.x",
     "@solana/web3.js": "1.x"
   },
   "dependencies": {

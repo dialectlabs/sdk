@@ -11,36 +11,40 @@ import type {
   ThreadMessage,
   ThreadsGeneralSummary,
   ThreadSummary,
-} from '@messaging/messaging.interface';
-import { ThreadId, ThreadMemberScope } from '@messaging/messaging.interface';
-import { PublicKey } from '@solana/web3.js';
+} from '../../messaging/messaging.interface';
 import {
-  EncryptedTextSerde,
-  EncryptionProps,
-  TextSerde,
-  UnencryptedTextSerde,
-} from '@dialectlabs/web3';
+  ThreadId,
+  ThreadMemberScope,
+} from '../../messaging/messaging.interface';
+import type {
+  DataServiceDialectsApi,
+  DialectAccountDto,
+  DialectDto,
+} from '../../dialect-cloud-api/data-service-dialects-api';
+import { MemberScopeDto } from '../../dialect-cloud-api/data-service-dialects-api';
+import type { DataServiceApiClientError } from '../../dialect-cloud-api/data-service-api';
 import {
   IllegalStateError,
   ResourceNotFoundError,
-  ThreadAlreadyExistsError,
   UnsupportedOperationError,
-} from '@sdk/errors';
-import { Backend } from '@sdk/sdk.interface';
-import { requireAtLeastOneMember } from '@messaging/internal/commons';
-import { withErrorParsing } from '@data-service-api/data-service-errors';
-import type { DataServiceDialectsApi } from '@data-service-api/data-service-dialects-api';
+} from '../../sdk/errors';
+import type { EncryptionKeysProvider } from '../../encryption/encryption-keys-provider';
+import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
+import { ThreadAlreadyExistsError } from '../../messaging/errors';
+import type { AccountAddress } from '../../auth/auth.interface';
+import { Ed25519PublicKey } from '../../auth/ed25519/ed25519-public-key';
+import type { EncryptionProps, TextSerde } from '../../messaging/text-serde';
 import {
-  DialectAccountDto,
-  DialectDto,
-  MemberScopeDto,
-} from '@data-service-api/data-service-dialects-api';
-import type { DataServiceApiClientError } from '@data-service-api/data-service-api';
-import type { EncryptionKeysProvider } from '@encryption/internal/encryption-keys-provider';
+  EncryptedTextSerde,
+  UnencryptedTextSerde,
+} from '../../messaging/text-serde';
+import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/sdk.interface';
 
 export class DataServiceMessaging implements Messaging {
+  readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;
+
   constructor(
-    private readonly me: PublicKey,
+    private readonly me: AccountAddress,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
   ) {}
@@ -59,11 +63,11 @@ export class DataServiceMessaging implements Messaging {
         encrypted: command.encrypted,
         members: [
           {
-            publicKey: this.me.toBase58(),
+            publicKey: this.me,
             scopes: toDataServiceScopes(command.me.scopes),
           },
           ...otherMembers.map((e) => ({
-            publicKey: e.publicKey.toBase58(),
+            publicKey: e.address,
             scopes: toDataServiceScopes(e.scopes),
           })),
         ],
@@ -87,8 +91,57 @@ export class DataServiceMessaging implements Messaging {
     );
   }
 
+  async findSummary(
+    query: FindThreadByOtherMemberQuery,
+  ): Promise<ThreadSummary | null> {
+    try {
+      const dialectSummaryDto = await withErrorParsing(
+        this.dataServiceDialectsApi.findSummary({
+          memberPublicKeys: [
+            this.me.toString(),
+            ...query.otherMembers.map((it) => it.toString()),
+          ],
+        }),
+      );
+      const meMember = dialectSummaryDto.memberSummaries.find(
+        (it) => it.publicKey === this.me,
+      );
+      if (!meMember) {
+        throw new IllegalStateError(
+          `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
+            (it) => it.publicKey,
+          )} and provided member public key ${this.me.toString()}`,
+        );
+      }
+      const meMemberSummary: ThreadMemberSummary = {
+        address: meMember.publicKey,
+        hasUnreadMessages: meMember.hasUnreadMessages,
+        unreadMessagesCount: meMember.unreadMessagesCount,
+      };
+      return {
+        id: new ThreadId({
+          address: dialectSummaryDto.publicKey,
+          type: this.type,
+        }),
+        me: meMemberSummary,
+      };
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
+  }
+
+  async findSummaryAll(): Promise<ThreadsGeneralSummary> {
+    return await withErrorParsing(
+      this.dataServiceDialectsApi.findSummaryAll({
+        publicKey: this.me,
+      }),
+    );
+  }
+
   private checkEncryptionSupported() {
-    return this.encryptionKeysProvider.getFailFast();
+    return this.encryptionKeysProvider.getFailFast(this.me);
   }
 
   private async toDataServiceThread(dialectAccountDto: DialectAccountDto) {
@@ -99,21 +152,21 @@ export class DataServiceMessaging implements Messaging {
       throw new IllegalStateError(
         `Cannot resolve members from given list: ${dialect.members.map(
           (it) => it.publicKey,
-        )} and wallet public key ${this.me.toBase58()}`,
+        )} and wallet public key ${this.me.toString()}`,
       );
     }
     const { serde, canBeDecrypted } = await this.createTextSerde(dialect);
     const otherThreadMembers: ThreadMember[] = otherMembers.map((member) => ({
-      publicKey: new PublicKey(member.publicKey),
+      address: member.publicKey,
       scopes: fromDataServiceScopes(member.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     }));
     const otherMembersPks = Object.fromEntries(
-      otherThreadMembers.map((member) => [member.publicKey.toBase58(), member]),
+      otherThreadMembers.map((member) => [member.address.toString(), member]),
     );
-    
-    let thisThreadMember = {
-      publicKey: new PublicKey(meMember.publicKey),
+
+    const thisThreadMember: ThreadMember = {
+      address: meMember.publicKey,
       scopes: fromDataServiceScopes(meMember.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     };
@@ -123,17 +176,19 @@ export class DataServiceMessaging implements Messaging {
       lastThreadMessage = {
         text: serde.deserialize(new Uint8Array(lastMessage.text)),
         timestamp: new Date(lastMessage.timestamp),
-        author: lastMessage.owner === this.me.toBase58()
-          ? thisThreadMember
-          : otherMembersPks[lastMessage.owner]!,
-        deduplicationId: lastMessage.deduplicationId ,
-      }
-    };
+        author:
+          lastMessage.owner === this.me
+            ? thisThreadMember
+            : otherMembersPks[lastMessage.owner]!,
+        deduplicationId: lastMessage.deduplicationId,
+      };
+    }
+
     return new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
-      new PublicKey(publicKey),
+      publicKey,
       thisThreadMember,
       otherThreadMembers,
       otherMembersPks,
@@ -154,11 +209,12 @@ export class DataServiceMessaging implements Messaging {
         canBeDecrypted: true,
       };
     }
-    const diffieHellmanKeyPair =
-      await this.encryptionKeysProvider.getFailSafe();
+    const diffieHellmanKeyPair = await this.encryptionKeysProvider.getFailSafe(
+      this.me,
+    );
     const encryptionProps: EncryptionProps | null = diffieHellmanKeyPair && {
       diffieHellmanKeyPair,
-      ed25519PublicKey: this.me.toBytes(),
+      ed25519PublicKey: new Ed25519PublicKey(this.me).toBytes(),
     };
     if (!encryptionProps) {
       return {
@@ -169,7 +225,7 @@ export class DataServiceMessaging implements Messaging {
     return {
       serde: new EncryptedTextSerde(
         encryptionProps,
-        dialect.members.map((it) => new PublicKey(it.publicKey)),
+        dialect.members.map((it) => new Ed25519PublicKey(it.publicKey)),
       ),
       canBeDecrypted: true,
     };
@@ -187,7 +243,7 @@ export class DataServiceMessaging implements Messaging {
   private async findById(query: FindThreadByIdQuery) {
     try {
       return await withErrorParsing(
-        this.dataServiceDialectsApi.find(query.id.address.toBase58()),
+        this.dataServiceDialectsApi.find(query.id.address.toString()),
       );
     } catch (e) {
       const err = e as DataServiceApiClientError;
@@ -200,7 +256,7 @@ export class DataServiceMessaging implements Messaging {
     const otherMembers = requireAtLeastOneMember(query.otherMembers);
     const dialectAccountDtos = await withErrorParsing(
       this.dataServiceDialectsApi.findAll({
-        memberPublicKeys: otherMembers.map((member) => member.toBase58()),
+        memberPublicKeys: otherMembers.map((member) => member.toString()),
       }),
     );
     if (dialectAccountDtos.length > 1) {
@@ -208,66 +264,17 @@ export class DataServiceMessaging implements Messaging {
     }
     return dialectAccountDtos[0] ?? null;
   }
-
-  async findSummary(
-    query: FindThreadByOtherMemberQuery,
-  ): Promise<ThreadSummary | null> {
-    try {
-      const dialectSummaryDto = await withErrorParsing(
-        this.dataServiceDialectsApi.findSummary({
-          memberPublicKeys: [
-            this.me.toBase58(),
-            ...query.otherMembers.map((it) => it.toBase58()),
-          ],
-        }),
-      );
-      const meMember = dialectSummaryDto.memberSummaries.find(
-        (it) => it.publicKey === this.me.toBase58(),
-      );
-      if (!meMember) {
-        throw new IllegalStateError(
-          `Cannot resolve member from given list: ${dialectSummaryDto.memberSummaries.map(
-            (it) => it.publicKey,
-          )} and provided member public key ${this.me.toBase58()}`,
-        );
-      }
-      const meMemberSummary: ThreadMemberSummary = {
-        publicKey: new PublicKey(meMember.publicKey),
-        hasUnreadMessages: meMember.hasUnreadMessages,
-        unreadMessagesCount: meMember.unreadMessagesCount,
-      };
-      return {
-        id: new ThreadId({
-          address: new PublicKey(dialectSummaryDto.publicKey),
-          backend: Backend.DialectCloud,
-        }),
-        me: meMemberSummary,
-      };
-    } catch (e) {
-      const err = e as DataServiceApiClientError;
-      if (err instanceof ResourceNotFoundError) return null;
-      throw e;
-    }
-  }
-
-  async findSummaryAll(): Promise<ThreadsGeneralSummary> {
-    return await withErrorParsing(
-      this.dataServiceDialectsApi.findSummaryAll({
-        publicKey: this.me.toBase58(),
-      }),
-    );
-  }
 }
 
 export class DataServiceThread implements Thread {
-  readonly backend: Backend = Backend.DialectCloud;
+  readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;
   readonly id: ThreadId;
 
   constructor(
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly textSerde: TextSerde,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-    private readonly address: PublicKey,
+    private readonly address: AccountAddress,
     readonly me: ThreadMember,
     readonly otherMembers: ThreadMember[],
     private readonly otherMembersPks: Record<string, ThreadMember>,
@@ -277,20 +284,20 @@ export class DataServiceThread implements Thread {
     public lastMessage: ThreadMessage | null,
   ) {
     this.id = new ThreadId({
-      backend: this.backend,
+      type: this.type,
       address,
     });
   }
 
   async delete(): Promise<void> {
     await withErrorParsing(
-      this.dataServiceDialectsApi.delete(this.address.toBase58()),
+      this.dataServiceDialectsApi.delete(this.address.toString()),
     );
   }
 
   async messages(): Promise<ThreadMessage[]> {
     const { dialect } = await withErrorParsing(
-      this.dataServiceDialectsApi.find(this.address.toBase58()),
+      this.dataServiceDialectsApi.find(this.address.toString()),
     );
     this.updatedAt = new Date(dialect.lastMessageTimestamp);
     if (this.encryptionEnabledButCannotBeUsed()) {
@@ -298,7 +305,7 @@ export class DataServiceThread implements Thread {
     }
     return dialect.messages.map((it) => ({
       author:
-        it.owner === this.me.publicKey.toBase58()
+        it.owner === this.me.address.toString()
           ? this.me
           : this.otherMembersPks[it.owner]!,
       timestamp: new Date(it.timestamp),
@@ -307,16 +314,15 @@ export class DataServiceThread implements Thread {
     }));
   }
 
-  private encryptionEnabledButCannotBeUsed() {
-    return this.encryptionEnabled && !this.canBeDecrypted;
-  }
-
   async send(command: SendMessageCommand): Promise<void> {
     if (this.encryptionEnabledButCannotBeUsed()) {
-      await this.encryptionKeysProvider.getFailFast();
+      throw new UnsupportedOperationError(
+        'Encryption not supported',
+        'Please use encryption keys provider that supports encryption.',
+      );
     }
     await withErrorParsing(
-      this.dataServiceDialectsApi.sendMessage(this.address.toBase58(), {
+      this.dataServiceDialectsApi.sendMessage(this.address.toString(), {
         text: Array.from(this.textSerde.serialize(command.text)),
         deduplicationId: command.deduplicationId,
       }),
@@ -325,10 +331,14 @@ export class DataServiceThread implements Thread {
 
   async setLastReadMessageTime(time: Date): Promise<void> {
     await withErrorParsing(
-      this.dataServiceDialectsApi.patchMember(this.id.address.toBase58(), {
+      this.dataServiceDialectsApi.patchMember(this.id.address.toString(), {
         lastReadMessageTimestamp: time.getTime(),
       }),
     );
+  }
+
+  private encryptionEnabledButCannotBeUsed() {
+    return this.encryptionEnabled && !this.canBeDecrypted;
   }
 }
 
@@ -340,12 +350,20 @@ function toDataServiceScopes(scopes: ThreadMemberScope[]) {
   return scopes.map((it) => MemberScopeDto[it]);
 }
 
-function findMember(memberPk: PublicKey, dialect: DialectDto) {
-  return (
-    dialect.members.find((it) => memberPk.toBase58() === it.publicKey) ?? null
-  );
+function findMember(memberPk: AccountAddress, dialect: DialectDto) {
+  return dialect.members.find((it) => memberPk === it.publicKey) ?? null;
 }
 
-function findOtherMembers(memberPk: PublicKey, dialect: DialectDto) {
-  return dialect.members.filter((it) => memberPk.toBase58() !== it.publicKey);
+function findOtherMembers(memberPk: AccountAddress, dialect: DialectDto) {
+  return dialect.members.filter((it) => memberPk !== it.publicKey);
+}
+
+function requireAtLeastOneMember<T>(members: T[]) {
+  if (members.length < 1) {
+    throw new UnsupportedOperationError(
+      'Unsupported operation',
+      'At least one member should be specified',
+    );
+  }
+  return members;
 }

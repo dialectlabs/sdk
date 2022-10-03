@@ -1,43 +1,69 @@
+import type { TokenProvider } from '../auth/token-provider';
+import type { Wallets } from '../wallet/wallet.interface';
+import type { EncryptionKeysStore } from '../encryption/encryption-keys-store';
+import type { Messaging } from '../messaging/messaging.interface';
 import type {
-  ApiAvailability,
-  DialectWalletAdapter,
-} from '@wallet-adapter/dialect-wallet-adapter.interface';
-import type { PublicKey } from '@solana/web3.js';
-import type { Messaging } from '@messaging/messaging.interface';
-import type { TokenStore } from '@auth/token-store';
-import { DialectSdkFactory } from '@sdk/internal/sdk-factory';
-import type { EncryptionKeysStore } from '@encryption/encryption-keys-store';
-import type { Dapps } from '@dapp/dapp.interface';
-import type { Program } from '@project-serum/anchor';
-import type { Wallets } from '@wallet/wallet.interface';
-import type { TokenProvider } from '@auth/token-provider';
-import type { Duration } from 'luxon';
-import type { IdentityResolver } from '@identity/identity.interface';
+  DappAddresses,
+  DappMessages,
+  Dapps,
+} from '../dapp/dapp.interface';
+import type { IdentityResolver } from '../identity/identity.interface';
+import type { TokenStore } from '../auth/token-store';
+import { DialectSdkFactory } from '../internal/sdk/sdk-factory';
+import type { AuthenticationFacade } from '../auth/authentication-facade';
+import type { EncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+
+export const DIALECT_API_TYPE_DIALECT_CLOUD = 'dialect-cloud';
 
 export abstract class Dialect {
-  static sdk(config: ConfigProps): DialectSdk {
-    return new DialectSdkFactory(config).create();
+  static sdk<ChainSdk extends BlockchainSdk>(
+    configProps: ConfigProps,
+    blockchainSdkFactory: BlockchainSdkFactory<ChainSdk>,
+  ): DialectSdk<ChainSdk> {
+    return new DialectSdkFactory(configProps, blockchainSdkFactory).create();
   }
 }
 
-export interface DialectSdk {
-  readonly info: DialectSdkInfo;
-  readonly threads: Messaging;
-  readonly dapps: Dapps;
-  readonly wallet: Wallets;
-  readonly identity: IdentityResolver;
+export interface ConfigProps {
+  environment?: Environment;
+  dialectCloud?: DialectCloudConfigProps;
+  encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
+  identity?: IdentityConfigProps;
+}
+
+export interface BlockchainSdkFactory<ChainSdk extends BlockchainSdk> {
+  create(config: Config): ChainSdk;
+}
+
+export abstract class BlockchainSdk {
+  readonly type!: string;
+  readonly info!: BlockChainSdkInfo;
+  readonly authenticationFacade!: AuthenticationFacade;
+  readonly encryptionKeysProvider!: EncryptionKeysProvider;
+  readonly messaging?: Messaging;
+  readonly dappMessages?: DappMessages;
+  readonly dappAddresses?: DappAddresses;
+}
+
+export interface BlockChainSdkInfo {
+  supportsOnChainMessaging: boolean;
+}
+
+export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
+  readonly info!: DialectSdkInfo;
+  readonly config!: Config;
+  readonly threads!: Messaging;
+  readonly dapps!: Dapps;
+  readonly wallet!: Wallets;
+  readonly identity!: IdentityResolver;
+  readonly tokenProvider!: TokenProvider;
+  readonly encryptionKeysProvider!: EncryptionKeysProvider;
+  readonly blockchainSdk!: ChainSdk;
 }
 
 export interface DialectSdkInfo {
-  readonly apiAvailability: ApiAvailability;
-  readonly config: Config;
-  readonly wallet: DialectWalletAdapter;
-  readonly solana: SolanaInfo;
-  readonly tokenProvider: TokenProvider;
-}
-
-export interface SolanaInfo {
-  dialectProgram: Program;
+  supportsEndToEndEncryption: boolean;
+  hasValidAuthentication: boolean;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';
@@ -47,22 +73,6 @@ export type EncryptionKeysStoreType =
   | 'session-storage'
   | 'local-storage';
 
-export interface ConfigProps {
-  environment?: Environment;
-  wallet: DialectWalletAdapter;
-  solana?: SolanaConfigProps;
-  dialectCloud?: DialectCloudConfigProps;
-  encryptionKeysStore?: EncryptionKeysStoreType | EncryptionKeysStore;
-  backends?: Backend[];
-  identity?: IdentityConfigProps;
-}
-
-export interface SolanaConfigProps {
-  network?: SolanaNetwork;
-  dialectProgramAddress?: PublicKey;
-  rpcUrl?: string;
-}
-
 export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
@@ -70,17 +80,10 @@ export interface DialectCloudConfigProps {
   tokenLifetimeMinutes?: number;
 }
 
-export type SolanaNetwork = 'mainnet-beta' | 'devnet' | 'localnet';
-
 export type DialectCloudEnvironment =
   | 'production'
   | 'development'
   | 'local-development';
-
-export enum Backend {
-  Solana = 'SOLANA',
-  DialectCloud = 'DIALECT_CLOUD',
-}
 
 type IdentityResolveStrategy =
   | 'first-found'
@@ -94,18 +97,9 @@ export interface IdentityConfigProps {
 
 export interface Config extends ConfigProps {
   environment: Environment;
-  wallet: DialectWalletAdapter;
-  solana: SolanaConfig;
   dialectCloud: DialectCloudConfig;
   encryptionKeysStore: EncryptionKeysStore;
-  backends: Backend[];
   identity: IdentityConfig;
-}
-
-export interface SolanaConfig extends SolanaConfigProps {
-  network: SolanaNetwork;
-  dialectProgramAddress: PublicKey;
-  rpcUrl: string;
 }
 
 export interface DialectCloudConfig extends DialectCloudConfigProps {

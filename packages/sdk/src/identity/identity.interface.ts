@@ -1,8 +1,8 @@
-import type { PublicKey } from '@solana/web3.js';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Identity {
   type: string;
-  publicKey: PublicKey;
+  address: AccountAddress;
   name: string;
   additionals?: {
     avatarUrl?: string;
@@ -12,10 +12,10 @@ export interface Identity {
   };
 }
 
-export interface IdentityResolver {
-  resolve(publicKey: PublicKey): Promise<Identity | null>;
+export abstract class IdentityResolver {
+  abstract resolve(address: AccountAddress): Promise<Identity | null>;
 
-  resolveReverse(domainName: string): Promise<Identity | null>;
+  abstract resolveReverse(domainName: string): Promise<Identity | null>;
 
-  get type(): string;
+  abstract get type(): string;
 }

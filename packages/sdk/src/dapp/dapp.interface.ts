@@ -1,10 +1,10 @@
-import type { PublicKey } from '@solana/web3.js';
-import type { AddressType, DappAddress } from '@address/addresses.interface';
+import type { AddressType, DappAddress } from '../address/addresses.interface';
 import type {
   NotificationConfig,
   NotificationSubscription,
   NotificationType,
-} from '@wallet/wallet.interface';
+} from '../wallet/wallet.interface';
+import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
@@ -15,7 +15,7 @@ export interface Dapps {
 }
 
 export interface Dapp {
-  publicKey: PublicKey;
+  address: AccountAddress;
   name: string;
   description?: string;
   websiteUrl?: string;
@@ -72,12 +72,12 @@ export interface SendDappMessageCommandBase {
 export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
 
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
-  recipient: PublicKey;
+  recipient: AccountAddress;
 }
 
 export interface MulticastDappMessageCommand
   extends SendDappMessageCommandBase {
-  recipients: PublicKey[];
+  recipients: AccountAddress[];
 }
 
 export type SendDappMessageCommand =

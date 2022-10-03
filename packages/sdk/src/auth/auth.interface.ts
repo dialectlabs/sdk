@@ -1,27 +1,13 @@
-import { AuthTokensImpl } from '@auth/internal/token-utils';
-import type { PublicKey } from '@solana/web3.js';
-import type { Duration } from 'luxon';
-import { TokenStore } from '@auth/token-store';
-import { DEFAULT_TOKEN_LIFETIME, TokenProvider } from '@auth/token-provider';
+export type AccountAddress = string;
 
-export abstract class Auth {
-  static tokens: AuthTokens = new AuthTokensImpl();
+export abstract class PublicKey {
+  abstract toString(): string;
 
-  static createTokenProvider(
-    signer: TokenSigner,
-    ttl: Duration = DEFAULT_TOKEN_LIFETIME,
-    tokenStore: TokenStore = TokenStore.createInMemory(),
-  ): TokenProvider {
-    return TokenProvider.create(signer, ttl, tokenStore);
+  abstract toBytes(): Uint8Array;
+
+  equals(other: PublicKey) {
+    return this.toString() === other.toString();
   }
-}
-
-export abstract class AuthTokens {
-  abstract generate(signer: TokenSigner, ttl: Duration): Promise<Token>;
-
-  abstract parse(rawToken: string): Token;
-
-  abstract isValid(token: Token): boolean;
 }
 
 export interface Token {
@@ -34,15 +20,14 @@ export interface Token {
   base64Signature: string;
 }
 
-export type TokenHeaderAlg = 'ed25519' | 'solana-tx' | string;
-
 export interface TokenHeader {
-  alg?: TokenHeaderAlg;
+  alg: string;
   typ?: string;
 }
 
 export interface TokenBody {
   sub: string;
+  sub_jwk?: string;
   iat?: number;
   exp: number;
 }
@@ -52,9 +37,10 @@ export interface TokenSignerResult {
   signature: Uint8Array;
 }
 
-export interface TokenSigner {
-  alg: TokenHeaderAlg;
-  subject: PublicKey;
+export abstract class TokenSigner {
+  abstract alg: string;
+  abstract subject: AccountAddress;
+  abstract subjectPublicKey?: PublicKey;
 
-  sign(payload: Uint8Array): Promise<TokenSignerResult>;
+  abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }
