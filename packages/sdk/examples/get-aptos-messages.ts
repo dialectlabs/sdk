@@ -14,7 +14,6 @@ import {
   const thread_ = await createAptosThread(sdk, recipient);
   await sendMessage(thread_, 'gm');
   const threads = await getAptosThreads(sdk);
-  // console.log({ threads });
   if (threads.length < 1 || !threads[0]) {
     console.log(
       'You have no threads. Try creating a thread and sending a message first.',
