@@ -33,16 +33,22 @@ export interface BlockchainSdkFactory<ChainSdk extends BlockchainSdk> {
   create(config: Config): ChainSdk;
 }
 
-export interface BlockchainSdk {
-  readonly type: string;
-  readonly authenticationFacade: AuthenticationFacade;
-  readonly encryptionKeysProvider: EncryptionKeysProvider;
+export abstract class BlockchainSdk {
+  readonly type!: string;
+  readonly info!: BlockChainSdkInfo;
+  readonly authenticationFacade!: AuthenticationFacade;
+  readonly encryptionKeysProvider!: EncryptionKeysProvider;
   readonly messaging?: Messaging;
   readonly dappMessages?: DappMessages;
   readonly dappAddresses?: DappAddresses;
 }
 
+export interface BlockChainSdkInfo {
+  supportsOnChainMessaging: boolean;
+}
+
 export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
+  readonly info!: DialectSdkInfo;
   readonly config!: Config;
   readonly threads!: Messaging;
   readonly dapps!: Dapps;
@@ -51,6 +57,11 @@ export abstract class DialectSdk<ChainSdk extends BlockchainSdk> {
   readonly tokenProvider!: TokenProvider;
   readonly encryptionKeysProvider!: EncryptionKeysProvider;
   readonly blockchainSdk!: ChainSdk;
+}
+
+export interface DialectSdkInfo {
+  supportsEncryption: boolean;
+  hasValidAuthentication: boolean;
 }
 
 export type Environment = 'production' | 'development' | 'local-development';

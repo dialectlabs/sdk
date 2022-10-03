@@ -6,11 +6,14 @@ import type {
   ConfigProps,
   DialectCloudConfig,
   DialectSdk,
+  DialectSdkInfo,
   IdentityConfig,
 } from '../../sdk/sdk.interface';
 import type { IdentityResolver } from '../../identity/identity.interface';
 import {
+  CachedTokenProvider,
   DEFAULT_TOKEN_LIFETIME,
+  DefaultTokenProvider,
   TokenProvider,
 } from '../../auth/token-provider';
 import type { Wallets } from '../../wallet/wallet.interface';
@@ -50,10 +53,17 @@ export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
     readonly dapps: Dapps,
     readonly wallet: Wallets,
     readonly identity: IdentityResolver,
-    readonly tokenProvider: TokenProvider,
+    readonly tokenProvider: CachedTokenProvider,
     readonly encryptionKeysProvider: EncryptionKeysProvider,
     readonly blockchainSdk: ChainSdk,
   ) {}
+
+  get info(): DialectSdkInfo {
+    return {
+      supportsEncryption: this.encryptionKeysProvider.isAvailable(),
+      hasValidAuthentication: this.tokenProvider.hasCachedToken(),
+    };
+  }
 }
 
 export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
@@ -110,14 +120,20 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
 
   private initializeTokenProvider(
     config: Config,
-    blockchainSdk: BlockchainSdk,
-  ) {
-    return TokenProvider.create(
-      blockchainSdk.authenticationFacade,
+    { authenticationFacade }: BlockchainSdk,
+  ): CachedTokenProvider {
+    const defaultTokenProvider = new DefaultTokenProvider(
       Duration.fromObject({
         minutes: config.dialectCloud.tokenLifetimeMinutes,
       }),
+      authenticationFacade.tokenGenerator,
+    );
+    return new CachedTokenProvider(
+      defaultTokenProvider,
       config.dialectCloud.tokenStore,
+      authenticationFacade.authenticator.parser,
+      authenticationFacade.authenticator.validator,
+      authenticationFacade.subject(),
     );
   }
 

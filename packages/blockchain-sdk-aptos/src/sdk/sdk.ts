@@ -65,6 +65,9 @@ Aptos settings:
       encryptionKeysProvider,
       authenticationFacade,
       config: aptosConfig,
+      info: {
+        supportsOnChainMessaging: false,
+      },
     };
   }
 

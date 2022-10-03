@@ -32,7 +32,7 @@ export abstract class TokenProvider {
   abstract get(): Promise<Token>;
 }
 
-class DefaultTokenProvider extends TokenProvider {
+export class DefaultTokenProvider extends TokenProvider {
   constructor(
     private readonly ttl: Duration,
     private readonly tokenGenerator: TokenGenerator,
@@ -50,7 +50,7 @@ class DefaultTokenProvider extends TokenProvider {
   }
 }
 
-class CachedTokenProvider extends TokenProvider {
+export class CachedTokenProvider extends TokenProvider {
   private readonly delegateGetPromises: Record<string, Promise<Token>> = {};
 
   constructor(
@@ -64,7 +64,7 @@ class CachedTokenProvider extends TokenProvider {
   }
 
   async get(): Promise<Token> {
-    const existingToken = this.getToken();
+    const existingToken = this.getCachedToken();
     const subject = this.subject.toString();
     if (existingToken && this.tokenValidator.isValid(existingToken)) {
       delete this.delegateGetPromises[subject];
@@ -88,7 +88,11 @@ class CachedTokenProvider extends TokenProvider {
     return delegatePromise;
   }
 
-  private getToken(): Token | null {
+  hasCachedToken() {
+    return Boolean(this.getCachedToken());
+  }
+
+  private getCachedToken(): Token | null {
     const rawToken = this.tokenStore.get(this.subject);
     if (!rawToken) {
       return null;

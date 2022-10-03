@@ -123,6 +123,9 @@ Solana settings:
       config: solanaConfig,
       dialectProgram,
       ...(solanaConfig.enableOnChainMessaging && onChainMessagingFactory()),
+      info: {
+        supportsOnChainMessaging: solanaConfig.enableOnChainMessaging,
+      },
     };
   }
 

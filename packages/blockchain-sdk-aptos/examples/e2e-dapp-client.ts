@@ -83,12 +83,16 @@ async function setupUserSubscription(): Promise<Thread> {
 
   // Next, we use that address to subscribe for notifications from a dapp.
   const dappAddress: DappAddress = await getOrCreateSubscription(address.id);
-  console.log(`Subscriber is subscribing to dapp address: ${JSON.stringify(dappAddress)}`);
+  console.log(
+    `Subscriber is subscribing to dapp address: ${JSON.stringify(dappAddress)}`,
+  );
 
   // Lastly, we create the notifications thread, which is just a one-way
   // messaging thread between the dapp and the subscribing user.
   const notificationsThread: Thread = await getOrCreateNotificationsThread();
-  console.log(`Notifications thread created with id: ${notificationsThread.id}`);
+  console.log(
+    `Notifications thread created with id: ${notificationsThread.id}`,
+  );
   return notificationsThread;
 }
 
@@ -111,13 +115,15 @@ async function getOrCreateAddress(): Promise<Address> {
   return address;
 }
 
-async function getOrCreateSubscription(addressId: string): Promise<DappAddress> {
+async function getOrCreateSubscription(
+  addressId: string,
+): Promise<DappAddress> {
   // Subscribe for notifications from a dapp using an address (from function above)
 
   // Fetch all subscriptions this user's address already has
   const subscriptions: DappAddress[] = await sdk.wallet.dappAddresses.findAll();
 
-  // Check if any subscriptions match this address and are subscribed to the 
+  // Check if any subscriptions match this address and are subscribed to the
   // "dapp" from above
   // NOTE: DappAddress is effectively a Subscription, and will be renamed to this.
   // For a given Dapp, and a given user's Address, a DappAddress is the entity that
@@ -126,7 +132,6 @@ async function getOrCreateSubscription(addressId: string): Promise<DappAddress> 
   const subscription: DappAddress | null =
     subscriptions.find((it) => it.address.id === addressId) ?? null;
 
-  
   if (!subscription) {
     console.log(`Dapp address not found, creating...`);
     return sdk.wallet.dappAddresses.create({
