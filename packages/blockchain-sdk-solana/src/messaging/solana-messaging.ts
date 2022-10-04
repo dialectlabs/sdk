@@ -242,7 +242,7 @@ export class SolanaThread implements Thread {
     this.dialectAccount = await withErrorParsing(
       getDialect(this.program, this.dialectAccount.publicKey, encryptionProps),
     );
-    let threadMessages = this.dialectAccount.dialect.messages.map((it) => ({
+    const threadMessages = this.dialectAccount.dialect.messages.map((it) => ({
       author: it.owner.equals(new SolanaPublicKey(this.me.address))
         ? this.me
         : this.otherMember,

@@ -135,7 +135,7 @@ Solana settings:
     const wallet = new DialectSolanaWalletAdapterWrapper(
       this.solanaConfigProps.wallet,
     );
-    let base: SolanaConfig = {
+    const base: SolanaConfig = {
       wallet,
       network: 'mainnet-beta',
       dialectProgramAddress: new PublicKey(programs.mainnet.programAddress),

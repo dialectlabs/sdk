@@ -170,7 +170,7 @@ export class DataServiceMessaging implements Messaging {
       scopes: fromDataServiceScopes(meMember.scopes),
       // lastReadMessageTimestamp: new Date(), // TODO: implement
     };
-    let lastMessage = dialect.messages[0] ?? null;
+    const lastMessage = dialect.messages[0] ?? null;
     let lastThreadMessage: ThreadMessage | null = null;
     if (lastMessage != null) {
       lastThreadMessage = {

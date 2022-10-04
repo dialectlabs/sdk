@@ -8,7 +8,8 @@ export class Ed25519PublicKey extends PublicKey {
 
   constructor(value: Ed25519PublicKeyInitData) {
     super();
-    if (typeof value === 'string' && value.startsWith('0x')) { // oof
+    if (typeof value === 'string' && value.startsWith('0x')) {
+      // oof
       const enc = new TextEncoder();
       this.value = enc.encode(value);
     } else if (typeof value === 'string') {
