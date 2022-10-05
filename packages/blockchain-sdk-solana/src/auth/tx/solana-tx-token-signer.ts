@@ -40,9 +40,7 @@ export class DialectWalletAdapterSolanaTxTokenSigner extends SolanaTxTokenSigner
 
   async sign(payload: Uint8Array): Promise<TokenSignerResult> {
     const tx = new Transaction();
-    const subjectPublicKey = new SolanaPublicKey(
-      this.subjectPublicKey.toString(),
-    );
+    const subjectPublicKey = new SolanaPublicKey(this.subject);
     tx.add(
       new TransactionInstruction({
         keys: [
