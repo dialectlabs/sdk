@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/identity-dialect-dapps",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
