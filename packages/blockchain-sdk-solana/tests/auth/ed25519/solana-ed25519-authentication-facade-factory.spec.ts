@@ -105,7 +105,22 @@ describe('solana ed25519 token tests', () => {
     expect(isParsedTokenValid).toBeFalsy();
   });
 
-  test('subject and subject public must be same if defined', async () => {
+  test('subject and subject public are same', async () => {
+    // when
+    const signer = new DialectWalletAdapterSolanaEd25519TokenSigner(wallet);
+    authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
+      signer,
+    ).get();
+    // when
+    const token = await authenticationFacade.generateToken(
+      Duration.fromObject({ seconds: 100 }),
+    );
+    // then
+    expect(token.body.sub).toBe(wallet.publicKey.toString());
+    expect(token.body.sub_jwk).toBe(wallet.publicKey.toString());
+  });
+
+  test('subject and subject public cannot be different if defined', async () => {
     // when
     const subjectPublicKey = new Ed25519PublicKey(
       generateEd25519Keypair().publicKey,
