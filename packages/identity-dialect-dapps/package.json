@@ -14,7 +14,6 @@
   "scripts": {
     "clean": "rm -rf lib",
     "generate-version": "node ./prebuild.js",
-    "postinstall": "chmod +x ./postinstall.sh && ./postinstall.sh",
     "build": "yarn generate-version && yarn clean && yarn build:cjs; yarn build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:cjs:watch": "concurrently \"tsc --project tsconfig.cjs.json --watch\"",
