@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.0-beta.6] - 2022-10-03
+
+- fix(IN-84) users are unable to auth with ledger
+
 ## [1.0.0-beta.5] - 2022-10-03
 
 - fix: eliminate cyclic dependencies
