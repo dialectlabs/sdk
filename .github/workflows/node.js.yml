@@ -5,9 +5,10 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "**" ]
   pull_request:
     branches: [ "main" ]
+    types: [ opened, synchronize ]
 
 jobs:
   build:
@@ -28,4 +29,6 @@ jobs:
         cache: 'yarn'
     - run: yarn --frozen-lockfile
     - run: yarn build:all
+    - run: yarn lint:all
+
 
