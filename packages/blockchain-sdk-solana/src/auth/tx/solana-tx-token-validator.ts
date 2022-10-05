@@ -17,6 +17,9 @@ export class SolanaTxTokenValidator extends TokenValidator {
   }
 
   override performExtraValidation(token: Token): boolean {
+    if (!token.body.sub_jwk) {
+      return true;
+    }
     return token.body.sub === token.body.sub_jwk;
   }
 }

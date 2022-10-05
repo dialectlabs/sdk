@@ -1,5 +1,8 @@
 import { DialectSolanaWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
-import { NodeDialectSolanaWalletAdapter } from '../../../src';
+import {
+  NodeDialectSolanaWalletAdapter,
+  SolanaEd25519AuthenticationFacadeFactory,
+} from '../../../src';
 import {
   DialectWalletAdapterSolanaTxTokenSigner,
   SolanaTxTokenSigner,
@@ -12,6 +15,7 @@ import {
   AccountAddress,
   Ed25519PublicKey,
   generateEd25519Keypair,
+  PublicKey,
 } from '@dialectlabs/sdk';
 
 describe('solana-tx token tests', () => {
@@ -54,15 +58,46 @@ describe('solana-tx token tests', () => {
     expect(isParsedTokenValid).toBeFalsy();
   });
 
+  test('subject and subject public are same', async () => {
+    // when
+    const signer = new DialectWalletAdapterSolanaTxTokenSigner(wallet);
+    authenticationFacade = new SolanaTxAuthenticationFacadeFactory(
+      signer,
+    ).get();
+    // when
+    const token = await authenticationFacade.generateToken(
+      Duration.fromObject({ seconds: 100 }),
+    );
+    // then
+    expect(token.body.sub).toBe(wallet.publicKey.toString());
+    expect(token.body.sub_jwk).toBe(wallet.publicKey.toString());
+  });
+
   test('subject and subject public key may not be different', async () => {
     // when
-    const signerKeypair = generateEd25519Keypair();
     const subjectPublicKey = new Ed25519PublicKey(
       generateEd25519Keypair().publicKey,
-    ).toString();
+    );
     const signer = new TestDialectWalletAdapterSolanaTxTokenSigner(
       wallet,
-      subjectPublicKey,
+      subjectPublicKey.toString(),
+      wallet.publicKey,
+    );
+    authenticationFacade = new SolanaTxAuthenticationFacadeFactory(
+      signer,
+    ).get();
+    // when / then
+    await expect(
+      authenticationFacade.generateToken(Duration.fromObject({ seconds: 100 })),
+    ).rejects.toThrowError();
+  });
+
+  test('subject public key is optional', async () => {
+    // when
+    const signer = new TestDialectWalletAdapterSolanaTxTokenSigner(
+      wallet,
+      wallet.publicKey.toBase58(),
+      undefined!,
     );
     authenticationFacade = new SolanaTxAuthenticationFacadeFactory(
       signer,
@@ -72,13 +107,13 @@ describe('solana-tx token tests', () => {
       Duration.fromObject({ seconds: 100 }),
     );
     // then
-    expect(token.body.sub).toBe(subjectPublicKey.toString());
-    expect(token.body.sub_jwk).toBe(wallet.publicKey.toString());
+    expect(token.body.sub).toBe(wallet.publicKey.toString());
+    expect(token.body.sub_jwk).toBeUndefined();
     const isValid = authenticationFacade.isValid(token);
-    expect(isValid).toBeFalsy();
+    expect(isValid).toBeTruthy();
     const parsedToken = authenticationFacade.parseToken(token.rawValue);
     const isParsedTokenValid = authenticationFacade.isValid(parsedToken);
-    expect(isParsedTokenValid).toBeFalsy();
+    expect(isParsedTokenValid).toBeTruthy();
   });
 });
 
@@ -86,11 +121,16 @@ class TestDialectWalletAdapterSolanaTxTokenSigner extends DialectWalletAdapterSo
   constructor(
     wallet: DialectSolanaWalletAdapterWrapper,
     private readonly _subject: AccountAddress,
+    private readonly _subjectPublicKey: PublicKey,
   ) {
     super(wallet);
   }
 
   override get subject(): AccountAddress {
     return this._subject;
+  }
+
+  override get subjectPublicKey(): PublicKey {
+    return this._subjectPublicKey;
   }
 }
