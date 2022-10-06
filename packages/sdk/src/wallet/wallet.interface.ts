@@ -4,6 +4,7 @@ import type {
   DappAddress,
 } from '../address/addresses.interface';
 import type { AccountAddress } from '../auth/auth.interface';
+import type { ThreadsGeneralSummary } from '../messaging/messaging.interface';
 
 export interface Wallets {
   readonly address: AccountAddress;
@@ -97,8 +98,22 @@ export interface DeleteDappAddressCommand {
   readonly dappAddressId: string;
 }
 
+export interface FindDappMessagesSummaryQuery {
+  readonly dappVerified?: boolean;
+}
+
+export interface MarkDappMessagesAsReadCommand {
+  readonly dappVerified?: boolean;
+}
+
 export interface WalletMessages {
   findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]>;
+  dappMessagesSummary(
+    query?: FindDappMessagesSummaryQuery,
+  ): Promise<ThreadsGeneralSummary>;
+  markAllDappMessagesAsRead(
+    command?: MarkDappMessagesAsReadCommand,
+  ): Promise<void>;
 }
 
 export interface DappMessage {
@@ -110,6 +125,10 @@ export interface DappMessage {
 export interface FindDappMessageQuery {
   readonly skip?: number;
   readonly take?: number;
+  readonly dappVerified?: boolean;
+}
+
+export interface MarkDappMessagesAsReadCommand {
   readonly dappVerified?: boolean;
 }
 
