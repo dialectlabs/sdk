@@ -27,10 +27,6 @@ export interface FindDappMessagesSummaryQueryDto {
   readonly dappVerified?: boolean;
 }
 
-export interface MarkDappMessagesAsReadCommandDto {
-  readonly dappVerified?: boolean;
-}
-
 export interface FindWalletMessagesQueryDto {
   readonly skip?: number;
   readonly take?: number;
