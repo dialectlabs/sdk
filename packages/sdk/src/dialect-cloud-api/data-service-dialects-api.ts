@@ -25,10 +25,12 @@ export interface DataServiceDialectsApi {
 
   findSummaryAll(query: FindDialectsSummaryDto): Promise<DialectsSummaryDto>;
 
-  patchMember(
-    dialectPublicKey: string,
-    command: PatchMemberCommandDto,
-  ): Promise<MemberDto>;
+  markAsRead(dialectPublicKey: string): Promise<void>;
+
+  // patchMember(
+  //   dialectPublicKey: string,
+  //   command: PatchMemberCommandDto,
+  // ): Promise<MemberDto>;
 }
 
 export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
@@ -37,16 +39,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async patchMember(
-    dialectPublicKey: string,
-    command: PatchMemberCommandDto,
-  ): Promise<MemberDto> {
+  async markAsRead(dialectPublicKey: string): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .patch<MemberDto>(
-          `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/members/me`,
-          command,
+        .post<void>(
+          `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/markAsRead`,
+          {},
           {
             headers: createHeaders(token),
           },
@@ -54,6 +53,24 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
         .then((it) => it.data),
     );
   }
+
+  // async patchMember(
+  //   dialectPublicKey: string,
+  //   command: PatchMemberCommandDto,
+  // ): Promise<MemberDto> {
+  //   const token = await this.tokenProvider.get();
+  //   return withReThrowingDataServiceError(
+  //     axios
+  //       .patch<MemberDto>(
+  //         `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/members/me`,
+  //         command,
+  //         {
+  //           headers: createHeaders(token),
+  //         },
+  //       )
+  //       .then((it) => it.data),
+  //   );
+  // }
 
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();

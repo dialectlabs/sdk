@@ -14,7 +14,9 @@ import type {
   FindDappAddressesQuery,
   FindDappAddressQuery,
   FindDappMessageQuery,
+  FindDappMessagesSummaryQuery,
   FindNotificationSubscriptionQuery,
+  MarkDappMessagesAsReadCommand,
   PartialUpdateAddressCommand,
   PartialUpdateDappAddressCommand,
   ResendVerificationCodeCommand,
@@ -45,6 +47,7 @@ import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 import type { AccountAddress } from '../../auth/auth.interface';
 import type { TextSerde } from '../../messaging/text-serde';
 import { UnencryptedTextSerde } from '../../messaging/text-serde';
+import type { ThreadsGeneralSummary } from '../../messaging/messaging.interface';
 
 export class DataServiceWallets implements Wallets {
   addresses: WalletAddresses;
@@ -206,6 +209,29 @@ export class DataServiceWalletMessages implements WalletMessages {
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
     }));
+  }
+
+  async dappMessagesSummary(
+    query?: FindDappMessagesSummaryQuery,
+  ): Promise<ThreadsGeneralSummary> {
+    const summaryDto = await withErrorParsing(
+      this.api.dappMessagesSummary({
+        dappVerified: query?.dappVerified,
+      }),
+    );
+    return {
+      unreadMessagesCount: summaryDto.unreadMessagesCount,
+    };
+  }
+
+  async markAllDappMessagesAsRead(
+    command?: MarkDappMessagesAsReadCommand,
+  ): Promise<void> {
+    await withErrorParsing(
+      this.api.markAllDappMessagesAsRead({
+        dappVerified: command?.dappVerified,
+      }),
+    );
   }
 }
 
