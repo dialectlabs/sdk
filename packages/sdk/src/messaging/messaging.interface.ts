@@ -108,7 +108,7 @@ export interface Thread {
 
   delete(): Promise<void>;
 
-  setLastReadMessageTime(time: Date): Promise<void>;
+  markAsRead(): Promise<void>;
 }
 
 export interface ThreadMember {

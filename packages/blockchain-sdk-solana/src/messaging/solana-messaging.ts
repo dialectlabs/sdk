@@ -270,7 +270,7 @@ export class SolanaThread implements Thread {
     );
   }
 
-  setLastReadMessageTime(time: Date): Promise<void> {
+  markAsRead(): Promise<void> {
     return Promise.resolve(undefined);
   }
 }

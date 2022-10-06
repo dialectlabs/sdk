@@ -303,7 +303,7 @@ export class DataServiceThread implements Thread {
     if (this.encryptionEnabledButCannotBeUsed()) {
       return [];
     }
-    return dialect.messages.map((it) => ({
+    const messages = dialect.messages.map((it) => ({
       author:
         it.owner === this.me.address.toString()
           ? this.me
@@ -312,6 +312,8 @@ export class DataServiceThread implements Thread {
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
       deduplicationId: it.deduplicationId,
     }));
+    this.lastMessage = messages[0] ?? null;
+    return messages;
   }
 
   async send(command: SendMessageCommand): Promise<void> {
@@ -329,11 +331,9 @@ export class DataServiceThread implements Thread {
     );
   }
 
-  async setLastReadMessageTime(time: Date): Promise<void> {
+  async markAsRead(): Promise<void> {
     await withErrorParsing(
-      this.dataServiceDialectsApi.patchMember(this.id.address.toString(), {
-        lastReadMessageTimestamp: time.getTime(),
-      }),
+      this.dataServiceDialectsApi.markAsRead(this.id.address.toString()),
     );
   }
 
