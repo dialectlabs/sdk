@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.1.0] - 2022-10-05
+
+- feature: add read/unread messages api for dapp notification feed
+
 ## [1.0.0] - 2022-10-05
 
 - stable release
