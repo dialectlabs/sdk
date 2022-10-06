@@ -102,10 +102,6 @@ export interface FindDappMessagesSummaryQuery {
   readonly dappVerified?: boolean;
 }
 
-export interface MarkDappMessagesAsReadCommand {
-  readonly dappVerified?: boolean;
-}
-
 export interface WalletMessages {
   findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]>;
   dappMessagesSummary(
