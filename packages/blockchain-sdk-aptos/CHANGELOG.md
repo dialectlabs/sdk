@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.2] - 2022-10-11
+
+- fix: unpadded public key hex support fix and add utils test
+
 ## [1.0.1] - 2022-10-11
 
 - fix: unpadded public key hex support
