@@ -2,6 +2,7 @@ import { sign } from 'tweetnacl';
 
 import { APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG } from './aptos-ed25519-payload-token-signer';
 import { getAptosAccountAddress } from '../../utils/aptos-account-utils';
+import { getPublicKeyWithPadding } from '../../utils/aptos-public-key-utils';
 import {
   AuthenticationError,
   Token,
@@ -29,7 +30,7 @@ export class AptosEd25519PayloadTokenValidator extends TokenValidator {
     const address = getAptosAccountAddress(
       HexString.fromUint8Array(this.getPublicKey(token)),
     ).toString();
-    return token.body.sub === address;
+    return BigInt(token.body.sub) === BigInt(address);
   }
 
   private getPublicKey(token: Token): Uint8Array {
@@ -39,6 +40,7 @@ export class AptosEd25519PayloadTokenValidator extends TokenValidator {
         'Cannot validate token without sub_jwk claim',
       );
     }
-    return HexString.ensure(signerPublicKey).toUint8Array();
+    const hexPubKey = HexString.ensure(signerPublicKey);
+    return getPublicKeyWithPadding(hexPubKey).toUint8Array();
   }
 }

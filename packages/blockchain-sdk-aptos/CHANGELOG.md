@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.1] - 2022-10-11
+
+- fix: unpadded public key hex support
+
 ## [1.0.0] - 2022-10-05
 
 - stable release

@@ -9,6 +9,7 @@ import {
   TokenValidator,
 } from '@dialectlabs/sdk';
 import { HexString } from 'aptos';
+import { getPublicKeyWithPadding } from '../../utils/aptos-public-key-utils';
 
 export class AptosEd25519TokenValidator extends TokenValidator {
   canValidate(tokenHeader: TokenHeader): boolean {
@@ -29,7 +30,7 @@ export class AptosEd25519TokenValidator extends TokenValidator {
     const address = getAptosAccountAddress(
       HexString.fromUint8Array(this.getPublicKey(token)),
     ).toString();
-    return token.body.sub === address;
+    return BigInt(token.body.sub) === BigInt(address);
   }
 
   private getPublicKey(token: Token): Uint8Array {
@@ -39,6 +40,7 @@ export class AptosEd25519TokenValidator extends TokenValidator {
         'Cannot validate token without sub_jwk claim',
       );
     }
-    return HexString.ensure(signerPublicKey).toUint8Array();
+    const hexPubKey = HexString.ensure(signerPublicKey);
+    return getPublicKeyWithPadding(hexPubKey).toUint8Array();
   }
 }
