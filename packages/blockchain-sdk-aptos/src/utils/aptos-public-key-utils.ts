@@ -6,7 +6,6 @@ export function getPublicKeyWithPadding(pubKey: HexString): HexString {
   if (pubKeyStr.length === pubKeyRequiredSize) {
     return pubKey;
   }
-  pubKeyStr = pubKey.toShortString().slice(2);
-  pubKeyStr.padStart(pubKeyRequiredSize, '0');
+  pubKeyStr = pubKey.toShortString().slice(2).padStart(pubKeyRequiredSize, '0');
   return HexString.ensure(pubKeyStr);
 }
