@@ -2,6 +2,7 @@ import { sign } from 'tweetnacl';
 
 import { APTOS_ED25519_PAYLOAD_TOKEN_SIGNER_ALG } from './aptos-ed25519-payload-token-signer';
 import { getAptosAccountAddress } from '../../utils/aptos-account-utils';
+import { getPublicKeyWithPadding } from '../../utils/aptos-public-key-utils';
 import {
   AuthenticationError,
   Token,
@@ -40,18 +41,6 @@ export class AptosEd25519PayloadTokenValidator extends TokenValidator {
       );
     }
     const hexPubKey = HexString.ensure(signerPublicKey);
-    return this.getPublicKeyWithPadding(hexPubKey).toUint8Array();
-  }
-
-  private getPublicKeyWithPadding(pubKey: HexString): HexString {
-    const pubKeyRequiredSize = 64;
-    let pubKeyStr = pubKey.noPrefix();
-    if (pubKeyStr.length === pubKeyRequiredSize) {
-      return pubKey;
-    }
-    while (pubKeyStr.length < pubKeyRequiredSize) {
-      pubKeyStr = '0' + pubKeyStr;
-    }
-    return HexString.ensure(pubKeyStr);
+    return getPublicKeyWithPadding(hexPubKey).toUint8Array();
   }
 }

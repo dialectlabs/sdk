@@ -9,6 +9,7 @@ import {
   TokenValidator,
 } from '@dialectlabs/sdk';
 import { HexString } from 'aptos';
+import { getPublicKeyWithPadding } from '../../utils/aptos-public-key-utils';
 
 export class AptosEd25519TokenValidator extends TokenValidator {
   canValidate(tokenHeader: TokenHeader): boolean {
@@ -40,18 +41,6 @@ export class AptosEd25519TokenValidator extends TokenValidator {
       );
     }
     const hexPubKey = HexString.ensure(signerPublicKey);
-    return this.getPublicKeyWithPadding(hexPubKey).toUint8Array();
-  }
-
-  private getPublicKeyWithPadding(pubKey: HexString): HexString {
-    const pubKeyRequiredSize = 64;
-    let pubKeyStr = pubKey.noPrefix();
-    if (pubKeyStr.length === pubKeyRequiredSize) {
-      return pubKey;
-    }
-    while (pubKeyStr.length < pubKeyRequiredSize) {
-      pubKeyStr = '0' + pubKeyStr;
-    }
-    return HexString.ensure(pubKeyStr);
+    return getPublicKeyWithPadding(hexPubKey).toUint8Array();
   }
 }
