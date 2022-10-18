@@ -1,4 +1,5 @@
 import type {
+  AddMembersCommand,
   CreateThreadCommand,
   FindThreadByIdQuery,
   FindThreadByOtherMemberQuery,
@@ -196,6 +197,7 @@ export class DataServiceMessaging implements Messaging {
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
       lastThreadMessage,
+      dialect.groupName,
     );
   }
 
@@ -282,6 +284,7 @@ export class DataServiceThread implements Thread {
     readonly canBeDecrypted: boolean,
     public updatedAt: Date,
     public lastMessage: ThreadMessage | null,
+    public name?: string,
   ) {
     this.id = new ThreadId({
       type: this.type,
@@ -334,6 +337,35 @@ export class DataServiceThread implements Thread {
   async markAsRead(): Promise<void> {
     await withErrorParsing(
       this.dataServiceDialectsApi.markAsRead(this.id.address.toString()),
+    );
+  }
+
+  //TODO add checks
+  async addMembers(command: AddMembersCommand): Promise<void> {
+    await withErrorParsing(
+      this.dataServiceDialectsApi.addMembers(this.id.address.toString(), {
+        members: command.members.map((e) => ({
+          publicKey: e.address,
+          scopes: toDataServiceScopes(e.scopes),
+        })),
+      }),
+    );
+  }
+
+  async removeMember(address: AccountAddress): Promise<void> {
+    await withErrorParsing(
+      this.dataServiceDialectsApi.removeMember(
+        this.id.address.toString(),
+        address,
+      ),
+    );
+  }
+
+  async rename(name: string): Promise<void> {
+    await withErrorParsing(
+      this.dataServiceDialectsApi.patch(this.id.address.toString(), {
+        groupName: name,
+      }),
     );
   }
 

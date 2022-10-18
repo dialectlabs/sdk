@@ -1,4 +1,6 @@
 import type {
+  AccountAddress,
+  AddMembersCommand,
   CreateThreadCommand,
   DiffeHellmanKeys,
   EncryptionKeysProvider,
@@ -271,6 +273,18 @@ export class SolanaThread implements Thread {
   }
 
   markAsRead(): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  addMembers(command: AddMembersCommand): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  removeMember(address: AccountAddress): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  rename(name: string): Promise<void> {
     return Promise.resolve(undefined);
   }
 }
