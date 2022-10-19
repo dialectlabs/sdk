@@ -30,7 +30,7 @@ export class NodeDialectAptosWalletAdapter
       );
       return new NodeDialectAptosWalletAdapter(account);
     }
-    if (process.env.DIALECT_SDK_CREDENTIALS) {
+    else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKeyRaw = process.env.DIALECT_SDK_CREDENTIALS;
       const privateKey = new Uint8Array(JSON.parse(privateKeyRaw as string));
       const account = new AptosAccount(privateKey);
@@ -41,13 +41,11 @@ export class NodeDialectAptosWalletAdapter
       );
       return new NodeDialectAptosWalletAdapter(account);
     }
-    const account = new AptosAccount();
-    console.log(
-      `Initializing ${
+    else {
+      throw new Error(`Error initializing ${
         NodeDialectAptosWalletAdapter.name
-      } using generated ${account.pubKey()} public key and ${account.address()} address.`,
-    );
-    return new NodeDialectAptosWalletAdapter(account);
+      }: SDK credential must be provided.`);
+    }
   }
 
   async signMessage(message: string): Promise<string> {

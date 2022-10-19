@@ -21,7 +21,7 @@ export class NodeDialectSolanaWalletAdapter
       );
       return new NodeDialectSolanaWalletAdapter(keypair);
     }
-    if (process.env.DIALECT_SDK_CREDENTIALS) {
+    else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKey = process.env.DIALECT_SDK_CREDENTIALS;
       const keypair: Keypair = Keypair.fromSecretKey(
         new Uint8Array(JSON.parse(privateKey as string)),
@@ -33,13 +33,11 @@ export class NodeDialectSolanaWalletAdapter
       );
       return new NodeDialectSolanaWalletAdapter(keypair);
     }
-    const generated = Keypair.generate();
-    console.log(
-      `Initializing ${
+    else {
+      throw new Error(`Error initializing ${
         NodeDialectSolanaWalletAdapter.name
-      } using generated ${generated.publicKey.toBase58()} key.`,
-    );
-    return new NodeDialectSolanaWalletAdapter(generated);
+      }: SDK credential must be provided.`);
+    }
   }
 
   async signTransaction(tx: Transaction): Promise<Transaction> {
