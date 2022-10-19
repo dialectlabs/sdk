@@ -154,8 +154,7 @@ describe('Wallet messages read messages', () => {
     // when
     const user2Thread = await user2.threads.find(user1Thread);
     const messages = await user2Thread!.messages();
-    const theOnlyMessage = messages[0]!;
-    await user2Thread!.setLastReadMessageTime(theOnlyMessage.timestamp);
+    await user2Thread!.markAsRead();
     const user2SummaryAfter = await user2.threads.findSummary({
       otherMembers: [user1.wallet.address],
     });
@@ -224,8 +223,7 @@ describe('Wallet multi-thread read messages', () => {
     // when
     const mainUserPovThread2 = await mainUser.threads.find(user2Thread);
     const messages = await mainUserPovThread2!.messages();
-    const theOnlyMessage = messages[0]!;
-    await mainUserPovThread2!.setLastReadMessageTime(theOnlyMessage.timestamp);
+    await mainUserPovThread2!.markAsRead();
     // then
     const mainUserGeneralSummaryAfter = await mainUser.threads.findSummaryAll();
     const mainUserThread1SummaryAfter = await mainUser.threads.findSummary({
