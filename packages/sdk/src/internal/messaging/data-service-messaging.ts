@@ -340,15 +340,16 @@ export class DataServiceThread implements Thread {
     );
   }
 
-  //TODO add checks
   async addMembers(command: AddMembersCommand): Promise<void> {
+    const members = requireAtLeastOneMember(command.members);
     await withErrorParsing(
       this.dataServiceDialectsApi.addMembers(this.id.address.toString(), {
-        members: command.members.map((e) => ({
+        members: members.map((e) => ({
           publicKey: e.address,
           scopes: toDataServiceScopes(e.scopes),
         })),
       }),
+      () => new ThreadAlreadyExistsError(),
     );
   }
 
@@ -358,6 +359,7 @@ export class DataServiceThread implements Thread {
         this.id.address.toString(),
         address,
       ),
+      () => new ThreadAlreadyExistsError(),
     );
   }
 

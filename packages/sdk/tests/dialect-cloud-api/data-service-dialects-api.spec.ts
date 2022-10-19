@@ -13,6 +13,10 @@ import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
 
+function generatePublicKey() {
+  return new Ed25519PublicKey(generateEd25519Keypair().publicKey).toString();
+}
+
 describe('Data service dialects api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
 
@@ -53,15 +57,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -128,9 +128,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -149,9 +147,7 @@ describe('Data service dialects api (e2e)', () => {
             scopes: [MemberScopeDto.WRITE],
           },
           {
-            publicKey: new Ed25519PublicKey(
-              generateEd25519Keypair().publicKey,
-            ).toString(),
+            publicKey: generatePublicKey(),
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -172,9 +168,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -207,15 +201,11 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -245,15 +235,11 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -270,15 +256,11 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -297,15 +279,11 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -344,9 +322,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -373,15 +349,11 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.WRITE],
         },
       ],
@@ -452,9 +424,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -467,9 +437,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -527,9 +495,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -602,9 +568,7 @@ describe('Data service dialects api (e2e)', () => {
     expect(before).toMatchObject([]);
 
     const member3 = {
-      publicKey: new Ed25519PublicKey(
-        generateEd25519Keypair().publicKey,
-      ).toString(),
+      publicKey: generatePublicKey(),
       scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
     };
     const createDialectCommand: CreateDialectCommand = {
@@ -647,15 +611,9 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('can add members to group dialect', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member4 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member5 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
+    const member4 = generatePublicKey();
+    const member5 = generatePublicKey();
     const createDialectCommand: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -718,12 +676,8 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('can remove member from group dialect', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member4 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
+    const member4 = generatePublicKey();
     const createDialectCommand: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -798,9 +752,7 @@ describe('Data service dialects api (e2e)', () => {
     const { id } = await wallet1Api.create(createDialectCommand);
 
     // when
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
     await expect(
       wallet1Api.addMembers(id, {
         members: [
@@ -826,9 +778,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -839,9 +789,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet2Api.addMembers(id, {
         members: [
           {
-            publicKey: new Ed25519PublicKey(
-              generateEd25519Keypair().publicKey,
-            ).toString(),
+            publicKey: generatePublicKey(),
             scopes: [MemberScopeDto.WRITE],
           },
         ],
@@ -862,9 +810,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: new Ed25519PublicKey(
-            generateEd25519Keypair().publicKey,
-          ).toString(),
+          publicKey: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -875,9 +821,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet2Api.addMembers(id, {
         members: [
           {
-            publicKey: new Ed25519PublicKey(
-              generateEd25519Keypair().publicKey,
-            ).toString(),
+            publicKey: generatePublicKey(),
             scopes: [MemberScopeDto.WRITE],
           },
         ],
@@ -886,12 +830,8 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('cannot add member to match existing group dialect', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member4 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
+    const member4 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -946,12 +886,8 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('cannot remove member to match existing group dialect', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member4 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
+    const member4 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -999,12 +935,8 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('cannot remove address which is not a member', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
-    const member4 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
+    const member4 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -1030,9 +962,7 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('cannot remove oneself', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
 
     const createDialectCommand1: CreateDialectCommand = {
       encrypted: false,
@@ -1059,9 +989,7 @@ describe('Data service dialects api (e2e)', () => {
   });
 
   test('cannot remove member to leave p2p dialect', async () => {
-    const member3 = new Ed25519PublicKey(
-      generateEd25519Keypair().publicKey,
-    ).toString();
+    const member3 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
       encrypted: false,
       members: [
