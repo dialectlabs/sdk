@@ -57,11 +57,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -75,7 +75,7 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1Address,
+            address: wallet1Address,
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -89,11 +89,11 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1Address,
+            address: wallet1Address,
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
           {
-            publicKey: wallet1Address,
+            address: wallet1Address,
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
         ],
@@ -107,11 +107,11 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1Address,
+            address: wallet1Address,
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
           {
-            publicKey: 'invalid-public-key',
+            address: 'invalid-public-key',
             scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
           },
         ],
@@ -124,11 +124,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -143,11 +143,11 @@ describe('Data service dialects api (e2e)', () => {
         encrypted: false,
         members: [
           {
-            publicKey: wallet1Address,
+            address: wallet1Address,
             scopes: [MemberScopeDto.WRITE],
           },
           {
-            publicKey: generatePublicKey(),
+            address: generatePublicKey(),
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -164,11 +164,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -176,14 +176,12 @@ describe('Data service dialects api (e2e)', () => {
     const { dialect, id } = await wallet1Api.create(command);
     // then
     expect(id).not.toBeNull();
-    const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
-      messages: [],
+    const expectedDialect: Omit<DialectDto, 'updatedAt'> = {
       members: command.members.map((it) => ({
         ...it,
         lastReadMessageTimestamp: 0,
       })),
       encrypted: command.encrypted,
-      nextMessageIdx: 0,
     };
     expect(dialect).toMatchObject(expectedDialect);
   });
@@ -197,15 +195,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -213,14 +211,12 @@ describe('Data service dialects api (e2e)', () => {
     const { dialect, id } = await wallet1Api.create(command);
     // then
     expect(id).not.toBeNull();
-    const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
-      messages: [],
+    const expectedDialect: Omit<DialectDto, 'updatedAt'> = {
       members: command.members.map((it) => ({
         ...it,
         lastReadMessageTimestamp: 0,
       })),
       encrypted: command.encrypted,
-      nextMessageIdx: 0,
       groupName: id,
     };
     expect(dialect).toMatchObject(expectedDialect);
@@ -231,15 +227,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: true,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -252,15 +248,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -275,29 +271,27 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
     };
     const { id } = await wallet1Api.create(command);
     const testGroupName = 'test group name';
-    const expectedDialect: Omit<DialectDto, 'lastMessageTimestamp'> = {
-      messages: [],
+    const expectedDialect: Omit<DialectDto, 'updatedAt'> = {
       members: command.members.map((it) => ({
         ...it,
         lastReadMessageTimestamp: 0,
       })),
       encrypted: command.encrypted,
-      nextMessageIdx: 0,
       groupName: testGroupName,
     };
 
@@ -314,15 +308,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.WRITE, MemberScopeDto.ADMIN],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -345,15 +339,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.WRITE],
         },
       ],
@@ -375,11 +369,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -397,11 +391,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.WRITE],
         },
       ],
@@ -420,11 +414,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -433,11 +427,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -460,24 +454,20 @@ describe('Data service dialects api (e2e)', () => {
     );
     const expectedDialects: Set<DialectDto> = new Set([
       {
-        messages: [],
         members: createDialect1Command.members.map((it) => ({
           ...it,
           lastReadMessageTimestamp: 0,
         })),
         encrypted: createDialect1Command.encrypted,
-        nextMessageIdx: 0,
-        lastMessageTimestamp: expect.any(Number),
+        updatedAt: expect.any(Number),
       },
       {
-        messages: [],
         members: createDialect2Command.members.map((it) => ({
           ...it,
           lastReadMessageTimestamp: 0,
         })),
         encrypted: createDialect2Command.encrypted,
-        nextMessageIdx: 0,
-        lastMessageTimestamp: expect.any(Number),
+        updatedAt: expect.any(Number),
       },
     ]);
     expect(actualDialects).toMatchObject(expectedDialects);
@@ -491,11 +481,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -509,20 +499,9 @@ describe('Data service dialects api (e2e)', () => {
     const actualDialect = dialectAccountDto?.dialect!;
     expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
-      messages: [],
       members: createDialectCommand.members,
       encrypted: createDialectCommand.encrypted,
-      nextMessageIdx: 0,
     });
-  });
-
-  test('can limit the number of messages returned', async () => {
-    // when
-    const dialects = await wallet1Api.findAll({
-      takeMessages: 1,
-    });
-    // then
-    expect(dialects).toMatchObject([]);
   });
 
   test('can get dialect by member key after creating', async () => {
@@ -533,32 +512,28 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
     };
     // when
     const { id } = await wallet1Api.create(createDialectCommand);
-    const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKeys: [wallet2Address],
+    const dialectAccountDto = await wallet1Api.findByMembers({
+      memberAddresses: [wallet2Address],
     });
     // then
-    expect(dialectAccountDtos.length).toBe(1);
-    const dialectAccountDto = dialectAccountDtos[0];
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
     expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
-      messages: [],
       members: createDialectCommand.members,
       encrypted: createDialectCommand.encrypted,
-      nextMessageIdx: 0,
     });
   });
 
@@ -568,18 +543,18 @@ describe('Data service dialects api (e2e)', () => {
     expect(before).toMatchObject([]);
 
     const member3 = {
-      publicKey: generatePublicKey(),
+      address: generatePublicKey(),
       scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
     };
     const createDialectCommand: CreateDialectCommand = {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -592,21 +567,17 @@ describe('Data service dialects api (e2e)', () => {
       members: [...createDialectCommand.members, member3],
     };
     await wallet1Api.create(createGroupDialectCommand);
-    const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKeys: [wallet2Address],
+    const dialectAccountDto = await wallet1Api.findByMembers({
+      memberAddresses: [wallet2Address],
     });
     // then
-    expect(dialectAccountDtos.length).toBe(1);
-    const dialectAccountDto = dialectAccountDtos[0];
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
     expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
-      messages: [],
       members: createDialectCommand.members,
       encrypted: createDialectCommand.encrypted,
-      nextMessageIdx: 0,
     });
   });
 
@@ -618,15 +589,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -638,40 +609,36 @@ describe('Data service dialects api (e2e)', () => {
     await wallet1Api.addMembers(id, {
       members: [
         {
-          publicKey: member4,
+          address: member4,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member5,
+          address: member5,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
     });
-    const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKeys: [wallet2Address, member3, member4, member5],
+    const dialectAccountDto = await wallet1Api.findByMembers({
+      memberAddresses: [wallet2Address, member3, member4, member5],
     });
     // then
-    expect(dialectAccountDtos.length).toBe(1);
-    const dialectAccountDto = dialectAccountDtos[0];
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
     expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
-      messages: [],
       members: [
         ...createDialectCommand.members,
         {
-          publicKey: member4,
+          address: member4,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member5,
+          address: member5,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
       encrypted: createDialectCommand.encrypted,
-      nextMessageIdx: 0,
     });
   });
 
@@ -682,19 +649,19 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member4,
+          address: member4,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -704,34 +671,31 @@ describe('Data service dialects api (e2e)', () => {
 
     // when
     await wallet1Api.removeMember(id, member4);
-    const dialectAccountDtos = await wallet1Api.findAll({
-      memberPublicKeys: [wallet2Address, member3],
+
+    const dialectAccountDto = await wallet1Api.findByMembers({
+      memberAddresses: [wallet2Address, member3],
     });
     // then
-    expect(dialectAccountDtos.length).toBe(1);
-    const dialectAccountDto = dialectAccountDtos[0];
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
     const actualDialect = dialectAccountDto?.dialect!;
     expect(actualDialectId).toBe(id);
     expect(actualDialect).toMatchObject({
-      messages: [],
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
       encrypted: createDialectCommand.encrypted,
-      nextMessageIdx: 0,
     });
   });
 
@@ -740,11 +704,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -757,7 +721,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet1Api.addMembers(id, {
         members: [
           {
-            publicKey: member3,
+            address: member3,
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -770,15 +734,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -789,7 +753,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet2Api.addMembers(id, {
         members: [
           {
-            publicKey: generatePublicKey(),
+            address: generatePublicKey(),
             scopes: [MemberScopeDto.WRITE],
           },
         ],
@@ -802,15 +766,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.WRITE],
         },
         {
-          publicKey: generatePublicKey(),
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -821,7 +785,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet2Api.addMembers(id, {
         members: [
           {
-            publicKey: generatePublicKey(),
+            address: generatePublicKey(),
             scopes: [MemberScopeDto.WRITE],
           },
         ],
@@ -836,19 +800,19 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member4,
+          address: member4,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -858,15 +822,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -877,7 +841,7 @@ describe('Data service dialects api (e2e)', () => {
       wallet1Api.addMembers(dialect2.id, {
         members: [
           {
-            publicKey: member4,
+            address: member4,
             scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
           },
         ],
@@ -892,19 +856,19 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member4,
+          address: member4,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -915,15 +879,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -941,15 +905,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -968,15 +932,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -994,15 +958,15 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: false,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: member3,
+          address: member3,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -1018,11 +982,11 @@ describe('Data service dialects api (e2e)', () => {
       encrypted: true,
       members: [
         {
-          publicKey: wallet1Address,
+          address: wallet1Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          publicKey: wallet2Address,
+          address: wallet2Address,
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
       ],
@@ -1036,22 +1000,18 @@ describe('Data service dialects api (e2e)', () => {
     const sendMessageCommand2: SendMessageCommand = {
       text: Array.from(new TextEncoder().encode('Hello')),
     };
-    const dialectAccountDto = (await wallet2Api.sendMessage(
-      id,
-      sendMessageCommand2,
-    ))!;
-    // then
-    const actualDialectId = dialectAccountDto?.id!;
-    const actualDialect = dialectAccountDto?.dialect!;
-    expect(actualDialectId).toBe(id);
+    await wallet2Api.sendMessage(id, sendMessageCommand2);
 
-    const messages = new Set(
-      actualDialect.messages.map((it) => ({
+    const { messages } = await wallet1Api.getMessages(id);
+
+    // then
+    const messagesSummary = new Set(
+      messages.map((it) => ({
         text: it.text,
         owner: it.owner,
       })),
     );
-    expect(messages).toMatchObject(
+    expect(messagesSummary).toMatchObject(
       new Set([
         {
           text: sendMessageCommand1.text,
@@ -1063,6 +1023,5 @@ describe('Data service dialects api (e2e)', () => {
         },
       ]),
     );
-    console.log(dialectAccountDto);
   });
 });
