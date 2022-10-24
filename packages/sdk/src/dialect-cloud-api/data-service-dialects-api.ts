@@ -98,10 +98,13 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<DialectAccountDto>(`${this.baseUrl}/api/v2/dialects/search`, {
-          headers: createHeaders(token),
-          params: query,
-        })
+        .get<DialectAccountDto>(
+          `${this.baseUrl}/api/v2/dialects/search/byMembers`,
+          {
+            headers: createHeaders(token),
+            params: query,
+          },
+        )
         .then((it) => it.data),
     );
   }
@@ -189,7 +192,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .put<void>(
+        .post<void>(
           `${this.baseUrl}/api/v2/dialects/${dialectId}/members`,
           members,
           {

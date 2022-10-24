@@ -256,12 +256,17 @@ export class DataServiceMessaging implements Messaging {
 
   private async findByOtherMember(query: FindThreadByOtherMemberQuery) {
     const otherMembers = requireAtLeastOneMember(query.otherMembers);
-    const dialectAccountDto = await withErrorParsing(
-      this.dataServiceDialectsApi.findByMembers({
-        memberAddresses: otherMembers.map((member) => member.toString()),
-      }),
-    );
-    return dialectAccountDto ?? null;
+    try {
+      return await withErrorParsing(
+        this.dataServiceDialectsApi.findByMembers({
+          memberAddresses: otherMembers.map((member) => member.toString()),
+        }),
+      );
+    } catch (e) {
+      const err = e as DataServiceApiClientError;
+      if (err instanceof ResourceNotFoundError) return null;
+      throw e;
+    }
   }
 }
 
