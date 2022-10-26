@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+## [1.2.0] - 2022-10-26
+
 - feature: add api for add/remove members in group threads
 - feature: add api for rename group threads
 - chore: switch dialect rest api to v2
