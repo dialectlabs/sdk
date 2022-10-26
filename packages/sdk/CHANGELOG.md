@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+- feature: add api for add/remove members in group threads
+- feature: add api for rename group threads
+- chore: switch dialect rest api to v2
+
 ## [1.1.0] - 2022-10-05
 
 - feature: add read/unread messages api for dapp notification feed
