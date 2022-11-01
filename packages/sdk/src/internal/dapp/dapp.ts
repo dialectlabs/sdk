@@ -42,6 +42,7 @@ export class DappsImpl implements Dapps {
 
   private toDapp(dappDto: DappDto) {
     return new DappImpl(
+      dappDto.id,
       dappDto.publicKey,
       dappDto.name,
       dappDto.verified,
@@ -64,6 +65,7 @@ export class DappsImpl implements Dapps {
       }),
     );
     return dappDtos.map((it) => ({
+      id: it.id,
       address: it.publicKey,
       name: it.name,
       description: it.description,
@@ -92,6 +94,7 @@ export class DappsImpl implements Dapps {
 
 export class DappImpl implements Dapp {
   constructor(
+    readonly id: string,
     readonly address: AccountAddress,
     readonly name: string,
     readonly verified: boolean,

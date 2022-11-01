@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.2.1] - 2022-11-01
+
+- chore: expose dapp id in sdk api
+
 ## [1.2.0] - 2022-10-26
 
 - feature: add api for add/remove members in group threads

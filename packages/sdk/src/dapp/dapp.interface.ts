@@ -15,6 +15,7 @@ export interface Dapps {
 }
 
 export interface Dapp {
+  id: string;
   address: AccountAddress;
   name: string;
   description?: string;
