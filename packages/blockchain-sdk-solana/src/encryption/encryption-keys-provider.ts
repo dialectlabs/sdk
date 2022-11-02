@@ -1,5 +1,6 @@
-import type { DiffeHellmanKeys } from '@dialectlabs/sdk';
+import { DiffeHellmanKeys, UnsupportedOperationError } from '@dialectlabs/sdk';
 import { EncryptionKeysProvider } from '@dialectlabs/sdk';
+import { Err, Ok, Result } from 'ts-results';
 import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 
 export class DialectSolanaWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
@@ -19,7 +20,10 @@ export class DialectSolanaWalletAdapterEncryptionKeysProvider extends Encryption
       : Promise.resolve(null);
   }
 
-  getFailFast(): Promise<DiffeHellmanKeys> {
-    return this.dialectWalletAdapter.diffieHellman();
+  getFailFast(): Promise<Result<DiffeHellmanKeys, UnsupportedOperationError>> {
+    const diffieHellman = this.dialectWalletAdapter.diffieHellman();
+    return this.dialectWalletAdapter.diffieHellman().then((it) =>
+      it ? Ok(it) : Err(new UnsupportedOperationError('DialectSolanaWalletAdapterEncryptionKeysProvider', 'getFailFast failed')),
+    );
   }
 }

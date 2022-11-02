@@ -13,12 +13,6 @@ export class DialectSdkError extends Error {
   }
 }
 
-export class NetworkError extends DialectSdkError {
-  constructor(msg: string, details?: any) {
-    super(NetworkError.name, 'Network error', msg, details);
-  }
-}
-
 export class IllegalArgumentError extends DialectSdkError {
   constructor(title: string, msg?: string, details?: any) {
     super(IllegalArgumentError.name, title, msg, details);

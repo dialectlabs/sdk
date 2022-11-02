@@ -10,7 +10,7 @@ import type { DataServiceDappsApi } from '../../dialect-cloud-api/data-service-d
 import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
-  constructor(private readonly api: DataServiceDappsApi) {}
+  constructor(private readonly api: DataServiceDappsApi) { }
 
   async send(command: SendDappMessageCommand): Promise<void> {
     if (command.addressTypes?.length === 0) {
@@ -32,7 +32,7 @@ export class DataServiceDappMessages implements DappMessages {
         notificationTypeId: command.notificationTypeId,
         recipientPublicKey: command.recipient.toString(),
         addressTypes: command?.addressTypes?.map((addr) =>
-          toAddressTypeDto(addr),
+          toAddressTypeDto(addr).unwrap(), // unwrap throws the error
         ),
       }),
     );
@@ -48,7 +48,7 @@ export class DataServiceDappMessages implements DappMessages {
         notificationTypeId: command.notificationTypeId,
         recipientPublicKeys: command.recipients.map((it) => it.toString()),
         addressTypes: command?.addressTypes?.map((addr) =>
-          toAddressTypeDto(addr),
+          toAddressTypeDto(addr).unwrap(), // unwrap throws the error
         ),
       }),
     );
@@ -60,7 +60,7 @@ export class DataServiceDappMessages implements DappMessages {
         ...command,
         notificationTypeId: command.notificationTypeId,
         addressTypes: command?.addressTypes?.map((addr) =>
-          toAddressTypeDto(addr),
+          toAddressTypeDto(addr).unwrap(), // unwrap throws the error
         ),
       }),
     );

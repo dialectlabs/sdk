@@ -40,7 +40,7 @@ import {
 } from '../../messaging/text-serde';
 import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/constants';
 import { Err, Ok, Result, Option, None, Some } from 'ts-results';
-import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from '../../../lib/types/messaging/ecdh-encryption';
+import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from '../../messaging/ecdh-encryption';
 
 export class DataServiceMessaging implements Messaging {
   readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;

@@ -1,3 +1,5 @@
+import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from 'messaging/ecdh-encryption';
+import { Result, Option, None, Ok } from 'ts-results';
 import type {
   CreateThreadCommand,
   FindThreadByOtherMemberQuery,
@@ -24,12 +26,12 @@ export class MessagingFacade implements Messaging {
     }
   }
 
-  create(command: CreateThreadCommand): Promise<Thread> {
+  create(command: CreateThreadCommand): Promise<Result<Thread, IncorrectPublicKeyFormatError | AuthenticationFailedError | IllegalStateError>> {
     const messaging = this.getPreferableMessaging(command.type);
     return messaging.create(command);
   }
 
-  async find(query: FindThreadQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Result<Option<Thread>, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>> {
     if ('id' in query && query.id.type) {
       const messaging = this.lookUpMessagingBackend(query.id.type);
       return messaging.find(query);
@@ -44,10 +46,10 @@ export class MessagingFacade implements Messaging {
         console.error(e);
       }
     }
-    return null;
+    return Ok(None);
   }
 
-  async findAll(): Promise<Thread[]> {
+  async findAll(): Promise<Result<Thread, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>[]> {
     const allSettled = await Promise.allSettled(
       this.delegates.map((messaging) => messaging.findAll()),
     );
@@ -71,10 +73,10 @@ export class MessagingFacade implements Messaging {
       throw error;
     }
     return fulfilled
-      .map((it) => it as PromiseFulfilledResult<Thread[]>)
+      .map((it) => it as PromiseFulfilledResult<Result<Thread, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>[]>)
       .map((it) => it.value)
       .flat()
-      .sort((t1, t2) => t2.updatedAt.getTime() - t1.updatedAt.getTime());
+      .sort((t1, t2) => t2.unwrap().updatedAt.getTime() - t1.unwrap().updatedAt.getTime());
   }
 
   async findSummary(

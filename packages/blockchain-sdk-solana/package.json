@@ -23,9 +23,9 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@dialectlabs/sdk": "^1.0.0",
     "@solana/wallet-adapter-base": "^0.9.15",
-    "@solana/web3.js": "^1.53.0",
-    "@dialectlabs/sdk": "^1.0.0"
+    "@solana/web3.js": "^1.53.0"
   },
   "peerDependencies": {
     "@dialectlabs/sdk": "1.x",
@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@dialectlabs/web3": "^0.3.2",
-    "@project-serum/anchor": "0.23.0"
+    "@project-serum/anchor": "0.23.0",
+    "ts-results": "^3.3.0"
   }
 }

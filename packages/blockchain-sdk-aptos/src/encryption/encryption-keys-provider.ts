@@ -3,6 +3,7 @@ import {
   EncryptionKeysProvider,
   UnsupportedOperationError,
 } from '@dialectlabs/sdk';
+import type { Result } from 'ts-results';
 import type { DialectAptosWalletAdapterWrapper } from '../wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
 
 export class DialectAptosWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
@@ -16,7 +17,7 @@ export class DialectAptosWalletAdapterEncryptionKeysProvider extends EncryptionK
     return null;
   }
 
-  getFailFast(): Promise<DiffeHellmanKeys> {
+  getFailFast(): Promise<Result<DiffeHellmanKeys, UnsupportedOperationError>> {
     throw new UnsupportedOperationError(
       'Encryption not supported',
       'Wallet does not support encryption yet',

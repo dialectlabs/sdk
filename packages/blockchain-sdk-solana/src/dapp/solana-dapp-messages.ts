@@ -12,7 +12,7 @@ export class SolanaDappMessages implements DappMessages {
   constructor(
     private readonly messaging: SolanaMessaging,
     private readonly dappAddresses: SolanaDappAddresses,
-  ) {}
+  ) { }
 
   async send(command: SendDappMessageCommand): Promise<void> {
     if (Boolean(command.notificationTypeId)) {
@@ -78,11 +78,15 @@ export class SolanaDappMessages implements DappMessages {
   }
 
   private async sendInternal(command: UnicastDappMessageCommand) {
-    const thread = await this.messaging.find({
+    const threadResult = await this.messaging.find({
       otherMembers: [command.recipient],
     });
-    if (thread) {
-      return thread.send({
+    if (threadResult.err) {
+      throw threadResult.val;
+    }
+    const thread = threadResult.val;
+    if (thread.some) {
+      return thread.val.send({
         text: command.message,
       });
     }

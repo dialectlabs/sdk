@@ -8,7 +8,7 @@ import type {
 import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 
 export class DataServiceDappAddresses implements DappAddresses {
-  constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) {}
+  constructor(private readonly dataServiceDappsApi: DataServiceDappsApi) { }
 
   async findAll(): Promise<DappAddress[]> {
     const dappAddressesDtos = await withErrorParsing(
@@ -19,13 +19,17 @@ export class DataServiceDappAddresses implements DappAddresses {
 }
 
 export function toDappAddress(dto: DappAddressDto) {
+  const addressType = toAddressType(dto.address.type);
+  if (addressType.err) {
+    throw new Error(`Unknown address type: ${dto.address.type}`);
+  }
   const dapp: DappAddress = {
     id: dto.id,
     enabled: dto.enabled,
     channelId: dto.channelId,
     address: {
       id: dto.address.id,
-      type: toAddressType(dto.address.type),
+      type: addressType.val,
       value: dto.address.value,
       verified: dto.address.verified,
       wallet: {

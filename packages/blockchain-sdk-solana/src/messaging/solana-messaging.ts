@@ -42,6 +42,8 @@ import { PublicKey as SolanaPublicKey } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapterWrapper } from '../wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type { SolanaError } from '../errors';
 import { DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA } from '../sdk/constants';
+import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from '@dialectlabs/sdk/lib/types/messaging/ecdh-encryption';
+import { Result, Option, None, Ok, Some, Err } from 'ts-results';
 
 export class SolanaMessaging implements Messaging {
   readonly type: string = DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA;
@@ -50,9 +52,9 @@ export class SolanaMessaging implements Messaging {
     private readonly walletAdapter: DialectSolanaWalletAdapterWrapper,
     private readonly program: Program,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-  ) {}
+  ) { }
 
-  async create(command: CreateThreadCommand): Promise<Thread> {
+  async create(command: CreateThreadCommand): Promise<Result<Thread, IncorrectPublicKeyFormatError | AuthenticationFailedError | IllegalStateError>> {
     const dialectAccount = await this.createInternal(command);
     const solanaThread = await toSolanaThread(
       dialectAccount,
@@ -61,27 +63,33 @@ export class SolanaMessaging implements Messaging {
       this.program,
     );
     if (!solanaThread) {
-      throw new IllegalStateError(
+      return Err(new IllegalStateError(
         `Should not happen: cannot determine members in created thread.`,
-      );
+      ));
     }
-    return solanaThread;
+    return Ok(solanaThread);
   }
 
-  async find(query: FindThreadQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Result<Option<Thread>, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>> {
     const dialectAccount = await this.findInternal(query);
-    return (
-      dialectAccount &&
-      toSolanaThread(
-        dialectAccount,
-        this.walletAdapter,
-        this.encryptionKeysProvider,
-        this.program,
-      )
+    if (!dialectAccount) {
+      return Ok(None);
+    }
+    const solanaThread = await toSolanaThread(
+      dialectAccount,
+      this.walletAdapter,
+      this.encryptionKeysProvider,
+      this.program,
     );
+    if (!solanaThread) {
+      return Err(new IllegalStateError(
+        `Should not happen: cannot determine members in found thread.`,
+      ));
+    }
+    return Ok(Some(dialectAccount && solanaThread));
   }
 
-  async findAll(): Promise<Thread[]> {
+  async findAll(): Promise<Result<Thread, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>[]> {
     const dialects = await withErrorParsing(
       findDialects(this.program, {
         userPk: this.walletAdapter.publicKey,
@@ -97,7 +105,7 @@ export class SolanaMessaging implements Messaging {
         ),
       ),
     );
-    return all.filter((it) => Boolean(it)).map((it) => it!);
+    return all.filter((it) => Boolean(it)).map((it) => Ok(it! as Thread));
   }
 
   async findSummary(
@@ -319,8 +327,8 @@ async function toSolanaThread(
   }
   const canBeDecrypted = dialect.encrypted
     ? (await encryptionKeysProvider.getFailSafe(
-        walletAdapter.publicKey.toBase58(),
-      )) !== null
+      walletAdapter.publicKey.toBase58(),
+    )) !== null
     : true;
   const otherThreadMember: ThreadMember = {
     address: otherMember.publicKey.toBase58(),
@@ -352,10 +360,13 @@ async function getEncryptionPropsForMutation(
 ) {
   const encryptionKeys = isThreadEncrypted
     ? await encryptionKeysProvider.getFailFast(
-        walletAdapter.publicKey.toBase58(),
-      )
+      walletAdapter.publicKey.toBase58(),
+    )
     : null;
-  return getEncryptionProps(walletAdapter.publicKey, encryptionKeys);
+  if (encryptionKeys === null) {
+    return null;
+  }
+  return getEncryptionProps(walletAdapter.publicKey, encryptionKeys.unwrap());
 }
 
 function getEncryptionProps(

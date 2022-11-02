@@ -27,7 +27,7 @@ export interface Aptos extends BlockchainSdk {
 }
 
 export class AptosSdkFactory implements BlockchainSdkFactory<Aptos> {
-  private constructor(readonly aptosConfigProps: AptosConfigProps) {}
+  private constructor(readonly aptosConfigProps: AptosConfigProps) { }
 
   static create(props: AptosConfigProps) {
     return new AptosSdkFactory(props);
