@@ -1,4 +1,5 @@
 import ed2curve from 'ed2curve';
+import { Err, Ok, Result } from 'ts-results';
 import nacl from 'tweetnacl';
 
 export const ENCRYPTION_OVERHEAD_BYTES = 16;
@@ -32,23 +33,23 @@ export type Ed25519KeyPair = {
 export function ed25519KeyPairToCurve25519({
   publicKey,
   secretKey,
-}: Ed25519KeyPair): Curve25519KeyPair {
+}: Ed25519KeyPair): Result<Curve25519KeyPair, IncorrectPublicKeyFormatError> {
   const curve25519KeyPair = ed2curve.convertKeyPair({
     publicKey,
     secretKey,
   });
   if (!curve25519KeyPair) {
-    throw new IncorrectPublicKeyFormatError();
+    return Err(new IncorrectPublicKeyFormatError());
   }
-  return curve25519KeyPair;
+  return Ok(curve25519KeyPair);
 }
 
-export function ed25519PublicKeyToCurve25519(key: Ed25519Key): Curve25519Key {
+export function ed25519PublicKeyToCurve25519(key: Ed25519Key): Result<Curve25519Key, IncorrectPublicKeyFormatError> {
   const curve25519PublicKey = ed2curve.convertPublicKey(key);
   if (!curve25519PublicKey) {
-    throw new IncorrectPublicKeyFormatError();
+    return Err(new IncorrectPublicKeyFormatError());
   }
-  return curve25519PublicKey;
+  return Ok(curve25519PublicKey);
 }
 
 export function ecdhEncrypt(
@@ -56,13 +57,13 @@ export function ecdhEncrypt(
   { secretKey, publicKey }: Curve25519KeyPair,
   otherPartyPublicKey: Ed25519Key,
   nonce: Uint8Array,
-): Uint8Array {
-  return nacl.box(
-    payload,
-    nonce,
-    ed25519PublicKeyToCurve25519(otherPartyPublicKey),
-    secretKey,
-  );
+): Result<Uint8Array, IncorrectPublicKeyFormatError> {
+  const key = ed25519PublicKeyToCurve25519(otherPartyPublicKey);
+  if (key.ok) {
+    return Ok(nacl.box(payload, nonce, key.val, secretKey));
+  } else {
+    return Err(key.val);
+  }
 }
 
 export function ecdhDecrypt(
@@ -70,15 +71,16 @@ export function ecdhDecrypt(
   { secretKey, publicKey }: Curve25519KeyPair,
   otherPartyPublicKey: Ed25519Key,
   nonce: Uint8Array,
-): Uint8Array {
-  const decrypted = nacl.box.open(
-    payload,
-    nonce,
-    ed25519PublicKeyToCurve25519(otherPartyPublicKey),
-    secretKey,
-  );
-  if (!decrypted) {
-    throw new AuthenticationFailedError();
+): Result<Uint8Array, AuthenticationFailedError | IncorrectPublicKeyFormatError> {
+  const key = ed25519PublicKeyToCurve25519(otherPartyPublicKey);
+  if (key.ok) {
+    const decrypted = nacl.box.open(payload, nonce, key.val, secretKey);
+    if (decrypted) {
+      return Ok(decrypted);
+    } else {
+      return Err(new AuthenticationFailedError());
+    }
+  } else {
+    return Err(key.val);
   }
-  return decrypted;
 }

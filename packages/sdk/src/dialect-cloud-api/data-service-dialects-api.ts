@@ -37,7 +37,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
   constructor(
     private readonly baseUrl: string,
     private readonly tokenProvider: TokenProvider,
-  ) {}
+  ) { }
 
   async markAsRead(dialectPublicKey: string): Promise<void> {
     const token = await this.tokenProvider.get();

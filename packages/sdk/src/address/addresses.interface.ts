@@ -1,3 +1,4 @@
+import { Err, Ok, Result } from 'ts-results';
 import { AddressTypeDto } from '../dialect-cloud-api/data-service-dapps-api';
 import { IllegalArgumentError } from '../sdk/errors';
 import type { Wallet } from '../wallet/wallet.interface';
@@ -24,12 +25,12 @@ const addressTypeToAddressTypeDto: Record<AddressType, AddressTypeDto> = {
   [AddressType.Wallet]: AddressTypeDto.Wallet,
 };
 
-export function toAddressTypeDto(type: AddressType): AddressTypeDto {
+export function toAddressTypeDto(type: AddressType): Result<AddressTypeDto, IllegalArgumentError> {
   const addressTypeDto = addressTypeToAddressTypeDto[type];
   if (!addressTypeDto) {
-    throw new IllegalArgumentError(`Unknown address type ${type}`);
+    return Err(new IllegalArgumentError(`Unknown address type ${type}`));
   }
-  return addressTypeDto;
+  return Ok(addressTypeDto);
 }
 
 const addressTypeDtoToAddressType: Record<AddressTypeDto, AddressType> = {
@@ -39,12 +40,12 @@ const addressTypeDtoToAddressType: Record<AddressTypeDto, AddressType> = {
   [AddressTypeDto.Wallet]: AddressType.Wallet,
 };
 
-export function toAddressType(type: AddressTypeDto): AddressType {
+export function toAddressType(type: AddressTypeDto): Result<AddressType, IllegalArgumentError> {
   const addressType = addressTypeDtoToAddressType[type];
   if (!addressType) {
-    throw new IllegalArgumentError(`Unknown address type ${type}`);
+    return Err(new IllegalArgumentError(`Unknown address type ${type}`));
   }
-  return addressType;
+  return Ok(addressType);
 }
 
 export interface DappAddress {

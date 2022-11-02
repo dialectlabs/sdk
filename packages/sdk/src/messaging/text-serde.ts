@@ -3,18 +3,21 @@ import {
   NONCE_SIZE_BYTES,
 } from './nonce-generator';
 import {
+  AuthenticationFailedError,
   Curve25519KeyPair,
   ecdhDecrypt,
   ecdhEncrypt,
   Ed25519Key,
+  IncorrectPublicKeyFormatError,
 } from './ecdh-encryption';
 import type { PublicKey } from '../auth/auth.interface';
 import { Ed25519PublicKey } from '../auth/ed25519/ed25519-public-key';
+import { Err, Ok, Result } from 'ts-results';
 
 export interface TextSerde {
   serialize(text: string): Uint8Array;
 
-  deserialize(bytes: Uint8Array): string;
+  deserialize(bytes: Uint8Array): Result<string, IncorrectPublicKeyFormatError | AuthenticationFailedError>;
 }
 
 export class EncryptedTextSerde implements TextSerde {
@@ -24,9 +27,9 @@ export class EncryptedTextSerde implements TextSerde {
   constructor(
     private readonly encryptionProps: EncryptionProps,
     private readonly members: PublicKey[],
-  ) {}
+  ) { }
 
-  deserialize(bytes: Uint8Array): string {
+  deserialize(bytes: Uint8Array): Result<string, IncorrectPublicKeyFormatError | AuthenticationFailedError> {
     const encryptionNonce = bytes.slice(0, NONCE_SIZE_BYTES);
     const encryptedText = bytes.slice(NONCE_SIZE_BYTES, bytes.length);
     const otherMember = this.findOtherMember(
@@ -38,7 +41,14 @@ export class EncryptedTextSerde implements TextSerde {
       otherMember.toBytes(),
       encryptionNonce,
     );
-    return this.unencryptedTextSerde.deserialize(encodedText);
+    if (encodedText.err) {
+      return Err(encodedText.val);
+    }
+    const decode = this.unencryptedTextSerde.deserialize(encodedText.val);
+    if (decode.err) {
+      return Err(decode.val);
+    }
+    return Ok(decode.val);
   }
 
   serialize(text: string): Uint8Array {
@@ -76,8 +86,13 @@ export class EncryptedTextSerde implements TextSerde {
 }
 
 export class UnencryptedTextSerde implements TextSerde {
-  deserialize(bytes: Uint8Array): string {
-    return new TextDecoder().decode(bytes);
+  deserialize(bytes: Uint8Array): Result<string, IncorrectPublicKeyFormatError | AuthenticationFailedError> {
+    try {
+      const decode = new TextDecoder().decode(bytes);
+      return Ok(decode);
+    } catch (e) {
+      return Err(new IncorrectPublicKeyFormatError);
+    }
   }
 
   serialize(text: string): Uint8Array {

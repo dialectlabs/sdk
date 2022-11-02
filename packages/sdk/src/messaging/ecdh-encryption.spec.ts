@@ -50,10 +50,11 @@ describe('ECDH encryptor/decryptor test', () => {
         keyPair2.ed25519.publicKey,
         nonce,
       );
+      expect(encrypted.ok);
       return {
         sizeBefore: unencrypted.byteLength,
-        sizeAfter: encrypted.byteLength,
-        sizeDiff: encrypted.byteLength - unencrypted.byteLength,
+        sizeAfter: encrypted.unwrap().byteLength,
+        sizeDiff: encrypted.unwrap().byteLength - unencrypted.byteLength,
       };
     });
     // then
@@ -74,16 +75,18 @@ describe('ECDH encryptor/decryptor test', () => {
       party2KeyPair.ed25519.publicKey,
       nonce,
     );
+    expect(encrypted.ok);
     // when
     const decrypted = ecdhDecrypt(
-      encrypted,
+      encrypted.unwrap(),
       party1KeyPair.curve25519,
       party2KeyPair.ed25519.publicKey,
       nonce,
     );
+    expect(decrypted.ok);
     // then
-    expect(unencrypted).not.toMatchObject(encrypted);
-    expect(decrypted).toMatchObject(unencrypted);
+    expect(unencrypted).not.toMatchObject(encrypted.unwrap());
+    expect(decrypted.unwrap()).toMatchObject(unencrypted);
   });
 
   it('should be possible to decrypt using other party keypair', () => {
@@ -98,15 +101,17 @@ describe('ECDH encryptor/decryptor test', () => {
       party2KeyPair.ed25519.publicKey,
       nonce,
     );
+    expect(encrypted.ok);
     // when
     const decrypted = ecdhDecrypt(
-      encrypted,
+      encrypted.unwrap(),
       party2KeyPair.curve25519,
       party1KeyPair.ed25519.publicKey,
       nonce,
     );
+    expect(decrypted.ok);
     // then
-    expect(unencrypted).not.toMatchObject(encrypted);
-    expect(decrypted).toMatchObject(unencrypted);
+    expect(unencrypted).not.toMatchObject(encrypted.unwrap());
+    expect(decrypted.unwrap()).toMatchObject(unencrypted);
   });
 });

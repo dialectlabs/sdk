@@ -39,6 +39,8 @@ import {
   UnencryptedTextSerde,
 } from '../../messaging/text-serde';
 import { DIALECT_API_TYPE_DIALECT_CLOUD } from '../../sdk/constants';
+import { Err, Ok, Result, Option, None, Some } from 'ts-results';
+import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from '../../../lib/types/messaging/ecdh-encryption';
 
 export class DataServiceMessaging implements Messaging {
   readonly type = DIALECT_API_TYPE_DIALECT_CLOUD;
@@ -47,15 +49,15 @@ export class DataServiceMessaging implements Messaging {
     private readonly me: AccountAddress,
     private readonly dataServiceDialectsApi: DataServiceDialectsApi,
     private readonly encryptionKeysProvider: EncryptionKeysProvider,
-  ) {}
+  ) { }
 
-  async create(command: CreateThreadCommand): Promise<Thread> {
+  async create(command: CreateThreadCommand): Promise<Result<Thread, IncorrectPublicKeyFormatError | AuthenticationFailedError | IllegalStateError>> {
     const otherMembers = requireAtLeastOneMember(command.otherMembers);
     if (command.encrypted && otherMembers.length >= 2) {
-      throw new UnsupportedOperationError(
+      return Err(new UnsupportedOperationError(
         'Unsupported operation',
         'Encryption not supported in group chats',
-      );
+      ));
     }
     command.encrypted && (await this.checkEncryptionSupported());
     const dialectAccountDto = await withErrorParsing(
@@ -77,12 +79,18 @@ export class DataServiceMessaging implements Messaging {
     return this.toDataServiceThread(dialectAccountDto);
   }
 
-  async find(query: FindThreadQuery): Promise<Thread | null> {
+  async find(query: FindThreadQuery): Promise<Result<Option<Thread>, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>> {
     const dialectAccountDto = await this.findInternal(query);
-    return dialectAccountDto && this.toDataServiceThread(dialectAccountDto);
+    if (!dialectAccountDto) return Ok(None);
+
+    const thread = await this.toDataServiceThread(dialectAccountDto);
+    if (thread.err) {
+      return Err(thread.val);
+    }
+    return Ok(Some(dialectAccountDto && thread.val));
   }
 
-  async findAll(): Promise<Thread[]> {
+  async findAll(): Promise<Result<Thread, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>[]> {
     const dialectAccountDtos = await withErrorParsing(
       this.dataServiceDialectsApi.findAll(),
     );
@@ -144,16 +152,16 @@ export class DataServiceMessaging implements Messaging {
     return this.encryptionKeysProvider.getFailFast(this.me);
   }
 
-  private async toDataServiceThread(dialectAccountDto: DialectAccountDto) {
+  private async toDataServiceThread(dialectAccountDto: DialectAccountDto): Promise<Result<DataServiceThread, IncorrectPublicKeyFormatError | AuthenticationFailedError | IllegalStateError>> {
     const { publicKey, dialect } = dialectAccountDto;
     const meMember = findMember(this.me, dialect);
     const otherMembers = findOtherMembers(this.me, dialect);
     if (!meMember || !otherMembers.length) {
-      throw new IllegalStateError(
+      return Err(new IllegalStateError(
         `Cannot resolve members from given list: ${dialect.members.map(
           (it) => it.publicKey,
         )} and wallet public key ${this.me.toString()}`,
-      );
+      ));
     }
     const { serde, canBeDecrypted } = await this.createTextSerde(dialect);
     const otherThreadMembers: ThreadMember[] = otherMembers.map((member) => ({
@@ -173,8 +181,12 @@ export class DataServiceMessaging implements Messaging {
     const lastMessage = dialect.messages[0] ?? null;
     let lastThreadMessage: ThreadMessage | null = null;
     if (lastMessage != null) {
+      const deserializedResult = serde.deserialize(new Uint8Array(lastMessage.text));
+      if (deserializedResult.err) {
+        return Err(deserializedResult.val);
+      }
       lastThreadMessage = {
-        text: serde.deserialize(new Uint8Array(lastMessage.text)),
+        text: deserializedResult.val,
         timestamp: new Date(lastMessage.timestamp),
         author:
           lastMessage.owner === this.me
@@ -184,7 +196,7 @@ export class DataServiceMessaging implements Messaging {
       };
     }
 
-    return new DataServiceThread(
+    return Ok(new DataServiceThread(
       this.dataServiceDialectsApi,
       serde,
       this.encryptionKeysProvider,
@@ -196,7 +208,7 @@ export class DataServiceMessaging implements Messaging {
       canBeDecrypted,
       new Date(dialect.lastMessageTimestamp),
       lastThreadMessage,
-    );
+    ));
   }
 
   private async createTextSerde(dialect: DialectDto): Promise<{
@@ -309,7 +321,7 @@ export class DataServiceThread implements Thread {
           ? this.me
           : this.otherMembersPks[it.owner]!,
       timestamp: new Date(it.timestamp),
-      text: this.textSerde.deserialize(new Uint8Array(it.text)),
+      text: this.textSerde.deserialize(new Uint8Array(it.text)).unwrapOr(""),
       deduplicationId: it.deduplicationId,
     }));
     this.lastMessage = messages[0] ?? null;

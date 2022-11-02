@@ -27,7 +27,7 @@ export class DataServiceApi {
     readonly walletNotificationSubscriptions: DataServiceWalletNotificationSubscriptionsApi,
     readonly pushNotificationSubscriptions: DataServicePushNotificationSubscriptionsApi,
     readonly health: DataServiceHealthApi,
-  ) {}
+  ) { }
 }
 
 interface RawDataServiceApiError {
@@ -36,7 +36,7 @@ interface RawDataServiceApiError {
 
 export type DataServiceApiClientError = NetworkError | DataServiceApiError;
 
-export class NetworkError {}
+export class NetworkError { }
 
 export class DataServiceApiError {
   constructor(
@@ -44,7 +44,7 @@ export class DataServiceApiError {
     readonly statusCode: number,
     readonly message?: string | null,
     readonly requestId?: string | null,
-  ) {}
+  ) { }
 }
 
 const XRequestIdHeader = 'x-request-id';

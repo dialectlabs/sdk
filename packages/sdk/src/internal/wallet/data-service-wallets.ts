@@ -41,7 +41,7 @@ import type {
 } from '../../dialect-cloud-api/data-service-wallet-notification-subscriptions-api';
 import type { DataServiceWalletDappAddressesApi } from '../../dialect-cloud-api/data-service-wallet-dapp-addresses-api';
 import type { AddressDto } from '../../dialect-cloud-api/data-service-dapps-api';
-import { ResourceNotFoundError } from '../../sdk/errors';
+import { IllegalArgumentError, ResourceNotFoundError } from '../../sdk/errors';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../dialect-cloud-api/data-service-push-notification-subscriptions-api';
 import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 import type { AccountAddress } from '../../auth/auth.interface';
@@ -83,13 +83,17 @@ export class DataServiceWallets implements Wallets {
 }
 
 export class DataServiceWalletAddresses implements WalletAddresses {
-  constructor(private readonly api: DataServiceWalletAddressesApi) {}
+  constructor(private readonly api: DataServiceWalletAddressesApi) { }
 
   async create(command: CreateAddressCommand): Promise<Address> {
+    const type = toAddressTypeDto(command.type);
+    if (type.err) {
+      throw type.val; // Throws IllegalArgumentError
+    }
     const created = await withErrorParsing(
       this.api.create({
         value: command.value,
-        type: toAddressTypeDto(command.type),
+        type: type.val,
       }),
     );
     return toAddress(created);
@@ -141,7 +145,7 @@ export class DataServiceWalletAddresses implements WalletAddresses {
 }
 
 export class DataServiceWalletDappAddresses implements WalletDappAddresses {
-  constructor(private readonly api: DataServiceWalletDappAddressesApi) {}
+  constructor(private readonly api: DataServiceWalletDappAddressesApi) { }
 
   async create(command: CreateDappAddressCommand): Promise<DappAddress> {
     const created = await withErrorParsing(
@@ -194,7 +198,7 @@ export class DataServiceWalletDappAddresses implements WalletDappAddresses {
 export class DataServiceWalletMessages implements WalletMessages {
   private readonly textSerde: TextSerde = new UnencryptedTextSerde();
 
-  constructor(private readonly api: DataServiceWalletMessagesApi) {}
+  constructor(private readonly api: DataServiceWalletMessagesApi) { }
 
   async findAllFromDapps(query?: FindDappMessageQuery): Promise<DappMessage[]> {
     const dappMessages = await withErrorParsing(
@@ -207,7 +211,7 @@ export class DataServiceWalletMessages implements WalletMessages {
     return dappMessages.map((it) => ({
       author: it.owner,
       timestamp: new Date(it.timestamp),
-      text: this.textSerde.deserialize(new Uint8Array(it.text)),
+      text: this.textSerde.deserialize(new Uint8Array(it.text)).unwrapOr(""),
     }));
   }
 
@@ -236,11 +240,15 @@ export class DataServiceWalletMessages implements WalletMessages {
 }
 
 function toAddress(addressDto: AddressDto): Address {
+  const addressType = toAddressType(addressDto.type);
+  if (addressType.err) {
+    throw addressType.val; // Throws IllegalArgumentError
+  }
   return {
     id: addressDto.id,
     value: addressDto.value,
     verified: addressDto.verified,
-    type: toAddressType(addressDto.type),
+    type: addressType.val,
     wallet: {
       address: addressDto.wallet.publicKey,
     },
@@ -248,11 +256,10 @@ function toAddress(addressDto: AddressDto): Address {
 }
 
 export class DataServiceWalletNotificationSubscriptions
-  implements WalletNotificationSubscriptions
-{
+  implements WalletNotificationSubscriptions {
   constructor(
     private readonly api: DataServiceWalletNotificationSubscriptionsApi,
-  ) {}
+  ) { }
 
   async findAll(
     query: FindNotificationSubscriptionQuery,
@@ -288,11 +295,10 @@ function fromNotificationSubscriptionDto(
 }
 
 export class DataServiceWalletPushNotificationSubscriptions
-  implements WalletPushNotificationSubscriptions
-{
+  implements WalletPushNotificationSubscriptions {
   constructor(
     private readonly api: DataServicePushNotificationSubscriptionsApi,
-  ) {}
+  ) { }
 
   async delete(physicalId: string): Promise<void> {
     await withErrorParsing(this.api.delete(physicalId));

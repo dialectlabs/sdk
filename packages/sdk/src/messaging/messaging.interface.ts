@@ -1,13 +1,16 @@
+import type { IllegalStateError, UnsupportedOperationError } from 'sdk/errors';
+import type { Result, Option } from 'ts-results';
 import type { AccountAddress } from '../auth/auth.interface';
+import type { AuthenticationFailedError, IncorrectPublicKeyFormatError } from './ecdh-encryption';
 
 export interface Messaging {
   type: string;
 
-  findAll(): Promise<Thread[]>;
+  findAll(): Promise<Result<Thread, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>[]>;
 
-  create(command: CreateThreadCommand): Promise<Thread>;
+  create(command: CreateThreadCommand): Promise<Result<Thread, IncorrectPublicKeyFormatError | AuthenticationFailedError | IllegalStateError>>;
 
-  find(query: FindThreadQuery): Promise<Thread | null>;
+  find(query: FindThreadQuery): Promise<Result<Option<Thread>, IllegalStateError | IncorrectPublicKeyFormatError | AuthenticationFailedError>>;
 
   findSummary(
     query: FindThreadByOtherMemberQuery,

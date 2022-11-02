@@ -2,6 +2,7 @@ import { UnsupportedOperationError } from '../sdk/errors';
 import { EncryptionKeysStore } from './encryption-keys-store';
 import type { DiffeHellmanKeys } from './encryption.interface';
 import type { AccountAddress } from '../auth/auth.interface';
+import { Err, Ok, Result } from 'ts-results';
 
 export abstract class EncryptionKeysProvider {
   static create(
@@ -17,7 +18,7 @@ export abstract class EncryptionKeysProvider {
     subject: AccountAddress,
   ): Promise<DiffeHellmanKeys | null>;
 
-  abstract getFailFast(subject: AccountAddress): Promise<DiffeHellmanKeys>;
+  abstract getFailFast(subject: AccountAddress): Promise<Result<DiffeHellmanKeys, UnsupportedOperationError>>;
 }
 
 class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
@@ -61,15 +62,15 @@ class CachedEncryptionKeysProvider extends EncryptionKeysProvider {
     return delegatePromise;
   }
 
-  async getFailFast(subject: AccountAddress): Promise<DiffeHellmanKeys> {
+  async getFailFast(subject: AccountAddress): Promise<Result<DiffeHellmanKeys, UnsupportedOperationError>> {
     return this.getFailSafe(subject).then((keys) => {
       if (!keys) {
-        throw new UnsupportedOperationError(
+        return Err(new UnsupportedOperationError(
           'Encryption not supported',
           'Wallet does not support encryption, please use wallet-adapter that supports diffieHellman() operation.',
-        );
+        ));
       }
-      return keys;
+      return Ok(keys);
     });
   }
 }
