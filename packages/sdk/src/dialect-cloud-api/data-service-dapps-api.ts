@@ -4,6 +4,7 @@ import {
   withReThrowingDataServiceError,
 } from './data-service-api';
 import axios from 'axios';
+import type { BlockchainType } from '../dapp/dapp.interface';
 
 export interface DataServiceDappsApi {
   create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
@@ -137,6 +138,7 @@ export class DappDto {
   readonly heroUrl?: string;
   readonly telegramBotUserName!: string;
   readonly verified!: boolean;
+  readonly blockchainType!: BlockchainType;
 }
 
 export class CreateDappCommandDto {
@@ -199,4 +201,5 @@ export type BroadcastDappMessageCommandDto = SendDappMessageCommand;
 
 export class FindDappQueryDto {
   verified?: boolean;
+  blockchainType?: BlockchainType;
 }
