@@ -2,6 +2,11 @@
 
 ## [UNRELEASED]
 
+## [1.3.0] - 2022-11-03
+
+- feat: add to request dapps by blockchainType property
+- fix yarn.lock
+
 ## [1.2.1] - 2022-11-01
 
 - chore: expose dapp id in sdk api
