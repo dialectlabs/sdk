@@ -1,5 +1,5 @@
 {
-  "name": "@dialectlabs/identity-dialect-dapps",
+  "name": "@dialectlabs/identity-dialect",
   "version": "1.0.0",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
@@ -26,5 +26,8 @@
   "peerDependencies": {
     "@dialectlabs/sdk": "1.x"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "isomorphic-fetch": "^3.0.0"
+  }
 }
