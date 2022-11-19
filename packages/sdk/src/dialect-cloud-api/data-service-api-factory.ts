@@ -36,6 +36,7 @@ import type { DataServiceHealthApi } from './data-service-health-api';
 import { DataServiceHealthApiClient } from './data-service-health-api';
 import { SDK_VERSION } from '../version';
 import { DataServiceApi } from './data-service-api';
+import { DataServiceWalletsApiClientV1 } from './data-service-wallets-api.v1';
 
 export class DataServiceApiFactory {
   static create(baseUrl: string, tokenProvider: TokenProvider) {
@@ -57,6 +58,10 @@ export class DataServiceApiFactory {
         tokenProvider,
       );
     const walletsApiV0 = new DataServiceWalletsApiClientV0(
+      baseUrl,
+      tokenProvider,
+    );
+    const walletsApiV1 = new DataServiceWalletsApiClientV1(
       baseUrl,
       tokenProvider,
     );
@@ -90,6 +95,7 @@ export class DataServiceApiFactory {
       dappNotificationTypes,
       dappNotificationSubscriptions,
       walletsApiV0,
+      walletsApiV1,
       walletAddressesApi,
       walletDappAddressesApi,
       walletDappMessagesApi,

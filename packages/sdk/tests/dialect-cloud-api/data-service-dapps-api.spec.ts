@@ -8,6 +8,7 @@ import { DataServiceApi } from '../../src/dialect-cloud-api/data-service-api';
 import type {
   DappDto,
   DataServiceDappsApi,
+  WalletDto,
 } from '../../src/dialect-cloud-api/data-service-dapps-api';
 import type { CreateDappCommand } from '../../src/dapp/dapp.interface';
 import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
@@ -16,6 +17,7 @@ import type { AccountAddress } from '../../src/auth/auth.interface';
 import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
+import type { DataServiceWalletsApiV1 } from 'dialect-cloud-api/data-service-wallets-api.v1';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -152,6 +154,38 @@ describe('Data service dapps api (e2e)', () => {
         message: 'test',
       }),
     ).resolves.toBeTruthy();
+  });
+
+  describe('Wallet api v1', () => {
+    let walletAccountAddress: AccountAddress;
+    let walletsV1: DataServiceWalletsApiV1;
+
+    beforeEach(() => {
+      const authenticationFacade = new Ed25519AuthenticationFacadeFactory(
+        new Ed25519TokenSigner(),
+      ).get();
+      walletAccountAddress = authenticationFacade.subject();
+      const dataServiceApi = DataServiceApiFactory.create(
+        baseUrl,
+        TokenProvider.create(authenticationFacade),
+      );
+      walletsV1 = dataServiceApi.walletsV1;
+    });
+
+    test('can explicitly upsert wallet', async () => {
+      // when
+      const walletDto: WalletDto = {
+        id: '',
+        publicKey: walletAccountAddress.toString(),
+      }
+      const walletResult: WalletDto = await walletsV1.upsertWallet(walletDto);
+      // then
+      const expected = {
+        id: expect.any(String),
+        publicKey: walletAccountAddress.toString(),
+      };
+      expect(walletResult).toMatchObject(expected);
+    });
   });
 
   describe('Wallet dapp addresses v0', () => {
