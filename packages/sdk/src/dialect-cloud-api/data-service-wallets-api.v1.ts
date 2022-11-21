@@ -23,7 +23,7 @@ export class DataServiceWalletsApiClientV1
     return withReThrowingDataServiceError(
       axios
         .post<WalletDto>(
-          `${this.baseUrl}/api/v1/wallets/me/upsertWallet`,
+          `${this.baseUrl}/api/v1/wallets/me/`,
           walletDto,
           {
             headers: createHeaders(token),
