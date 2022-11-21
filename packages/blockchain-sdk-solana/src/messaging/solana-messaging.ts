@@ -1,4 +1,6 @@
 import type {
+  AccountAddress,
+  AddMembersCommand,
   CreateThreadCommand,
   DiffeHellmanKeys,
   EncryptionKeysProvider,
@@ -19,6 +21,7 @@ import {
   ThreadAlreadyExistsError,
   ThreadId,
   ThreadMemberScope,
+  UnsupportedOperationError,
 } from '@dialectlabs/sdk';
 import {
   createDialect,
@@ -272,6 +275,24 @@ export class SolanaThread implements Thread {
 
   markAsRead(): Promise<void> {
     return Promise.resolve(undefined);
+  }
+
+  addMembers(command: AddMembersCommand): Promise<void> {
+    throw new UnsupportedOperationError(
+      'Group threads are not supported for solana-backed threads',
+    );
+  }
+
+  removeMember(address: AccountAddress): Promise<void> {
+    throw new UnsupportedOperationError(
+      'Group threads are not supported for solana-backed threads',
+    );
+  }
+
+  rename(name: string): Promise<void> {
+    throw new UnsupportedOperationError(
+      'Group threads are not supported for solana-backed threads',
+    );
   }
 }
 

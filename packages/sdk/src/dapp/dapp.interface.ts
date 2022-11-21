@@ -14,7 +14,15 @@ export interface Dapps {
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
+export declare const BlockchainType: {
+  SOLANA: 'SOLANA';
+  APTOS: 'APTOS';
+};
+
+export type BlockchainType = typeof BlockchainType[keyof typeof BlockchainType];
+
 export interface Dapp {
+  id: string;
   address: AccountAddress;
   name: string;
   description?: string;
@@ -23,6 +31,7 @@ export interface Dapp {
   heroUrl?: string;
   verified: boolean;
   telegramUsername: string;
+  blockchainType: BlockchainType;
   dappAddresses: DappAddresses;
   messages: DappMessages;
   notificationTypes: DappNotificationTypes;
@@ -60,6 +69,7 @@ export interface DappTelegramBotConfiguration {
 
 export interface FindDappQuery {
   verified?: boolean;
+  blockchainType?: BlockchainType;
 }
 
 export interface SendDappMessageCommandBase {

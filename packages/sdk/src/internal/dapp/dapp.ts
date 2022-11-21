@@ -14,6 +14,7 @@ import type {
   Dapps,
   FindDappQuery,
   ReadOnlyDapp,
+  BlockchainType,
 } from '../../dapp/dapp.interface';
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
 import type { DataServiceDappNotificationSubscriptions } from './data-service-dapp-notification-subscriptions';
@@ -42,10 +43,12 @@ export class DappsImpl implements Dapps {
 
   private toDapp(dappDto: DappDto) {
     return new DappImpl(
+      dappDto.id,
       dappDto.publicKey,
       dappDto.name,
       dappDto.verified,
       dappDto.telegramBotUserName,
+      dappDto.blockchainType,
       this.dappAddresses,
       this.dappMessages,
       this.notificationTypes,
@@ -58,12 +61,9 @@ export class DappsImpl implements Dapps {
   }
 
   async findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]> {
-    const dappDtos = await withErrorParsing(
-      this.dappsApi.findAll({
-        verified: query?.verified,
-      }),
-    );
+    const dappDtos = await withErrorParsing(this.dappsApi.findAll(query));
     return dappDtos.map((it) => ({
+      id: it.id,
       address: it.publicKey,
       name: it.name,
       description: it.description,
@@ -72,6 +72,7 @@ export class DappsImpl implements Dapps {
       heroUrl: it.heroUrl,
       verified: it.verified,
       telegramUsername: it.telegramBotUserName,
+      blockchainType: it.blockchainType,
     }));
   }
 
@@ -92,10 +93,12 @@ export class DappsImpl implements Dapps {
 
 export class DappImpl implements Dapp {
   constructor(
+    readonly id: string,
     readonly address: AccountAddress,
     readonly name: string,
     readonly verified: boolean,
     readonly telegramUsername: string,
+    readonly blockchainType: BlockchainType,
     readonly dappAddresses: DappAddresses,
     readonly messages: DappMessages,
     readonly notificationTypes: DappNotificationTypes,

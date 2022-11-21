@@ -8,29 +8,34 @@ import axios from 'axios';
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
-  findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]>;
+  findAll(): Promise<DialectAccountDto[]>;
 
-  find(publicKey: string): Promise<DialectAccountDto>;
+  find(dialectId: string): Promise<DialectAccountDto>;
 
-  delete(publicKey: string): Promise<void>;
-
-  sendMessage(
-    publicKey: string,
-    command: SendMessageCommand,
+  findByMembers(
+    query: FindDialectByMembersQueryDto,
   ): Promise<DialectAccountDto>;
 
-  findSummary(
-    query: FindDialectSummaryByMembersQueryDto,
-  ): Promise<DialectSummaryDto>;
+  delete(dialectId: string): Promise<void>;
+
+  sendMessage(dialectId: string, command: SendMessageCommand): Promise<void>;
+
+  getMessages(dialectId: string): Promise<MessagesDto>;
+
+  findSummary(query: FindDialectByMembersQueryDto): Promise<DialectSummaryDto>;
 
   findSummaryAll(query: FindDialectsSummaryDto): Promise<DialectsSummaryDto>;
 
-  markAsRead(dialectPublicKey: string): Promise<void>;
+  patch(
+    dialectId: string,
+    command: PatchDialectCommand,
+  ): Promise<DialectAccountDto>;
 
-  // patchMember(
-  //   dialectPublicKey: string,
-  //   command: PatchMemberCommandDto,
-  // ): Promise<MemberDto>;
+  addMembers(dialectId: string, members: AddMembersCommand): Promise<void>;
+
+  removeMember(dialectId: string, memberAddress: string): Promise<void>;
+
+  markAsRead(dialectId: string): Promise<void>;
 }
 
 export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
@@ -39,12 +44,12 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async markAsRead(dialectPublicKey: string): Promise<void> {
+  async markAsRead(dialectId: string): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .post<void>(
-          `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/markAsRead`,
+          `${this.baseUrl}/api/v2/dialects/${dialectId}/markAsRead`,
           {},
           {
             headers: createHeaders(token),
@@ -54,81 +59,76 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  // async patchMember(
-  //   dialectPublicKey: string,
-  //   command: PatchMemberCommandDto,
-  // ): Promise<MemberDto> {
-  //   const token = await this.tokenProvider.get();
-  //   return withReThrowingDataServiceError(
-  //     axios
-  //       .patch<MemberDto>(
-  //         `${this.baseUrl}/api/v1/dialects/${dialectPublicKey}/members/me`,
-  //         command,
-  //         {
-  //           headers: createHeaders(token),
-  //         },
-  //       )
-  //       .then((it) => it.data),
-  //   );
-  // }
-
   async create(command: CreateDialectCommand): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .post<DialectAccountDto>(`${this.baseUrl}/api/v1/dialects`, command, {
+        .post<DialectAccountDto>(`${this.baseUrl}/api/v2/dialects`, command, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
   }
 
-  async findAll(query?: FindDialectQuery): Promise<DialectAccountDto[]> {
+  async findAll(): Promise<DialectAccountDto[]> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<DialectAccountDto[]>(`${this.baseUrl}/api/v1/dialects`, {
+        .get<DialectAccountDto[]>(`${this.baseUrl}/api/v2/dialects`, {
           headers: createHeaders(token),
-          ...(query && { params: query }),
         })
         .then((it) => it.data),
     );
   }
 
-  async find(publicKey: string): Promise<DialectAccountDto> {
+  async find(id: string): Promise<DialectAccountDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<DialectAccountDto>(`${this.baseUrl}/api/v2/dialects/${id}`, {
+          headers: createHeaders(token),
+        })
+        .then((it) => it.data),
+    );
+  }
+
+  async findByMembers(
+    query: FindDialectByMembersQueryDto,
+  ): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
         .get<DialectAccountDto>(
-          `${this.baseUrl}/api/v1/dialects/${publicKey}`,
+          `${this.baseUrl}/api/v2/dialects/search/byMembers`,
           {
             headers: createHeaders(token),
+            params: query,
           },
         )
         .then((it) => it.data),
     );
   }
 
-  async delete(publicKey: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .delete<void>(`${this.baseUrl}/api/v1/dialects/${publicKey}`, {
+        .delete<void>(`${this.baseUrl}/api/v2/dialects/${id}`, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),
     );
   }
 
-  async sendMessage(
-    publicKey: string,
-    command: SendMessageCommand,
+  async patch(
+    id: string,
+    command: PatchDialectCommand,
   ): Promise<DialectAccountDto> {
     const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .post<DialectAccountDto>(
-          `${this.baseUrl}/api/v1/dialects/${publicKey}/messages`,
+        .patch<DialectAccountDto>(
+          `${this.baseUrl}/api/v2/dialects/${id}`,
           command,
           {
             headers: createHeaders(token),
@@ -138,12 +138,32 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     );
   }
 
-  findSummary(
-    query: FindDialectSummaryByMembersQueryDto,
-  ): Promise<DialectSummaryDto> {
+  async sendMessage(id: string, command: SendMessageCommand): Promise<void> {
+    const token = await this.tokenProvider.get();
     return withReThrowingDataServiceError(
       axios
-        .get<DialectSummaryDto>(`${this.baseUrl}/api/v1/dialects/summary`, {
+        .post<void>(`${this.baseUrl}/api/v2/dialects/${id}/messages`, command, {
+          headers: createHeaders(token),
+        })
+        .then((it) => it.data),
+    );
+  }
+
+  async getMessages(id: string): Promise<MessagesDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .get<MessagesDto>(`${this.baseUrl}/api/v2/dialects/${id}/messages`, {
+          headers: createHeaders(token),
+        })
+        .then((it) => it.data),
+    );
+  }
+
+  findSummary(query: FindDialectByMembersQueryDto): Promise<DialectSummaryDto> {
+    return withReThrowingDataServiceError(
+      axios
+        .get<DialectSummaryDto>(`${this.baseUrl}/api/v2/dialects/summary`, {
           headers: createHeaders(),
           ...(query && { params: query }),
         })
@@ -155,10 +175,42 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     return withReThrowingDataServiceError(
       axios
         .get<DialectsSummaryDto>(
-          `${this.baseUrl}/api/v1/dialects/summary/all`,
+          `${this.baseUrl}/api/v2/dialects/summary/all`,
           {
             headers: createHeaders(),
             params: query,
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
+
+  async addMembers(
+    dialectId: string,
+    members: AddMembersCommand,
+  ): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .post<void>(
+          `${this.baseUrl}/api/v2/dialects/${dialectId}/members`,
+          members,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
+    );
+  }
+
+  async removeMember(dialectId: string, memberAddress: string): Promise<void> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .delete<void>(
+          `${this.baseUrl}/api/v2/dialects/${dialectId}/members/${memberAddress}`,
+          {
+            headers: createHeaders(token),
           },
         )
         .then((it) => it.data),
@@ -171,27 +223,30 @@ export interface CreateDialectCommand {
   readonly encrypted: boolean;
 }
 
+export interface AddMembersCommand {
+  readonly members: PostMemberDto[];
+}
+
 export interface PostMemberDto {
-  readonly publicKey: string;
+  readonly address: string;
   readonly scopes: MemberScopeDto[];
 }
 
 export interface DialectAccountDto {
-  readonly publicKey: string;
+  readonly id: string;
   readonly dialect: DialectDto;
 }
 
 export interface DialectDto {
   readonly members: MemberDto[];
-  readonly messages: MessageDto[];
-  // N.b. nextMessageIdx & lastMessageTimestamp are added only so we have schema parity with what's on chain.
-  readonly nextMessageIdx: number;
-  readonly lastMessageTimestamp: number;
+  readonly lastMessage?: MessageDto;
+  readonly updatedAt: number;
   readonly encrypted: boolean;
+  readonly groupName?: string;
 }
 
 export interface MemberDto {
-  readonly publicKey: string;
+  readonly address: string;
   readonly scopes: MemberScopeDto[];
   readonly lastReadMessageTimestamp: number;
 }
@@ -208,19 +263,21 @@ export interface MessageDto {
   readonly deduplicationId?: string;
 }
 
+export interface MessagesDto {
+  readonly messages: MessageDto[];
+}
+
 export interface SendMessageCommand {
   readonly text: number[];
   readonly deduplicationId?: string;
 }
 
-export interface FindDialectQuery {
-  readonly memberPublicKey?: string;
-  readonly memberPublicKeys?: string[];
-  readonly takeMessages?: number;
+export interface PatchDialectCommand {
+  readonly groupName: string;
 }
 
 export interface DialectSummaryDto {
-  readonly publicKey: string;
+  readonly id: string;
   readonly memberSummaries: MemberSummaryDto[];
 }
 
@@ -229,19 +286,15 @@ export interface DialectsSummaryDto {
 }
 
 export interface MemberSummaryDto {
-  readonly publicKey: string;
+  readonly address: string;
   readonly hasUnreadMessages: boolean;
   readonly unreadMessagesCount: number;
 }
 
-export interface FindDialectSummaryByMembersQueryDto {
-  readonly memberPublicKeys: string[];
+export interface FindDialectByMembersQueryDto {
+  readonly memberAddresses: string[];
 }
 
 export interface FindDialectsSummaryDto {
-  readonly publicKey: string;
-}
-
-export interface PatchMemberCommandDto {
-  readonly lastReadMessageTimestamp?: number;
+  readonly address: string;
 }

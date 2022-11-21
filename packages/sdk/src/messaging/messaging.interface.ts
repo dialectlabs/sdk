@@ -50,6 +50,10 @@ export interface CreateThreadCommand {
   type?: string;
 }
 
+export interface AddMembersCommand {
+  members: Omit<ThreadMember, 'lastReadMessageTimestamp'>[];
+}
+
 export type FindThreadQuery =
   | FindThreadByIdQuery
   | FindThreadByOtherMemberQuery;
@@ -101,6 +105,7 @@ export interface Thread {
   type: string;
   updatedAt: Date;
   lastMessage: ThreadMessage | null;
+  name?: string;
 
   messages(): Promise<ThreadMessage[]>;
 
@@ -109,6 +114,12 @@ export interface Thread {
   delete(): Promise<void>;
 
   markAsRead(): Promise<void>;
+
+  addMembers(command: AddMembersCommand): Promise<void>;
+
+  removeMember(address: AccountAddress): Promise<void>;
+
+  rename(name: string): Promise<void>;
 }
 
 export interface ThreadMember {

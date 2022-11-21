@@ -52,6 +52,7 @@ describe('Data service dapps api (e2e)', () => {
       avatarUrl: command.avatarUrl,
       verified: false,
       telegramBotUserName: expect.any(String),
+      blockchainType: 'SOLANA',
     };
     expect(created).toMatchObject(dappDtoExpected);
     expect(addresses).toMatchObject([]);
@@ -77,6 +78,7 @@ describe('Data service dapps api (e2e)', () => {
       avatarUrl: command.avatarUrl,
       telegramBotUserName: expect.any(String),
       verified: false,
+      blockchainType: 'SOLANA',
     };
     expect(found).toMatchObject(dappDtoExpected);
   });
