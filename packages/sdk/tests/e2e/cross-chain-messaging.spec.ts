@@ -6,27 +6,18 @@ import {
   AptosSdkFactory,
   NodeDialectAptosWalletAdapter,
 } from '@dialectlabs/blockchain-sdk-aptos';
-import { Dialect, ThreadMemberScope } from '@dialectlabs/sdk';
+import { Dialect, Environment, ThreadMemberScope } from '@dialectlabs/sdk';
+import { createSolanaSdk, createAptosSdk } from '../../../sdk/tests/utils/utils';
+import { Keypair } from '@solana/web3.js';
+import { randomBytes } from 'tweetnacl';
+
+const environment: Environment = 'local-development';
 
 describe('Cross-chain messaging tests (e2e)', () => {
   test('can create token', async () => {
     // given
-    const solanaSdk = Dialect.sdk(
-      {
-        environment: 'local-development',
-      },
-      SolanaSdkFactory.create({
-        wallet: NodeDialectSolanaWalletAdapter.create(),
-      }),
-    );
-    const aptosSdk = Dialect.sdk(
-      {
-        environment: 'local-development',
-      },
-      AptosSdkFactory.create({
-        wallet: NodeDialectAptosWalletAdapter.create(),
-      }),
-    );
+    const solanaSdk = createSolanaSdk(environment, Keypair.generate());
+    const aptosSdk = createAptosSdk(environment, Uint8Array.from(randomBytes(32)));
     // when
     const solanaThread = await solanaSdk.threads.create({
       encrypted: false,

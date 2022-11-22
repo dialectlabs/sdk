@@ -1,5 +1,6 @@
 import {
   Dialect,
+  Environment,
   ResourceAlreadyExistsError,
   ThreadMemberScope,
 } from '@dialectlabs/sdk';
@@ -7,23 +8,16 @@ import {
   NodeDialectSolanaWalletAdapter,
   SolanaSdkFactory,
 } from '@dialectlabs/blockchain-sdk-solana';
+import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
+import { Keypair } from '@solana/web3.js';
 
-function createSdk() {
-  return Dialect.sdk(
-    {
-      environment: 'local-development',
-    },
-    SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(),
-    }),
-  );
-}
+const environment: Environment = 'local-development';
 
 describe('Data-service-specific: messages deduplication id  (e2e)', () => {
   it('allows saving a deduplication id for a sent message', async () => {
     // given
-    const wallet1 = createSdk();
-    const wallet2 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
+    const wallet2 = createSolanaSdk(environment, Keypair.generate());
 
     const thread = await wallet1.threads.create({
       encrypted: false,
@@ -56,9 +50,9 @@ describe('Data-service-specific: messages deduplication id  (e2e)', () => {
 
   it('allows messages in different threads have the same deduplication id', async () => {
     // given
-    const wallet1 = createSdk();
-    const wallet2 = createSdk();
-    const wallet3 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
+    const wallet2 = createSolanaSdk(environment, Keypair.generate());
+    const wallet3 = createSolanaSdk(environment, Keypair.generate());
 
     const thread1 = await wallet1.threads.create({
       encrypted: false,
@@ -117,8 +111,8 @@ describe('Data-service-specific: messages deduplication id  (e2e)', () => {
 
   it('throws an error if a message in the same thread contains the same deduplication id', async () => {
     // given
-    const wallet1 = createSdk();
-    const wallet2 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
+    const wallet2 = createSolanaSdk(environment, Keypair.generate());
 
     const thread = await wallet1.threads.create({
       encrypted: false,
