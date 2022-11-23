@@ -1,9 +1,4 @@
-import {
-  getHashedName,
-  getNameAccountKeyWithBump,
-  TldParser,
-  NameRecordHeader,
-} from '@onsol/tldparser';
+import { TldParser, NameRecordHeader } from '@onsol/tldparser';
 import type {
   AccountAddress,
   Identity,
@@ -13,7 +8,7 @@ import type { Connection } from '@solana/web3.js';
 import { OnsolIdentityError } from './identity-onsol.error';
 
 export class OnsolIdentityResolver implements IdentityResolver {
-  constructor(private readonly connection: Connection) { }
+  constructor(private readonly connection: Connection) {}
 
   get type(): string {
     return 'Onsol';
@@ -22,9 +17,7 @@ export class OnsolIdentityResolver implements IdentityResolver {
   async resolve(address: AccountAddress): Promise<Identity | null> {
     try {
       const parser = new TldParser(this.connection);
-      const allDomains = await parser.getAllUserDomains(
-        address,
-      );
+      const allDomains = await parser.getAllUserDomains(address);
 
       if (!allDomains || !allDomains[0]) {
         return null;
@@ -44,19 +37,16 @@ export class OnsolIdentityResolver implements IdentityResolver {
       );
 
       const tld = await parser.getTldFromParentAccount(
-        mainDomainRecord?.parentName
+        mainDomainRecord?.parentName,
       );
 
-      const reverseLookupHashedName = await getHashedName(
-        mainDomain.toString(),
-      );
-      const [reverseLookupAccount] = await getNameAccountKeyWithBump(
-        reverseLookupHashedName,
-        parentNameAccount?.owner!,
-        undefined,
-      );
+      // not found
+      if (!parentNameAccount?.owner) return null;
 
-      const domain = await parser.reverseLookupNameAccount(mainDomain, parentNameAccount?.owner!);
+      const domain = await parser.reverseLookupNameAccount(
+        mainDomain,
+        parentNameAccount?.owner,
+      );
 
       return {
         name: `${domain}${tld}`,

@@ -14,10 +14,10 @@ describe('onsol tests', () => {
 
     expect(identity).toStrictEqual({
       type: 'Onsol',
-      name: expect.stringContaining("miester.poor"),
+      name: expect.stringContaining('miester.poor'),
       address: owner,
       additionals: {
-        displayName: expect.stringContaining("miester.poor"),
+        displayName: expect.stringContaining('miester.poor'),
       },
     });
   });
