@@ -135,6 +135,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
+      config.dialectCloud.url,
     );
   }
 

@@ -6,6 +6,9 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
+import { createHeaders, withReThrowingDataServiceError } from '../dialect-cloud-api/data-service-api';
+import type { WalletDto } from '../dialect-cloud-api/data-service-dapps-api';
+import axios from 'axios';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -59,6 +62,7 @@ export class CachedTokenProvider extends TokenProvider {
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
+    private readonly dialectCloudBaseUrl?: string,
   ) {
     super();
   }
@@ -74,8 +78,9 @@ export class CachedTokenProvider extends TokenProvider {
     if (existingDelegatePromise) {
       return existingDelegatePromise;
     }
-    const delegatePromise = this.delegate.get().then((it) => {
+    const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
+      await this.upsertWallet(it);
       return it;
     });
 
@@ -94,6 +99,25 @@ export class CachedTokenProvider extends TokenProvider {
       return false;
     }
     return this.tokenValidator.isValid(cachedToken);
+  }
+
+  private upsertWallet(token: Token) {
+    console.log("*\n*\n*\n Upserting wallet in token-provider")
+    const walletDto: WalletDto = {
+      id: '',
+      publicKey: this.subject,
+    }
+    return withReThrowingDataServiceError(
+      axios
+        .post<WalletDto>(
+          `${this.dialectCloudBaseUrl}/api/v1/wallets/me/`,
+          walletDto,
+          {
+            headers: createHeaders(token),
+          },
+        )
+        .then((it) => it.data),
+    );
   }
 
   private getCachedToken(): Token | null {
