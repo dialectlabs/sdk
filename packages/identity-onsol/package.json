@@ -27,6 +27,6 @@
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
-    "@onsol/tldparser": "https://github.com/onsol-labs/tld-parser#expirable"
+    "@onsol/tldparser": "^0.3.3"
   }
 }

@@ -1217,9 +1217,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@onsol/tldparser@https://github.com/onsol-labs/tld-parser#expirable":
-  version "0.3.2"
-  resolved "https://github.com/onsol-labs/tld-parser#c3f7fffb2ecbb4a6728080e2cc981c2648db3af6"
+"@onsol/tldparser@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.3.3.tgz#4dd1df4f3cfb3f677527c0929002c342b3a8cd71"
+  integrity sha512-Daf2vudmYzouqHineedg4l/tZ8PoqJ3jNgGi7eEahHDoS2desOudy4x7hV6DzkQZ+9696Sh6Zpu+/QatIF4/wg==
   dependencies:
     "@solana/buffer-layout" "^4.0.0"
     "@solana/web3.js" "^1.17.0"
