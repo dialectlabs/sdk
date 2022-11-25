@@ -5,13 +5,13 @@ import type {
   IdentityResolver,
 } from '@dialectlabs/sdk';
 import type { Connection } from '@solana/web3.js';
-import { OnsolIdentityError } from './identity-onsol.error';
+import { ANSIdentityError } from './identity-ans.error';
 
-export class OnsolIdentityResolver implements IdentityResolver {
-  constructor(private readonly connection: Connection) {}
+export class ANSIdentityResolver implements IdentityResolver {
+  constructor(private readonly connection: Connection) { }
 
   get type(): string {
-    return 'Onsol';
+    return 'ANS';
   }
 
   async resolve(address: AccountAddress): Promise<Identity | null> {
@@ -57,8 +57,8 @@ export class OnsolIdentityResolver implements IdentityResolver {
         },
       };
     } catch (e: any) {
-      if (!OnsolIdentityError.ignoreMatcher.some((it) => e.message.match(it))) {
-        throw new OnsolIdentityError(e.message);
+      if (!ANSIdentityError.ignoreMatcher.some((it) => e.message.match(it))) {
+        throw new ANSIdentityError(e.message);
       }
     }
     return null;
