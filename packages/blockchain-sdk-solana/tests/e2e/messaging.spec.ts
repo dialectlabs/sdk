@@ -7,6 +7,7 @@ import {
   ThreadAlreadyExistsError,
   ThreadMemberScope,
   TokenProvider,
+  DataServiceWalletsApiClientV1,
 } from '@dialectlabs/sdk';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../../src/messaging/solana-dialect-program-factory';
@@ -659,6 +660,9 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
 function createDataServiceWalletMessagingState(): WalletMessagingState {
   const wallet = NodeDialectSolanaWalletAdapter.create();
   const adapter = new DialectSolanaWalletAdapterWrapper(wallet);
+  const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+    baseUrl,
+  );
   const messaging = new DataServiceMessaging(
     adapter.publicKey.toBase58(),
     DataServiceApiFactory.create(
@@ -667,6 +671,7 @@ function createDataServiceWalletMessagingState(): WalletMessagingState {
         new SolanaEd25519AuthenticationFacadeFactory(
           new DialectWalletAdapterSolanaEd25519TokenSigner(adapter),
         ).get(),
+        dataServiceWalletsApiV1,
       ),
     ).threads,
     new DialectSolanaWalletAdapterEncryptionKeysProvider(adapter),

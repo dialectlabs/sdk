@@ -12,6 +12,7 @@ import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer'
 import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
+import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 
 function generatePublicKey() {
   return new Ed25519PublicKey(generateEd25519Keypair().publicKey).toString();
@@ -31,17 +32,23 @@ describe('Data service dialects api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     wallet1Address = wallet1AuthenticationFacade.subject();
+    const w1DataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     wallet1Api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(wallet1AuthenticationFacade),
+      TokenProvider.create(wallet1AuthenticationFacade, w1DataServiceWalletsApiV1),
     ).threads;
     const wallet2AuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
       new Ed25519TokenSigner(),
     ).get();
     wallet2Address = wallet2AuthenticationFacade.subject();
+    const w2DataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     wallet2Api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(wallet2AuthenticationFacade),
+      TokenProvider.create(wallet2AuthenticationFacade, w2DataServiceWalletsApiV1),
     ).threads;
   });
 

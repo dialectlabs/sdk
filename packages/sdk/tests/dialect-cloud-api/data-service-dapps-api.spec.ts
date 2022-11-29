@@ -17,7 +17,8 @@ import type { AccountAddress } from '../../src/auth/auth.interface';
 import { Ed25519PublicKey } from '../../src/auth/ed25519/ed25519-public-key';
 import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
-import type { DataServiceWalletsApiV1 } from 'dialect-cloud-api/data-service-wallets-api.v1';
+import type { DataServiceWalletsApiV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
+import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -30,9 +31,12 @@ describe('Data service dapps api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     dappAccountAddress = authenticationFacade.subject();
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     dappsApi = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(authenticationFacade),
+      TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
     ).dapps;
   });
 
@@ -165,26 +169,13 @@ describe('Data service dapps api (e2e)', () => {
         new Ed25519TokenSigner(),
       ).get();
       walletAccountAddress = authenticationFacade.subject();
+      const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+        baseUrl,
+      );
       const dataServiceApi = DataServiceApiFactory.create(
         baseUrl,
-        TokenProvider.create(authenticationFacade),
+        TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
       );
-      walletsV1 = dataServiceApi.walletsV1;
-    });
-
-    test('can explicitly upsert wallet', async () => {
-      // when
-      const walletDto: WalletDto = {
-        id: '',
-        publicKey: walletAccountAddress.toString(),
-      }
-      const walletResult: WalletDto = await walletsV1.upsertWallet(walletDto);
-      // then
-      const expected = {
-        id: expect.any(String),
-        publicKey: walletAccountAddress.toString(),
-      };
-      expect(walletResult).toMatchObject(expected);
     });
   });
 
@@ -198,9 +189,12 @@ describe('Data service dapps api (e2e)', () => {
         new Ed25519TokenSigner(),
       ).get();
       walletAccountAddress = authenticationFacade.subject();
+      const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+        baseUrl,
+      );
       const dataServiceApi = DataServiceApiFactory.create(
         baseUrl,
-        TokenProvider.create(authenticationFacade),
+        TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
       );
       wallets = dataServiceApi.walletsV0;
       dapps = dataServiceApi.dapps;

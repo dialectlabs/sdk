@@ -13,7 +13,6 @@ import type { AxiosError } from 'axios';
 import type { DataServiceDappNotificationSubscriptionsApi } from './data-service-dapp-notification-subscriptions-api';
 import type { DataServiceHealthApi } from './data-service-health-api';
 import { SDK_VERSION } from '../version';
-import type { DataServiceWalletsApiV1 } from './data-service-wallets-api.v1';
 
 export class DataServiceApi {
   constructor(
@@ -22,7 +21,6 @@ export class DataServiceApi {
     readonly dappNotificationTypes: DataServiceDappNotificationTypesApi,
     readonly dappNotificationSubscriptions: DataServiceDappNotificationSubscriptionsApi,
     readonly walletsV0: DataServiceWalletsApiV0,
-    readonly walletsV1: DataServiceWalletsApiV1,
     readonly walletAddresses: DataServiceWalletAddressesApi,
     readonly walletDappAddresses: DataServiceWalletDappAddressesApi,
     readonly walletMessages: DataServiceWalletMessagesApi,

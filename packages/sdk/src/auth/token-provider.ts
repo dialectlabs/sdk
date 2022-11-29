@@ -6,9 +6,8 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
-import { createHeaders, withReThrowingDataServiceError } from '../dialect-cloud-api/data-service-api';
 import type { WalletDto } from '../dialect-cloud-api/data-service-dapps-api';
-import axios from 'axios';
+import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-service-wallets-api.v1';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -16,6 +15,7 @@ export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export abstract class TokenProvider {
   static create(
     authenticationFacade: AuthenticationFacade,
+    dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
@@ -29,6 +29,7 @@ export abstract class TokenProvider {
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
+      dataServiceWalletsApiClientV1
     );
   }
 
@@ -62,7 +63,7 @@ export class CachedTokenProvider extends TokenProvider {
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
-    private readonly dialectCloudBaseUrl?: string,
+    private readonly dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
   ) {
     super();
   }
@@ -78,14 +79,19 @@ export class CachedTokenProvider extends TokenProvider {
     if (existingDelegatePromise) {
       return existingDelegatePromise;
     }
+    
     const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
-      await this.upsertWallet(it);
+      const walletDto: WalletDto = {
+        id: '',
+        publicKey: this.subject,
+      }
+      await this.dataServiceWalletsApiClientV1.upsertWallet(walletDto, it);
       return it;
     });
 
     // delete promise to refetch the token in case of failure
-    delegatePromise.catch(() => {
+    delegatePromise.catch((it) => {
       delete this.delegateGetPromises[subject];
     });
 
@@ -99,25 +105,6 @@ export class CachedTokenProvider extends TokenProvider {
       return false;
     }
     return this.tokenValidator.isValid(cachedToken);
-  }
-
-  private upsertWallet(token: Token) {
-    console.log("*\n*\n*\n Upserting wallet in token-provider")
-    const walletDto: WalletDto = {
-      id: '',
-      publicKey: this.subject,
-    }
-    return withReThrowingDataServiceError(
-      axios
-        .post<WalletDto>(
-          `${this.dialectCloudBaseUrl}/api/v1/wallets/me/`,
-          walletDto,
-          {
-            headers: createHeaders(token),
-          },
-        )
-        .then((it) => it.data),
-    );
   }
 
   private getCachedToken(): Token | null {

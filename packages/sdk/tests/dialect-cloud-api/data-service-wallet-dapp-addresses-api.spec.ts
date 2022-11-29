@@ -16,6 +16,7 @@ import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed255
 import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../../src/auth/auth.interface';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
+import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -34,9 +35,12 @@ describe('Data service wallet addresses api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     userAddress = userAuthenticationFacade.subject();
+    const userDataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     const walletDataServiceApi = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(userAuthenticationFacade),
+      TokenProvider.create(userAuthenticationFacade, userDataServiceWalletsApiV1),
     );
     walletDappAddressesApi = walletDataServiceApi.walletDappAddresses;
 
@@ -44,9 +48,12 @@ describe('Data service wallet addresses api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     dappAddress = dappAuthenticationFacade.subject();
+    const dappDataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     dappApi = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(dappAuthenticationFacade),
+      TokenProvider.create(dappAuthenticationFacade, dappDataServiceWalletsApiV1),
     ).dapps;
     dappDto = await dappApi.create({
       name: 'Test dapp',

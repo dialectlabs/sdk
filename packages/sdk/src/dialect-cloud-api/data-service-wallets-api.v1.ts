@@ -1,4 +1,4 @@
-import type { TokenProvider } from '../auth/token-provider';
+import type { Token } from '../auth/auth.interface';
 import {
   createHeaders,
   withReThrowingDataServiceError,
@@ -7,7 +7,7 @@ import type { WalletDto } from './data-service-dapps-api';
 import axios from 'axios';
 
 export interface DataServiceWalletsApiV1 {
-  upsertWallet(walletDto: WalletDto): Promise<WalletDto>;
+  upsertWallet(walletDto: WalletDto, token: Token): Promise<WalletDto>;
 }
 
 export class DataServiceWalletsApiClientV1
@@ -15,11 +15,9 @@ export class DataServiceWalletsApiClientV1
 {
   constructor(
     private readonly baseUrl: string,
-    private readonly tokenProvider: TokenProvider,
   ) {}
 
-  async upsertWallet(walletDto: WalletDto): Promise<WalletDto> {
-    const token = await this.tokenProvider.get();
+  async upsertWallet(walletDto: WalletDto, token: Token): Promise<WalletDto> {
     return withReThrowingDataServiceError(
       axios
         .post<WalletDto>(

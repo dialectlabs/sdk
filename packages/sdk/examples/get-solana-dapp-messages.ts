@@ -10,6 +10,7 @@ import {
   UpsertNotificationSubscriptionCommand,
 } from '../src';
 import { AddressTypeDto } from '../src/dialect-cloud-api/data-service-dapps-api';
+import { DataServiceWalletsApiClientV1 } from '../src/dialect-cloud-api/data-service-wallets-api.v1';
 import { createSolanaSdk } from './helpers';
 
 (async () => {
@@ -21,9 +22,12 @@ import { createSolanaSdk } from './helpers';
   ).get();
 
   // create dapp api
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      sdk1.config.dialectCloud.url,
+    );
   const dappDataServiceApi = DataServiceApi.create(
     sdk1.config.dialectCloud.url,
-    TokenProvider.create(dappAuthenticationFacade),
+    TokenProvider.create(dappAuthenticationFacade, dataServiceWalletsApiV1),
   );
 
   // create dapp
