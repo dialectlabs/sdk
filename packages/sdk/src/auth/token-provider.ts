@@ -82,11 +82,10 @@ export class CachedTokenProvider extends TokenProvider {
     
     const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
-      const walletDto: WalletDto = {
-        id: '',
+      const wallet: { publicKey: string } = {
         publicKey: this.subject,
       }
-      await this.dataServiceWalletsApiClientV1.upsertWallet(walletDto, it);
+      await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
       return it;
     });
 

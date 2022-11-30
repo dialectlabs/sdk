@@ -7,7 +7,7 @@ import type { WalletDto } from './data-service-dapps-api';
 import axios from 'axios';
 
 export interface DataServiceWalletsApiV1 {
-  upsertWallet(walletDto: WalletDto, token: Token): Promise<WalletDto>;
+  upsertWallet(wallet: { publicKey: string }, token: Token): Promise<WalletDto>;
 }
 
 export class DataServiceWalletsApiClientV1
@@ -17,12 +17,12 @@ export class DataServiceWalletsApiClientV1
     private readonly baseUrl: string,
   ) {}
 
-  async upsertWallet(walletDto: WalletDto, token: Token): Promise<WalletDto> {
+  async upsertWallet(wallet: { publicKey: string }, token: Token): Promise<WalletDto> {
     return withReThrowingDataServiceError(
       axios
         .post<WalletDto>(
           `${this.baseUrl}/api/v1/wallets/me/`,
-          walletDto,
+          wallet,
           {
             headers: createHeaders(token),
           },
