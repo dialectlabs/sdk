@@ -33,6 +33,8 @@ export function createSolanaSdk(): DialectSdk<Solana> {
       environment,
     },
     SolanaSdkFactory.create({
+      // IMPORTANT: must set environment variable DIALECT_SDK_CREDENTIALS
+      // to your dapp's Solana messaging wallet keypair e.g. [170,23, . . . ,300]
       wallet: NodeDialectSolanaWalletAdapter.create(),
     }),
   );
@@ -105,6 +107,8 @@ export function createAptosSdk(): DialectSdk<Aptos> {
       environment,
     },
     AptosSdkFactory.create({
+      // IMPORTANT: must set environment variable DIALECT_SDK_CREDENTIALS
+      // to your dapp's Aptos messaging wallet keypair
       wallet: NodeDialectAptosWalletAdapter.create(),
     }),
   );
