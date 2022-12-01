@@ -44,6 +44,7 @@ import type { Messaging } from '../../messaging/messaging.interface';
 import type { EncryptionKeysProvider } from '../../encryption/encryption-keys-provider';
 import { DataServiceApiFactory } from '../../dialect-cloud-api/data-service-api-factory';
 import type { DataServiceApi } from '../../dialect-cloud-api/data-service-api';
+import { DataServiceWalletsApiClientV1 } from '../../dialect-cloud-api/data-service-wallets-api.v1';
 
 export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
   implements DialectSdk<ChainSdk>
@@ -129,12 +130,16 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       }),
       authenticationFacade.tokenGenerator,
     );
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      config.dialectCloud.url,
+    );
     return new CachedTokenProvider(
       defaultTokenProvider,
       config.dialectCloud.tokenStore,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
+      dataServiceWalletsApiV1,
     );
   }
 
