@@ -1108,6 +1108,18 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@onsol/tldparser@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.3.3.tgz#4dd1df4f3cfb3f677527c0929002c342b3a8cd71"
+  integrity sha512-Daf2vudmYzouqHineedg4l/tZ8PoqJ3jNgGi7eEahHDoS2desOudy4x7hV6DzkQZ+9696Sh6Zpu+/QatIF4/wg==
+  dependencies:
+    "@solana/buffer-layout" "^4.0.0"
+    "@solana/web3.js" "^1.17.0"
+    bigint-buffer "^1.1.5"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    buffer "6.0.1"
+
 "@panva/asn1.js@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@panva/asn1.js/-/asn1.js-1.0.0.tgz#dd55ae7b8129e02049f009408b97c61ccf9032f6"
@@ -1354,6 +1366,27 @@
   integrity sha512-IZp02Egb4vOueBnPY3Hf2PRqsbBjLZyNOImq956J3OEtIRPSWbq+6TKMQ1OrSOI3g9mvccY7QjbtvJEwTQBY2w==
   dependencies:
     eventemitter3 "^4.0.0"
+
+"@solana/web3.js@^1.17.0":
+  version "1.66.2"
+  resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.66.2.tgz#80b43c5868b846124fe3ebac7d3943930c3fa60c"
+  integrity sha512-RyaHMR2jGmaesnYP045VLeBGfR/gAW3cvZHzMFGg7bkO+WOYOYp1nEllf0/la4U4qsYGKCsO9eEevR5fhHiVHg==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    "@noble/ed25519" "^1.7.0"
+    "@noble/hashes" "^1.1.2"
+    "@noble/secp256k1" "^1.6.3"
+    "@solana/buffer-layout" "^4.0.0"
+    bigint-buffer "^1.1.5"
+    bn.js "^5.0.0"
+    borsh "^0.7.0"
+    bs58 "^4.0.1"
+    buffer "6.0.1"
+    fast-stable-stringify "^1.0.0"
+    jayson "^3.4.4"
+    node-fetch "2"
+    rpc-websockets "^7.5.0"
+    superstruct "^0.14.2"
 
 "@solana/web3.js@^1.21.0":
   version "1.43.6"
