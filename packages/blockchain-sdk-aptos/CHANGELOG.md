@@ -2,7 +2,7 @@
 
 ## [UNRELEASED]
 
-## [1.3.1] - 2022-11-29
+## [1.0.3] - 2022-11-30
 
 - fix: remove implicit sdk-cred generation
 

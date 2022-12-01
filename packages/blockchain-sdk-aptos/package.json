@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/blockchain-sdk-aptos",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
