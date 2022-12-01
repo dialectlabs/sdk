@@ -7,6 +7,7 @@ import {
 } from '../../src';
 import type { DataServicePushNotificationSubscriptionsApi } from '../../src/dialect-cloud-api/data-service-push-notification-subscriptions-api';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
+import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 
 describe('Data service push notification subscriptions api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -22,9 +23,12 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     userAddress = authenticationFacade.subject();
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(authenticationFacade),
+      TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
     ).pushNotificationSubscriptions;
   });
 

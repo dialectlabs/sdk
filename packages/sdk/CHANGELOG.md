@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.4.0] - 2022-11-30
+
+feature: upsert wallet in token provider on new client connection
+
 ## [1.3.0] - 2022-11-03
 
 - feat: add to request dapps by blockchainType property

@@ -6,6 +6,8 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
+import type { WalletDto } from '../dialect-cloud-api/data-service-dapps-api';
+import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-service-wallets-api.v1';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -13,6 +15,7 @@ export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export abstract class TokenProvider {
   static create(
     authenticationFacade: AuthenticationFacade,
+    dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
   ): TokenProvider {
@@ -26,6 +29,7 @@ export abstract class TokenProvider {
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
+      dataServiceWalletsApiClientV1
     );
   }
 
@@ -59,6 +63,7 @@ export class CachedTokenProvider extends TokenProvider {
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
+    private readonly dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
   ) {
     super();
   }
@@ -74,13 +79,18 @@ export class CachedTokenProvider extends TokenProvider {
     if (existingDelegatePromise) {
       return existingDelegatePromise;
     }
-    const delegatePromise = this.delegate.get().then((it) => {
+    
+    const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
+      const wallet: { publicKey: string } = {
+        publicKey: this.subject,
+      }
+      await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
       return it;
     });
 
     // delete promise to refetch the token in case of failure
-    delegatePromise.catch(() => {
+    delegatePromise.catch((it) => {
       delete this.delegateGetPromises[subject];
     });
 

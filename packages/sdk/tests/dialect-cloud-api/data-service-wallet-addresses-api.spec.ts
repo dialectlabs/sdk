@@ -13,6 +13,7 @@ import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed255
 import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../../src/auth/auth.interface';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
+import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -25,9 +26,12 @@ describe('Data service wallet addresses api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     userAccountAddress = authenticationFacade.subject();
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+      baseUrl,
+    );
     api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(authenticationFacade),
+      TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
     ).walletAddresses;
   });
 
