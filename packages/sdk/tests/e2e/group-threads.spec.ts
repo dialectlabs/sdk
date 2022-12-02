@@ -6,21 +6,15 @@ import {
   CreateThreadCommand,
   Dialect,
   Ed25519PublicKey,
+  Environment,
   generateEd25519Keypair,
   ThreadAlreadyExistsError,
   ThreadMemberScope,
 } from '@dialectlabs/sdk';
+import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
+import { Keypair } from '@solana/web3.js';
 
-function createSdk() {
-  return Dialect.sdk(
-    {
-      environment: 'local-development',
-    },
-    SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(),
-    }),
-  );
-}
+const environment: Environment = 'local-development';
 
 function getScopedMembers(...members: string[]) {
   return members.map((it) => ({
@@ -36,7 +30,7 @@ function generateAddress() {
 describe('Group threads routines test (e2e)', () => {
   it('can create group thread (with >2 members)', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -65,7 +59,7 @@ describe('Group threads routines test (e2e)', () => {
   });
 
   it('cannot create encrypted group thread', async () => {
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -82,7 +76,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('cannot create group thread with same members', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -103,7 +97,7 @@ describe('Group threads routines test (e2e)', () => {
   });
 
   it('cannot create group thread with repeated members', async () => {
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -118,7 +112,7 @@ describe('Group threads routines test (e2e)', () => {
   });
 
   it('cannot create group thread with self among other members', async () => {
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let command: CreateThreadCommand = {
       encrypted: false,
@@ -135,7 +129,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('when two threads with matching members exist, finds only one with exact given members', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -171,7 +165,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('cannot create group thread with same members after add members', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -204,7 +198,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('cannot create group thread with same members after remove members', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -235,7 +229,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('cannot add member to match existing group dialect', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();
@@ -269,7 +263,7 @@ describe('Group threads routines test (e2e)', () => {
 
   it('cannot remove member to match existion group dialect', async () => {
     // given
-    const wallet1 = createSdk();
+    const wallet1 = createSolanaSdk(environment, Keypair.generate());
 
     let member1 = generateAddress();
     let member2 = generateAddress();

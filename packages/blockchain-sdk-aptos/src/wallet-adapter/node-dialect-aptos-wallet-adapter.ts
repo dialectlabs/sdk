@@ -29,8 +29,7 @@ export class NodeDialectAptosWalletAdapter
         } using provided ${account.pubKey()} public key and ${account.address()} address.`,
       );
       return new NodeDialectAptosWalletAdapter(account);
-    }
-    if (process.env.DIALECT_SDK_CREDENTIALS) {
+    } else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKeyRaw = process.env.DIALECT_SDK_CREDENTIALS;
       const privateKey = new Uint8Array(JSON.parse(privateKeyRaw as string));
       const account = new AptosAccount(privateKey);
@@ -40,14 +39,11 @@ export class NodeDialectAptosWalletAdapter
         } using provided ${account.pubKey()} public key and ${account.address()} address.`,
       );
       return new NodeDialectAptosWalletAdapter(account);
+    } else {
+      throw new Error(
+        `Error initializing ${NodeDialectAptosWalletAdapter.name}: SDK credential must be provided.`,
+      );
     }
-    const account = new AptosAccount();
-    console.log(
-      `Initializing ${
-        NodeDialectAptosWalletAdapter.name
-      } using generated ${account.pubKey()} public key and ${account.address()} address.`,
-    );
-    return new NodeDialectAptosWalletAdapter(account);
   }
 
   async signMessage(message: string): Promise<string> {

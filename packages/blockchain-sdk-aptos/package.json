@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/blockchain-sdk-aptos",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
@@ -20,7 +20,8 @@
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\"",
     "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\"",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "dependencies": {
     "tweetnacl": "^1.0.3"
