@@ -20,8 +20,7 @@ export class NodeDialectSolanaWalletAdapter
         } using provided ${keypair.publicKey.toBase58()} key.`,
       );
       return new NodeDialectSolanaWalletAdapter(keypair);
-    }
-    else if (process.env.DIALECT_SDK_CREDENTIALS) {
+    } else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKey = process.env.DIALECT_SDK_CREDENTIALS;
       const keypair: Keypair = Keypair.fromSecretKey(
         new Uint8Array(JSON.parse(privateKey as string)),
@@ -32,11 +31,10 @@ export class NodeDialectSolanaWalletAdapter
         } using env-provided ${keypair.publicKey.toBase58()} key.`,
       );
       return new NodeDialectSolanaWalletAdapter(keypair);
-    }
-    else {
-      throw new Error(`Error initializing ${
-        NodeDialectSolanaWalletAdapter.name
-      }: SDK credential must be provided.`);
+    } else {
+      throw new Error(
+        `Error initializing ${NodeDialectSolanaWalletAdapter.name}: SDK credential must be provided.`,
+      );
     }
   }
 

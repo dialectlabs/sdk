@@ -20,7 +20,8 @@
     "build:esm": "tsc --project tsconfig.esm.json",
     "build:esm:watch": "concurrently \"tsc --project tsconfig.esm.json --watch\"",
     "dev": "yarn clean && concurrently \"npm:build:cjs:watch\" \"npm:build:esm:watch\"",
-    "test": "jest"
+    "test": "jest",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "devDependencies": {
     "@solana/wallet-adapter-base": "^0.9.15",
