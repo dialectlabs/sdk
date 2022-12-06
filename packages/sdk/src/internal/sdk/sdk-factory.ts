@@ -240,11 +240,12 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
 
   private initializeConfig(): Config {
     const environment = this.config.environment ?? 'production';
+    const dialectCloud = this.initializeDialectCloudConfig();
     const encryptionKeysStore = this.createEncryptionKeysStore();
     const identity = this.createIdentityConfig();
     return {
       environment,
-      dialectCloud: this.initializeDialectCloudConfig(),
+      dialectCloud,
       encryptionKeysStore,
       identity,
     };
