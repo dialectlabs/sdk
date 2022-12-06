@@ -27,6 +27,6 @@
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
-    "@onsol/tldparser": "^0.3.3"
+    "@onsol/tldparser": "^0.3.5"
   }
 }
