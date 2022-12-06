@@ -31,7 +31,7 @@ To support this, the Dialect SDK includes APIs for:
 
 ### Create an SDK client & connect your wallet to it
 
-Run the [`create-sdk` example script](examples/create-sdk.ts).
+Run the [`create-solana-sdk` example script](examples/create-solana-sdk.ts).
 
 To use the Dialect SDK, you'll need to create an SDK client with an assigned wallet to:
 
@@ -67,6 +67,8 @@ const solana = {
 };
 // A node wallet for running in a node environment. N.b. this would be a mobile or web wallet object instead. The Wrapper class handles conversion to the API expected by the Dialect SDK, but is mostly consistent with expected wallet APIs.
 const wallet = DialectSolanaWalletAdapterWrapper.create(
+  // IMPORTANT: must set environment variable DIALECT_SDK_CREDENTIALS
+  // to your dapp's Solana messaging wallet keypair e.g. [170,23, . . . ,300]
   NodeDialectSolanaWalletAdapter.create(),
 );
 

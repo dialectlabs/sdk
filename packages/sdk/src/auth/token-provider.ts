@@ -29,7 +29,7 @@ export abstract class TokenProvider {
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
-      dataServiceWalletsApiClientV1
+      dataServiceWalletsApiClientV1,
     );
   }
 
@@ -79,12 +79,12 @@ export class CachedTokenProvider extends TokenProvider {
     if (existingDelegatePromise) {
       return existingDelegatePromise;
     }
-    
+
     const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
       const wallet: { publicKey: string } = {
         publicKey: this.subject,
-      }
+      };
       await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
       return it;
     });

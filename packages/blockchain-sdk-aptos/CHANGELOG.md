@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.0.3] - 2022-11-30
+
+- fix: remove implicit sdk-cred generation
+
 ## [1.0.2] - 2022-10-11
 
 - fix: unpadded public key hex support fix and add utils test

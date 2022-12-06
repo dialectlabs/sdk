@@ -19,11 +19,13 @@ import {
 
 describe('solana ed25519 token tests', () => {
   let wallet: DialectSolanaWalletAdapterWrapper;
+  let walletKeypair: Keypair;
   let signer: SolanaEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
+    walletKeypair = Keypair.generate();
     wallet = new DialectSolanaWalletAdapterWrapper(
-      NodeDialectSolanaWalletAdapter.create(),
+      NodeDialectSolanaWalletAdapter.create(walletKeypair),
     );
     signer = new DialectWalletAdapterSolanaEd25519TokenSigner(wallet);
     authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(

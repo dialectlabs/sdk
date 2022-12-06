@@ -2,28 +2,24 @@ import {
   NodeDialectSolanaWalletAdapter,
   SolanaSdkFactory,
 } from '@dialectlabs/blockchain-sdk-solana';
-import type { Thread } from '@dialectlabs/sdk';
+import type { Environment, Thread } from '@dialectlabs/sdk';
 import { Dialect, ThreadMemberScope } from '@dialectlabs/sdk';
+import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
+import { Keypair } from '@solana/web3.js';
+
+const environment: Environment = 'local-development';
 
 describe('Marking thread messages as read test (e2e)', () => {
+  let senderSdkKeypair: Keypair;
+  let receiverSdkKeypair: Keypair;
+  beforeEach(() => {
+    senderSdkKeypair = Keypair.generate();
+    receiverSdkKeypair = Keypair.generate();
+  });
   test('can mark message as read', async () => {
     // given
-    const senderSdk = Dialect.sdk(
-      {
-        environment: 'local-development',
-      },
-      SolanaSdkFactory.create({
-        wallet: NodeDialectSolanaWalletAdapter.create(),
-      }),
-    );
-    const receiverSdk = Dialect.sdk(
-      {
-        environment: 'local-development',
-      },
-      SolanaSdkFactory.create({
-        wallet: NodeDialectSolanaWalletAdapter.create(),
-      }),
-    );
+    const senderSdk = createSolanaSdk(environment, senderSdkKeypair);
+    const receiverSdk = createSolanaSdk(environment, receiverSdkKeypair);
     const thread = await senderSdk.threads.create({
       encrypted: false,
       me: {

@@ -10,23 +10,18 @@ export interface DataServiceWalletsApiV1 {
   upsertWallet(wallet: { publicKey: string }, token: Token): Promise<WalletDto>;
 }
 
-export class DataServiceWalletsApiClientV1
-  implements DataServiceWalletsApiV1
-{
-  constructor(
-    private readonly baseUrl: string,
-  ) {}
+export class DataServiceWalletsApiClientV1 implements DataServiceWalletsApiV1 {
+  constructor(private readonly baseUrl: string) {}
 
-  async upsertWallet(wallet: { publicKey: string }, token: Token): Promise<WalletDto> {
+  async upsertWallet(
+    wallet: { publicKey: string },
+    token: Token,
+  ): Promise<WalletDto> {
     return withReThrowingDataServiceError(
       axios
-        .post<WalletDto>(
-          `${this.baseUrl}/api/v1/wallets/me/`,
-          wallet,
-          {
-            headers: createHeaders(token),
-          },
-        )
+        .post<WalletDto>(`${this.baseUrl}/api/v1/wallets/me/`, wallet, {
+          headers: createHeaders(token),
+        })
         .then((it) => it.data),
     );
   }

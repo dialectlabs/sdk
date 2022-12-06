@@ -1,20 +1,11 @@
-import { Dialect, DialectSdk, ThreadMemberScope } from '@dialectlabs/sdk';
-import {
-  NodeDialectSolanaWalletAdapter,
+import { Dialect, DialectSdk, Environment, ThreadMemberScope } from '@dialectlabs/sdk';
+import type {
   Solana,
-  SolanaSdkFactory,
 } from '../../src';
+import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
+import { Keypair } from '@solana/web3.js';
 
-function createSdk() {
-  return Dialect.sdk(
-    {
-      environment: 'local-development',
-    },
-    SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(),
-    }),
-  );
-}
+const environment: Environment = 'local-development';
 
 function createThread(sdk: DialectSdk<Solana>, receiver: DialectSdk<Solana>) {
   return sdk.threads.create({
@@ -34,16 +25,16 @@ function createThread(sdk: DialectSdk<Solana>, receiver: DialectSdk<Solana>) {
 describe('Wallet dapp messages (e2e)', () => {
   test('can find all dapp messages', async () => {
     // given
-    const dapp1Sdk = createSdk();
+    const dapp1Sdk = createSolanaSdk(environment, Keypair.generate());
     await dapp1Sdk.dapps.create({
       name: 'test',
     });
-    const dapp2Sdk = createSdk();
+    const dapp2Sdk = createSolanaSdk(environment, Keypair.generate());
     await dapp2Sdk.dapps.create({
       name: 'test',
     });
-    const sdk1 = createSdk();
-    const sdk2 = createSdk();
+    const sdk1 = createSolanaSdk(environment, Keypair.generate());
+    const sdk2 = createSolanaSdk(environment, Keypair.generate());
     // when
     const dapp1Sdk1Thread = await createThread(dapp1Sdk, sdk1);
     await dapp1Sdk1Thread.send({ text: 'dapp1Sdk1Thread' });
