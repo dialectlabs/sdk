@@ -12,14 +12,11 @@ import type {
 import { EncryptionKeysProvider } from '@dialectlabs/sdk';
 import type { DialectSolanaWalletAdapter } from '../wallet-adapter/dialect-solana-wallet-adapter.interface';
 import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
-import { SolanaEd25519AuthenticationFacadeFactory } from '../auth/ed25519/solana-ed25519-authentication-facade-factory';
-import { DialectWalletAdapterSolanaEd25519TokenSigner } from '../auth/ed25519/solana-ed25519-token-signer';
-import { SolanaTxAuthenticationFacadeFactory } from '../auth/tx/solana-tx-authentication-facade-factory';
-import { DialectWalletAdapterSolanaTxTokenSigner } from '../auth/tx/solana-tx-token-signer';
 import { SolanaMessaging } from '../messaging/solana-messaging';
 import { SolanaDappAddresses } from '../dapp/solana-dapp-addresses';
 import { SolanaDappMessages } from '../dapp/solana-dapp-messages';
 import { DIALECT_BLOCKCHAIN_SDK_TYPE_SOLANA } from './constants';
+import { SolanaAuthenticationFacadeFactory } from '../auth/solana-authentication-facade-factory';
 
 export interface SolanaConfigProps {
   wallet: DialectSolanaWalletAdapter;
@@ -90,13 +87,11 @@ Solana settings:
       walletAdapterEncryptionKeysProvider,
       config.encryptionKeysStore,
     );
-    const authenticationFacadeFactory = wallet.canSignMessage()
-      ? new SolanaEd25519AuthenticationFacadeFactory(
-          new DialectWalletAdapterSolanaEd25519TokenSigner(wallet),
-        )
-      : new SolanaTxAuthenticationFacadeFactory(
-          new DialectWalletAdapterSolanaTxTokenSigner(wallet),
-        );
+
+    const authenticationFacadeFactory = new SolanaAuthenticationFacadeFactory(
+      config,
+      wallet,
+    ).create();
     const authenticationFacade = authenticationFacadeFactory.get();
 
     const onChainMessagingFactory = () => {
