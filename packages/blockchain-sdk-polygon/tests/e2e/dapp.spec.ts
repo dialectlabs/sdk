@@ -1,6 +1,6 @@
 import { Dialect } from '@dialectlabs/sdk';
 import { PolygonSdkFactory } from '../../src/sdk/sdk';
-import { NodeDialectPolygonWalletAdapter } from '../../wallet-adapter/node-dialect-polygon-wallet-adapter';
+import { NodeDialectPolygonWalletAdapter } from '../../src/wallet-adapter/node-dialect-polygon-wallet-adapter';
 
 
 function createSdk() {
@@ -18,9 +18,14 @@ describe('Dapps (e2e)', () => {
     test('Can find all dapps using filters', async () => {
         // given
         const dapp1Sdk = createSdk();
+
+        console.warn(await dapp1Sdk.dapps.create({ name: '1' }));
+
         const dapp = await dapp1Sdk.dapps.create({
             name: 'test',
         });
+
+
         // when
         const sdk = createSdk();
         const allVerifiedDapps = (

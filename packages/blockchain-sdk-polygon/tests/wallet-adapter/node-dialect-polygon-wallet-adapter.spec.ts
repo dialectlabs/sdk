@@ -1,4 +1,4 @@
-import { NodeDialectPolygonWalletAdapter } from '../../wallet-adapter/node-dialect-polygon-wallet-adapter';
+import { NodeDialectPolygonWalletAdapter } from '../../src/wallet-adapter/node-dialect-polygon-wallet-adapter';
 
 describe('dialect node polygon wallet adapter', () => {
     it('should sign message correctly', async () => {

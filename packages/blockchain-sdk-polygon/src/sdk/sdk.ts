@@ -1,11 +1,12 @@
 import type { BlockchainSdkFactory, BlockchainSdk, Config, Environment } from '@dialectlabs/sdk';
-import type { DialectPolygonWalletAdapter } from '../../wallet-adapter/dialect-polygon-wallet-adapter.interface';
-import { DialectPolygonWalletAdapterWrapper } from '../../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
+import type { DialectPolygonWalletAdapter } from '../wallet-adapter/dialect-polygon-wallet-adapter.interface';
+import { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
 import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
-import { DialectWalletAdapterPolygonEd25519TokenSigner } from '../../auth/polygon-ed25519-token-signer';
-import { PolygonEd25519AuthenticationFacadeFactory } from '../../auth/polygon-ed25519-authentication-facade-factory';
-import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from './constant';
-import { DialectPolygonWalletAdapterEncryptionKeysProvider } from "../../encryption/encryption-keys-provider"
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from './constants';
+
+import { PolygonEd25519AuthenticationFacadeFactory } from '../auth/polygon-ed25519-authentication-facade-factory';
+import { DialectWalletAdapterPolygonEd25519TokenSigner } from '../auth/polygon-ed25519-token-signer';
+import { DialectPolygonWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 
 export interface PolygonConfigProps {
   wallet: DialectPolygonWalletAdapter;

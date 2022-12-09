@@ -5,6 +5,7 @@ import {
 } from '@dialectlabs/sdk';
 import type { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
 
+
 export class DialectPolygonWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
     constructor(
         private readonly dialectWalletAdapter: DialectPolygonWalletAdapterWrapper,

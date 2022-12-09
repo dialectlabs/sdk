@@ -1,13 +1,10 @@
-import { DialectPolygonWalletAdapterWrapper } from "../../../wallet-adapter/dialect-polygon-wallet-adapter-wrapper";
+import { DialectPolygonWalletAdapterWrapper } from "../../../src/wallet-adapter/dialect-polygon-wallet-adapter-wrapper";
 import { Duration } from 'luxon';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
-import { NodeDialectPolygonWalletAdapter } from "../../../wallet-adapter/node-dialect-polygon-wallet-adapter";
-import {
-  DialectWalletAdapterPolygonEd25519TokenSigner,
-  PolygonEd25519TokenSigner
-} from "../../../auth/polygon-ed25519-token-signer";
-import { PolygonEd25519AuthenticationFacadeFactory } from "../../../auth/polygon-ed25519-authentication-facade-factory";
+import { NodeDialectPolygonWalletAdapter } from "../../../src/wallet-adapter/node-dialect-polygon-wallet-adapter";
 import Web3 from "web3";
+import { DialectWalletAdapterPolygonEd25519TokenSigner, PolygonEd25519TokenSigner } from "../../../src/auth/polygon-ed25519-token-signer";
+import { PolygonEd25519AuthenticationFacadeFactory } from "../../../src/auth/polygon-ed25519-authentication-facade-factory";
 
 describe('polygon ed25519 token tests', () => {
   let wallet: DialectPolygonWalletAdapterWrapper;

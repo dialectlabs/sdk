@@ -1,10 +1,10 @@
-import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from '../src/sdk/constant';
-import type { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
 import type {
   AccountAddress,
   TokenSigner,
   TokenSignerResult,
 } from '@dialectlabs/sdk';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from '../sdk/constants';
+import type { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
 
 export const EVM_ED25519_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON}-ed25519`;
 
