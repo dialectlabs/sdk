@@ -1,19 +1,19 @@
-import { DialectPolygonWalletAdapterWrapper } from "../../../src/wallet-adapter/dialect-polygon-wallet-adapter-wrapper";
+import { DialectEvmWalletAdapterWrapper } from "../../../src/wallet-adapter/dialect-evm-wallet-adapter-wrapper";
 import { Duration } from 'luxon';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
-import { NodeDialectPolygonWalletAdapter } from "../../../src/wallet-adapter/node-dialect-polygon-wallet-adapter";
+import { NodeDialectEvmWalletAdapter } from "../../../src/wallet-adapter/node-evm-wallet-adapter";
 import Web3 from "web3";
-import { DialectWalletAdapterPolygonEd25519TokenSigner, PolygonEd25519TokenSigner } from "../../../src/auth/polygon-ed25519-token-signer";
-import { PolygonEd25519AuthenticationFacadeFactory } from "../../../src/auth/polygon-ed25519-authentication-facade-factory";
+import { DialectWalletAdapterEvmEd25519TokenSigner, EvmEd25519TokenSigner } from "../../../src/auth/evm-ed25519-token-signer";
+import { EvmEd25519AuthenticationFacadeFactory } from "../../../src/auth/evm-ed25519-authentication-facade-factory";
 
 describe('polygon ed25519 token tests', () => {
-  let wallet: DialectPolygonWalletAdapterWrapper;
-  let signer: PolygonEd25519TokenSigner;
+  let wallet: DialectEvmWalletAdapterWrapper;
+  let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectPolygonWalletAdapterWrapper(NodeDialectPolygonWalletAdapter.create('5c5e2a8fa477f1e0babe2c425c9e936dc00441fccee9913fd81194f18bf535c5'));
-    signer = new DialectWalletAdapterPolygonEd25519TokenSigner(wallet) as any;
-    authenticationFacade = new PolygonEd25519AuthenticationFacadeFactory(signer).get();
+    wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create('dd4b7127f4601d376168ceb7107e6de8c9d67b4de2efef0b09557efe2043eadb'));
+    signer = new DialectWalletAdapterEvmEd25519TokenSigner(wallet) as any;
+    authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(signer).get();
   });
 
   test('when not expired validation returns true', async () => {

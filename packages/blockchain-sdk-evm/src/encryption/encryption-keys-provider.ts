@@ -3,12 +3,12 @@ import {
     EncryptionKeysProvider,
     UnsupportedOperationError,
 } from '@dialectlabs/sdk';
-import type { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
+import type { DialectEvmWalletAdapterWrapper } from '../wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 
 
-export class DialectPolygonWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
+export class DialectEvmWalletAdapterEncryptionKeysProvider extends EncryptionKeysProvider {
     constructor(
-        private readonly dialectWalletAdapter: DialectPolygonWalletAdapterWrapper,
+        private readonly dialectWalletAdapter: DialectEvmWalletAdapterWrapper,
     ) {
         super();
     }

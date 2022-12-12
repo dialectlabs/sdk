@@ -1,5 +1,5 @@
 {
-  "name": "@dialectlabs/blockchain-sdk-polygon",
+  "name": "@dialectlabs/blockchain-sdk-evm",
   "version": "1.0.0",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",

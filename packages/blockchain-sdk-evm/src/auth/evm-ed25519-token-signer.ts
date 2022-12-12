@@ -3,20 +3,20 @@ import type {
   TokenSigner,
   TokenSignerResult,
 } from '@dialectlabs/sdk';
-import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from '../sdk/constants';
-import type { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_EVM } from '../sdk/constants';
+import type { DialectEvmWalletAdapterWrapper } from '../wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 
-export const EVM_ED25519_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON}-ed25519`;
+export const EVM_ED25519_TOKEN_SIGNER_ALG = `${DIALECT_BLOCKCHAIN_SDK_TYPE_EVM}-ed25519`;
 
-export abstract class PolygonEd25519TokenSigner implements TokenSigner {
+export abstract class EvmEd25519TokenSigner implements TokenSigner {
   readonly alg = EVM_ED25519_TOKEN_SIGNER_ALG;
   abstract subject: AccountAddress;
   abstract sign(payload: Uint8Array): Promise<TokenSignerResult>;
 }
 
-export class DialectWalletAdapterPolygonEd25519TokenSigner extends PolygonEd25519TokenSigner {
+export class DialectWalletAdapterEvmEd25519TokenSigner extends EvmEd25519TokenSigner {
   constructor(
-    readonly dialectWalletAdapter: DialectPolygonWalletAdapterWrapper,
+    readonly dialectWalletAdapter: DialectEvmWalletAdapterWrapper,
   ) {
     super();
   }

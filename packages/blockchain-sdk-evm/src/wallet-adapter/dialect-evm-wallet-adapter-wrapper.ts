@@ -1,4 +1,4 @@
-import type { DialectPolygonWalletAdapter } from './dialect-polygon-wallet-adapter.interface';
+import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@dialectlabs/sdk';
 import type {
   TransactionConfig,
@@ -7,14 +7,14 @@ import type {
   EncryptedKeystoreV3Json,
 } from 'web3-core';
 
-export class DialectPolygonWalletAdapterWrapper
-  implements DialectPolygonWalletAdapter {
-  constructor(private readonly delegate: DialectPolygonWalletAdapter) { }
+export class DialectEvmWalletAdapterWrapper
+  implements DialectEvmWalletAdapter {
+  constructor(private readonly delegate: DialectEvmWalletAdapter) { }
 
   static create(
-    adapter: DialectPolygonWalletAdapter,
-  ): DialectPolygonWalletAdapterWrapper {
-    return new DialectPolygonWalletAdapterWrapper(adapter);
+    adapter: DialectEvmWalletAdapter,
+  ): DialectEvmWalletAdapterWrapper {
+    return new DialectEvmWalletAdapterWrapper(adapter);
   }
 
   get address(): string {

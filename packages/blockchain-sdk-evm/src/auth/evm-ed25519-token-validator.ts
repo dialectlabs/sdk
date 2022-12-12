@@ -1,6 +1,6 @@
 import { Token, TokenHeader, TokenValidator } from '@dialectlabs/sdk';
 import Web3 from 'web3';
-import { EVM_ED25519_TOKEN_SIGNER_ALG } from './polygon-ed25519-token-signer';
+import { EVM_ED25519_TOKEN_SIGNER_ALG } from './evm-ed25519-token-signer';
 
 export class PolygonEd25519TokenValidator extends TokenValidator {
   isSignatureValid(token: Token): boolean {

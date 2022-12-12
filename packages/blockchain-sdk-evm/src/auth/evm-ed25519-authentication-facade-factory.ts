@@ -7,11 +7,11 @@ import {
   TokenParser,
 } from '@dialectlabs/sdk';
 
-import { PolygonEd25519TokenValidator } from './polygon-ed25519-token-validator';
-import type { PolygonEd25519TokenSigner } from './polygon-ed25519-token-signer';
+import { PolygonEd25519TokenValidator } from './evm-ed25519-token-validator';
+import type { EvmEd25519TokenSigner } from './evm-ed25519-token-signer';
 
-export class PolygonEd25519AuthenticationFacadeFactory extends AuthenticationFacadeFactory {
-  constructor(private readonly tokenSigner: PolygonEd25519TokenSigner) {
+export class EvmEd25519AuthenticationFacadeFactory extends AuthenticationFacadeFactory {
+  constructor(private readonly tokenSigner: EvmEd25519TokenSigner) {
     super();
   }
 
@@ -26,7 +26,7 @@ export class PolygonEd25519AuthenticationFacadeFactory extends AuthenticationFac
     return new AuthenticationFacade(
       this.tokenSigner,
       new DefaultTokenGenerator(this.tokenSigner),
-      PolygonEd25519AuthenticationFacadeFactory.createAuthenticator(),
+      EvmEd25519AuthenticationFacadeFactory.createAuthenticator(),
     );
   }
 }

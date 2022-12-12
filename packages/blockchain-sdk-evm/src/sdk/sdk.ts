@@ -1,19 +1,19 @@
 import type { BlockchainSdkFactory, BlockchainSdk, Config, Environment } from '@dialectlabs/sdk';
-import type { DialectPolygonWalletAdapter } from '../wallet-adapter/dialect-polygon-wallet-adapter.interface';
-import { DialectPolygonWalletAdapterWrapper } from '../wallet-adapter/dialect-polygon-wallet-adapter-wrapper';
+import type { DialectEvmWalletAdapter } from '../wallet-adapter/dialect-evm-wallet-adapter.interface';
+import { DialectEvmWalletAdapterWrapper } from '../wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
-import { DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON } from './constants';
+import { DIALECT_BLOCKCHAIN_SDK_TYPE_EVM } from './constants';
 
-import { PolygonEd25519AuthenticationFacadeFactory } from '../auth/polygon-ed25519-authentication-facade-factory';
-import { DialectWalletAdapterPolygonEd25519TokenSigner } from '../auth/polygon-ed25519-token-signer';
-import { DialectPolygonWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
+import { EvmEd25519AuthenticationFacadeFactory } from '../auth/evm-ed25519-authentication-facade-factory';
+import { DialectWalletAdapterEvmEd25519TokenSigner } from '../auth/evm-ed25519-token-signer';
+import { DialectEvmWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 
 export interface PolygonConfigProps {
-  wallet: DialectPolygonWalletAdapter;
+  wallet: DialectEvmWalletAdapter;
 }
 
 export interface PolygonConfig extends PolygonConfigProps {
-  wallet: DialectPolygonWalletAdapterWrapper;
+  wallet: DialectEvmWalletAdapterWrapper;
 }
 
 export interface Polygon extends BlockchainSdk {
@@ -43,14 +43,14 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
 
     const wallet = polygonConfig.wallet;
     const walletAdapterEncryptionKeysProvider =
-      new DialectPolygonWalletAdapterEncryptionKeysProvider(wallet);
+      new DialectEvmWalletAdapterEncryptionKeysProvider(wallet);
     const encryptionKeysProvider = EncryptionKeysProvider.create(
       walletAdapterEncryptionKeysProvider,
       config.encryptionKeysStore,
     );
     const authenticationFacade = this.initializeAuthenticationFacade(wallet);
     return {
-      type: DIALECT_BLOCKCHAIN_SDK_TYPE_POLYGON,
+      type: DIALECT_BLOCKCHAIN_SDK_TYPE_EVM,
       info: {
         supportsOnChainMessaging: false,
       },
@@ -61,16 +61,16 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
   }
 
   private initializeAuthenticationFacade(
-    wallet: DialectPolygonWalletAdapterWrapper,
+    wallet: DialectEvmWalletAdapterWrapper,
   ) {
     if (wallet.canSignMessage()) {
-      return new PolygonEd25519AuthenticationFacadeFactory(
-        new DialectWalletAdapterPolygonEd25519TokenSigner(wallet),
+      return new EvmEd25519AuthenticationFacadeFactory(
+        new DialectWalletAdapterEvmEd25519TokenSigner(wallet),
       ).get();
     }
     if (wallet.canSignTransaction()) {
-      return new PolygonEd25519AuthenticationFacadeFactory(
-        new DialectWalletAdapterPolygonEd25519TokenSigner(wallet),
+      return new EvmEd25519AuthenticationFacadeFactory(
+        new DialectWalletAdapterEvmEd25519TokenSigner(wallet),
       ).get();
     }
     throw new IllegalArgumentError(
@@ -84,7 +84,7 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
   }
 
   private initializePolygonConfig(): PolygonConfig {
-    const wallet = new DialectPolygonWalletAdapterWrapper(
+    const wallet = new DialectEvmWalletAdapterWrapper(
       this.polygoncConfigProps.wallet,
     );
     return {

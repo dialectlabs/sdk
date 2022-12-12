@@ -5,7 +5,7 @@ import type {
   Sign,
 } from 'web3-core';
 
-export interface DialectPolygonWalletAdapter {
+export interface DialectEvmWalletAdapter {
   address?: string;
   signTransaction: (
     transactionConfig: TransactionConfig,

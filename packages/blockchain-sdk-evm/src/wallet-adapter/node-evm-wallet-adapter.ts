@@ -1,11 +1,10 @@
 import type { Account, TransactionConfig, SignedTransaction } from 'web3-core';
 import Web3 from 'web3';
-import type { DialectPolygonWalletAdapter } from './dialect-polygon-wallet-adapter.interface';
+import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
 
-export class NodeDialectPolygonWalletAdapter
-  implements DialectPolygonWalletAdapter
-{
-  constructor(private readonly account: Account) {}
+export class NodeDialectEvmWalletAdapter
+  implements DialectEvmWalletAdapter {
+  constructor(private readonly account: Account) { }
 
   get address() {
     return this.account.address;
@@ -16,19 +15,19 @@ export class NodeDialectPolygonWalletAdapter
     if (privateKey) {
       const account = web3.eth.accounts.privateKeyToAccount(privateKey);
       console.log(
-        `Initializing ${NodeDialectPolygonWalletAdapter.name} using provided ${account.address}.`,
+        `Initializing ${NodeDialectEvmWalletAdapter.name} using provided ${account.address}.`,
       );
-      return new NodeDialectPolygonWalletAdapter(account);
+      return new NodeDialectEvmWalletAdapter(account);
     } else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKeyRaw = process.env.DIALECT_SDK_CREDENTIALS;
       const account = web3.eth.accounts.privateKeyToAccount(privateKeyRaw);
       console.log(
-        `Initializing ${NodeDialectPolygonWalletAdapter.name} using provided ${account.address}.`,
+        `Initializing ${NodeDialectEvmWalletAdapter.name} using provided ${account.address}.`,
       );
-      return new NodeDialectPolygonWalletAdapter(account);
+      return new NodeDialectEvmWalletAdapter(account);
     } else {
       throw new Error(
-        `Error initializing ${NodeDialectPolygonWalletAdapter.name}: SDK credential must be provided.`,
+        `Error initializing ${NodeDialectEvmWalletAdapter.name}: SDK credential must be provided.`,
       );
     }
   }
