@@ -1,4 +1,4 @@
-import { TldParser, NameRecordHeader } from '@onsol/tldparser';
+import { TldParser } from '@onsol/tldparser';
 import type {
   AccountAddress,
   Identity,
@@ -17,37 +17,9 @@ export class ANSIdentityResolver implements IdentityResolver {
   async resolve(address: AccountAddress): Promise<Identity | null> {
     try {
       const parser = new TldParser(this.connection);
-      const allDomains = await parser.getAllUserDomains(address);
-
-      if (!allDomains || !allDomains[0]) {
-        return null;
-      }
-      const mainDomain = allDomains[0];
-      const mainDomainRecord = await NameRecordHeader.fromAccountAddress(
-        this.connection,
-        mainDomain,
-      );
-
-      // expired or not found
-      if (!mainDomainRecord?.owner) return null;
-
-      const parentNameAccount = await NameRecordHeader.fromAccountAddress(
-        this.connection,
-        mainDomainRecord?.parentName,
-      );
-
-      const tld = await parser.getTldFromParentAccount(
-        mainDomainRecord?.parentName,
-      );
-
-      // not found
-      if (!parentNameAccount?.owner) return null;
-
-      const domain = await parser.reverseLookupNameAccount(
-        mainDomain,
-        parentNameAccount?.owner,
-      );
-
+      const mainDomain = await parser.getMainDomain(address);
+      const domain = mainDomain.domain;
+      const tld = mainDomain.tld
       return {
         name: `${domain}${tld}`,
         address,

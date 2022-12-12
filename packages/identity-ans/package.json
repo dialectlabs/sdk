@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/identity-ans",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
@@ -27,6 +27,6 @@
     "@solana/web3.js": "1.x"
   },
   "dependencies": {
-    "@onsol/tldparser": "^0.3.5"
+    "@onsol/tldparser": "^0.4.0"
   }
 }
