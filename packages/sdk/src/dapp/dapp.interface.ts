@@ -17,7 +17,7 @@ export interface Dapps {
 export declare const BlockchainType: {
   SOLANA: 'SOLANA';
   APTOS: 'APTOS';
-  POLYGON: 'POLYGON';
+  EVM: 'EVM';
 };
 
 export type BlockchainType = typeof BlockchainType[keyof typeof BlockchainType];

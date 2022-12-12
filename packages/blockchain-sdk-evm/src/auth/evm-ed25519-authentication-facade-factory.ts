@@ -7,7 +7,7 @@ import {
   TokenParser,
 } from '@dialectlabs/sdk';
 
-import { PolygonEd25519TokenValidator } from './evm-ed25519-token-validator';
+import { EvmEd25519TokenValidator } from './evm-ed25519-token-validator';
 import type { EvmEd25519TokenSigner } from './evm-ed25519-token-signer';
 
 export class EvmEd25519AuthenticationFacadeFactory extends AuthenticationFacadeFactory {
@@ -18,7 +18,7 @@ export class EvmEd25519AuthenticationFacadeFactory extends AuthenticationFacadeF
   static createAuthenticator(): Authenticator {
     return new Authenticator(
       new TokenParser(new Ed25519TokenBodyParser()),
-      new PolygonEd25519TokenValidator(),
+      new EvmEd25519TokenValidator(),
     );
   }
 

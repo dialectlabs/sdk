@@ -6,7 +6,7 @@ import Web3 from "web3";
 import { DialectWalletAdapterEvmEd25519TokenSigner, EvmEd25519TokenSigner } from "../../../src/auth/evm-ed25519-token-signer";
 import { EvmEd25519AuthenticationFacadeFactory } from "../../../src/auth/evm-ed25519-authentication-facade-factory";
 
-describe('polygon ed25519 token tests', () => {
+describe('evm ed25519 token tests', () => {
   let wallet: DialectEvmWalletAdapterWrapper;
   let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;

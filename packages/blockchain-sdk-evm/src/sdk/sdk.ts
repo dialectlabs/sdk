@@ -8,24 +8,24 @@ import { EvmEd25519AuthenticationFacadeFactory } from '../auth/evm-ed25519-authe
 import { DialectWalletAdapterEvmEd25519TokenSigner } from '../auth/evm-ed25519-token-signer';
 import { DialectEvmWalletAdapterEncryptionKeysProvider } from '../encryption/encryption-keys-provider';
 
-export interface PolygonConfigProps {
+export interface EvmConfigProps {
   wallet: DialectEvmWalletAdapter;
 }
 
-export interface PolygonConfig extends PolygonConfigProps {
+export interface EvmConfig extends EvmConfigProps {
   wallet: DialectEvmWalletAdapterWrapper;
 }
 
-export interface Polygon extends BlockchainSdk {
-  readonly config: PolygonConfig;
+export interface Evm extends BlockchainSdk {
+  readonly config: EvmConfig;
 }
 
-export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
-  private constructor(readonly polygoncConfigProps: PolygonConfigProps) { }
+export class EvmSdkFactory implements BlockchainSdkFactory<Evm> {
+  private constructor(readonly evmConfigProps: EvmConfigProps) { }
 
 
   private static logConfiguration(
-    config: PolygonConfig,
+    config: EvmConfig,
     environment: Environment,
   ) {
     if (environment !== 'production') {
@@ -37,11 +37,11 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
       );
     }
   }
-  create(config: Config): Polygon {
-    const polygonConfig = this.initializePolygonConfig();
-    PolygonSdkFactory.logConfiguration(polygonConfig, config.environment);
+  create(config: Config): Evm {
+    const evmConfig = this.initializeEvmConfig();
+    EvmSdkFactory.logConfiguration(evmConfig, config.environment);
 
-    const wallet = polygonConfig.wallet;
+    const wallet = evmConfig.wallet;
     const walletAdapterEncryptionKeysProvider =
       new DialectEvmWalletAdapterEncryptionKeysProvider(wallet);
     const encryptionKeysProvider = EncryptionKeysProvider.create(
@@ -56,7 +56,7 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
       },
       encryptionKeysProvider,
       authenticationFacade,
-      config: polygonConfig,
+      config: evmConfig,
     };
   }
 
@@ -79,13 +79,13 @@ export class PolygonSdkFactory implements BlockchainSdkFactory<Polygon> {
     );
   }
 
-  static create(props: PolygonConfigProps) {
-    return new PolygonSdkFactory(props);
+  static create(props: EvmConfigProps) {
+    return new EvmSdkFactory(props);
   }
 
-  private initializePolygonConfig(): PolygonConfig {
+  private initializeEvmConfig(): EvmConfig {
     const wallet = new DialectEvmWalletAdapterWrapper(
-      this.polygoncConfigProps.wallet,
+      this.evmConfigProps.wallet,
     );
     return {
       wallet,
