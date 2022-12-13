@@ -37,7 +37,10 @@ describe('Data service dialects api (e2e)', () => {
     );
     wallet1Api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(wallet1AuthenticationFacade, w1DataServiceWalletsApiV1),
+      TokenProvider.create(
+        wallet1AuthenticationFacade,
+        w1DataServiceWalletsApiV1,
+      ),
     ).threads;
     const wallet2AuthenticationFacade = new Ed25519AuthenticationFacadeFactory(
       new Ed25519TokenSigner(),
@@ -48,7 +51,10 @@ describe('Data service dialects api (e2e)', () => {
     );
     wallet2Api = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(wallet2AuthenticationFacade, w2DataServiceWalletsApiV1),
+      TokenProvider.create(
+        wallet2AuthenticationFacade,
+        w2DataServiceWalletsApiV1,
+      ),
     ).threads;
   });
 
@@ -736,7 +742,7 @@ describe('Data service dialects api (e2e)', () => {
     ).rejects.toBeTruthy();
   });
 
-  test('cannot add member if not admin', async () => {
+  test('cannot add member if not a member', async () => {
     const createDialectCommand: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -745,7 +751,7 @@ describe('Data service dialects api (e2e)', () => {
           scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
         },
         {
-          address: wallet2Address,
+          address: generatePublicKey(),
           scopes: [MemberScopeDto.WRITE],
         },
         {
