@@ -7,7 +7,8 @@
 - [Aptos SDK](https://github.com/dialectlabs/sdk/tree/main/packages/blockchain-sdk-aptos) - bridge for aptos blockchain to interact with aptos wallets
 - [Identity Dialect Dapps](https://github.com/dialectlabs/sdk/tree/main/packages/identity-dialect-dapps) - Dialect identity provider to resolve dapps by it's public keys
 - [Identity SNS](https://github.com/dialectlabs/sdk/tree/main/packages/identity-sns) - bridge for SNS identity to resolve sns domains and owner details
-- [Identity Cardinal](https://github.com/dialectlabs/sdk/tree/main/packages/identity-cardinal) - bridge for cardinal twitter identity to resolve solana public keys by twitter handles and vice verca
+- [Identity Cardinal](https://github.com/dialectlabs/sdk/tree/main/packages/identity-cardinal) - bridge for Cardinal twitter identity to resolve solana public keys by twitter handles and vice verca
+- [Identity Civic](https://github.com/dialectlabs/sdk/tree/main/packages/identity-civic) - bridge for Civic identity to resolve solana public keys
 - [Identity ANS](https://github.com/dialectlabs/sdk/tree/main/packages/identity-ans) - bridge for ANS (alternative name service) identity by Onsol to resolve solana public keys 
 
 ## Setting up development environment
