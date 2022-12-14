@@ -1,4 +1,4 @@
-import type { Bytes } from 'ethers/lib/utils';
+import type { Bytes } from 'ethers';
 
 export interface DialectEvmWalletAdapter {
   address?: string;
