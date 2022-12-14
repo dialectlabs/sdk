@@ -8,7 +8,7 @@ function createSdk() {
       environment: 'local-development',
     },
     EvmSdkFactory.create({
-      wallet: NodeDialectEvmWalletAdapter.create("5c5e2a8fa477f1e0babe2c425c9e936dc00441fccee9913fd81194f18bf535c5"),
+      wallet: NodeDialectEvmWalletAdapter.create(),
     }),
   );
 }

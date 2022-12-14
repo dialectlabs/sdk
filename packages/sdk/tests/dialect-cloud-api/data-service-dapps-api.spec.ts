@@ -10,7 +10,7 @@ import type {
   DataServiceDappsApi,
   WalletDto,
 } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import type { CreateDappCommand } from '../../src/dapp/dapp.interface';
+
 import { Ed25519AuthenticationFacadeFactory } from '../../src/auth/ed25519/ed25519-authentication-facade-factory';
 import { Ed25519TokenSigner } from '../../src/auth/ed25519/ed25519-token-signer';
 import type { AccountAddress } from '../../src/auth/auth.interface';
@@ -19,6 +19,7 @@ import { generateEd25519Keypair } from '../../src/auth/ed25519/utils';
 import { DataServiceApiFactory } from '../../src/dialect-cloud-api/data-service-api-factory';
 import type { DataServiceWalletsApiV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
 import { DataServiceWalletsApiClientV1 } from '../../src/dialect-cloud-api/data-service-wallets-api.v1';
+import type { CreateDappCommand } from 'dapp/dapp.interface';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';
@@ -46,6 +47,7 @@ describe('Data service dapps api (e2e)', () => {
       name: 'Test dapp',
       description: 'Test description',
       avatarUrl: 'https://www.dialect.to/favicon-32x32.png',
+      blockchainType: 'SOLANA'
     };
     const created = await dappsApi.create(command);
     const addresses = await dappsApi.findAllDappAddresses();
@@ -70,6 +72,7 @@ describe('Data service dapps api (e2e)', () => {
       name: 'Test dapp',
       description: 'Test description',
       avatarUrl: 'https://www.dialect.to/favicon-32x32.png',
+      blockchainType: "SOLANA"
     };
     await expect(dappsApi.find()).rejects.toBeTruthy();
     await dappsApi.create(command);
@@ -94,6 +97,7 @@ describe('Data service dapps api (e2e)', () => {
     await expect(dappsApi.find()).rejects.toBeTruthy();
     const created = await dappsApi.create({
       name: 'Test dapp',
+      blockchainType: "SOLANA"
     });
     // when
     const found = await dappsApi.findAll({
@@ -115,6 +119,7 @@ describe('Data service dapps api (e2e)', () => {
     // given
     await dappsApi.create({
       name: 'Test dapp',
+      blockchainType: "SOLANA"
     });
     // when / then
     await expect(
@@ -132,6 +137,7 @@ describe('Data service dapps api (e2e)', () => {
     // given
     await dappsApi.create({
       name: 'Test dapp',
+      blockchainType: "SOLANA"
     });
     // when / then
     await expect(
@@ -150,6 +156,7 @@ describe('Data service dapps api (e2e)', () => {
     // given
     await dappsApi.create({
       name: 'Test dapp',
+      blockchainType: "SOLANA"
     });
     // when / then
     await expect(
@@ -204,6 +211,7 @@ describe('Data service dapps api (e2e)', () => {
       // given
       const dapp = await dapps.create({
         name: 'Test dapp',
+        blockchainType: "SOLANA"
       });
       // when
       const createDappAddressCommand: CreateAddressCommandV0 = {
@@ -230,6 +238,7 @@ describe('Data service dapps api (e2e)', () => {
       // given
       const dapp = await dapps.create({
         name: 'Test dapp',
+        blockchainType: "SOLANA"
       });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',
@@ -255,6 +264,7 @@ describe('Data service dapps api (e2e)', () => {
       // given
       const dapp = await dapps.create({
         name: 'Test dapp',
+        blockchainType: "SOLANA"
       });
       const createDappAddressCommand: CreateAddressCommandV0 = {
         type: 'wallet',

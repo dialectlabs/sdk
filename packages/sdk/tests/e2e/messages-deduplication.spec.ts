@@ -4,10 +4,6 @@ import {
   ResourceAlreadyExistsError,
   ThreadMemberScope,
 } from '@dialectlabs/sdk';
-import {
-  NodeDialectSolanaWalletAdapter,
-  SolanaSdkFactory,
-} from '@dialectlabs/blockchain-sdk-solana';
 import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
 import { Keypair } from '@solana/web3.js';
 

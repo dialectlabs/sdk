@@ -1,7 +1,3 @@
-import {
-  NodeDialectSolanaWalletAdapter,
-  SolanaSdkFactory,
-} from '@dialectlabs/blockchain-sdk-solana';
 import type { Environment, Thread } from '@dialectlabs/sdk';
 import { Dialect, ThreadMemberScope } from '@dialectlabs/sdk';
 import { createSolanaSdk } from '../../../sdk/tests/utils/utils';

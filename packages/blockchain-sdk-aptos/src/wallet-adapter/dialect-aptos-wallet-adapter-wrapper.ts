@@ -8,9 +8,8 @@ import type {
 import { UnsupportedOperationError } from '@dialectlabs/sdk';
 
 export class DialectAptosWalletAdapterWrapper
-  implements DialectAptosWalletAdapter
-{
-  constructor(private readonly delegate: DialectAptosWalletAdapter) {}
+  implements DialectAptosWalletAdapter {
+  constructor(private readonly delegate: DialectAptosWalletAdapter) { }
 
   get publicKey(): PublicKey {
     if (!this.delegate.publicKey) {
