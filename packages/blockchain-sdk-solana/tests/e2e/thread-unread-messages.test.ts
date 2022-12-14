@@ -1,5 +1,6 @@
 import { Dialect, ThreadMemberScope } from '@dialectlabs/sdk';
 import { NodeDialectSolanaWalletAdapter, SolanaSdkFactory } from '../../src';
+import { Keypair } from '@solana/web3.js';
 
 function createSdk() {
   return Dialect.sdk(
@@ -7,7 +8,7 @@ function createSdk() {
       environment: 'local-development',
     },
     SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(),
+      wallet: NodeDialectSolanaWalletAdapter.create(Keypair.generate()),
     }),
   );
 }

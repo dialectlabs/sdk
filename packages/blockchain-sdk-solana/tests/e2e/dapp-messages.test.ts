@@ -1,13 +1,17 @@
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { AddressType, Dialect, ThreadMemberScope } from '@dialectlabs/sdk';
+import { Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import {
+  AddressType,
+  BlockchainType,
+  Dialect,
+  ThreadMemberScope,
+} from '@dialectlabs/sdk';
 import { NodeDialectSolanaWalletAdapter, SolanaSdkFactory } from '../../src';
 
 function sdkFactory(backend: 'solana' | 'dialect-cloud') {
   return async () => {
-    const wallet = NodeDialectSolanaWalletAdapter.create();
-
+    const wallet = NodeDialectSolanaWalletAdapter.create(Keypair.generate());
     const solanaSdkFactory = SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(),
+      wallet,
     });
     const dialectSdk = Dialect.sdk(
       {
@@ -37,6 +41,7 @@ describe('Dapp messages (e2e)', () => {
     const dapp = await dappSdk.dapps.create({
       name: 'test',
       description: 'testtest',
+      blockchainType: 'SOLANA',
     });
     const sdk = await createSdk();
     const address = await sdk.wallet.addresses.create({
@@ -61,24 +66,26 @@ describe('Dapp messages (e2e)', () => {
       encrypted: false,
     });
     // when
-    await dapp.messages.send({
-      title: 'Test',
-      message: 'Multicast',
-      recipients: [sdk.wallet.address],
-    });
-    await dapp.messages.send({
-      title: 'Test',
-      message: 'Unicast',
-      recipient: sdk.wallet.address,
-    });
-    await dapp.messages.send({
-      title: 'Test',
-      message: 'Broadcast',
-    });
+    await expect(
+      dapp.messages.send({
+        title: 'Test',
+        message: 'Multicast',
+        recipients: [sdk.wallet.address],
+      }),
+    ).resolves;
+    await expect(
+      dapp.messages.send({
+        title: 'Test',
+        message: 'Unicast',
+        recipient: sdk.wallet.address,
+      }),
+    ).resolves;
+    await expect(
+      dapp.messages.send({
+        title: 'Test',
+        message: 'Broadcast',
+      }),
+    ).resolves;
     // then
-    const messages = await thread.messages();
-    expect(messages.map((it) => it.text)).toMatchObject(
-      expect.arrayContaining(['Multicast', 'Unicast', 'Broadcast']),
-    );
   });
 });
