@@ -2,22 +2,22 @@ import { DialectEvmWalletAdapterWrapper } from "../../../src/wallet-adapter/dial
 import { Duration } from 'luxon';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
 import { NodeDialectEvmWalletAdapter } from "../../../src/wallet-adapter/node-evm-wallet-adapter";
-import Web3 from "web3";
 import { DialectWalletAdapterEvmEd25519TokenSigner, EvmEd25519TokenSigner } from "../../../src/auth/evm-ed25519-token-signer";
 import { EvmEd25519AuthenticationFacadeFactory } from "../../../src/auth/evm-ed25519-authentication-facade-factory";
+import { ethers } from "ethers";
 
 describe('evm ed25519 token tests', () => {
   let wallet: DialectEvmWalletAdapterWrapper;
   let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create('dd4b7127f4601d376168ceb7107e6de8c9d67b4de2efef0b09557efe2043eadb'));
+      wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create('5c5e2a8fa477f1e0babe2c425c9e936dc00441fccee9913fd81194f18bf535c5'));
     signer = new DialectWalletAdapterEvmEd25519TokenSigner(wallet) as any;
     authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(signer).get();
   });
 
   test('when not expired validation returns true', async () => {
-    const token = await authenticationFacade.generateToken(Duration.fromObject({ seconds: 100 }));
+    const token = await authenticationFacade.generateToken(Duration.fromObject({ seconds: 10000 }));
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
     const parsedToken = authenticationFacade.parseToken(token.rawValue);
@@ -48,7 +48,7 @@ describe('evm ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub: new Web3().eth.accounts.create("compormised").address,
+      sub: ethers.Wallet.fromMnemonic("announce room limb pattern dry unit scale effort smooth jazz weasel alcohol").address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(
@@ -72,7 +72,7 @@ describe('evm ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub_jwk: new Web3().eth.accounts.create("compormised").address,
+      sub_jwk: ethers.Wallet.fromMnemonic("announce room limb pattern dry unit scale effort smooth jazz weasel alcohol").address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(

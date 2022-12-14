@@ -1,4 +1,9 @@
-import type { BlockchainSdkFactory, BlockchainSdk, Config, Environment } from '@dialectlabs/sdk';
+import type {
+  BlockchainSdkFactory,
+  BlockchainSdk,
+  Config,
+  Environment,
+} from '@dialectlabs/sdk';
 import type { DialectEvmWalletAdapter } from '../wallet-adapter/dialect-evm-wallet-adapter.interface';
 import { DialectEvmWalletAdapterWrapper } from '../wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
@@ -21,13 +26,9 @@ export interface Evm extends BlockchainSdk {
 }
 
 export class EvmSdkFactory implements BlockchainSdkFactory<Evm> {
-  private constructor(readonly evmConfigProps: EvmConfigProps) { }
+  private constructor(readonly evmConfigProps: EvmConfigProps) {}
 
-
-  private static logConfiguration(
-    config: EvmConfig,
-    environment: Environment,
-  ) {
+  private static logConfiguration(config: EvmConfig, environment: Environment) {
     if (environment !== 'production') {
       console.log(
         `Initializing Dialect Aptos SDK using configuration:
@@ -68,15 +69,7 @@ export class EvmSdkFactory implements BlockchainSdkFactory<Evm> {
         new DialectWalletAdapterEvmEd25519TokenSigner(wallet),
       ).get();
     }
-    if (wallet.canSignTransaction()) {
-      return new EvmEd25519AuthenticationFacadeFactory(
-        new DialectWalletAdapterEvmEd25519TokenSigner(wallet),
-      ).get();
-    }
-    throw new IllegalArgumentError(
-      'Wallet does not support signing',
-      'Wallet does not support signing',
-    );
+    throw new IllegalArgumentError('Wallet does not support signing');
   }
 
   static create(props: EvmConfigProps) {

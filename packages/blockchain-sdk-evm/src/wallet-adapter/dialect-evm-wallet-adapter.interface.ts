@@ -1,16 +1,6 @@
-import type {
-  TransactionConfig,
-  SignedTransaction,
-  EncryptedKeystoreV3Json,
-  Sign,
-} from 'web3-core';
+import type { Bytes } from 'ethers/lib/utils';
 
 export interface DialectEvmWalletAdapter {
   address?: string;
-  signTransaction: (
-    transactionConfig: TransactionConfig,
-    callback?: (signTransaction: SignedTransaction) => void,
-  ) => Promise<SignedTransaction>;
-  sign: (data: string) => Sign;
-  encrypt: (password: string) => EncryptedKeystoreV3Json;
+  sign: (data: string | Bytes) => Promise<string>;
 }

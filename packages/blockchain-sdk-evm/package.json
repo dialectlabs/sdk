@@ -25,14 +25,13 @@
   },
   "devDependencies": {
     "@dialectlabs/sdk": "^1.0.0",
-    "@ethereumjs/evm": "^1.2.2"
+    "ethers": "^5.7.2"
   },
   "peerDependencies": {
     "@dialectlabs/sdk": "1.x",
-    "@ethereumjs/evm": "^1.x"
+    "ethers": "^5.x"
   },
   "dependencies": {
-    "@ethereumjs/evm": "^1.2.2",
-    "web3": "^1.8.1"
+    "ethers": "^5.7.2"
   }
 }

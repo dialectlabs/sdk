@@ -1,26 +1,25 @@
-import type { Account, TransactionConfig, SignedTransaction } from 'web3-core';
-import Web3 from 'web3';
 import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
+import { Bytes, ethers } from 'ethers';
 
-export class NodeDialectEvmWalletAdapter
-  implements DialectEvmWalletAdapter {
-  constructor(private readonly account: Account) { }
+export class NodeDialectEvmWalletAdapter implements DialectEvmWalletAdapter {
+  constructor(private readonly account: ethers.Wallet) {}
 
   get address() {
     return this.account.address;
   }
 
   static create(privateKey?: string) {
-    const web3 = new Web3();
+    const provider = new ethers.providers.JsonRpcProvider();
     if (privateKey) {
-      const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+      const account = new ethers.Wallet(privateKey, provider);
+
       console.log(
         `Initializing ${NodeDialectEvmWalletAdapter.name} using provided ${account.address}.`,
       );
       return new NodeDialectEvmWalletAdapter(account);
     } else if (process.env.DIALECT_SDK_CREDENTIALS) {
       const privateKeyRaw = process.env.DIALECT_SDK_CREDENTIALS;
-      const account = web3.eth.accounts.privateKeyToAccount(privateKeyRaw);
+      const account = new ethers.Wallet(privateKeyRaw, provider);
       console.log(
         `Initializing ${NodeDialectEvmWalletAdapter.name} using provided ${account.address}.`,
       );
@@ -32,18 +31,7 @@ export class NodeDialectEvmWalletAdapter
     }
   }
 
-  encrypt(password: string) {
-    return this.account.encrypt(password);
-  }
-
-  sign(data: string) {
-    return this.account.sign(data);
-  }
-
-  signTransaction(
-    transactionConfig: TransactionConfig,
-    callback?: (signTransaction: SignedTransaction) => void,
-  ): Promise<SignedTransaction> {
-    return this.account.signTransaction(transactionConfig, callback);
+  sign(data: string | Bytes) {
+    return this.account.signMessage(data);
   }
 }

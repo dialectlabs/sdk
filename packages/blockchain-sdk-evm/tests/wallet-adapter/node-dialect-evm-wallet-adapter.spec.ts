@@ -8,9 +8,9 @@ describe('dialect node evm wallet adapter', () => {
         // when
         const signed = await adapter.sign('test');
 
-        // https://www.myetherwallet.com/wallet/sign can test singature here
+        // https://www.myetherwallet.com/wallet/sign can test singature heres
         const expected =
             '0xd0efcaf9365c7c304d6c2d2615718409945fa2699a60fc58ca4178b374e26d3c5d52da338e95b81f8872ce39d809c6527c89c2162aa51e76ea5005cbbd26bc211b';
-        expect(signed.signature).toEqual(expected);
+        expect(signed).toEqual(expected);
     });
 });

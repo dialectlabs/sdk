@@ -1,15 +1,9 @@
 import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@dialectlabs/sdk';
-import type {
-  TransactionConfig,
-  SignedTransaction,
-  Sign,
-  EncryptedKeystoreV3Json,
-} from 'web3-core';
+import type { Bytes } from 'ethers';
 
-export class DialectEvmWalletAdapterWrapper
-  implements DialectEvmWalletAdapter {
-  constructor(private readonly delegate: DialectEvmWalletAdapter) { }
+export class DialectEvmWalletAdapterWrapper implements DialectEvmWalletAdapter {
+  constructor(private readonly delegate: DialectEvmWalletAdapter) {}
 
   static create(
     adapter: DialectEvmWalletAdapter,
@@ -32,24 +26,7 @@ export class DialectEvmWalletAdapterWrapper
     return Boolean(this.delegate.sign);
   }
 
-  canSignTransaction(): boolean {
-    return Boolean(this.delegate.signTransaction);
-  }
-
-  signTransaction(
-    transactionConfig: TransactionConfig,
-    callback?: (signTransaction: SignedTransaction) => void,
-  ): Promise<SignedTransaction> {
-    if (!this.delegate.signTransaction) {
-      throw new UnsupportedOperationError(
-        'Signing not supported',
-        'Wallet does not support signing, please use wallet-adapter that supports signTransaction() operation.',
-      );
-    }
-    return this.delegate.signTransaction(transactionConfig, callback);
-  }
-
-  sign(data: string): Sign {
+  sign(data: string | Bytes): Promise<string> {
     if (!this.delegate.sign) {
       throw new UnsupportedOperationError(
         'Signing not supported',
@@ -57,15 +34,5 @@ export class DialectEvmWalletAdapterWrapper
       );
     }
     return this.delegate.sign(data);
-  }
-
-  encrypt(password: string): EncryptedKeystoreV3Json {
-    if (!this.delegate.encrypt) {
-      throw new UnsupportedOperationError(
-        'Encryption not supported',
-        'Wallet does not support encryption, please use wallet-adapter that supports encrypt() operation.',
-      );
-    }
-    return this.delegate.encrypt(password);
   }
 }
