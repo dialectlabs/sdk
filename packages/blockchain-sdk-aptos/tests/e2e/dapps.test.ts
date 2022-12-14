@@ -1,5 +1,6 @@
 import { Dialect } from '@dialectlabs/sdk';
 import { AptosSdkFactory, NodeDialectAptosWalletAdapter } from '../../src';
+import { AptosAccount } from 'aptos';
 
 function createSdk() {
   return Dialect.sdk(
@@ -7,7 +8,9 @@ function createSdk() {
       environment: 'local-development',
     },
     AptosSdkFactory.create({
-      wallet: NodeDialectAptosWalletAdapter.create(),
+      wallet: NodeDialectAptosWalletAdapter.create(
+        new AptosAccount().signingKey.secretKey,
+      ),
     }),
   );
 }
@@ -18,7 +21,7 @@ describe('Dapps (e2e)', () => {
     const dapp1Sdk = createSdk();
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: 'APTOS'
+      blockchainType: 'APTOS',
     });
     // when
     const sdk = createSdk();

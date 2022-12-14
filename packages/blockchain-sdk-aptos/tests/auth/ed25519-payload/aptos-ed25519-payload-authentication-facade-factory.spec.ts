@@ -22,7 +22,9 @@ describe('aptos ed25519 payload token tests', () => {
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     wallet = new DialectAptosWalletAdapterWrapper(
-      NodeDialectAptosWalletAdapter.create(),
+      NodeDialectAptosWalletAdapter.create(
+        new AptosAccount().signingKey.secretKey,
+      ),
     );
     signer = new DialectWalletAdapterAptosEd25519PayloadTokenSigner(wallet);
     authenticationFacade = new AptosEd25519PayloadAuthenticationFacadeFactory(
@@ -59,7 +61,9 @@ describe('aptos ed25519 payload token tests', () => {
   test('when sub isl compromised returns false', async () => {
     // when
     const wallet = new DialectAptosWalletAdapterWrapper(
-      NodeDialectAptosWalletAdapter.create(),
+      NodeDialectAptosWalletAdapter.create(
+        new AptosAccount().signingKey.secretKey,
+      ),
     );
     const subjectPublicKey = new AptosPubKey(
       HexString.ensure(wallet.publicKey),

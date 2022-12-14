@@ -17,7 +17,9 @@ describe('aptos ed25519 token tests', () => {
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     wallet = new DialectAptosWalletAdapterWrapper(
-      NodeDialectAptosWalletAdapter.create(),
+      NodeDialectAptosWalletAdapter.create(
+        new AptosAccount().signingKey.secretKey,
+      ),
     );
     signer = new DialectWalletAdapterAptosEd25519TokenSigner(wallet);
     authenticationFacade = new AptosEd25519AuthenticationFacadeFactory(
