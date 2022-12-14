@@ -1,6 +1,7 @@
 import { Dialect } from '@dialectlabs/sdk';
 import { EvmSdkFactory } from '../../src/sdk/sdk';
 import { NodeDialectEvmWalletAdapter } from '../../src/wallet-adapter/node-evm-wallet-adapter';
+import { ethers } from 'ethers';
 
 function createSdk() {
   return Dialect.sdk(
@@ -8,7 +9,9 @@ function createSdk() {
       environment: 'local-development',
     },
     EvmSdkFactory.create({
-      wallet: NodeDialectEvmWalletAdapter.create(),
+      wallet: NodeDialectEvmWalletAdapter.create(
+        ethers.Wallet.createRandom().privateKey,
+      ),
     }),
   );
 }
@@ -20,9 +23,8 @@ describe('Dapps (e2e)', () => {
 
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: "EVM"
+      blockchainType: 'EVM',
     });
-
 
     // when
     const sdk = createSdk();
@@ -45,4 +47,3 @@ describe('Dapps (e2e)', () => {
     );
   });
 });
-

@@ -1,23 +1,34 @@
-import { DialectEvmWalletAdapterWrapper } from "../../../src/wallet-adapter/dialect-evm-wallet-adapter-wrapper";
+import { DialectEvmWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 import { Duration } from 'luxon';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
-import { NodeDialectEvmWalletAdapter } from "../../../src/wallet-adapter/node-evm-wallet-adapter";
-import { DialectWalletAdapterEvmEd25519TokenSigner, EvmEd25519TokenSigner } from "../../../src/auth/evm-ed25519-token-signer";
-import { EvmEd25519AuthenticationFacadeFactory } from "../../../src/auth/evm-ed25519-authentication-facade-factory";
-import { ethers } from "ethers";
+import { NodeDialectEvmWalletAdapter } from '../../../src/wallet-adapter/node-evm-wallet-adapter';
+import {
+  DialectWalletAdapterEvmEd25519TokenSigner,
+  EvmEd25519TokenSigner,
+} from '../../../src/auth/evm-ed25519-token-signer';
+import { EvmEd25519AuthenticationFacadeFactory } from '../../../src/auth/evm-ed25519-authentication-facade-factory';
+import { ethers } from 'ethers';
 
 describe('evm ed25519 token tests', () => {
   let wallet: DialectEvmWalletAdapterWrapper;
   let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create());
+    wallet = new DialectEvmWalletAdapterWrapper(
+      NodeDialectEvmWalletAdapter.create(
+        ethers.Wallet.createRandom().privateKey,
+      ),
+    );
     signer = new DialectWalletAdapterEvmEd25519TokenSigner(wallet) as any;
-    authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(signer).get();
+    authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(
+      signer,
+    ).get();
   });
 
   test('when not expired validation returns true', async () => {
-    const token = await authenticationFacade.generateToken(Duration.fromObject({ seconds: 10000 }));
+    const token = await authenticationFacade.generateToken(
+      Duration.fromObject({ seconds: 10000 }),
+    );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
     const parsedToken = authenticationFacade.parseToken(token.rawValue);
@@ -48,15 +59,17 @@ describe('evm ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub: ethers.Wallet.fromMnemonic("announce room limb pattern dry unit scale effort smooth jazz weasel alcohol").address,
+      sub: ethers.Wallet.fromMnemonic(
+        'announce room limb pattern dry unit scale effort smooth jazz weasel alcohol',
+      ).address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(
       token.base64Header +
-      '.' +
-      compromisedBase64Body +
-      '.' +
-      token.base64Signature,
+        '.' +
+        compromisedBase64Body +
+        '.' +
+        token.base64Signature,
     );
     const isParsedTokenValid = authenticationFacade.isValid(compromisedToken);
     expect(isParsedTokenValid).toBeFalsy();
@@ -72,15 +85,17 @@ describe('evm ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub_jwk: ethers.Wallet.fromMnemonic("announce room limb pattern dry unit scale effort smooth jazz weasel alcohol").address,
+      sub_jwk: ethers.Wallet.fromMnemonic(
+        'announce room limb pattern dry unit scale effort smooth jazz weasel alcohol',
+      ).address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(
       token.base64Header +
-      '.' +
-      compromisedBase64Body +
-      '.' +
-      token.base64Signature,
+        '.' +
+        compromisedBase64Body +
+        '.' +
+        token.base64Signature,
     );
     const isParsedTokenValid = authenticationFacade.isValid(compromisedToken);
     expect(isParsedTokenValid).toBeFalsy();
@@ -101,12 +116,12 @@ describe('evm ed25519 token tests', () => {
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(
       token.base64Header +
-      '.' +
-      compromisedBase64Body +
-      '.' +
-      token.base64Signature,
+        '.' +
+        compromisedBase64Body +
+        '.' +
+        token.base64Signature,
     );
     const isParsedTokenValid = authenticationFacade.isValid(compromisedToken);
     expect(isParsedTokenValid).toBeFalsy();
   });
-})
+});
