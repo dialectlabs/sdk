@@ -795,14 +795,7 @@ describe('Data service dialects api (e2e)', () => {
     const { id } = await wallet1Api.create(createDialectCommand);
 
     await expect(
-      wallet2Api.addMembers(id, {
-        members: [
-          {
-            address: generatePublicKey(),
-            scopes: [MemberScopeDto.WRITE],
-          },
-        ],
-      }),
+      wallet2Api.removeMember(id, wallet1Address),
     ).rejects.toBeTruthy();
   });
 
