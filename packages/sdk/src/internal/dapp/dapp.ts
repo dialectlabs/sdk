@@ -85,6 +85,7 @@ export class DappsImpl implements Dapps {
         avatarUrl: command.avatarUrl,
         heroUrl: command.heroUrl,
         telegramBotConfiguration: command.telegramBotConfiguration,
+        blockchainType: command.blockchainType,
       }),
     );
     return this.toDapp(dappDto);

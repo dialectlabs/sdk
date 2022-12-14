@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## [UNRELEASED]
+- feat: blockchain type as parameter to create Dapp
 
 ## [1.4.0] - 2022-11-30
 

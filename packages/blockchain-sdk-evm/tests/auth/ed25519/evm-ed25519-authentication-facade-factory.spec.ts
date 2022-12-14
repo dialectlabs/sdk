@@ -11,7 +11,7 @@ describe('evm ed25519 token tests', () => {
   let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-      wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create('5c5e2a8fa477f1e0babe2c425c9e936dc00441fccee9913fd81194f18bf535c5'));
+    wallet = new DialectEvmWalletAdapterWrapper(NodeDialectEvmWalletAdapter.create('dd4b7127f4601d376168ceb7107e6de8c9d67b4de2efef0b09557efe2043eadb'));
     signer = new DialectWalletAdapterEvmEd25519TokenSigner(wallet) as any;
     authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(signer).get();
   });

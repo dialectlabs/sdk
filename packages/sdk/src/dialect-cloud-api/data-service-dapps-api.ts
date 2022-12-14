@@ -149,6 +149,7 @@ export class CreateDappCommandDto {
   readonly avatarUrl?: string;
   readonly heroUrl?: string;
   readonly telegramBotConfiguration?: DappTelegramBotConfigurationDto;
+  readonly blockchainType?: string;
 }
 
 export class DappTelegramBotConfigurationDto {
