@@ -1,6 +1,7 @@
 # CHANGELOG
 
-## [UNRELEASED]
+## [1.5.0] - 2022-12-15
+
 - feat: blockchain type as parameter to create Dapp
 
 ## [1.4.0] - 2022-11-30
@@ -49,7 +50,7 @@
 ## [0.12.0] - 2022-09-27
 
 - feature: error models for identities created
- 
+
 ## [0.11.0] - 2022-09-20
 
 - feature: add website, heroUrl and index fields for dapp model
