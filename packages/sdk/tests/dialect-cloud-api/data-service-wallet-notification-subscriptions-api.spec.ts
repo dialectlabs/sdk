@@ -32,10 +32,11 @@ describe('Data service wallet notification subscriptions api (e2e)', () => {
     );
     const dappDataServiceApi = DataServiceApiFactory.create(
       baseUrl,
-      TokenProvider.create(dappAuthenticationFacade,dappDataServiceWalletsApiV1),
+      TokenProvider.create(dappAuthenticationFacade, dappDataServiceWalletsApiV1),
     );
     dapp = await dappDataServiceApi.dapps.create({
       name: 'test-dapp' + new Date().toString(),
+      blockchainType: "SOLANA"
     });
     notificationType = await dappDataServiceApi.dappNotificationTypes.create({
       name: 'test',

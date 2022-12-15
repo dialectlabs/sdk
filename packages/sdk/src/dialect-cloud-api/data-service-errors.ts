@@ -24,6 +24,7 @@ export async function withErrorParsing<T>(
     }
     if (e instanceof DataServiceApiError) {
       if (e.statusCode === 400) {
+        console.error(e);
         throw new IllegalArgumentError(createMessage(e));
       }
       if (e.statusCode === 401) {

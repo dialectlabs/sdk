@@ -1,38 +1,34 @@
+import { DialectEvmWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-evm-wallet-adapter-wrapper';
 import { Duration } from 'luxon';
-import { DialectAptosWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
-import {
-  AptosEd25519TokenSigner,
-  DialectWalletAdapterAptosEd25519TokenSigner,
-} from '../../../src/auth/ed25519/aptos-ed25519-token-signer';
-import {
-  AptosEd25519AuthenticationFacadeFactory,
-  NodeDialectAptosWalletAdapter,
-} from '../../../src';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
-import { AptosAccount } from 'aptos';
+import { NodeDialectEvmWalletAdapter } from '../../../src/wallet-adapter/node-evm-wallet-adapter';
+import {
+  DialectWalletAdapterEvmEd25519TokenSigner,
+  EvmEd25519TokenSigner,
+} from '../../../src/auth/evm-ed25519-token-signer';
+import { EvmEd25519AuthenticationFacadeFactory } from '../../../src/auth/evm-ed25519-authentication-facade-factory';
+import { ethers } from 'ethers';
 
-describe('aptos ed25519 token tests', () => {
-  let wallet: DialectAptosWalletAdapterWrapper;
-  let signer: AptosEd25519TokenSigner;
+describe('evm ed25519 token tests', () => {
+  let wallet: DialectEvmWalletAdapterWrapper;
+  let signer: EvmEd25519TokenSigner;
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
-    wallet = new DialectAptosWalletAdapterWrapper(
-      NodeDialectAptosWalletAdapter.create(
-        new AptosAccount().signingKey.secretKey,
+    wallet = new DialectEvmWalletAdapterWrapper(
+      NodeDialectEvmWalletAdapter.create(
+        ethers.Wallet.createRandom().privateKey,
       ),
     );
-    signer = new DialectWalletAdapterAptosEd25519TokenSigner(wallet);
-    authenticationFacade = new AptosEd25519AuthenticationFacadeFactory(
+    signer = new DialectWalletAdapterEvmEd25519TokenSigner(wallet) as any;
+    authenticationFacade = new EvmEd25519AuthenticationFacadeFactory(
       signer,
     ).get();
   });
 
   test('when not expired validation returns true', async () => {
-    // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      Duration.fromObject({ seconds: 10000 }),
     );
-    // then
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
     const parsedToken = authenticationFacade.parseToken(token.rawValue);
@@ -63,7 +59,9 @@ describe('aptos ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub: new AptosAccount().address().toString(),
+      sub: ethers.Wallet.fromMnemonic(
+        'announce room limb pattern dry unit scale effort smooth jazz weasel alcohol',
+      ).address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(
@@ -87,7 +85,9 @@ describe('aptos ed25519 token tests', () => {
     // then
     const compromisedBody: TokenBody = {
       ...token.body,
-      sub_jwk: new AptosAccount().address().toString(),
+      sub_jwk: ethers.Wallet.fromMnemonic(
+        'announce room limb pattern dry unit scale effort smooth jazz weasel alcohol',
+      ).address,
     };
     const compromisedBase64Body = btoa(JSON.stringify(compromisedBody));
     const compromisedToken = authenticationFacade.parseToken(

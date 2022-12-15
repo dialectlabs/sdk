@@ -9,7 +9,7 @@ import {
   TokenProvider,
   DataServiceWalletsApiClientV1,
 } from '@dialectlabs/sdk';
-import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 import { createDialectProgram } from '../../src/messaging/solana-dialect-program-factory';
 import { SolanaMessaging } from '../../src/messaging/solana-messaging';
 import { programs } from '@dialectlabs/web3';
@@ -634,7 +634,7 @@ async function createSolanaServiceMessaging() {
 
 async function createSolanaWalletMessagingState(): Promise<WalletMessagingState> {
   const walletAdapter = new DialectSolanaWalletAdapterWrapper(
-    NodeDialectSolanaWalletAdapter.create(),
+    NodeDialectSolanaWalletAdapter.create(Keypair.generate()),
   );
   const program = await createDialectProgram(
     walletAdapter,
@@ -658,11 +658,9 @@ async function createSolanaWalletMessagingState(): Promise<WalletMessagingState>
 }
 
 function createDataServiceWalletMessagingState(): WalletMessagingState {
-  const wallet = NodeDialectSolanaWalletAdapter.create();
+  const wallet = NodeDialectSolanaWalletAdapter.create(Keypair.generate());
   const adapter = new DialectSolanaWalletAdapterWrapper(wallet);
-  const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
-    baseUrl,
-  );
+  const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(baseUrl);
   const messaging = new DataServiceMessaging(
     adapter.publicKey.toBase58(),
     DataServiceApiFactory.create(

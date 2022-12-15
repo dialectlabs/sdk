@@ -34,6 +34,7 @@ describe('Data service dapp notification types api (e2e)', () => {
     api = dataServiceApi.dappNotificationTypes;
     dapp = await dataServiceApi.dapps.create({
       name: 'test-dapp' + new Date().toString(),
+      blockchainType: 'SOLANA'
     });
   });
 

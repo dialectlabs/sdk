@@ -17,6 +17,7 @@ import {
   generateEd25519Keypair,
   PublicKey,
 } from '@dialectlabs/sdk';
+import { Keypair } from '@solana/web3.js';
 
 describe('solana-tx token tests', () => {
   let wallet: DialectSolanaWalletAdapterWrapper;
@@ -24,7 +25,7 @@ describe('solana-tx token tests', () => {
   let authenticationFacade: AuthenticationFacade;
   beforeEach(() => {
     wallet = new DialectSolanaWalletAdapterWrapper(
-      NodeDialectSolanaWalletAdapter.create(),
+      NodeDialectSolanaWalletAdapter.create(Keypair.generate()),
     );
     signer = new DialectWalletAdapterSolanaTxTokenSigner(wallet);
     authenticationFacade = new SolanaTxAuthenticationFacadeFactory(

@@ -57,6 +57,7 @@ describe('Data service wallet addresses api (e2e)', () => {
     ).dapps;
     dappDto = await dappApi.create({
       name: 'Test dapp',
+      blockchainType: "SOLANA"
     });
     walletAddress = await walletDataServiceApi.walletAddresses.create({
       type: AddressTypeDto.Wallet,
@@ -70,6 +71,7 @@ describe('Data service wallet addresses api (e2e)', () => {
       addressId: walletAddress.id,
       dappPublicKey: dappDto.publicKey,
       enabled: true,
+
     };
     const created: DappAddressDto = await walletDappAddressesApi.create(
       command,

@@ -17,6 +17,7 @@ export interface Dapps {
 export declare const BlockchainType: {
   SOLANA: 'SOLANA';
   APTOS: 'APTOS';
+  EVM: 'EVM';
 };
 
 export type BlockchainType = typeof BlockchainType[keyof typeof BlockchainType];
@@ -61,6 +62,7 @@ export interface CreateDappCommand {
   avatarUrl?: string;
   heroUrl?: string;
   telegramBotConfiguration?: DappTelegramBotConfiguration;
+  blockchainType: string;
 }
 
 export interface DappTelegramBotConfiguration {

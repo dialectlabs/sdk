@@ -21,6 +21,7 @@ describe('Marking dapp messages as read test (e2e)', () => {
     const receiverSdk = createSolanaSdk(environment, receiverSdkKeypair);
     await dappSdk.dapps.create({
       name: 'Marking dapp messages as read test (e2e)',
+      blockchainType: "SOLANA"
     });
     const thread = await dappSdk.threads.create({
       encrypted: false,

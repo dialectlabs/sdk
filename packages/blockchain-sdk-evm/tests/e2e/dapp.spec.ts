@@ -1,14 +1,17 @@
-import { NodeDialectSolanaWalletAdapter, SolanaSdkFactory } from '../../src';
 import { Dialect } from '@dialectlabs/sdk';
-import { Keypair } from '@solana/web3.js';
+import { EvmSdkFactory } from '../../src/sdk/sdk';
+import { NodeDialectEvmWalletAdapter } from '../../src/wallet-adapter/node-evm-wallet-adapter';
+import { ethers } from 'ethers';
 
 function createSdk() {
   return Dialect.sdk(
     {
       environment: 'local-development',
     },
-    SolanaSdkFactory.create({
-      wallet: NodeDialectSolanaWalletAdapter.create(Keypair.generate()),
+    EvmSdkFactory.create({
+      wallet: NodeDialectEvmWalletAdapter.create(
+        ethers.Wallet.createRandom().privateKey,
+      ),
     }),
   );
 }
@@ -17,10 +20,12 @@ describe('Dapps (e2e)', () => {
   test('Can find all dapps using filters', async () => {
     // given
     const dapp1Sdk = createSdk();
+
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: 'SOLANA',
+      blockchainType: 'EVM',
     });
+
     // when
     const sdk = createSdk();
     const allVerifiedDapps = (
