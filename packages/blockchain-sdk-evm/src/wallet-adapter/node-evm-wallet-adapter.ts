@@ -1,5 +1,5 @@
 import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
-import { Bytes, ethers } from 'ethers';
+import { ethers } from 'ethers';
 
 export class NodeDialectEvmWalletAdapter implements DialectEvmWalletAdapter {
   constructor(private readonly account: ethers.Wallet) {}
@@ -31,7 +31,7 @@ export class NodeDialectEvmWalletAdapter implements DialectEvmWalletAdapter {
     }
   }
 
-  sign(data: string | Bytes) {
+  sign(data: string | Uint8Array) {
     return this.account.signMessage(data);
   }
 }
