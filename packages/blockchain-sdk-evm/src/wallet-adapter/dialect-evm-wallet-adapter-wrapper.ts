@@ -1,6 +1,5 @@
 import type { DialectEvmWalletAdapter } from './dialect-evm-wallet-adapter.interface';
 import { UnsupportedOperationError } from '@dialectlabs/sdk';
-import type { Bytes } from 'ethers';
 
 export class DialectEvmWalletAdapterWrapper implements DialectEvmWalletAdapter {
   constructor(private readonly delegate: DialectEvmWalletAdapter) {}
@@ -26,7 +25,7 @@ export class DialectEvmWalletAdapterWrapper implements DialectEvmWalletAdapter {
     return Boolean(this.delegate.sign);
   }
 
-  sign(data: string | Bytes): Promise<string> {
+  sign(data: string | ArrayLike<number>): Promise<string> {
     if (!this.delegate.sign) {
       throw new UnsupportedOperationError(
         'Signing not supported',
