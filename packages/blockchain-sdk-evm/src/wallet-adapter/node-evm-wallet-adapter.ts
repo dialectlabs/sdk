@@ -31,7 +31,7 @@ export class NodeDialectEvmWalletAdapter implements DialectEvmWalletAdapter {
     }
   }
 
-  sign(data: string | Bytes) {
+  sign(data: string | Bytes | Uint8Array) {
     return this.account.signMessage(data);
   }
 }
