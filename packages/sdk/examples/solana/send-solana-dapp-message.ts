@@ -1,6 +1,6 @@
-import { AddressType, IllegalStateError } from '../src';
+import { AddressType, IllegalStateError } from '../../src';
 import { PublicKey } from '@solana/web3.js';
-import { createSolanaSdk } from './helpers';
+import { createSolanaSdk } from '../helpers';
 
 (async () => {
   const sdk = createSolanaSdk();

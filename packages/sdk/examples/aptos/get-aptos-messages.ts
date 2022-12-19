@@ -1,12 +1,12 @@
 import { AptosAccount } from 'aptos';
-import type { Thread } from '../src';
+import type { Thread } from '../../src';
 import {
   createAptosSdk,
   createAptosThread,
   getAptosMessages,
   getAptosThreads,
   sendMessage,
-} from './helpers';
+} from '../helpers';
 
 (async () => {
   const sdk = createAptosSdk();

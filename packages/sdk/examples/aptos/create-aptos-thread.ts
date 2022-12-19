@@ -1,4 +1,4 @@
-import { createAptosSdk, createAptosThread } from './helpers';
+import { createAptosSdk, createAptosThread } from '../helpers';
 import { AptosAccount } from 'aptos';
 
 (async () => {

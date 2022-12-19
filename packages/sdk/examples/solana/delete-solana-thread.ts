@@ -1,5 +1,5 @@
-import { createSolanaSdk, createSolanaThread } from './helpers';
-import type { FindThreadByIdQuery } from '../src';
+import { createSolanaSdk, createSolanaThread } from '../helpers';
+import type { FindThreadByIdQuery } from '../../src';
 
 (async () => {
   const sdk = createSolanaSdk();

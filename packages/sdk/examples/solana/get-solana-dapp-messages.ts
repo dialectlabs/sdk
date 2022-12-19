@@ -1,6 +1,7 @@
 import {
   AddressType,
   DataServiceApi,
+  DataServiceWalletsApiClientV1,
   Ed25519AuthenticationFacadeFactory,
   Ed25519TokenSigner,
   FindNotificationSubscriptionQuery,
@@ -8,10 +9,9 @@ import {
   ThreadMemberScope,
   TokenProvider,
   UpsertNotificationSubscriptionCommand,
-} from '../src';
-import { AddressTypeDto } from '../src/dialect-cloud-api/data-service-dapps-api';
-import { DataServiceWalletsApiClientV1 } from '../src/dialect-cloud-api/data-service-wallets-api.v1';
-import { createSolanaSdk } from './helpers';
+} from '../../src';
+import { AddressTypeDto } from '../../src/dialect-cloud-api/data-service-dapps-api';
+import { createSolanaSdk } from '../helpers';
 
 (async () => {
   const sdk1 = createSolanaSdk();
@@ -22,9 +22,9 @@ import { createSolanaSdk } from './helpers';
   ).get();
 
   // create dapp api
-    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
-      sdk1.config.dialectCloud.url,
-    );
+  const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+    sdk1.config.dialectCloud.url,
+  );
   const dappDataServiceApi = DataServiceApi.create(
     sdk1.config.dialectCloud.url,
     TokenProvider.create(dappAuthenticationFacade, dataServiceWalletsApiV1),

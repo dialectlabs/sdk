@@ -1,4 +1,5 @@
 import {
+  BlockchainSdk,
   CreateThreadCommand,
   Dialect,
   DialectCloudEnvironment,
@@ -20,6 +21,11 @@ import {
   AptosSdkFactory,
   NodeDialectAptosWalletAdapter,
 } from '@dialectlabs/blockchain-sdk-aptos';
+import {
+  Evm,
+  EvmSdkFactory,
+  NodeDialectEvmWalletAdapter,
+} from '@dialectlabs/blockchain-sdk-evm';
 
 /*
   Solana
@@ -28,7 +34,7 @@ import {
 export function createSolanaSdk(): DialectSdk<Solana> {
   const environment: DialectCloudEnvironment = 'local-development';
 
-  const sdk = Dialect.sdk(
+  return Dialect.sdk(
     {
       environment,
     },
@@ -38,8 +44,6 @@ export function createSolanaSdk(): DialectSdk<Solana> {
       wallet: NodeDialectSolanaWalletAdapter.create(),
     }),
   );
-
-  return sdk;
 }
 
 export async function createSolanaThread(
@@ -73,26 +77,14 @@ export async function sendMessage(thread: Thread, text: string): Promise<void> {
 export async function getSolanaThreads(
   sdk: DialectSdk<Solana>,
 ): Promise<Thread[]> {
-  const threads: Thread[] = await sdk.threads.findAll();
-  return threads;
+  return await sdk.threads.findAll();
 }
 
 export async function getSolanaMessages(
   sdk: DialectSdk<Solana>,
   threadId: ThreadId,
 ): Promise<ThreadMessage[]> {
-  const query: FindThreadByIdQuery = {
-    id: threadId,
-  };
-  const thread = await sdk.threads.find(query);
-  if (!thread) {
-    console.log('No thread found with id', threadId);
-    return [];
-  }
-  console.log({ thread });
-  const messages = await thread.messages();
-  console.log({ messages });
-  return messages;
+  return getMessages(sdk, threadId);
 }
 
 /*
@@ -102,7 +94,7 @@ export async function getSolanaMessages(
 export function createAptosSdk(): DialectSdk<Aptos> {
   const environment: DialectCloudEnvironment = 'local-development';
 
-  const sdk = Dialect.sdk(
+  return Dialect.sdk(
     {
       environment,
     },
@@ -112,8 +104,6 @@ export function createAptosSdk(): DialectSdk<Aptos> {
       wallet: NodeDialectAptosWalletAdapter.create(),
     }),
   );
-
-  return sdk;
 }
 
 export async function createAptosThread(
@@ -143,14 +133,69 @@ export async function createAptosThread(
 export async function getAptosThreads(
   sdk: DialectSdk<Aptos>,
 ): Promise<Thread[]> {
-  const threads: Thread[] = await sdk.threads.findAll();
-  return threads;
+  return await sdk.threads.findAll();
 }
 
 export async function getAptosMessages(
   sdk: DialectSdk<Aptos>,
   threadId: ThreadId,
 ): Promise<ThreadMessage[]> {
+  return getMessages(sdk, threadId);
+}
+
+/*
+  Evm
+*/
+
+export function createEvmSdk(): DialectSdk<Evm> {
+  const environment: DialectCloudEnvironment = 'local-development';
+
+  return Dialect.sdk(
+    {
+      environment,
+    },
+    EvmSdkFactory.create({
+      // IMPORTANT: must set environment variable DIALECT_SDK_CREDENTIALS
+      // to your dapp's Aptos messaging wallet keypair
+      wallet: NodeDialectEvmWalletAdapter.create(),
+    }),
+  );
+}
+
+export async function createEvmThread(
+  sdk: DialectSdk<Evm>,
+  recipient: string,
+): Promise<Thread> {
+  const command: CreateThreadCommand = {
+    encrypted: false,
+    me: {
+      scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+    },
+    otherMembers: [
+      {
+        address: recipient,
+        scopes: [ThreadMemberScope.ADMIN, ThreadMemberScope.WRITE],
+      },
+    ],
+  };
+  const thread = await sdk.threads.create(command);
+  console.log({ thread });
+  return thread;
+}
+
+export async function getEvmThreads(sdk: DialectSdk<Evm>): Promise<Thread[]> {
+  return await sdk.threads.findAll();
+}
+
+export async function getEvmMessages(sdk: DialectSdk<Evm>, threadId: ThreadId) {
+  return getMessages(sdk, threadId);
+}
+
+/*
+  Common
+*/
+
+async function getMessages(sdk: DialectSdk<BlockchainSdk>, threadId: ThreadId) {
   const query: FindThreadByIdQuery = {
     id: threadId,
   };

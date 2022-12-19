@@ -1,4 +1,4 @@
-import { createSolanaSdk, createSolanaThread, sendMessage } from './helpers';
+import { createSolanaSdk, createSolanaThread, sendMessage } from '../helpers';
 
 (async () => {
   const sdk = createSolanaSdk();
