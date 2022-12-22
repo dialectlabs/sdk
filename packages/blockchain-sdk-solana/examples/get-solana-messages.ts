@@ -1,11 +1,11 @@
-import type { Thread } from '../../src';
 import {
   createSolanaSdk,
   createSolanaThread,
   getSolanaMessages,
   getSolanaThreads,
   sendMessage,
-} from '../helpers';
+} from './helpers';
+import type { Thread } from '@dialectlabs/sdk';
 
 (async () => {
   const sdk = createSolanaSdk();

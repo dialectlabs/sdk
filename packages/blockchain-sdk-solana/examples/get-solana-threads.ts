@@ -2,7 +2,7 @@ import {
   createSolanaSdk,
   createSolanaThread,
   getSolanaThreads,
-} from '../helpers';
+} from './helpers';
 
 (async () => {
   const sdk = createSolanaSdk();

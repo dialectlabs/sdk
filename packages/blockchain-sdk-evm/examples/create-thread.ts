@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { createEvmSdk, createEvmThread } from '../helpers';
+import { createEvmSdk, createEvmThread } from './helpers';
 
 (async () => {
   const sdk = createEvmSdk();

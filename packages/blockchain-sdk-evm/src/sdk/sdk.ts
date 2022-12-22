@@ -1,12 +1,12 @@
 import type {
-  BlockchainSdkFactory,
   BlockchainSdk,
+  BlockchainSdkFactory,
   Config,
   Environment,
 } from '@dialectlabs/sdk';
+import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
 import type { DialectEvmWalletAdapter } from '../wallet-adapter/dialect-evm-wallet-adapter.interface';
 import { DialectEvmWalletAdapterWrapper } from '../wallet-adapter/dialect-evm-wallet-adapter-wrapper';
-import { EncryptionKeysProvider, IllegalArgumentError } from '@dialectlabs/sdk';
 import { DIALECT_BLOCKCHAIN_SDK_TYPE_EVM } from './constants';
 
 import { EvmEd25519AuthenticationFacadeFactory } from '../auth/evm-ed25519-authentication-facade-factory';
@@ -31,13 +31,14 @@ export class EvmSdkFactory implements BlockchainSdkFactory<Evm> {
   private static logConfiguration(config: EvmConfig, environment: Environment) {
     if (environment !== 'production') {
       console.log(
-        `Initializing Dialect Aptos SDK using configuration:
+        `Initializing Dialect EVM SDK using configuration:
         EVM settings:
           Wallet address: ${config.wallet.address}
         `,
       );
     }
   }
+
   create(config: Config): Evm {
     const evmConfig = this.initializeEvmConfig();
     EvmSdkFactory.logConfiguration(evmConfig, config.environment);

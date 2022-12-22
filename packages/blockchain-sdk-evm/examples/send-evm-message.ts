@@ -1,4 +1,4 @@
-import { createEvmSdk, createEvmThread, sendMessage } from '../helpers';
+import { createEvmSdk, createEvmThread, sendMessage } from './helpers';
 import { ethers } from 'ethers';
 
 (async () => {

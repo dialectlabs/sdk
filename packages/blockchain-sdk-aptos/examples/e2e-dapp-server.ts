@@ -63,6 +63,7 @@ async function getOrRegisterDapp() {
     dapp = await sdk.dapps.create({
       name: 'Example dapp',
       description: 'Example dapp description.',
+      blockchainType: 'aptos',
     });
     console.log(
       `Dapp created. Name: ${dapp!.name}; description: ${

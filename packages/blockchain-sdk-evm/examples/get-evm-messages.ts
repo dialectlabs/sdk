@@ -4,9 +4,9 @@ import {
   getEvmMessages,
   getEvmThreads,
   sendMessage,
-} from '../helpers';
-import { Thread } from '../../src';
+} from './helpers';
 import { ethers } from 'ethers';
+import type { Thread } from '@dialectlabs/sdk';
 
 (async () => {
   const sdk = createEvmSdk();

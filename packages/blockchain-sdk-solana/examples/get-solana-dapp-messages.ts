@@ -1,3 +1,4 @@
+import { createSolanaSdk } from './helpers';
 import {
   AddressType,
   DataServiceApi,
@@ -9,9 +10,7 @@ import {
   ThreadMemberScope,
   TokenProvider,
   UpsertNotificationSubscriptionCommand,
-} from '../../src';
-import { AddressTypeDto } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import { createSolanaSdk } from '../helpers';
+} from '@dialectlabs/sdk';
 
 (async () => {
   const sdk1 = createSolanaSdk();
@@ -146,7 +145,7 @@ import { createSolanaSdk } from '../helpers';
       message: 'Hello, world 4',
       recipientPublicKey: recipient,
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Wallet],
+      addressTypes: [AddressType.Wallet],
     });
 
     // // Multicast, but only to wallet channel (Dialect, Solflare or Step inboxes)
@@ -155,7 +154,7 @@ import { createSolanaSdk } from '../helpers';
       message: 'Hello, world',
       recipientPublicKeys: [recipient, recipient2],
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Telegram],
+      addressTypes: [AddressType.Telegram],
     });
 
     // // Per-channel broadcast, in this case notification is sent all dapp subscribers but to only specificied channels, e.g. telegram, sms, email, wallet
@@ -163,7 +162,7 @@ import { createSolanaSdk } from '../helpers';
       title: 'Hello to sms and telegram subscribers',
       message: 'Hello, world',
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Telegram, AddressTypeDto.PhoneNumber],
+      addressTypes: [AddressType.Telegram, AddressType.PhoneNumber],
     });
   } catch (e) {
     console.log('ERROR:', e);
