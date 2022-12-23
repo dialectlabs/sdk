@@ -1,5 +1,5 @@
 import { NodeDialectSolanaWalletAdapter, SolanaSdkFactory } from '../../src';
-import { Dialect } from '@dialectlabs/sdk';
+import { BlockchainType, Dialect } from '@dialectlabs/sdk';
 import { Keypair } from '@solana/web3.js';
 
 function createSdk() {
@@ -19,7 +19,7 @@ describe('Dapps (e2e)', () => {
     const dapp1Sdk = createSdk();
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: 'SOLANA',
+      blockchainType: BlockchainType.SOLANA,
     });
     // when
     const sdk = createSdk();

@@ -1,4 +1,3 @@
-import type { Thread } from '../src';
 import {
   createSolanaSdk,
   createSolanaThread,
@@ -6,6 +5,7 @@ import {
   getSolanaThreads,
   sendMessage,
 } from './helpers';
+import type { Thread } from '@dialectlabs/sdk';
 
 (async () => {
   const sdk = createSolanaSdk();

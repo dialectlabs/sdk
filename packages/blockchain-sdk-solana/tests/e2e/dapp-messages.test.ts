@@ -41,7 +41,7 @@ describe('Dapp messages (e2e)', () => {
     const dapp = await dappSdk.dapps.create({
       name: 'test',
       description: 'testtest',
-      blockchainType: 'SOLANA',
+      blockchainType: BlockchainType.SOLANA,
     });
     const sdk = await createSdk();
     const address = await sdk.wallet.addresses.create({

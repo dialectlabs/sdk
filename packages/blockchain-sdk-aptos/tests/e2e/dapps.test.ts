@@ -1,4 +1,4 @@
-import { Dialect } from '@dialectlabs/sdk';
+import { BlockchainType, Dialect } from '@dialectlabs/sdk';
 import { AptosSdkFactory, NodeDialectAptosWalletAdapter } from '../../src';
 import { AptosAccount } from 'aptos';
 
@@ -21,7 +21,7 @@ describe('Dapps (e2e)', () => {
     const dapp1Sdk = createSdk();
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: 'APTOS',
+      blockchainType: BlockchainType.APTOS,
     });
     // when
     const sdk = createSdk();

@@ -1,5 +1,4 @@
 import { AptosAccount } from 'aptos';
-import type { Thread } from '../src';
 import {
   createAptosSdk,
   createAptosThread,
@@ -7,6 +6,7 @@ import {
   getAptosThreads,
   sendMessage,
 } from './helpers';
+import type { Thread } from '@dialectlabs/sdk';
 
 (async () => {
   const sdk = createAptosSdk();

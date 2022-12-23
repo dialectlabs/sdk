@@ -1,6 +1,5 @@
-import { Dialect } from '@dialectlabs/sdk';
-import { EvmSdkFactory } from '../../src/sdk/sdk';
-import { NodeDialectEvmWalletAdapter } from '../../src/wallet-adapter/node-evm-wallet-adapter';
+import { BlockchainType, Dialect } from '@dialectlabs/sdk';
+import { EvmSdkFactory, NodeDialectEvmWalletAdapter } from '../../src';
 import { ethers } from 'ethers';
 
 function createSdk() {
@@ -23,7 +22,7 @@ describe('Dapps (e2e)', () => {
 
     const dapp = await dapp1Sdk.dapps.create({
       name: 'test',
-      blockchainType: 'EVM',
+      blockchainType: BlockchainType.EVM,
     });
 
     // when

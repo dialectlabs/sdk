@@ -62,7 +62,7 @@ export interface CreateDappCommand {
   avatarUrl?: string;
   heroUrl?: string;
   telegramBotConfiguration?: DappTelegramBotConfiguration;
-  blockchainType: string;
+  blockchainType: BlockchainType;
 }
 
 export interface DappTelegramBotConfiguration {

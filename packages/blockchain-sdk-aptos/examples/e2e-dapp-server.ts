@@ -4,7 +4,7 @@
   send messages.
 */
 
-import { Dialect, DialectSdk } from '@dialectlabs/sdk';
+import { BlockchainType, Dialect, DialectSdk } from '@dialectlabs/sdk';
 import { Aptos, AptosSdkFactory, NodeDialectAptosWalletAdapter } from '../src';
 import { dappPrivateKey } from './e2e-shared';
 
@@ -63,6 +63,7 @@ async function getOrRegisterDapp() {
     dapp = await sdk.dapps.create({
       name: 'Example dapp',
       description: 'Example dapp description.',
+      blockchainType: BlockchainType.APTOS,
     });
     console.log(
       `Dapp created. Name: ${dapp!.name}; description: ${

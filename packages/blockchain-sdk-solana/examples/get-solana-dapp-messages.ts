@@ -1,6 +1,8 @@
+import { createSolanaSdk } from './helpers';
 import {
   AddressType,
   DataServiceApi,
+  DataServiceWalletsApiClientV1,
   Ed25519AuthenticationFacadeFactory,
   Ed25519TokenSigner,
   FindNotificationSubscriptionQuery,
@@ -8,10 +10,7 @@ import {
   ThreadMemberScope,
   TokenProvider,
   UpsertNotificationSubscriptionCommand,
-} from '../src';
-import { AddressTypeDto } from '../src/dialect-cloud-api/data-service-dapps-api';
-import { DataServiceWalletsApiClientV1 } from '../src/dialect-cloud-api/data-service-wallets-api.v1';
-import { createSolanaSdk } from './helpers';
+} from '@dialectlabs/sdk';
 
 (async () => {
   const sdk1 = createSolanaSdk();
@@ -22,9 +21,9 @@ import { createSolanaSdk } from './helpers';
   ).get();
 
   // create dapp api
-    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
-      sdk1.config.dialectCloud.url,
-    );
+  const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
+    sdk1.config.dialectCloud.url,
+  );
   const dappDataServiceApi = DataServiceApi.create(
     sdk1.config.dialectCloud.url,
     TokenProvider.create(dappAuthenticationFacade, dataServiceWalletsApiV1),
@@ -146,7 +145,7 @@ import { createSolanaSdk } from './helpers';
       message: 'Hello, world 4',
       recipientPublicKey: recipient,
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Wallet],
+      addressTypes: [AddressType.Wallet],
     });
 
     // // Multicast, but only to wallet channel (Dialect, Solflare or Step inboxes)
@@ -155,7 +154,7 @@ import { createSolanaSdk } from './helpers';
       message: 'Hello, world',
       recipientPublicKeys: [recipient, recipient2],
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Telegram],
+      addressTypes: [AddressType.Telegram],
     });
 
     // // Per-channel broadcast, in this case notification is sent all dapp subscribers but to only specificied channels, e.g. telegram, sms, email, wallet
@@ -163,7 +162,7 @@ import { createSolanaSdk } from './helpers';
       title: 'Hello to sms and telegram subscribers',
       message: 'Hello, world',
       notificationTypeId,
-      addressTypes: [AddressTypeDto.Telegram, AddressTypeDto.PhoneNumber],
+      addressTypes: [AddressType.Telegram, AddressType.PhoneNumber],
     });
   } catch (e) {
     console.log('ERROR:', e);

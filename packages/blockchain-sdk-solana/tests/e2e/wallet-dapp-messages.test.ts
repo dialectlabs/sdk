@@ -1,4 +1,9 @@
-import { DialectSdk, Environment, ThreadMemberScope } from '@dialectlabs/sdk';
+import {
+  BlockchainType,
+  DialectSdk,
+  Environment,
+  ThreadMemberScope,
+} from '@dialectlabs/sdk';
 import type { Solana } from '@dialectlabs/blockchain-sdk-solana';
 import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
 import { Keypair } from '@solana/web3.js';
@@ -25,12 +30,12 @@ describe('Wallet dapp messages (e2e)', () => {
     // given
     const dapp1Sdk = createSolanaSdk(environment, Keypair.generate());
     await dapp1Sdk.dapps.create({
-      blockchainType: 'SOLANA',
+      blockchainType: BlockchainType.SOLANA,
       name: 'test',
     });
     const dapp2Sdk = createSolanaSdk(environment, Keypair.generate());
     await dapp2Sdk.dapps.create({
-      blockchainType: 'SOLANA',
+      blockchainType: BlockchainType.SOLANA,
       name: 'test',
     });
     const sdk1 = createSolanaSdk(environment, Keypair.generate());
