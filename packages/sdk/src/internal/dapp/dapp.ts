@@ -5,6 +5,7 @@ import type {
 } from '../../dialect-cloud-api/data-service-dapps-api';
 import { ResourceNotFoundError } from '../../sdk/errors';
 import type {
+  BlockchainType,
   CreateDappCommand,
   Dapp,
   DappAddresses,
@@ -14,7 +15,6 @@ import type {
   Dapps,
   FindDappQuery,
   ReadOnlyDapp,
-  BlockchainType,
 } from '../../dapp/dapp.interface';
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
 import type { DataServiceDappNotificationSubscriptions } from './data-service-dapp-notification-subscriptions';

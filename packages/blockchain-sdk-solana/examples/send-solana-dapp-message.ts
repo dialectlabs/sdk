@@ -1,10 +1,17 @@
 import { PublicKey } from '@solana/web3.js';
 import { createSolanaSdk } from './helpers';
-import { AddressType, IllegalStateError } from '@dialectlabs/sdk';
+import {
+  AddressType,
+  BlockchainType,
+  IllegalStateError,
+} from '@dialectlabs/sdk';
 
 (async () => {
   const sdk = createSolanaSdk();
-  await sdk.dapps.create({ name: "Kevin's dapp", blockchainType: 'solana' });
+  await sdk.dapps.create({
+    name: "Kevin's dapp",
+    blockchainType: BlockchainType.SOLANA,
+  });
   const dapp = await sdk.dapps.find();
   if (!dapp) {
     throw new IllegalStateError(

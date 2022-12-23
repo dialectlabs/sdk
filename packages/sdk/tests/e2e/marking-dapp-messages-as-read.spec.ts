@@ -1,9 +1,9 @@
 import {
-  NodeDialectSolanaWalletAdapter,
-  SolanaSdkFactory,
-} from '@dialectlabs/blockchain-sdk-solana';
-import { Dialect, Environment, ThreadMemberScope } from '@dialectlabs/sdk';
-import { createSolanaSdk } from '../../../sdk/tests/utils/utils';
+  BlockchainType,
+  Environment,
+  ThreadMemberScope,
+} from '@dialectlabs/sdk';
+import { createSolanaSdk } from '../utils/utils';
 import { Keypair } from '@solana/web3.js';
 
 const environment: Environment = 'local-development';
@@ -21,7 +21,7 @@ describe('Marking dapp messages as read test (e2e)', () => {
     const receiverSdk = createSolanaSdk(environment, receiverSdkKeypair);
     await dappSdk.dapps.create({
       name: 'Marking dapp messages as read test (e2e)',
-      blockchainType: "SOLANA"
+      blockchainType: BlockchainType.SOLANA,
     });
     const thread = await dappSdk.threads.create({
       encrypted: false,
