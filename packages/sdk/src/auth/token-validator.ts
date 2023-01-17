@@ -24,7 +24,7 @@ export abstract class TokenValidator {
 
   private isExpired(token: Token) {
     const nowUtcSeconds = new Date().getTime() / 1000;
-    const delta = 30;
+    const delta = 10;
     return nowUtcSeconds + delta > token.body.exp;
   }
 }

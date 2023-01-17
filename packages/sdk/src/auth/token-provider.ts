@@ -6,7 +6,6 @@ import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
-import type { WalletDto } from '../dialect-cloud-api/data-service-dapps-api';
 import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-service-wallets-api.v1';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -72,7 +71,6 @@ export class CachedTokenProvider extends TokenProvider {
     const existingToken = this.getCachedToken();
     const subject = this.subject.toString();
     if (existingToken && this.tokenValidator.isValid(existingToken)) {
-      delete this.delegateGetPromises[subject];
       return existingToken;
     }
     const existingDelegatePromise = this.delegateGetPromises[subject];
@@ -82,6 +80,7 @@ export class CachedTokenProvider extends TokenProvider {
 
     const delegatePromise = this.delegate.get().then(async (it) => {
       this.tokenStore.save(this.subject, it.rawValue);
+      delete this.delegateGetPromises[subject];
       const wallet: { publicKey: string } = {
         publicKey: this.subject,
       };
