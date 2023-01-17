@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.5.2] - 2023-01-17
+
+- fix: stale token after expiration
+
 ## [1.5.0] - 2022-12-15
 
 - feat: blockchain type as parameter to create Dapp
