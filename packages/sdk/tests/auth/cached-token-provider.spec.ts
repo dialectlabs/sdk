@@ -1,4 +1,5 @@
 import * as MockDate from 'mockdate';
+import type { Token } from '../../src';
 import {
   CachedTokenProvider,
   DataServiceWalletsApiClientV1,
@@ -9,7 +10,6 @@ import {
   TokenStore,
 } from '../../src';
 import { Duration } from 'luxon';
-import type { Token } from '../../lib/types';
 
 jest.mock('./../../src/dialect-cloud-api/data-service-wallets-api.v1');
 
@@ -71,7 +71,7 @@ describe('Cached token provider test', () => {
     expect(delegateTokenProviderSpy).toBeCalledTimes(0);
     MockDate.set(new Date('1970-01-01T01:00:00.000Z'));
     // when
-    const cycles = 2;
+    const cycles = 3;
     const concurrentGetsPerCycle = 100;
     const totalRequests = cycles * concurrentGetsPerCycle;
     const tokens = await getTokensConcurrently(
@@ -84,6 +84,30 @@ describe('Cached token provider test', () => {
     expect(new Set(tokens.map((it) => it.rawValue)).size).toBe(1);
     expect(tokens[0]?.rawValue).not.toBe(tokenBeforeExpiration.rawValue);
     expect(delegateTokenProviderSpy).toBeCalledTimes(1);
+  });
+
+  test(`
+    given 
+      cached token provider decorator is used
+      token is requested once
+      there is a an expired cached token
+    when 
+      token is expired
+      and token is requested again
+    then 
+      new token is generated`, async () => {
+    // given
+    const tokenValidityMinutes = 1;
+    const { cachedTokenProvider } = createTokenProvider(tokenValidityMinutes);
+    MockDate.set(new Date('1970-01-01T00:00:00.000Z'));
+    const tokenBeforeExpiration = await cachedTokenProvider.get();
+    MockDate.set(new Date('1970-01-01T01:00:00.000Z'));
+    // when
+    const tokenAfterExpiration = await cachedTokenProvider.get();
+    // then
+    expect(tokenAfterExpiration.rawValue).not.toBe(
+      tokenBeforeExpiration.rawValue,
+    );
   });
 
   function createTokenProvider(tokenValidityMinutes: number) {
