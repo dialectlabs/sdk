@@ -931,7 +931,7 @@ describe('Data service dialects api (e2e)', () => {
     ).rejects.toBeTruthy();
   });
 
-  test('cannot remove oneself', async () => {
+  test('cannot remove oneself if admin', async () => {
     const member3 = generatePublicKey();
 
     const createDialectCommand1: CreateDialectCommand = {
