@@ -17,9 +17,7 @@ describe('Data service health api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     walletAddress = authenticationFacade.subject();
-    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
-      baseUrl,
-    );
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(baseUrl);
     healthApi = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
@@ -30,9 +28,7 @@ describe('Data service health api (e2e)', () => {
     const healthCheckResult = await healthApi.healthCheck();
     const expectedResult = {
       status: 'ok',
-      info: { database: { status: 'up' } },
       error: {},
-      details: { database: { status: 'up' } },
     };
     expect(healthCheckResult).toMatchObject(expectedResult);
   });

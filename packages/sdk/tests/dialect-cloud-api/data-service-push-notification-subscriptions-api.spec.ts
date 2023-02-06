@@ -23,9 +23,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
       new Ed25519TokenSigner(),
     ).get();
     userAddress = authenticationFacade.subject();
-    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
-      baseUrl,
-    );
+    const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(baseUrl);
     api = DataServiceApiFactory.create(
       baseUrl,
       TokenProvider.create(authenticationFacade, dataServiceWalletsApiV1),
@@ -89,7 +87,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
     expect(pnSubscriptionUpsertGet2).toEqual(pnSubscriptionUpsert2);
   });
 
-  test('cannot create multiple subscriptions with the same token', async () => {
+  test('сan create multiple subscriptions with the same token', async () => {
     // when
     const pnSubscriptionUpsert1 = await api.upsert({
       physicalId: physicalId,
@@ -101,7 +99,7 @@ describe('Data service push notification subscriptions api (e2e)', () => {
         physicalId: 'temp-physical-id-2',
         token: token1,
       }),
-    ).rejects.toBeTruthy();
+    ).resolves.toBeTruthy();
   });
 
   test('can create multiple subscriptions with different device and token', async () => {

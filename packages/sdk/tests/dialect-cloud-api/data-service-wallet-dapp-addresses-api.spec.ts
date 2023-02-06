@@ -12,13 +12,13 @@ import {
 } from '../../src/dialect-cloud-api/data-service-dapps-api';
 import type { AccountAddress } from '../../src';
 import {
+  BlockchainType,
   DataServiceApiFactory,
   DataServiceWalletsApiClientV1,
   Ed25519AuthenticationFacadeFactory,
   Ed25519TokenSigner,
   TokenProvider,
 } from '../../src';
-import { BlockchainType } from '@dialectlabs/sdk';
 
 describe('Data service wallet addresses api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

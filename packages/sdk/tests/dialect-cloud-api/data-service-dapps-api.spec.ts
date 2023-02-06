@@ -3,8 +3,13 @@ import type {
   DappAddressDtoV0,
   DataServiceWalletsApiV0,
 } from '../../src/dialect-cloud-api/data-service-wallets-api.v0';
-import type { AccountAddress, DataServiceWalletsApiV1 } from '../../src';
+import type {
+  AccountAddress,
+  CreateDappCommand,
+  DataServiceWalletsApiV1,
+} from '../../src';
 import {
+  BlockchainType,
   DataServiceApiFactory,
   DataServiceWalletsApiClientV1,
   Ed25519AuthenticationFacadeFactory,
@@ -17,8 +22,6 @@ import type {
   DappDto,
   DataServiceDappsApi,
 } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import type { CreateDappCommand } from 'dapp/dapp.interface';
-import { BlockchainType } from 'dapp/dapp.interface';
 
 describe('Data service dapps api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

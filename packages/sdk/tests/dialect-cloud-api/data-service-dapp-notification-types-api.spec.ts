@@ -1,5 +1,6 @@
 import type { AccountAddress } from '../../src';
 import {
+  BlockchainType,
   DataServiceApiFactory,
   DataServiceWalletsApiClientV1,
   Ed25519AuthenticationFacadeFactory,
@@ -12,7 +13,6 @@ import type {
 } from '../../src/dialect-cloud-api/data-service-dapp-notification-types-api';
 import type { NotificationTypeDto } from '../../src/dialect-cloud-api/data-service-wallet-notification-subscriptions-api';
 import type { DappDto } from '../../src/dialect-cloud-api/data-service-dapps-api';
-import { BlockchainType } from '@dialectlabs/sdk';
 
 describe('Data service dapp notification types api (e2e)', () => {
   const baseUrl = 'http://localhost:8080';

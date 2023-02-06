@@ -14,13 +14,11 @@ export interface Dapps {
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
 
-export declare const BlockchainType: {
-  SOLANA: 'SOLANA';
-  APTOS: 'APTOS';
-  EVM: 'EVM';
-};
-
-export type BlockchainType = typeof BlockchainType[keyof typeof BlockchainType];
+export enum BlockchainType {
+  SOLANA = 'SOLANA',
+  APTOS = 'APTOS',
+  EVM = 'EVM',
+}
 
 export interface Dapp {
   id: string;
