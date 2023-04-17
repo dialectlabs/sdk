@@ -190,7 +190,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
     members: AddMembersCommand,
   ): Promise<void> {
     const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
+    await withReThrowingDataServiceError(
       axios
         .post<void>(
           `${this.baseUrl}/api/v2/dialects/${dialectId}/members`,
@@ -205,7 +205,7 @@ export class DataServiceDialectsApiClient implements DataServiceDialectsApi {
 
   async removeMember(dialectId: string, memberAddress: string): Promise<void> {
     const token = await this.tokenProvider.get();
-    return withReThrowingDataServiceError(
+    await withReThrowingDataServiceError(
       axios
         .delete<void>(
           `${this.baseUrl}/api/v2/dialects/${dialectId}/members/${memberAddress}`,

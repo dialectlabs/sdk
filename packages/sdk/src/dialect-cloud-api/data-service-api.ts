@@ -66,6 +66,7 @@ export async function withReThrowingDataServiceError<T>(fn: Promise<T>) {
   try {
     return await fn;
   } catch (e) {
+    console.error(e);
     const err = e as AxiosError;
     if (!err.response) {
       throw new NetworkError();

@@ -132,7 +132,7 @@ describe('Data service dialects api (e2e)', () => {
     ).rejects.toBeTruthy();
   });
 
-  test('wallet-adapter cannot create second dialect with same members', async () => {
+  test('wallet-adapter cannot create second p2p dialect with same members', async () => {
     const createDialectCommand: CreateDialectCommand = {
       encrypted: false,
       members: [
@@ -148,6 +148,28 @@ describe('Data service dialects api (e2e)', () => {
     };
     await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
     await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
+  });
+
+  test('wallet-adapter can create second group dialect with same members', async () => {
+    const createDialectCommand: CreateDialectCommand = {
+      encrypted: false,
+      members: [
+        {
+          address: wallet1Address,
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          address: generatePublicKey(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+        {
+          address: generatePublicKey(),
+          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
+        },
+      ],
+    };
+    await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
+    await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
   });
 
   test('wallet-adapter cannot create dialect not being an admin', async () => {
@@ -253,28 +275,6 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     };
-    await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
-  });
-
-  test('cannot create second group dialect with same members', async () => {
-    const createDialectCommand: CreateDialectCommand = {
-      encrypted: false,
-      members: [
-        {
-          address: wallet1Address,
-          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-        },
-        {
-          address: generatePublicKey(),
-          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-        },
-        {
-          address: generatePublicKey(),
-          scopes: [MemberScopeDto.ADMIN, MemberScopeDto.WRITE],
-        },
-      ],
-    };
-    await expect(wallet1Api.create(createDialectCommand)).resolves.toBeTruthy();
     await expect(wallet1Api.create(createDialectCommand)).rejects.toBeTruthy();
   });
 
@@ -631,9 +631,7 @@ describe('Data service dialects api (e2e)', () => {
         },
       ],
     });
-    const dialectAccountDto = await wallet1Api.findByMembers({
-      memberAddresses: [wallet2Address, member3, member4, member5],
-    });
+    const dialectAccountDto = await wallet1Api.find(id);
     // then
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
@@ -685,9 +683,7 @@ describe('Data service dialects api (e2e)', () => {
     // when
     await wallet1Api.removeMember(id, member4);
 
-    const dialectAccountDto = await wallet1Api.findByMembers({
-      memberAddresses: [wallet2Address, member3],
-    });
+    const dialectAccountDto = await wallet1Api.find(id);
     // then
     expect(dialectAccountDto).not.toBeUndefined();
     const actualDialectId = dialectAccountDto?.id!;
@@ -799,7 +795,7 @@ describe('Data service dialects api (e2e)', () => {
     ).rejects.toBeTruthy();
   });
 
-  test('cannot add member to match existing group dialect', async () => {
+  test('can add member to match existing group dialect', async () => {
     const member3 = generatePublicKey();
     const member4 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
@@ -852,10 +848,10 @@ describe('Data service dialects api (e2e)', () => {
           },
         ],
       }),
-    ).rejects.toBeTruthy();
+    ).resolves.toBeUndefined();
   });
 
-  test('cannot remove member to match existing group dialect', async () => {
+  test('can remove member to match existing group dialect', async () => {
     const member3 = generatePublicKey();
     const member4 = generatePublicKey();
     const createDialectCommand1: CreateDialectCommand = {
@@ -901,7 +897,7 @@ describe('Data service dialects api (e2e)', () => {
     await wallet1Api.create(createDialectCommand2);
     await expect(
       wallet1Api.removeMember(dialect1.id, member4),
-    ).rejects.toBeTruthy();
+    ).resolves.toBeUndefined();
   });
 
   test('cannot remove address which is not a member', async () => {

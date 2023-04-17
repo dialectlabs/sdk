@@ -121,7 +121,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
       axios
         .get<DappDto[]>(`${this.baseUrl}/api/v1/dapps`, {
           headers: createHeaders(token),
-          ...(query && { params: query }),
+          params: query,
         })
         .then((it) => it.data),
     );
