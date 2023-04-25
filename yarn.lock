@@ -1421,10 +1421,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@onsol/tldparser@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.5.2.tgz#0b2aee3f4680166ff1b68cb19a803dfa3c13dc2e"
-  integrity sha512-g4vpwKazqDVzpVoQjyi0MrIYYYG7ehnal50/PB9sTvnHRj7ajxN52ncED9uZW5ONrIlDBws4duk94eRbddDnKw==
+"@onsol/tldparser@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.5.3.tgz#f5a0a06fa69af0e8a2783464bbd32b3e88ad0b1a"
+  integrity sha512-rICUDhYPwDuO81wo4HI7QSCf6kQiaM0mSv3HKBJPrRxliIvgwanAoU5H0p54HEdAKeS3pmeLi5wB6ROpGxTZ/A==
   dependencies:
     "@ethersproject/sha2" "^5.7.0"
     "@metaplex-foundation/beet-solana" "^0.4.0"
