@@ -8,7 +8,7 @@ import type { Connection } from '@solana/web3.js';
 import { ANSIdentityError } from './identity-ans.error';
 
 export class ANSIdentityResolver implements IdentityResolver {
-  constructor(private readonly connection: Connection) { }
+  constructor(private readonly connection: Connection) {}
 
   get type(): string {
     return 'ANS';
@@ -19,7 +19,7 @@ export class ANSIdentityResolver implements IdentityResolver {
       const parser = new TldParser(this.connection);
       const mainDomain = await parser.getMainDomain(address);
       const domain = mainDomain.domain;
-      const tld = mainDomain.tld
+      const tld = mainDomain.tld;
       return {
         name: `${domain}${tld}`,
         address,
