@@ -124,6 +124,7 @@ describe('Cached token provider test', () => {
     const cachedTokenProvider = new CachedTokenProvider(
       defaultTokenProvider,
       TokenStore.createInMemory(),
+      true,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),

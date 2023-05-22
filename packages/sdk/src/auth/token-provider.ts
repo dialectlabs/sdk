@@ -17,6 +17,7 @@ export abstract class TokenProvider {
     dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
+    implicitWalletCreation = true,
   ): TokenProvider {
     const defaultTokenProvider = new DefaultTokenProvider(
       ttl,
@@ -25,6 +26,7 @@ export abstract class TokenProvider {
     return new CachedTokenProvider(
       defaultTokenProvider,
       tokenStore,
+      implicitWalletCreation,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
@@ -59,6 +61,7 @@ export class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
+    private readonly implicitWalletCreation: boolean,
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
@@ -84,7 +87,9 @@ export class CachedTokenProvider extends TokenProvider {
       const wallet: { publicKey: string } = {
         publicKey: this.subject,
       };
-      await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
+      if (this.implicitWalletCreation) {
+        await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
+      }
       return it;
     });
 

@@ -45,6 +45,7 @@ import type { EncryptionKeysProvider } from '../../encryption/encryption-keys-pr
 import { DataServiceApiFactory } from '../../dialect-cloud-api/data-service-api-factory';
 import type { DataServiceApi } from '../../dialect-cloud-api/data-service-api';
 import { DataServiceWalletsApiClientV1 } from '../../dialect-cloud-api/data-service-wallets-api.v1';
+import { isBoolean } from '../../utils/typecheck';
 
 export class InternalDialectSdk<ChainSdk extends BlockchainSdk>
   implements DialectSdk<ChainSdk>
@@ -136,6 +137,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
     return new CachedTokenProvider(
       defaultTokenProvider,
       config.dialectCloud.tokenStore,
+      config.dialectCloud.implicitWalletCreation,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
@@ -276,6 +278,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       url: 'https://dialectapi.to',
       tokenStore: this.createTokenStore(),
       tokenLifetimeMinutes: this.createTokenLifetime(),
+      implicitWalletCreation: true,
     };
     const environment = this.config.environment;
     if (environment) {
@@ -305,6 +308,14 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
     }
     if (this.config.dialectCloud?.url) {
       baseConfig.url = this.config.dialectCloud.url;
+    }
+
+    if (
+      this.config.dialectCloud &&
+      isBoolean(this.config.dialectCloud.implicitWalletCreation)
+    ) {
+      baseConfig.implicitWalletCreation =
+        this.config.dialectCloud?.implicitWalletCreation;
     }
     return baseConfig;
   }

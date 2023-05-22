@@ -76,6 +76,7 @@ export interface DialectCloudConfigProps {
   url?: string;
   tokenStore?: TokenStoreType | TokenStore;
   tokenLifetimeMinutes?: number;
+  implicitWalletCreation?: boolean;
 }
 
 export type DialectCloudEnvironment =
@@ -105,6 +106,7 @@ export interface DialectCloudConfig extends DialectCloudConfigProps {
   url: string;
   tokenStore: TokenStore;
   tokenLifetimeMinutes: number;
+  implicitWalletCreation: boolean;
 }
 
 export interface IdentityConfig extends IdentityConfigProps {
