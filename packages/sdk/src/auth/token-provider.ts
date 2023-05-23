@@ -62,7 +62,7 @@ export class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
-    private readonly implicitWalletCreation: WalletCreation,
+    private readonly walletCreation: WalletCreation,
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
@@ -88,7 +88,7 @@ export class CachedTokenProvider extends TokenProvider {
       const wallet: { publicKey: string } = {
         publicKey: this.subject,
       };
-      if (this.implicitWalletCreation === 'implicit') {
+      if (this.walletCreation === 'implicit') {
         await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
       }
       return it;
