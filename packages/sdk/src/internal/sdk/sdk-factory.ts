@@ -137,7 +137,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
     return new CachedTokenProvider(
       defaultTokenProvider,
       config.dialectCloud.tokenStore,
-      config.dialectCloud.implicitWalletCreation,
+      config.dialectCloud.walletCreation,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
@@ -278,7 +278,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       url: 'https://dialectapi.to',
       tokenStore: this.createTokenStore(),
       tokenLifetimeMinutes: this.createTokenLifetime(),
-      implicitWalletCreation: true,
+      walletCreation: 'implicit',
     };
     const environment = this.config.environment;
     if (environment) {
@@ -310,12 +310,8 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
       baseConfig.url = this.config.dialectCloud.url;
     }
 
-    if (
-      this.config.dialectCloud &&
-      isBoolean(this.config.dialectCloud.implicitWalletCreation)
-    ) {
-      baseConfig.implicitWalletCreation =
-        this.config.dialectCloud?.implicitWalletCreation;
+    if (this.config.dialectCloud?.walletCreation) {
+      baseConfig.walletCreation = this.config.dialectCloud.walletCreation;
     }
     return baseConfig;
   }

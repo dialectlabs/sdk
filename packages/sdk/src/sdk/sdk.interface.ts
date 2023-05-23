@@ -71,12 +71,14 @@ export type EncryptionKeysStoreType =
   | 'session-storage'
   | 'local-storage';
 
+export type WalletCreation = 'none' | 'implicit';
+
 export interface DialectCloudConfigProps {
   environment?: DialectCloudEnvironment;
   url?: string;
   tokenStore?: TokenStoreType | TokenStore;
   tokenLifetimeMinutes?: number;
-  implicitWalletCreation?: boolean;
+  walletCreation?: WalletCreation;
 }
 
 export type DialectCloudEnvironment =
@@ -106,7 +108,7 @@ export interface DialectCloudConfig extends DialectCloudConfigProps {
   url: string;
   tokenStore: TokenStore;
   tokenLifetimeMinutes: number;
-  implicitWalletCreation: boolean;
+  walletCreation: WalletCreation;
 }
 
 export interface IdentityConfig extends IdentityConfigProps {

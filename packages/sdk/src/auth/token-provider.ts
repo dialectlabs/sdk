@@ -7,6 +7,7 @@ import type { TokenValidator } from './token-validator';
 import type { AuthenticationFacade } from './authentication-facade';
 import type { TokenGenerator } from './token-generator';
 import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-service-wallets-api.v1';
+import type { WalletCreation } from '../sdk/sdk.interface';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
 export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
@@ -17,7 +18,7 @@ export abstract class TokenProvider {
     dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
     ttl: Duration = DEFAULT_TOKEN_LIFETIME,
     tokenStore: TokenStore = TokenStore.createInMemory(),
-    implicitWalletCreation = true,
+    walletCreation: WalletCreation = 'implicit',
   ): TokenProvider {
     const defaultTokenProvider = new DefaultTokenProvider(
       ttl,
@@ -26,7 +27,7 @@ export abstract class TokenProvider {
     return new CachedTokenProvider(
       defaultTokenProvider,
       tokenStore,
-      implicitWalletCreation,
+      walletCreation,
       authenticationFacade.authenticator.parser,
       authenticationFacade.authenticator.validator,
       authenticationFacade.subject(),
@@ -61,7 +62,7 @@ export class CachedTokenProvider extends TokenProvider {
   constructor(
     private readonly delegate: TokenProvider,
     private readonly tokenStore: TokenStore,
-    private readonly implicitWalletCreation: boolean,
+    private readonly implicitWalletCreation: WalletCreation,
     private readonly tokenParser: TokenParser,
     private readonly tokenValidator: TokenValidator,
     private readonly subject: AccountAddress,
@@ -87,7 +88,7 @@ export class CachedTokenProvider extends TokenProvider {
       const wallet: { publicKey: string } = {
         publicKey: this.subject,
       };
-      if (this.implicitWalletCreation) {
+      if (this.implicitWalletCreation === 'implicit') {
         await this.dataServiceWalletsApiClientV1.upsertWallet(wallet, it);
       }
       return it;
