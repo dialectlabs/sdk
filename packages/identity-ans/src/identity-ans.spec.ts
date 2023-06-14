@@ -14,10 +14,10 @@ describe('ans tests', () => {
 
     expect(identity).toStrictEqual({
       type: 'ANS',
-      name: expect.stringContaining('miester.poor'),
+      name: expect.stringContaining('miester.abc'),
       address: owner,
       additionals: {
-        displayName: expect.stringContaining('miester.poor'),
+        displayName: expect.stringContaining('miester.abc'),
       },
     });
   });

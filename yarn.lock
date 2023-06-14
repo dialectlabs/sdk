@@ -1421,18 +1421,13 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@onsol/tldparser@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.4.0.tgz#bda80613a9b83ee6ce98c8948e0464a04c2a82d6"
-  integrity sha512-iYDgcUxVItevXL3KOzUqZbJUttL0L52i4fzYftn7y7adQM4Ok2FKEeDGJsEgM/AASOaNig7HutwiwpQqi5Z62Q==
+"@onsol/tldparser@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@onsol/tldparser/-/tldparser-0.5.3.tgz#f5a0a06fa69af0e8a2783464bbd32b3e88ad0b1a"
+  integrity sha512-rICUDhYPwDuO81wo4HI7QSCf6kQiaM0mSv3HKBJPrRxliIvgwanAoU5H0p54HEdAKeS3pmeLi5wB6ROpGxTZ/A==
   dependencies:
+    "@ethersproject/sha2" "^5.7.0"
     "@metaplex-foundation/beet-solana" "^0.4.0"
-    "@solana/buffer-layout" "^4.0.0"
-    "@solana/web3.js" "^1.66.0"
-    bigint-buffer "^1.1.5"
-    bn.js "^5.2.0"
-    borsh "^0.7.0"
-    buffer "6.0.1"
 
 "@panva/asn1.js@^1.0.0":
   version "1.0.0"
@@ -1770,7 +1765,7 @@
     rpc-websockets "^7.5.0"
     superstruct "^0.14.2"
 
-"@solana/web3.js@^1.56.2", "@solana/web3.js@^1.66.0":
+"@solana/web3.js@^1.56.2":
   version "1.70.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.70.1.tgz#4a2df47cc32a0f67be5161e772b2ceb6512281fa"
   integrity sha512-AnaqCF1cJ3w7d0yhvLGAKAcRI+n5o+ursQihhoTe4cUh8/9d4gbT73SoHYElS7e67OtAgLmSfbcC5hcOAgdvnQ==
