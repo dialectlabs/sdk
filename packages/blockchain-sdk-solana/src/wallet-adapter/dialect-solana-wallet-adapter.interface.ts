@@ -7,7 +7,7 @@ import type { PublicKey } from '@solana/web3.js';
 export interface DialectSolanaWalletAdapter {
   publicKey?: PublicKey;
   signTransaction?: SignerWalletAdapterProps['signTransaction'];
-  signAllTransactions?: SignerWalletAdapterProps['signAllTransactions'];
+  signAllTransactions: SignerWalletAdapterProps['signAllTransactions'];
   signMessage?: MessageSignerWalletAdapterProps['signMessage'];
   diffieHellman?: MessageEncryptionWalletAdapterProps['diffieHellman'];
 }

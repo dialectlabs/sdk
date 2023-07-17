@@ -1,4 +1,10 @@
-import { Keypair, PublicKey, Transaction } from '@solana/web3.js';
+import {
+  Keypair,
+  PublicKey,
+  Signer,
+  Transaction,
+  VersionedTransaction,
+} from '@solana/web3.js';
 import type { DialectSolanaWalletAdapter } from './dialect-solana-wallet-adapter.interface';
 import nacl from 'tweetnacl';
 import { convertKeyPair } from 'ed2curve';
@@ -38,16 +44,22 @@ export class NodeDialectSolanaWalletAdapter
     }
   }
 
-  async signTransaction(tx: Transaction): Promise<Transaction> {
-    tx.partialSign(this.keypair);
-    return tx;
+  async signTransaction<T extends Transaction | VersionedTransaction>(
+    transaction: T,
+  ): Promise<T> {
+    const signer: Signer = {
+      publicKey: this.keypair.publicKey,
+      secretKey: this.keypair.secretKey,
+    };
+    const signers: Signer[] = [signer];
+    (transaction as VersionedTransaction).sign(signers);
+    return transaction;
   }
 
-  async signAllTransactions(txs: Transaction[]): Promise<Transaction[]> {
-    return txs.map((t) => {
-      t.partialSign(this.keypair);
-      return t;
-    });
+  async signAllTransactions<T extends Transaction | VersionedTransaction>(
+    transactions: T[],
+  ): Promise<T[]> {
+    return Promise.all(transactions.map((tx) => this.signTransaction(tx)));
   }
 
   signMessage(message: Uint8Array): Promise<Uint8Array> {
