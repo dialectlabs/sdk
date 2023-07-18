@@ -47,12 +47,16 @@ export class NodeDialectSolanaWalletAdapter
   async signTransaction<T extends Transaction | VersionedTransaction>(
     transaction: T,
   ): Promise<T> {
-    const signer: Signer = {
-      publicKey: this.keypair.publicKey,
-      secretKey: this.keypair.secretKey,
-    };
-    const signers: Signer[] = [signer];
-    (transaction as VersionedTransaction).sign(signers);
+    if (transaction instanceof VersionedTransaction) {
+      const signer: Signer = {
+        publicKey: this.keypair.publicKey,
+        secretKey: this.keypair.secretKey,
+      };
+      const signers: Signer[] = [signer];
+      transaction.sign(signers);
+    } else {
+      transaction.partialSign(this.keypair);
+    }
     return transaction;
   }
 
