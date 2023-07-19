@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@solana/wallet-adapter-base": "^0.9.15",
-    "@solana/web3.js": "^1.53.0",
+    "@solana/web3.js": "^1.78.0",
     "@types/bs58": "^4.0.1",
     "@types/ed2curve": "^0.2.2",
     "@types/luxon": "^2.3.2",
