@@ -2,6 +2,8 @@
 
 ## [UNRELEASED]
 
+- fix: solana token body parser
+
 ## [1.0.1] - 2022-11-30
 
 - fix: remove implicit sdk-cred generation
