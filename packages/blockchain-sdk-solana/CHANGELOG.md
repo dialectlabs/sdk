@@ -2,7 +2,17 @@
 
 ## [UNRELEASED]
 
+## [1.0.4]
+
 - fix: solana token body parser
+
+## [1.0.3]
+
+- wallet-adapter versioned transaction support
+
+## [1.0.2]
+
+- upserting wallet optional
 
 ## [1.0.1] - 2022-11-30
 
