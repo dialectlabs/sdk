@@ -11,7 +11,9 @@ export class SolanaTxTokenBodyParser extends TokenBodyParser {
   parse(base64Body: string): TokenBody {
     const byteBody = bytesFromBase64(base64Body);
     const tx = Transaction.from(byteBody);
-    const dataInstruction = tx.instructions[0];
+    const dataInstruction = tx.instructions.filter(
+      (it) => it.programId === tx.feePayer,
+    )[0];
     if (!dataInstruction) {
       throw new TokenStructureValidationError();
     }
