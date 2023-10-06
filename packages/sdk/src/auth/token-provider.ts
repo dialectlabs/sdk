@@ -10,7 +10,7 @@ import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-se
 import type { WalletCreation } from '../sdk/sdk.interface';
 
 export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
-export const MAX_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
+export const MAX_TOKEN_LIFETIME = Duration.fromObject({ months: 4 });
 
 export abstract class TokenProvider {
   static create(
