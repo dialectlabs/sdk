@@ -2,17 +2,14 @@ import {
   CreateThreadCommand,
   DataServiceApiFactory,
   DataServiceMessaging,
+  DataServiceWalletsApiClientV1,
   Messaging,
   SendMessageCommand,
   ThreadAlreadyExistsError,
   ThreadMemberScope,
   TokenProvider,
-  DataServiceWalletsApiClientV1,
 } from '@dialectlabs/sdk';
-import { Keypair, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { createDialectProgram } from '../../src/messaging/solana-dialect-program-factory';
-import { SolanaMessaging } from '../../src/messaging/solana-messaging';
-import { programs } from '@dialectlabs/web3';
+import { Keypair } from '@solana/web3.js';
 import { DialectWalletAdapterSolanaEd25519TokenSigner } from '../../src/auth/ed25519/solana-ed25519-token-signer';
 import { DialectSolanaWalletAdapterEncryptionKeysProvider } from '../../src/encryption/encryption-keys-provider';
 import { DialectSolanaWalletAdapterWrapper } from '../../src/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
@@ -37,7 +34,6 @@ const baseUrl = 'http://localhost:8080';
 describe('Data service messaging (e2e)', () => {
   const messaging: [string, () => Promise<MessagingState>][] = [
     [DataServiceMessaging.name, () => createDataServiceMessaging()],
-    [SolanaMessaging.name, () => createSolanaServiceMessaging()],
   ];
 
   it.each(messaging)(
@@ -616,46 +612,6 @@ describe('Data service messaging (e2e)', () => {
     },
   );
 });
-
-async function createSolanaServiceMessaging() {
-  const [wallet1, wallet2, wallet3] = await Promise.all([
-    createSolanaWalletMessagingState(),
-    createSolanaWalletMessagingState(),
-    createSolanaWalletMessagingState(),
-  ]);
-
-  const solanaMessagingState: MessagingState = {
-    wallet1,
-    wallet2,
-    wallet3,
-  };
-  return solanaMessagingState;
-}
-
-async function createSolanaWalletMessagingState(): Promise<WalletMessagingState> {
-  const walletAdapter = new DialectSolanaWalletAdapterWrapper(
-    NodeDialectSolanaWalletAdapter.create(Keypair.generate()),
-  );
-  const program = await createDialectProgram(
-    walletAdapter,
-    new PublicKey(programs['localnet'].programAddress),
-    programs['localnet'].clusterAddress,
-  );
-  const airdropRequest = await program.provider.connection.requestAirdrop(
-    walletAdapter.publicKey,
-    LAMPORTS_PER_SOL * 100,
-  );
-  await program.provider.connection.confirmTransaction(airdropRequest);
-  const userSolanaMessaging = new SolanaMessaging(
-    walletAdapter,
-    program,
-    new DialectSolanaWalletAdapterEncryptionKeysProvider(walletAdapter),
-  );
-  return {
-    adapter: walletAdapter,
-    messaging: userSolanaMessaging,
-  };
-}
 
 function createDataServiceWalletMessagingState(): WalletMessagingState {
   const wallet = NodeDialectSolanaWalletAdapter.create(Keypair.generate());

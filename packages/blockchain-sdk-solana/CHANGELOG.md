@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.1.0]
+
+- feat: retire on-chain messaging api
+
 ## [1.0.4]
 
 - fix: solana token body parser
