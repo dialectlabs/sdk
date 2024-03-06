@@ -72,11 +72,18 @@ export interface FindDappQuery {
   blockchainType?: BlockchainType;
 }
 
+export interface DappMessageAction {
+  label: string;
+  url: string;
+}
+
 export interface SendDappMessageCommandBase {
   message: string;
   title?: string;
   notificationTypeId?: string;
   addressTypes?: AddressType[];
+  tags?: string[];
+  actions?: DappMessageAction[];
 }
 
 export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
