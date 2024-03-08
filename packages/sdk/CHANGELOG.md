@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.0] - 2024-03-08
+
+- feature: add notification metadata
+
 ## [1.5.2] - 2023-01-17
 
 - fix: stale token after expiration
