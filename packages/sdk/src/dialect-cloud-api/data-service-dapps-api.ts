@@ -193,7 +193,7 @@ class SendDappMessageCommand {
   message!: string;
   notificationTypeId?: string;
   addressTypes?: AddressTypeDto[];
-  tags?: string[];
+  // tags?: string[];
   actions?: DappMessageActionDto[];
 }
 

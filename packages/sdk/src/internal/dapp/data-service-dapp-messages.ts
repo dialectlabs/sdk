@@ -50,7 +50,7 @@ export class DataServiceDappMessages implements DappMessages {
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),
-        tags: command.tags,
+        // tags: command.tags,
         actions: command.actions,
       }),
     );
