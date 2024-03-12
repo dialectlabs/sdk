@@ -82,7 +82,7 @@ export interface SendDappMessageCommandBase {
   title?: string;
   notificationTypeId?: string;
   addressTypes?: AddressType[];
-  tags?: string[];
+  // tags?: string[];
   actions?: DappMessageAction[];
 }
 

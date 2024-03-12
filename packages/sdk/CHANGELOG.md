@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.1] - 2024-03-12
+
+- feature: hide tags in notification model
+
 ## [1.7.0] - 2024-03-08
 
 - feature: add notification metadata
