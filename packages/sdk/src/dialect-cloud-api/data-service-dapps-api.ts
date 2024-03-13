@@ -4,7 +4,7 @@ import {
   withReThrowingDataServiceError,
 } from './data-service-api';
 import axios from 'axios';
-import type { BlockchainType } from '../dapp/dapp.interface';
+import type { BlockchainType, DappMessageAction } from '../dapp/dapp.interface';
 
 export interface DataServiceDappsApi {
   create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
@@ -183,11 +183,18 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
+export class DappMessageActionDto {
+  label!: string;
+  url!: string;
+}
+
 class SendDappMessageCommand {
   title?: string;
   message!: string;
   notificationTypeId?: string;
   addressTypes?: AddressTypeDto[];
+  // tags?: string[];
+  actions?: DappMessageActionDto[];
 }
 
 export class UnicastDappMessageCommandDto extends SendDappMessageCommand {

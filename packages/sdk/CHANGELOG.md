@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [1.7.2] - 2024-03-12
+
+- feature: fix version number
+
+## [1.7.1] - 2024-03-12
+
+- feature: hide tags in notification model
+
+## [1.7.0] - 2024-03-08
+
+- feature: add notification metadata
+
 ## [1.5.2] - 2023-01-17
 
 - fix: stale token after expiration

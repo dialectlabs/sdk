@@ -36,10 +36,24 @@ export interface SendMessageCommand {
   deduplicationId?: string;
 }
 
+export interface MessageAction {
+  label: string;
+  url: string;
+}
+
+export interface MessageMetadata {
+  title?: string;
+  // tags?: string[];
+  actions?: MessageAction[];
+  notificationTypeId?: string;
+  notificationTypeHumanReadableId?: string;
+}
+
 export interface ThreadMessage {
   text: string;
   timestamp: Date;
   author: ThreadMember;
+  metadata?: MessageMetadata;
   deduplicationId?: string;
 }
 

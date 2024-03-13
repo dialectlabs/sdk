@@ -182,6 +182,7 @@ export class DataServiceMessaging implements Messaging {
             ? thisThreadMember
             : otherMembersPks[lastMessage.owner]!,
         deduplicationId: lastMessage.deduplicationId,
+        metadata: lastMessage.metadata,
       };
     }
 
@@ -311,7 +312,7 @@ export class DataServiceThread implements Thread {
     const { messages } = await withErrorParsing(
       this.dataServiceDialectsApi.getMessages(this.address.toString()),
     );
-    const threadMessages = messages.map((it) => ({
+    const threadMessages: ThreadMessage[] = messages.map((it) => ({
       author:
         it.owner === this.me.address.toString()
           ? this.me
@@ -319,6 +320,7 @@ export class DataServiceThread implements Thread {
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
       deduplicationId: it.deduplicationId,
+      metadata: it.metadata,
     }));
     this.lastMessage = threadMessages[0] ?? null;
     return threadMessages;

@@ -4,7 +4,6 @@ import {
   withReThrowingDataServiceError,
 } from './data-service-api';
 import axios from 'axios';
-
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
@@ -256,11 +255,23 @@ export enum MemberScopeDto {
   WRITE = 'WRITE',
 }
 
+export class MessageActionDto {
+  label!: string;
+  url!: string;
+}
+export class MessageMetadataDto {
+  title?: string;
+  tags?: string[];
+  actions?: MessageActionDto[];
+  notificationTypeId?: string;
+}
+
 export interface MessageDto {
   readonly owner: string;
   readonly text: number[];
   readonly timestamp: number;
   readonly deduplicationId?: string;
+  readonly metadata?: MessageMetadataDto;
 }
 
 export interface MessagesDto {

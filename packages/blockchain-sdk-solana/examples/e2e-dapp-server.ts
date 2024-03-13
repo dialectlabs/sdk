@@ -66,7 +66,7 @@ async function getOrRegisterDapp() {
   let dapp = await sdk.dapps.find();
   if (!dapp) {
     console.log(`Dapp not found, creating it...`);
-    dapp = await sdk.dapps.create({
+    const createdDapp = await sdk.dapps.create({
       name: 'Example dapp',
       description: 'Example dapp description.',
       blockchainType: BlockchainType.SOLANA,
@@ -76,6 +76,8 @@ async function getOrRegisterDapp() {
         dapp!.description
       }; messaging address: ${dapp!.address})`,
     );
+
+    return createdDapp;
   }
-  return dapp;
+  return dapp.messages.send({});
 }
