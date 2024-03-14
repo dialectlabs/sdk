@@ -1,4 +1,3 @@
-import { Duration } from 'luxon';
 import { DialectAptosWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
 import {
   AptosEd25519PayloadTokenSigner,
@@ -35,7 +34,7 @@ describe('aptos ed25519 payload token tests', () => {
   test('when not expired validation returns true', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+     100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -48,7 +47,7 @@ describe('aptos ed25519 payload token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+     -100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -79,7 +78,7 @@ describe('aptos ed25519 payload token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     expect(token.body.sub).toBe(sub);

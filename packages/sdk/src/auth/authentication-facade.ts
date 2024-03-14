@@ -1,7 +1,6 @@
 import type { TokenGenerator } from './token-generator';
 import type { TokenValidator } from './token-validator';
 import type { TokenParser } from './token-parser';
-import type { Duration } from 'luxon';
 import type {
   AccountAddress,
   Token,
@@ -48,8 +47,8 @@ export class AuthenticationFacade {
     return this.tokenSigner.subject;
   }
 
-  generateToken(ttl: Duration) {
-    return this.tokenGenerator.generate(ttl);
+  generateToken(ttlSeconds: number) {
+    return this.tokenGenerator.generate(ttlSeconds);
   }
 
   parseToken(token: string) {

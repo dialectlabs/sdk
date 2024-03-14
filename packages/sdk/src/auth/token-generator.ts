@@ -1,4 +1,3 @@
-import type { Duration } from 'luxon';
 import { bytesToBase64 } from '../utils/bytes-utils';
 import type {
   Token,
@@ -10,7 +9,7 @@ import type {
 export abstract class TokenGenerator {
   constructor(protected readonly signer: TokenSigner) {}
 
-  abstract generate(ttl: Duration): Promise<Token>;
+  abstract generate(ttlSeconds: number): Promise<Token>;
 
   protected header(): TokenHeader {
     return {
@@ -19,13 +18,13 @@ export abstract class TokenGenerator {
     };
   }
 
-  protected body(ttl: Duration): TokenBody {
+  protected body(ttlSeconds: number): TokenBody {
     const nowUtcSeconds = new Date().getTime() / 1000;
     const body: TokenBody = {
       sub: this.signer.subject,
       sub_jwk: this.signer.subjectPublicKey?.toString(),
       iat: Math.round(nowUtcSeconds),
-      exp: Math.round(nowUtcSeconds + ttl.toMillis() / 1000),
+      exp: Math.round(nowUtcSeconds + ttlSeconds),
     };
     return body;
   }

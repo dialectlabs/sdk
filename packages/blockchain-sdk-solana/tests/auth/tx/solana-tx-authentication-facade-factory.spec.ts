@@ -9,7 +9,6 @@ import {
 } from '../../../src/auth/tx/solana-tx-token-signer';
 
 import { SolanaTxAuthenticationFacadeFactory } from '../../../src/auth/tx/solana-tx-authentication-facade-factory';
-import { Duration } from 'luxon';
 import type { AuthenticationFacade } from '@dialectlabs/sdk';
 import {
   AccountAddress,
@@ -36,7 +35,7 @@ describe('solana-tx token tests', () => {
   test('when not expired validation returns true', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -49,7 +48,7 @@ describe('solana-tx token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+      -100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -67,7 +66,7 @@ describe('solana-tx token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     expect(token.body.sub).toBe(wallet.publicKey.toString());
@@ -89,7 +88,7 @@ describe('solana-tx token tests', () => {
     ).get();
     // when / then
     await expect(
-      authenticationFacade.generateToken(Duration.fromObject({ seconds: 100 })),
+      authenticationFacade.generateToken(100),
     ).rejects.toThrowError();
   });
 
@@ -105,7 +104,7 @@ describe('solana-tx token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     expect(token.body.sub).toBe(wallet.publicKey.toString());

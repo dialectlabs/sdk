@@ -1,4 +1,3 @@
-import { Duration } from 'luxon';
 import { DialectAptosWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-aptos-wallet-adapter-wrapper';
 import {
   AptosEd25519TokenSigner,
@@ -30,7 +29,7 @@ describe('aptos ed25519 token tests', () => {
   test('when not expired validation returns true', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -43,7 +42,7 @@ describe('aptos ed25519 token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+      -100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -56,7 +55,7 @@ describe('aptos ed25519 token tests', () => {
   test('when sub compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -80,7 +79,7 @@ describe('aptos ed25519 token tests', () => {
   test('when sub jwk compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -104,7 +103,7 @@ describe('aptos ed25519 token tests', () => {
   test('when exp compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();

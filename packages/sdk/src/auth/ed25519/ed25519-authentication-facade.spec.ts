@@ -1,4 +1,3 @@
-import { Duration } from 'luxon';
 
 import { Ed25519TokenSigner } from './ed25519-token-signer';
 import type { AuthenticationFacade } from '../authentication-facade';
@@ -18,7 +17,7 @@ describe('ed25519 token tests', () => {
   test('when not expired validation returns true', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -31,7 +30,7 @@ describe('ed25519 token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+      -100,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -44,7 +43,7 @@ describe('ed25519 token tests', () => {
   test('when sub compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      6 * 60,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -71,7 +70,7 @@ describe('ed25519 token tests', () => {
   test('when exp compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -107,7 +106,7 @@ describe('ed25519 token tests', () => {
     authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100,
     );
     // then
     expect(token.body.sub_jwk).not.toBe(token.body.sub);
@@ -128,7 +127,7 @@ describe('ed25519 token tests', () => {
     authenticationFacade = new Ed25519AuthenticationFacadeFactory(signer).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+     100,
     );
     // then
     expect(token.body.sub).toBe(signerPublicKey.toString());

@@ -1,14 +1,13 @@
 import type { Token } from './auth.interface';
-import type { Duration } from 'luxon';
 import { jsonStringifyToBase64 } from '../utils/bytes-utils';
 import { TokenGenerator } from './token-generator';
 
 export class DefaultTokenGenerator extends TokenGenerator {
-  override async generate(ttl: Duration): Promise<Token> {
+  override async generate(ttlSeconds: number): Promise<Token> {
     const header = this.header();
     const base64Header = jsonStringifyToBase64(header);
 
-    const body = this.body(ttl);
+    const body = this.body(ttlSeconds);
     const base64Body = jsonStringifyToBase64(body);
 
     const { signature, base64Signature } = await this.sign(

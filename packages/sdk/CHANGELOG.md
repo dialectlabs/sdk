@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.3] - 2024-04-03
+
+- chore: retire luxon
+
 ## [1.7.2] - 2024-03-12
 
 - feature: fix version number

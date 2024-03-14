@@ -4,7 +4,6 @@ import {
   NodeDialectSolanaWalletAdapter,
   SolanaEd25519AuthenticationFacadeFactory,
 } from '@dialectlabs/blockchain-sdk-solana';
-import { Duration } from 'luxon';
 
 const adapter = NodeDialectSolanaWalletAdapter.create();
 const walletAdapter = DialectSolanaWalletAdapterWrapper.create(adapter);
@@ -16,8 +15,6 @@ const walletAdapter = DialectSolanaWalletAdapterWrapper.create(adapter);
   const authenticationFacade = new SolanaEd25519AuthenticationFacadeFactory(
     signer,
   ).get();
-  const token = await authenticationFacade.generateToken(
-    Duration.fromObject({ minutes: 120 }),
-  );
+  const token = await authenticationFacade.generateToken(120 * 60);
   console.log(token.rawValue);
 })();

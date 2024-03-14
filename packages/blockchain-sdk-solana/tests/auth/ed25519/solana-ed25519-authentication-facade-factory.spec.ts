@@ -1,5 +1,4 @@
 import { Keypair } from '@solana/web3.js';
-import { Duration } from 'luxon';
 import { DialectSolanaWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-solana-wallet-adapter-wrapper';
 import type {
   AccountAddress,
@@ -36,7 +35,7 @@ describe('solana ed25519 token tests', () => {
   test('when not expired validation returns true', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -49,7 +48,7 @@ describe('solana ed25519 token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+      -100
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -62,7 +61,7 @@ describe('solana ed25519 token tests', () => {
   test('when sub compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+     5 * 60
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -86,7 +85,8 @@ describe('solana ed25519 token tests', () => {
   test('when exp compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60
+
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -115,7 +115,7 @@ describe('solana ed25519 token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100
     );
     // then
     expect(token.body.sub).toBe(wallet.publicKey.toString());
@@ -137,7 +137,7 @@ describe('solana ed25519 token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100
     );
     // then
     expect(token.body.sub).toBe(subjectPublicKey.toString());
@@ -161,7 +161,7 @@ describe('solana ed25519 token tests', () => {
     ).get();
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 100 }),
+      100
     );
     // then
     expect(token.body.sub).toBe(wallet.publicKey.toString());

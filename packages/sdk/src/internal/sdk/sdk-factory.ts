@@ -12,7 +12,7 @@ import type {
 import type { IdentityResolver } from '../../identity/identity.interface';
 import {
   CachedTokenProvider,
-  DEFAULT_TOKEN_LIFETIME,
+  DEFAULT_TOKEN_LIFETIME_SECONDS,
   DefaultTokenProvider,
   TokenProvider,
 } from '../../auth/token-provider';
@@ -23,7 +23,6 @@ import type {
   Dapps,
 } from '../../dapp/dapp.interface';
 import { DataServiceDappNotificationSubscriptions } from '../dapp/data-service-dapp-notification-subscriptions';
-import { Duration } from 'luxon';
 import { DappMessagesFacade } from '../dapp/dapp-messages-facade';
 import { DappsImpl } from '../dapp/dapp';
 import { TokenStore } from '../../auth/token-store';
@@ -126,9 +125,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
     { authenticationFacade }: BlockchainSdk,
   ): CachedTokenProvider {
     const defaultTokenProvider = new DefaultTokenProvider(
-      Duration.fromObject({
-        minutes: config.dialectCloud.tokenLifetimeMinutes,
-      }),
+      config.dialectCloud.tokenLifetimeMinutes * 60,
       authenticationFacade.tokenGenerator,
     );
     const dataServiceWalletsApiV1 = new DataServiceWalletsApiClientV1(
@@ -319,7 +316,7 @@ export class DialectSdkFactory<ChainSdk extends BlockchainSdk> {
   private createTokenLifetime() {
     return (
       this.config.dialectCloud?.tokenLifetimeMinutes ??
-      DEFAULT_TOKEN_LIFETIME.toMillis() / 1000 / 60
+      DEFAULT_TOKEN_LIFETIME_SECONDS / 60
     );
   }
 

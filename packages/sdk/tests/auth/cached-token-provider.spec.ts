@@ -9,7 +9,6 @@ import {
   generateEd25519Keypair,
   TokenStore,
 } from '../../src';
-import { Duration } from 'luxon';
 
 jest.mock('./../../src/dialect-cloud-api/data-service-wallets-api.v1');
 
@@ -118,7 +117,7 @@ describe('Cached token provider test', () => {
     ).get();
 
     const defaultTokenProvider = new DefaultTokenProvider(
-      Duration.fromObject({ minutes: tokenValidityMinutes }),
+      tokenValidityMinutes * 60,
       authenticationFacade.tokenGenerator,
     );
     const cachedTokenProvider = new CachedTokenProvider(

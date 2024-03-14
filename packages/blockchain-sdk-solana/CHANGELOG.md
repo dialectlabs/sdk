@@ -2,6 +2,10 @@
 
 ## [UNRELEASED]
 
+## [1.1.1] - 2024-04-03
+
+- chore: retire luxon
+- 
 ## [1.1.0]
 
 - feat: retire on-chain messaging api

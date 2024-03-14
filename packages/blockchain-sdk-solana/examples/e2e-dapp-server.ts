@@ -23,18 +23,58 @@ import {
 const sdk: DialectSdk<Solana> = Dialect.sdk(
   {
     environment: 'production',
+    dialectCloud: {}
   },
   SolanaSdkFactory.create({
     wallet: NodeDialectSolanaWalletAdapter.create(), // don't forget to set DIALECT_SDK_CREDENTIALS env var to dapp wallet private key
   }),
 );
 
+const dapp = await sdk.dapps.find();
+
+if (!dapp) {
+  console.error('Dapp not found. Please register a dapp first.');
+  process.exit(1);
+}
+await dapp.messages.send({
+  title: 'New notification',
+  message: 'Hello, from the dialect sdk example!',
+  actions: [
+    {
+      label: 'Open Dialect',
+      url: 'https://dialect.io',
+    },
+  ],
+});
+
 console.log(`Server wallet address: ${sdk.wallet.address}`);
 
 async function main() {
-  // First, we register the sending keypair as a "dapp" (this is any project that wants to
-  // have users subscribe to receive notifications).
-  const dapp = await getOrRegisterDapp();
+  const sdk: DialectSdk<Solana> = Dialect.sdk(
+    {
+      environment: 'production',
+    },
+    SolanaSdkFactory.create({
+      wallet: NodeDialectSolanaWalletAdapter.create(), // don't forget to set DIALECT_SDK_CREDENTIALS env var to dapp wallet private key
+    }),
+  );
+
+  const dapp = await sdk.dapps.find();
+
+  if (!dapp) {
+    console.error('Dapp not found. Please register a dapp first.');
+    process.exit(1);
+  }
+  await dapp.messages.send({
+    title: 'New notification',
+    message: 'Hello, from the dialect sdk example!',
+    actions: [
+      {
+        label: 'Open Dialect',
+        url: 'https://dialect.io',
+      },
+    ],
+  });
 
   console.log(`Dapp id: ${dapp.id}`);
 
@@ -50,6 +90,12 @@ async function main() {
         .send({
           title: 'New notification',
           message: message.toString(),
+          actions: [
+            {
+              label: 'Open Dialect',
+              url: 'https://dialect.io',
+            },
+          ],
         })
         .catch((e) => console.error(e));
     }
@@ -79,5 +125,5 @@ async function getOrRegisterDapp() {
 
     return createdDapp;
   }
-  return dapp.messages.send({});
+  return dapp;
 }

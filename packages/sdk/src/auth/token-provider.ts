@@ -1,6 +1,5 @@
 import type { AccountAddress, Token } from './auth.interface';
 import { IllegalArgumentError } from '../sdk/errors';
-import { Duration } from 'luxon';
 import { TokenStore } from './token-store';
 import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
@@ -9,19 +8,19 @@ import type { TokenGenerator } from './token-generator';
 import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-service-wallets-api.v1';
 import type { WalletCreation } from '../sdk/sdk.interface';
 
-export const DEFAULT_TOKEN_LIFETIME = Duration.fromObject({ days: 1 });
-export const MAX_TOKEN_LIFETIME = Duration.fromObject({ months: 4 });
+export const DEFAULT_TOKEN_LIFETIME_SECONDS = 24 * 60 * 60; // 24 hours
+export const MAX_TOKEN_LIFETIME_SECONDS = 3 * 30 * 24 * 60 * 60; // 3 months
 
 export abstract class TokenProvider {
   static create(
     authenticationFacade: AuthenticationFacade,
     dataServiceWalletsApiClientV1: DataServiceWalletsApiClientV1,
-    ttl: Duration = DEFAULT_TOKEN_LIFETIME,
+    ttlSeconds = DEFAULT_TOKEN_LIFETIME_SECONDS,
     tokenStore: TokenStore = TokenStore.createInMemory(),
     walletCreation: WalletCreation = 'implicit',
   ): TokenProvider {
     const defaultTokenProvider = new DefaultTokenProvider(
-      ttl,
+      ttlSeconds,
       authenticationFacade.tokenGenerator,
     );
     return new CachedTokenProvider(
@@ -40,19 +39,19 @@ export abstract class TokenProvider {
 
 export class DefaultTokenProvider extends TokenProvider {
   constructor(
-    private readonly ttl: Duration,
+    private readonly ttlSeconds: number,
     private readonly tokenGenerator: TokenGenerator,
   ) {
-    if (ttl.toMillis() > MAX_TOKEN_LIFETIME.toMillis()) {
+    if (ttlSeconds > MAX_TOKEN_LIFETIME_SECONDS) {
       throw new IllegalArgumentError(
-        `Token TTL ${ttl.toHuman()} must be <= ${MAX_TOKEN_LIFETIME.toHuman()}`,
+        `Token TTL ${ttlSeconds} must be <= max ${MAX_TOKEN_LIFETIME_SECONDS}`,
       );
     }
     super();
   }
 
   get(): Promise<Token> {
-    return this.tokenGenerator.generate(this.ttl);
+    return this.tokenGenerator.generate(this.ttlSeconds);
   }
 }
 

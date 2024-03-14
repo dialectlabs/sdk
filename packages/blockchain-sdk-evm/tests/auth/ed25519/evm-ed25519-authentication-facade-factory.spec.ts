@@ -1,5 +1,4 @@
 import { DialectEvmWalletAdapterWrapper } from '../../../src/wallet-adapter/dialect-evm-wallet-adapter-wrapper';
-import { Duration } from 'luxon';
 import type { AuthenticationFacade, TokenBody } from '@dialectlabs/sdk';
 import { NodeDialectEvmWalletAdapter } from '../../../src/wallet-adapter/node-evm-wallet-adapter';
 import {
@@ -27,7 +26,7 @@ describe('evm ed25519 token tests', () => {
 
   test('when not expired validation returns true', async () => {
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: 10000 }),
+      10000,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -39,7 +38,7 @@ describe('evm ed25519 token tests', () => {
   test('when expired validation returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ seconds: -100 }),
+     -100 ,
     );
     // then
     const isValid = authenticationFacade.isValid(token);
@@ -52,7 +51,7 @@ describe('evm ed25519 token tests', () => {
   test('when sub compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -78,7 +77,8 @@ describe('evm ed25519 token tests', () => {
   test('when sub jwk compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60,
+
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
@@ -104,7 +104,7 @@ describe('evm ed25519 token tests', () => {
   test('when exp compromised returns false', async () => {
     // when
     const token = await authenticationFacade.generateToken(
-      Duration.fromObject({ minutes: 5 }),
+      5 * 60,
     );
     const isValid = authenticationFacade.isValid(token);
     expect(isValid).toBeTruthy();
