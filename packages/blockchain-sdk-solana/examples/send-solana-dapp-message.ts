@@ -42,6 +42,15 @@ import {
     message: 'Hello, world',
   });
 
+  // Broadcast with metadata
+  await dapp.messages.send({
+    title: 'Hello',
+    message: 'Hello, world',
+    // Actions will be displayed in the notification as buttons, e.g. "Demo CTA" button will open "https://dialect.io" in the browser
+    // NB: Only one action is supported at the moment
+    actions: [{ label: 'Demo CTA', url: 'https://dialect.io' }],
+  });
+
   // Unicast, but only to wallet channel (Dialect, Solflare or Step inboxes)
   await dapp.messages.send({
     title: 'Hello, dialectooooor',

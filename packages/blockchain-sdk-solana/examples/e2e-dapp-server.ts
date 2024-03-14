@@ -50,6 +50,12 @@ async function main() {
         .send({
           title: 'New notification',
           message: message.toString(),
+          actions: [
+            {
+              label: 'Open Dialect',
+              url: 'https://dialect.io',
+            },
+          ],
         })
         .catch((e) => console.error(e));
     }
@@ -79,5 +85,5 @@ async function getOrRegisterDapp() {
 
     return createdDapp;
   }
-  return dapp.messages.send({});
+  return dapp;
 }
