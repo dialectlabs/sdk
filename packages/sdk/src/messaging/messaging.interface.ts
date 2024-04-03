@@ -1,4 +1,5 @@
 import type { AccountAddress } from '../auth/auth.interface';
+import type { SmartMessageDto } from '../dialect-cloud-api/smart-message.dto';
 
 export interface Messaging {
   type: string;
@@ -45,6 +46,7 @@ export interface MessageMetadata {
   title?: string;
   // tags?: string[];
   actions?: MessageAction[];
+  smartMessage?: SmartMessageDto;
   notificationTypeId?: string;
   notificationTypeHumanReadableId?: string;
 }
