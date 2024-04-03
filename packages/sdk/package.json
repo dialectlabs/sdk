@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/sdk",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
