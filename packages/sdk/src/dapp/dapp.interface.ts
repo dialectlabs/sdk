@@ -72,9 +72,18 @@ export interface FindDappQuery {
   blockchainType?: BlockchainType;
 }
 
+export interface DappMessageTransaction {
+  transactionServiceId: string;
+  transactionParams: Record<string, any>;
+}
+
 export interface DappMessageAction {
   label: string;
-  url: string;
+  url?: string;
+}
+
+export interface UnicastDappMessageAction extends DappMessageAction {
+  transaction?: DappMessageTransaction;
 }
 
 export interface SendDappMessageCommandBase {
@@ -90,6 +99,7 @@ export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
 
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
   recipient: AccountAddress;
+  actions: UnicastDappMessageAction[];
 }
 
 export interface MulticastDappMessageCommand
