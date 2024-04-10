@@ -79,11 +79,27 @@ export interface DappMessageTransaction {
 
 export interface DappMessageAction {
   label: string;
-  url?: string;
+  url: string;
 }
 
-export interface UnicastDappMessageAction extends DappMessageAction {
-  transaction?: DappMessageTransaction;
+export enum DappMessageActionType {
+  LINK = 'Link',
+  SIGN_TRANSACTION = 'SignTransaction',
+}
+
+export interface DappMessageActionV2 {
+  type: DappMessageActionType;
+}
+
+export interface DappMessageLinkAction extends DappMessageActionV2 {
+  type: DappMessageActionType.LINK;
+  label: string;
+  url: string;
+}
+
+export interface DappMessageSignTransactionAction extends DappMessageActionV2 {
+  type: DappMessageActionType.SIGN_TRANSACTION;
+  transaction: DappMessageTransaction;
 }
 
 export interface SendDappMessageCommandBase {
@@ -99,7 +115,7 @@ export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
 
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
   recipient: AccountAddress;
-  actions: UnicastDappMessageAction[];
+  actionsV2: DappMessageActionV2[];
 }
 
 export interface MulticastDappMessageCommand
