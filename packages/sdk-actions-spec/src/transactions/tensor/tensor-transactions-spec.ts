@@ -1,6 +1,12 @@
-import type { TransactionParams } from '../transaction-action-spec';
+import type { SmartMessage, SmartMessageAction, SmartMessageParams } from '@dialectlabs/sdk/src'; //TODO: upd import
 
-export interface NftBuyTransaction extends TransactionParams {
+
+export interface TensorNftBuySmartMessage extends SmartMessage {
+  transactionServiceId: 'tensor-nft-buy';
+  transactionParams: NftBuyTransactionParams;
+}
+
+export interface NftBuyTransactionParams extends  SmartMessageParams{
   mintAddress: string;
   collectionId: string;
   price: string;

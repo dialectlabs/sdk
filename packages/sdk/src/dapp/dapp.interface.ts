@@ -1,9 +1,5 @@
 import type { AddressType, DappAddress } from '../address/addresses.interface';
-import type {
-  NotificationConfig,
-  NotificationSubscription,
-  NotificationType,
-} from '../wallet/wallet.interface';
+import type { NotificationConfig, NotificationSubscription, NotificationType } from '../wallet/wallet.interface';
 import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Dapps {
@@ -72,9 +68,9 @@ export interface FindDappQuery {
   blockchainType?: BlockchainType;
 }
 
-export interface DappMessageTransaction {
-  transactionServiceId: string;
-  transactionParams: Record<string, any>;
+
+export interface SmartMessageParams { // TODO: Just a marker interface for now??
+
 }
 
 export interface DappMessageAction {
@@ -84,23 +80,29 @@ export interface DappMessageAction {
 
 export enum DappMessageActionType {
   LINK = 'Link',
-  SIGN_TRANSACTION = 'SignTransaction',
+  SMART_MESSAGE = 'SignTransaction',
 }
 
-export interface DappMessageActionV2 {
+interface DappMessageActionV2Base {
   type: DappMessageActionType;
 }
 
-export interface DappMessageLinkAction extends DappMessageActionV2 {
+
+export interface DappMessageLinkAction extends DappMessageActionV2Base {
   type: DappMessageActionType.LINK;
   label: string;
   url: string;
 }
 
-export interface DappMessageSignTransactionAction extends DappMessageActionV2 {
-  type: DappMessageActionType.SIGN_TRANSACTION;
-  transaction: DappMessageTransaction;
+export interface SmartMessageAction extends DappMessageActionV2Base {
+  type: DappMessageActionType.SMART_MESSAGE;
+  smartMessage: SmartMessage;
 }
+export interface SmartMessage {
+  transactionServiceId: string;
+  transactionParams: SmartMessageParams;
+}
+
 
 export interface SendDappMessageCommandBase {
   message: string;
@@ -108,14 +110,23 @@ export interface SendDappMessageCommandBase {
   notificationTypeId?: string;
   addressTypes?: AddressType[];
   // tags?: string[];
-  actions?: DappMessageAction[];
+  actions?: DappMessageAction[]; // TODO: deprecate it, I think it's ok to intro breaking change since only tensor and our dashboard uses it atm
 }
 
 export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
 
+export type ActionsV3 = LinkOnlyActions | SmartMessageAction;
+
+export interface LinkOnlyActions {
+  actions: [DappMessageLinkAction];
+  // actions: [DappMessageLinkAction]; // TODO: we can allow single action in compile time using this notation
+}
+
+
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
   recipient: AccountAddress;
-  actionsV2: DappMessageActionV2[];
+  // actionsV2: DappMessageActionV2[];
+  actionsV3: ActionsV3;
 }
 
 export interface MulticastDappMessageCommand
@@ -169,3 +180,4 @@ export class DappNotificationSubscription {
   notificationType!: NotificationType;
   subscriptions!: NotificationSubscription[];
 }
+
