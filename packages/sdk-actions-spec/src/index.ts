@@ -1,2 +1,1 @@
-export * from './transactions/tensor/tensor-transactions-spec';
-export * from './transactions/tensor/token-transfer';
+export * from './smart-messages/tensor-transactions-spec';

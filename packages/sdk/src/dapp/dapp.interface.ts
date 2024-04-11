@@ -68,40 +68,36 @@ export interface FindDappQuery {
   blockchainType?: BlockchainType;
 }
 
-
-export interface SmartMessageParams { // TODO: Just a marker interface for now??
-
-}
-
-export interface DappMessageAction {
-  label: string;
-  url: string;
-}
-
 export enum DappMessageActionType {
   LINK = 'Link',
-  SMART_MESSAGE = 'SignTransaction',
+  SMART_MESSAGE = 'SmartMessage',
 }
 
-interface DappMessageActionV2Base {
+interface DappMessageActionBase {
   type: DappMessageActionType;
 }
 
-
-export interface DappMessageLinkAction extends DappMessageActionV2Base {
+export interface DappMessageLinksAction extends DappMessageActionBase  {
   type: DappMessageActionType.LINK;
+  links: [DappMessageLinkAction];
+}
+export interface DappMessageLinkAction {
   label: string;
   url: string;
 }
 
-export interface SmartMessageAction extends DappMessageActionV2Base {
+export interface DappMessageSmartMessageAction extends DappMessageActionBase {
   type: DappMessageActionType.SMART_MESSAGE;
   smartMessage: SmartMessage;
 }
+
 export interface SmartMessage {
   transactionServiceId: string;
   transactionParams: SmartMessageParams;
 }
+
+export interface SmartMessageParams {}
+
 
 
 export interface SendDappMessageCommandBase {
@@ -110,28 +106,21 @@ export interface SendDappMessageCommandBase {
   notificationTypeId?: string;
   addressTypes?: AddressType[];
   // tags?: string[];
-  actions?: DappMessageAction[]; // TODO: deprecate it, I think it's ok to intro breaking change since only tensor and our dashboard uses it atm
 }
 
-export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
-
-export type ActionsV3 = LinkOnlyActions | SmartMessageAction;
-
-export interface LinkOnlyActions {
-  actions: [DappMessageLinkAction];
-  // actions: [DappMessageLinkAction]; // TODO: we can allow single action in compile time using this notation
+export interface BroadcastDappMessageCommand extends SendDappMessageCommandBase {
+  actionsV2?: DappMessageLinksAction;
 }
-
 
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
   recipient: AccountAddress;
-  // actionsV2: DappMessageActionV2[];
-  actionsV3: ActionsV3;
+  actionsV2?: DappMessageLinksAction | DappMessageSmartMessageAction;
 }
 
 export interface MulticastDappMessageCommand
   extends SendDappMessageCommandBase {
   recipients: AccountAddress[];
+  actionsV2?: DappMessageLinksAction;
 }
 
 export type SendDappMessageCommand =
