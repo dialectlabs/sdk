@@ -1,8 +1,5 @@
 import type { TokenProvider } from '../auth/token-provider';
-import {
-  createHeaders,
-  withReThrowingDataServiceError,
-} from './data-service-api';
+import { createHeaders, withReThrowingDataServiceError } from './data-service-api';
 import axios from 'axios';
 import type { BlockchainType } from '../dapp/dapp.interface';
 
@@ -26,7 +23,8 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
   constructor(
     private readonly baseUrl: string,
     private readonly tokenProvider: TokenProvider,
-  ) {}
+  ) {
+  }
 
   async create(
     command: Omit<CreateDappCommandDto, 'publicKey'>,
@@ -183,39 +181,60 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
-export class DappMessageTransactionDto {
+// start actions
+export enum DappMessageActionTypeDto {
+  LINK = 'Link',
+  SMART_MESSAGE = 'SmartMessage',
+}
+
+interface DappMessageActionBaseDto {
+  type: DappMessageActionTypeDto;
+}
+
+export class DappMessageLinksActionDto implements DappMessageActionBaseDto {
+  type!: DappMessageActionTypeDto.LINK;
+  links!: DappMessageLinkAction[];
+}
+
+export class DappMessageLinkAction {
+  label!: string;
+  url!: string;
+}
+
+export class DappMessageSmartMessageActionDto implements DappMessageActionBaseDto {
+  type!: DappMessageActionTypeDto.SMART_MESSAGE;
+  smartMessage!: SmartMessageDto;
+}
+
+export class SmartMessageDto {
   transactionServiceId!: string;
   transactionParams!: Record<string, any>;
 }
+// end actions
 
-export class DappMessageActionDto {
-  label!: string;
-  url?: string;
-}
 
-export class UnicastDappMessageActionDto extends DappMessageActionDto {
-  transaction?: DappMessageTransactionDto;
-}
-
-class SendDappMessageCommand {
+class SendDappMessageCommandDto {
   title?: string;
   message!: string;
   notificationTypeId?: string;
   addressTypes?: AddressTypeDto[];
   // tags?: string[];
-  actions?: DappMessageActionDto[];
 }
 
-export class UnicastDappMessageCommandDto extends SendDappMessageCommand {
+
+export class UnicastDappMessageCommandDto extends SendDappMessageCommandDto {
   recipientPublicKey!: string;
-  override actions?: UnicastDappMessageActionDto[];
+  actionsV2?: DappMessageLinksActionDto | DappMessageSmartMessageActionDto;
 }
 
-export class MulticastDappMessageCommandDto extends SendDappMessageCommand {
+export class MulticastDappMessageCommandDto extends SendDappMessageCommandDto {
   recipientPublicKeys!: string[];
+  actionsV2?: DappMessageLinksActionDto;
 }
 
-export type BroadcastDappMessageCommandDto = SendDappMessageCommand;
+export class BroadcastDappMessageCommandDto extends SendDappMessageCommandDto {
+  actionsV2?: DappMessageLinksActionDto;
+}
 
 export class FindDappQueryDto {
   verified?: boolean;

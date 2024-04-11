@@ -1,16 +1,25 @@
-import type {
-  BroadcastDappMessageCommand,
-  DappMessages,
-  MulticastDappMessageCommand,
-  SendDappMessageCommand,
-  UnicastDappMessageCommand,
+import {
+  type BroadcastDappMessageCommand,
+  DappMessageActionType,
+  type DappMessageLinksAction,
+  type DappMessages,
+  type DappMessageSmartMessageAction,
+  type MulticastDappMessageCommand,
+  type SendDappMessageCommand,
+  type UnicastDappMessageCommand,
 } from '../../dapp/dapp.interface';
 import { toAddressTypeDto } from '../../address/addresses.interface';
-import type { DataServiceDappsApi } from '../../dialect-cloud-api/data-service-dapps-api';
+import {
+  DappMessageActionTypeDto,
+  DappMessageLinksActionDto,
+  DappMessageSmartMessageActionDto,
+  type DataServiceDappsApi,
+} from '../../dialect-cloud-api/data-service-dapps-api';
 import { withErrorParsing } from '../../dialect-cloud-api/data-service-errors';
 
 export class DataServiceDappMessages implements DappMessages {
-  constructor(private readonly api: DataServiceDappsApi) {}
+  constructor(private readonly api: DataServiceDappsApi) {
+  }
 
   async send(command: SendDappMessageCommand): Promise<void> {
     if (command.addressTypes?.length === 0) {
@@ -26,16 +35,45 @@ export class DataServiceDappMessages implements DappMessages {
   }
 
   private async unicast(command: UnicastDappMessageCommand) {
+
+
+    const actionsV2Dto = this.getActionsV2DtoForUnicast(command.actionsV2);
     return withErrorParsing(
       this.api.unicast({
-        ...command,
+        message: command.message,
+        title: command.title,
         notificationTypeId: command.notificationTypeId,
         recipientPublicKey: command.recipient.toString(),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),
+        actionsV2: actionsV2Dto,
       }),
     );
+  }
+
+  private getActionsV2DtoForUnicast(actions?: DappMessageLinksAction | DappMessageSmartMessageAction): DappMessageLinksActionDto | DappMessageSmartMessageActionDto | undefined {
+    if (!actions?.type) {
+      return;
+    }
+    if (actions.type === DappMessageActionType.LINK) {
+      return {
+        type: DappMessageActionTypeDto.LINK,
+        links: actions.links.map((link) => ({
+          label: link.label,
+          url: link.url,
+        })),
+      };
+    }
+    if (actions.type === DappMessageActionType.SMART_MESSAGE) {
+      return {
+        type: DappMessageActionTypeDto.SMART_MESSAGE,
+        smartMessage: {
+          transactionServiceId: actions.smartMessage.transactionServiceId,
+          transactionParams: actions.smartMessage.transactionParams,
+        },
+      };
+    }
   }
 
   private async multicast(command: MulticastDappMessageCommand) {
@@ -44,14 +82,14 @@ export class DataServiceDappMessages implements DappMessages {
     }
     return withErrorParsing(
       this.api.multicast({
-        ...command,
+        message: command.message,
+        title: command.title,
+        actionsV2: this.getActionsV2DtoForLinks(command.actionsV2),
         notificationTypeId: command.notificationTypeId,
         recipientPublicKeys: command.recipients.map((it) => it.toString()),
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
         ),
-        // tags: command.tags,
-        actions: command.actions,
       }),
     );
   }
@@ -59,7 +97,9 @@ export class DataServiceDappMessages implements DappMessages {
   private async broadcast(command: BroadcastDappMessageCommand) {
     return withErrorParsing(
       this.api.broadcast({
-        ...command,
+        message: command.message,
+        title: command.title,
+        actionsV2: this.getActionsV2DtoForLinks(command.actionsV2),
         notificationTypeId: command.notificationTypeId,
         addressTypes: command?.addressTypes?.map((addr) =>
           toAddressTypeDto(addr),
@@ -67,4 +107,19 @@ export class DataServiceDappMessages implements DappMessages {
       }),
     );
   }
+
+  private getActionsV2DtoForLinks(actions?: DappMessageLinksAction): DappMessageLinksActionDto | undefined {
+    if (!actions?.type) {
+      return;
+    }
+    return {
+      type: DappMessageActionTypeDto.LINK,
+      links: actions.links.map((link) => ({
+        label: link.label,
+        url: link.url,
+      })),
+    };
+
+  }
+
 }
