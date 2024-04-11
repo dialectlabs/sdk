@@ -175,6 +175,7 @@ export class DataServiceMessaging implements Messaging {
     let lastThreadMessage: ThreadMessage | null = null;
     if (lastMessage != null) {
       lastThreadMessage = {
+        id: lastMessage.id,
         text: serde.deserialize(new Uint8Array(lastMessage.text)),
         timestamp: new Date(lastMessage.timestamp),
         author:
@@ -313,6 +314,7 @@ export class DataServiceThread implements Thread {
       this.dataServiceDialectsApi.getMessages(this.address.toString()),
     );
     const threadMessages: ThreadMessage[] = messages.map((it) => ({
+      id: it.id,
       author:
         it.owner === this.me.address.toString()
           ? this.me

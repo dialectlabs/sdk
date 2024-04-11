@@ -50,6 +50,7 @@ export interface MessageMetadata {
 }
 
 export interface ThreadMessage {
+  id: string
   text: string;
   timestamp: Date;
   author: ThreadMember;
