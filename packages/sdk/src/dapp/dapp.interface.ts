@@ -9,7 +9,7 @@ import type { AccountAddress } from '../auth/auth.interface';
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
 
-  find(): Promise<Dapp | null>;
+  find(query?: FindOneDappQuery): Promise<Dapp | null>;
 
   findAll(query?: FindDappQuery): Promise<ReadOnlyDapp[]>;
 }
@@ -65,6 +65,10 @@ export interface CreateDappCommand {
 
 export interface DappTelegramBotConfiguration {
   token: string;
+}
+
+export interface FindOneDappQuery {
+  address?: AccountAddress;
 }
 
 export interface FindDappQuery {

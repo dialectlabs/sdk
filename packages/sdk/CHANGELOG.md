@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.6] - 2024-04-11
+
+- feat: expose find dapp api
+
 ## [1.7.4] - 2024-04-11
 
 - feat: expose thread id in api
