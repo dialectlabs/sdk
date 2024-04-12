@@ -42,6 +42,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.unicast({
         message: command.message,
         title: command.title,
+        imageUrl: command.imageUrl,
         notificationTypeId: command.notificationTypeId,
         recipientPublicKey: command.recipient.toString(),
         addressTypes: command?.addressTypes?.map((addr) =>
@@ -84,6 +85,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.multicast({
         message: command.message,
         title: command.title,
+        imageUrl: command.imageUrl,
         actionsV2: this.getActionsV2DtoForLinks(command.actionsV2),
         notificationTypeId: command.notificationTypeId,
         recipientPublicKeys: command.recipients.map((it) => it.toString()),
@@ -99,6 +101,7 @@ export class DataServiceDappMessages implements DappMessages {
       this.api.broadcast({
         message: command.message,
         title: command.title,
+        imageUrl: command.imageUrl,
         actionsV2: this.getActionsV2DtoForLinks(command.actionsV2),
         notificationTypeId: command.notificationTypeId,
         addressTypes: command?.addressTypes?.map((addr) =>
@@ -119,7 +122,5 @@ export class DataServiceDappMessages implements DappMessages {
         url: link.url,
       })),
     };
-
   }
-
 }

@@ -99,10 +99,10 @@ export interface SmartMessage {
 export interface SmartMessageParams {}
 
 
-
 export interface SendDappMessageCommandBase {
   message: string;
   title?: string;
+  imageUrl?: string;
   notificationTypeId?: string;
   addressTypes?: AddressType[];
   // tags?: string[];

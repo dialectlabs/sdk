@@ -1,5 +1,8 @@
 import type { TokenProvider } from '../auth/token-provider';
-import { createHeaders, withReThrowingDataServiceError } from './data-service-api';
+import {
+  createHeaders,
+  withReThrowingDataServiceError,
+} from './data-service-api';
 import axios from 'axios';
 import type { BlockchainType } from '../dapp/dapp.interface';
 
@@ -23,8 +26,7 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
   constructor(
     private readonly baseUrl: string,
     private readonly tokenProvider: TokenProvider,
-  ) {
-  }
+  ) {}
 
   async create(
     command: Omit<CreateDappCommandDto, 'publicKey'>,
@@ -201,7 +203,9 @@ export class DappMessageLinkAction {
   url!: string;
 }
 
-export class DappMessageSmartMessageActionDto implements DappMessageActionBaseDto {
+export class DappMessageSmartMessageActionDto
+  implements DappMessageActionBaseDto
+{
   type!: DappMessageActionTypeDto.SMART_MESSAGE;
   smartMessage!: SmartMessageDto;
 }
@@ -212,15 +216,14 @@ export class SmartMessageDto {
 }
 // end actions
 
-
 class SendDappMessageCommandDto {
   title?: string;
   message!: string;
+  imageUrl?: string;
   notificationTypeId?: string;
   addressTypes?: AddressTypeDto[];
   // tags?: string[];
 }
-
 
 export class UnicastDappMessageCommandDto extends SendDappMessageCommandDto {
   recipientPublicKey!: string;
