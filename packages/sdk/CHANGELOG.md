@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.7] - 2024-04-12
+
+- feat: hide req id from client error message
+
 ## [1.7.6] - 2024-04-11
 
 - feat: expose find dapp api

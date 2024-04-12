@@ -19,6 +19,7 @@ export async function withErrorParsing<T>(
   try {
     return await promise;
   } catch (e) {
+    console.error(e);
     if (e instanceof NetworkError) {
       throw new DialectCloudUnreachableError([e]);
     }
@@ -49,7 +50,5 @@ export async function withErrorParsing<T>(
 }
 
 function createMessage(e: DataServiceApiError) {
-  return `${e.message ?? e.error}. ${
-    e.requestId ? `Request ID: ${e.requestId}` : ''
-  }`;
+  return `${e.message ?? e.error}`;
 }
