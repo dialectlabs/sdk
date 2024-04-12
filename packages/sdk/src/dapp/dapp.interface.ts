@@ -96,6 +96,7 @@ export interface SmartMessage {
   transactionParams: SmartMessageParams;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SmartMessageParams {}
 
 
