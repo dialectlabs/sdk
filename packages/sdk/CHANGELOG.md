@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [1.7.7] - 2024-04-12
+
+- feat: hide req id from client error message
+
+## [1.7.6] - 2024-04-11
+
+- feat: expose find dapp api
+
+## [1.7.4] - 2024-04-11
+
+- feat: expose thread id in api
+
 ## [1.7.3] - 2024-04-03
 
 - chore: retire luxon

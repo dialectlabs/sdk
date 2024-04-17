@@ -11,7 +11,7 @@ export interface DataServiceDappsApi {
 
   findAll(query?: FindDappQueryDto): Promise<DappDto[]>;
 
-  find(): Promise<DappDto>;
+  find(dappAddress?: string): Promise<DappDto>;
 
   findAllDappAddresses(): Promise<DappAddressDto[]>;
 
@@ -59,11 +59,12 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
     );
   }
 
-  async find(): Promise<DappDto> {
+  async find(dappAddress?: string): Promise<DappDto> {
     const token = await this.tokenProvider.get();
+    const dappAddressToFind = dappAddress || token.body.sub;
     return withReThrowingDataServiceError(
       axios
-        .get<DappDto>(`${this.baseUrl}/api/v1/dapps/${token.body.sub}`, {
+        .get<DappDto>(`${this.baseUrl}/api/v1/dapps/${dappAddressToFind}`, {
           headers: createHeaders(token),
         })
         .then((it) => it.data),

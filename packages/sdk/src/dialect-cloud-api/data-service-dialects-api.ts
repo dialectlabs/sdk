@@ -269,6 +269,7 @@ export class MessageMetadataDto {
 }
 
 export interface MessageDto {
+  readonly id: string
   readonly owner: string;
   readonly text: number[];
   readonly timestamp: number;

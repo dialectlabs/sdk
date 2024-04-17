@@ -14,6 +14,7 @@ import type {
   DappNotificationTypes,
   Dapps,
   FindDappQuery,
+  FindOneDappQuery,
   ReadOnlyDapp,
 } from '../../dapp/dapp.interface';
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
@@ -30,9 +31,11 @@ export class DappsImpl implements Dapps {
     private readonly dappsApi: DataServiceDappsApi,
   ) {}
 
-  async find(): Promise<Dapp | null> {
+  async find(query?: FindOneDappQuery): Promise<Dapp | null> {
     try {
-      const dappDto = await withErrorParsing(this.dappsApi.find());
+      const dappDto = await withErrorParsing(
+        this.dappsApi.find(query?.address),
+      );
       return this.toDapp(dappDto);
     } catch (e) {
       const err = e as DataServiceApiClientError;
