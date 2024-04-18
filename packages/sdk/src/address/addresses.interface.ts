@@ -49,6 +49,7 @@ export function toAddressType(type: AddressTypeDto): AddressType {
 
 export interface DappAddress {
   id: string;
+  dappId: string;
   enabled: boolean;
   channelId?: string | null;
   address: Address;

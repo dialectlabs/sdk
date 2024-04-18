@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.7.8] - 2024-04-18
+
+- feat: expose dapp id in notification channel subscriptions
+
 ## [1.7.7] - 2024-04-12
 
 - feat: hide req id from client error message

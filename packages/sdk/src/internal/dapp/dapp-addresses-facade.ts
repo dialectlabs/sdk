@@ -23,6 +23,7 @@ export class DappAddressesFacade implements DappAddresses {
       walletDappAddresses.reduce((prev, curr) => ({
         id: prev.id,
         enabled: prev.enabled && curr.enabled,
+        dappId: prev.dappId,
         address: {
           id: prev.id,
           value: walletPublicKey,
