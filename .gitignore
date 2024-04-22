@@ -2,9 +2,6 @@
 lib/
 node_modules/
 
-# Version
-/packages/**/version.ts
-
 # Logs
 logs
 *.log
@@ -36,3 +33,5 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json!/prisma/node_modules/
+
+dist/
