@@ -3,12 +3,12 @@
 // 2. Multiple actions should be later supported (e.g. both link and sign transaction), based on mockups e.g. https://www.figma.com/file/YMrtyevM6MlWYDZBO2fLb4/Use-Case-Examples?type=design&node-id=1-820&mode=dev
 // 3. Single smart message should be produced if multiple actions exist, we should forbid using multiple tx-services in a context of single actionable notif
 import { DappMessageActionType, type DappMessageSmartMessageAction } from '@dialectlabs/sdk/src';
-import type { TensorNftBuySmartMessage } from '../../sdk-actions-spec';
+import type { TensorNftBuyNowSmartMessage } from '../../sdk-actions-spec';
 import type { DappMessages } from '../../sdk/src/';
 // @ts-ignore
 
 const dappMessages = (1 as DappMessages);
-const tensorSmartMessage: TensorNftBuySmartMessage = {
+const tensorSmartMessage: TensorNftBuyNowSmartMessage = {
   transactionServiceId: 'tensor-nft-buy',
   transactionParams: {
     collectionId: 'foo',
