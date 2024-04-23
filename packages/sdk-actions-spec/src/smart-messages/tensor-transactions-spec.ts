@@ -16,12 +16,12 @@ export interface NftBuyTransactionParams extends SmartMessageParams {
   nftName?: string;
 }
 
-export interface TensorNftBuyCheapestSmartMessage extends SmartMessage {
-  transactionServiceId: 'tensor-nft-buy-cheapest';
-  transactionParams: NftBuyTransactionParams;
+export interface TensorNftBuyFloorSmartMessage extends SmartMessage {
+  transactionServiceId: 'tensor-nft-buy-floor';
+  transactionParams: NftBuyFloorTransactionParams;
 }
 
-export interface NftBuyCheapestTransactionParams extends SmartMessageParams {
+export interface NftBuyFloorTransactionParams extends SmartMessageParams {
   collectionId: string;
   collectionName: string;
   imageUrl?: string;
