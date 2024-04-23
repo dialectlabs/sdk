@@ -1,9 +1,5 @@
 import type { AddressType, DappAddress } from '../address/addresses.interface';
-import type {
-  NotificationConfig,
-  NotificationSubscription,
-  NotificationType,
-} from '../wallet/wallet.interface';
+import type { NotificationConfig, NotificationSubscription, NotificationType } from '../wallet/wallet.interface';
 import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Dapps {
@@ -76,29 +72,60 @@ export interface FindDappQuery {
   blockchainType?: BlockchainType;
 }
 
-export interface DappMessageAction {
+export enum DappMessageActionType {
+  LINK = 'Link',
+  SMART_MESSAGE = 'SmartMessage',
+}
+
+interface DappMessageActionBase {
+  type: DappMessageActionType;
+}
+
+export interface DappMessageLinksAction extends DappMessageActionBase  {
+  type: DappMessageActionType.LINK;
+  links: [DappMessageLinkAction];
+}
+export interface DappMessageLinkAction {
   label: string;
   url: string;
 }
 
+export interface DappMessageSmartMessageAction extends DappMessageActionBase {
+  type: DappMessageActionType.SMART_MESSAGE;
+  smartMessage: SmartMessage;
+}
+
+export interface SmartMessage {
+  transactionServiceId: string;
+  transactionParams: SmartMessageParams;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SmartMessageParams {}
+
+
 export interface SendDappMessageCommandBase {
   message: string;
   title?: string;
+  imageUrl?: string;
   notificationTypeId?: string;
   addressTypes?: AddressType[];
   // tags?: string[];
-  actions?: DappMessageAction[];
 }
 
-export type BroadcastDappMessageCommand = SendDappMessageCommandBase;
+export interface BroadcastDappMessageCommand extends SendDappMessageCommandBase {
+  actionsV2?: DappMessageLinksAction;
+}
 
 export interface UnicastDappMessageCommand extends SendDappMessageCommandBase {
   recipient: AccountAddress;
+  actionsV2?: DappMessageLinksAction | DappMessageSmartMessageAction;
 }
 
 export interface MulticastDappMessageCommand
   extends SendDappMessageCommandBase {
   recipients: AccountAddress[];
+  actionsV2?: DappMessageLinksAction;
 }
 
 export type SendDappMessageCommand =
@@ -147,3 +174,4 @@ export class DappNotificationSubscription {
   notificationType!: NotificationType;
   subscriptions!: NotificationSubscription[];
 }
+

@@ -185,29 +185,61 @@ export enum AddressTypeDto {
   Wallet = 'WALLET',
 }
 
-export class DappMessageActionDto {
+// start actions
+export enum DappMessageActionTypeDto {
+  LINK = 'Link',
+  SMART_MESSAGE = 'SmartMessage',
+}
+
+interface DappMessageActionBaseDto {
+  type: DappMessageActionTypeDto;
+}
+
+export class DappMessageLinksActionDto implements DappMessageActionBaseDto {
+  type!: DappMessageActionTypeDto.LINK;
+  links!: DappMessageLinkAction[];
+}
+
+export class DappMessageLinkAction {
   label!: string;
   url!: string;
 }
 
-class SendDappMessageCommand {
+export class DappMessageSmartMessageActionDto
+  implements DappMessageActionBaseDto
+{
+  type!: DappMessageActionTypeDto.SMART_MESSAGE;
+  smartMessage!: SmartMessageDto;
+}
+
+export class SmartMessageDto {
+  transactionServiceId!: string;
+  transactionParams!: Record<string, any>;
+}
+// end actions
+
+class SendDappMessageCommandDto {
   title?: string;
   message!: string;
+  imageUrl?: string;
   notificationTypeId?: string;
   addressTypes?: AddressTypeDto[];
   // tags?: string[];
-  actions?: DappMessageActionDto[];
 }
 
-export class UnicastDappMessageCommandDto extends SendDappMessageCommand {
+export class UnicastDappMessageCommandDto extends SendDappMessageCommandDto {
   recipientPublicKey!: string;
+  actionsV2?: DappMessageLinksActionDto | DappMessageSmartMessageActionDto;
 }
 
-export class MulticastDappMessageCommandDto extends SendDappMessageCommand {
+export class MulticastDappMessageCommandDto extends SendDappMessageCommandDto {
   recipientPublicKeys!: string[];
+  actionsV2?: DappMessageLinksActionDto;
 }
 
-export type BroadcastDappMessageCommandDto = SendDappMessageCommand;
+export class BroadcastDappMessageCommandDto extends SendDappMessageCommandDto {
+  actionsV2?: DappMessageLinksActionDto;
+}
 
 export class FindDappQueryDto {
   verified?: boolean;

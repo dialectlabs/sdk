@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.9.0] - 2024-04-23
+
+- feat: support tx actions in notifications
+
 ## [1.7.8] - 2024-04-18
 
 - feat: expose dapp id in notification channel subscriptions

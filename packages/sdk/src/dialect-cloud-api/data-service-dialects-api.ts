@@ -4,6 +4,7 @@ import {
   withReThrowingDataServiceError,
 } from './data-service-api';
 import axios from 'axios';
+import type { SmartMessageDto } from './smart-message.dto';
 export interface DataServiceDialectsApi {
   create(command: CreateDialectCommand): Promise<DialectAccountDto>;
 
@@ -263,6 +264,7 @@ export class MessageMetadataDto {
   title?: string;
   tags?: string[];
   actions?: MessageActionDto[];
+  smartMessage?: SmartMessageDto;
   notificationTypeId?: string;
 }
 
