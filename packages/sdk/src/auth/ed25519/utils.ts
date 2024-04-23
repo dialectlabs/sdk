@@ -1,5 +1,5 @@
-import { randomBytes, sign } from 'tweetnacl';
+import nacl from 'tweetnacl';
 
 export function generateEd25519Keypair() {
-  return sign.keyPair.fromSeed(Uint8Array.from(randomBytes(32)));
+  return nacl.sign.keyPair.fromSeed(Uint8Array.from(nacl.randomBytes(32)));
 }

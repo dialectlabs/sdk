@@ -4,7 +4,8 @@ import type {
   TokenSigner,
   TokenSignerResult,
 } from '../auth.interface';
-import { sign, SignKeyPair } from 'tweetnacl';
+import nacl from 'tweetnacl';
+import type { SignKeyPair } from 'tweetnacl';
 import { Ed25519PublicKey } from './ed25519-public-key';
 import { generateEd25519Keypair } from './utils';
 
@@ -22,7 +23,7 @@ export class Ed25519TokenSigner implements TokenSigner {
   ) {}
 
   async sign(payload: Uint8Array): Promise<TokenSignerResult> {
-    const signature = sign.detached(payload, this.keypair.secretKey);
+    const signature = nacl.sign.detached(payload, this.keypair.secretKey);
     return {
       signature,
       payload,

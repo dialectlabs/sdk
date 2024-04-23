@@ -160,6 +160,7 @@ export class DappTelegramBotConfigurationDto {
 export class DappAddressDto {
   readonly id!: string;
   readonly enabled!: boolean;
+  readonly dapp!: DappDto;
   readonly channelId?: string;
   readonly address!: AddressDto;
 }

@@ -29,5 +29,6 @@ export * from './internal/identity/identity-resolvers';
 export * from './dialect-cloud-api/data-service-api';
 export * from './dialect-cloud-api/data-service-api-factory';
 export * from './dialect-cloud-api/data-service-wallets-api.v1';
+export * from './version';
 export * from './dialect-cloud-api/smart-message-spec.dto';
 export * from './dialect-cloud-api/smart-message.dto';

@@ -23,6 +23,7 @@ export function toDappAddress(dto: DappAddressDto) {
     id: dto.id,
     enabled: dto.enabled,
     channelId: dto.channelId,
+    dappId: dto.dapp.id,
     address: {
       id: dto.address.id,
       type: toAddressType(dto.address.type),

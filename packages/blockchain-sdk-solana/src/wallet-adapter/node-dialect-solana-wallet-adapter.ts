@@ -7,7 +7,7 @@ import {
 } from '@solana/web3.js';
 import type { DialectSolanaWalletAdapter } from './dialect-solana-wallet-adapter.interface';
 import nacl from 'tweetnacl';
-import { convertKeyPair } from 'ed2curve';
+import ed2curve from 'ed2curve';
 
 export class NodeDialectSolanaWalletAdapter
   implements DialectSolanaWalletAdapter
@@ -73,7 +73,7 @@ export class NodeDialectSolanaWalletAdapter
   diffieHellman(
     publicKey: Uint8Array,
   ): Promise<{ publicKey: Uint8Array; secretKey: Uint8Array }> {
-    const keypair = convertKeyPair({
+    const keypair = ed2curve.convertKeyPair({
       secretKey: this.keypair.secretKey,
       publicKey,
     });
