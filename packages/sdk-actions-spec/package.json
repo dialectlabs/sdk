@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/sdk-actions-spec",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
   "license": "Apache-2.0",
