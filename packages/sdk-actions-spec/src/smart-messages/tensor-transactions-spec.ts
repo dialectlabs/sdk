@@ -11,9 +11,9 @@ export interface NftBuyTransactionParams extends SmartMessageParams {
   price: string;
   owner: string;
   priceWithFeeAndRoyalty: string;
-  imageUrl?: string;
-  collectionName?: string;
-  nftName?: string;
+  imageUrl: string;
+  collectionName: string;
+  nftName: string;
 }
 
 export interface TensorNftBuyFloorSmartMessage extends SmartMessage {
@@ -24,5 +24,5 @@ export interface TensorNftBuyFloorSmartMessage extends SmartMessage {
 export interface NftBuyFloorTransactionParams extends SmartMessageParams {
   collectionId: string;
   collectionName: string;
-  imageUrl?: string;
+  imageUrl: string;
 }
