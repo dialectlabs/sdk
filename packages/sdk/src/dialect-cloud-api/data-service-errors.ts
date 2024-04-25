@@ -19,7 +19,6 @@ export async function withErrorParsing<T>(
   try {
     return await promise;
   } catch (e) {
-    console.error(e);
     if (e instanceof NetworkError) {
       throw new DialectCloudUnreachableError([e]);
     }
@@ -43,8 +42,10 @@ export async function withErrorParsing<T>(
       if (e.statusCode === 422) {
         throw new BusinessConstraintViolationError(createMessage(e));
       }
+      console.error(e);
       throw new UnknownError([e], createMessage(e));
     }
+    console.error(e);
     throw new UnknownError([e]);
   }
 }

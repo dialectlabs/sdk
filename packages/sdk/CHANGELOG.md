@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.9.1] - 2024-04-26
+
+- chore: log unknown api errors
+
 ## [1.9.0] - 2024-04-23
 
 - feat: support tx actions in notifications
