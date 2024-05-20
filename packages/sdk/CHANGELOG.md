@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.9.3] - 2024-05-20
+
+- fix: hide smart message in messages feed
+
 ## [1.9.2] - 2024-05-20
 
 - feat: expose more metadata in messages feed

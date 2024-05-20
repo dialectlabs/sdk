@@ -120,7 +120,7 @@ export interface DappMessage {
   text: string;
   timestamp: Date;
   author: AccountAddress;
-  metadata?: MessageMetadata;
+  metadata?: Pick<MessageMetadata, 'title' | 'actions'>;
 }
 
 export interface FindDappMessageQuery {
