@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [1.9.2] - 2024-05-20
+
+- feat: expose more metadata in messages feed
+
 ## [1.9.1] - 2024-04-26
 
 - chore: log unknown api errors

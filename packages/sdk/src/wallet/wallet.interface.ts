@@ -4,7 +4,10 @@ import type {
   DappAddress,
 } from '../address/addresses.interface';
 import type { AccountAddress } from '../auth/auth.interface';
-import type { ThreadsGeneralSummary } from '../messaging/messaging.interface';
+import type {
+  MessageMetadata,
+  ThreadsGeneralSummary,
+} from '../messaging/messaging.interface';
 
 export interface Wallets {
   readonly address: AccountAddress;
@@ -113,9 +116,11 @@ export interface WalletMessages {
 }
 
 export interface DappMessage {
+  id: string;
   text: string;
   timestamp: Date;
   author: AccountAddress;
+  metadata?: MessageMetadata;
 }
 
 export interface FindDappMessageQuery {

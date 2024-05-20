@@ -208,6 +208,8 @@ export class DataServiceWalletMessages implements WalletMessages {
       author: it.owner,
       timestamp: new Date(it.timestamp),
       text: this.textSerde.deserialize(new Uint8Array(it.text)),
+      id: it.id,
+      metadata: it.metadata,
     }));
   }
 
