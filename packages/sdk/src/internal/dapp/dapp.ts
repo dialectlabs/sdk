@@ -15,6 +15,7 @@ import type {
   Dapps,
   FindDappQuery,
   FindOneDappQuery,
+  PatchDappCommand,
   ReadOnlyDapp,
 } from '../../dapp/dapp.interface';
 import type { DataServiceDappNotificationTypes } from './data-service-dapp-notification-types';
@@ -89,6 +90,20 @@ export class DappsImpl implements Dapps {
         heroUrl: command.heroUrl,
         telegramBotConfiguration: command.telegramBotConfiguration,
         blockchainType: command.blockchainType,
+      }),
+    );
+    return this.toDapp(dappDto);
+  }
+
+  async patch(command: PatchDappCommand): Promise<Dapp> {
+    const dappDto = await withErrorParsing(
+      this.dappsApi.patch({
+        name: command.name,
+        description: command.description,
+        websiteUrl: command.websiteUrl,
+        avatarUrl: command.avatarUrl,
+        heroUrl: command.heroUrl,
+        telegramBotConfiguration: command.telegramBotConfiguration,
       }),
     );
     return this.toDapp(dappDto);
