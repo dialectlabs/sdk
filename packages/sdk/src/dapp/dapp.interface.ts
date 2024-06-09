@@ -71,7 +71,6 @@ export interface PatchDappCommand {
   websiteUrl?: string | null;
   avatarUrl?: string | null;
   heroUrl?: string | null;
-  telegramBotConfiguration?: DappTelegramBotConfiguration;
 }
 
 export interface DappTelegramBotConfiguration {

@@ -176,7 +176,6 @@ export class PatchDappCommandDto {
   readonly websiteUrl?: string | null;
   readonly avatarUrl?: string | null;
   readonly heroUrl?: string | null;
-  readonly telegramBotConfiguration?: DappTelegramBotConfigurationDto;
 }
 
 export class DappTelegramBotConfigurationDto {

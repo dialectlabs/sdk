@@ -103,7 +103,6 @@ export class DappsImpl implements Dapps {
         websiteUrl: command.websiteUrl,
         avatarUrl: command.avatarUrl,
         heroUrl: command.heroUrl,
-        telegramBotConfiguration: command.telegramBotConfiguration,
       }),
     );
     return this.toDapp(dappDto);
