@@ -1,9 +1,15 @@
 import type { AddressType, DappAddress } from '../address/addresses.interface';
-import type { NotificationConfig, NotificationSubscription, NotificationType } from '../wallet/wallet.interface';
+import type {
+  NotificationConfig,
+  NotificationSubscription,
+  NotificationType,
+} from '../wallet/wallet.interface';
 import type { AccountAddress } from '../auth/auth.interface';
 
 export interface Dapps {
   create(command: CreateDappCommand): Promise<Dapp>;
+
+  patch(command: PatchDappCommand): Promise<Dapp>;
 
   find(query?: FindOneDappQuery): Promise<Dapp | null>;
 
@@ -59,6 +65,14 @@ export interface CreateDappCommand {
   blockchainType: BlockchainType;
 }
 
+export interface PatchDappCommand {
+  name?: string;
+  description?: string | null;
+  websiteUrl?: string | null;
+  avatarUrl?: string | null;
+  heroUrl?: string | null;
+}
+
 export interface DappTelegramBotConfiguration {
   token: string;
 }
@@ -81,7 +95,7 @@ interface DappMessageActionBase {
   type: DappMessageActionType;
 }
 
-export interface DappMessageLinksAction extends DappMessageActionBase  {
+export interface DappMessageLinksAction extends DappMessageActionBase {
   type: DappMessageActionType.LINK;
   links: [DappMessageLinkAction];
 }
@@ -103,7 +117,6 @@ export interface SmartMessage {
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface SmartMessageParams {}
 
-
 export interface SendDappMessageCommandBase {
   message: string;
   title?: string;
@@ -113,7 +126,8 @@ export interface SendDappMessageCommandBase {
   // tags?: string[];
 }
 
-export interface BroadcastDappMessageCommand extends SendDappMessageCommandBase {
+export interface BroadcastDappMessageCommand
+  extends SendDappMessageCommandBase {
   actionsV2?: DappMessageLinksAction;
 }
 
@@ -174,4 +188,3 @@ export class DappNotificationSubscription {
   notificationType!: NotificationType;
   subscriptions!: NotificationSubscription[];
 }
-

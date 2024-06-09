@@ -9,6 +9,8 @@ import type { BlockchainType } from '../dapp/dapp.interface';
 export interface DataServiceDappsApi {
   create(command: Omit<CreateDappCommandDto, 'publicKey'>): Promise<DappDto>;
 
+  patch(command: PatchDappCommandDto): Promise<DappDto>;
+
   findAll(query?: FindDappQueryDto): Promise<DappDto[]>;
 
   find(dappAddress?: string): Promise<DappDto>;
@@ -41,6 +43,21 @@ export class DataServiceDappsApiClient implements DataServiceDappsApi {
         .post<DappDto>(`${this.baseUrl}/api/v1/dapps`, fullCommand, {
           headers: createHeaders(token),
         })
+        .then((it) => it.data),
+    );
+  }
+
+  async patch(command: PatchDappCommandDto): Promise<DappDto> {
+    const token = await this.tokenProvider.get();
+    return withReThrowingDataServiceError(
+      axios
+        .patch<DappDto>(
+          `${this.baseUrl}/api/v1/dapps/${token.body.sub}`,
+          command,
+          {
+            headers: createHeaders(token),
+          },
+        )
         .then((it) => it.data),
     );
   }
@@ -151,6 +168,14 @@ export class CreateDappCommandDto {
   readonly heroUrl?: string;
   readonly telegramBotConfiguration?: DappTelegramBotConfigurationDto;
   readonly blockchainType?: string;
+}
+
+export class PatchDappCommandDto {
+  readonly name?: string;
+  readonly description?: string | null;
+  readonly websiteUrl?: string | null;
+  readonly avatarUrl?: string | null;
+  readonly heroUrl?: string | null;
 }
 
 export class DappTelegramBotConfigurationDto {
