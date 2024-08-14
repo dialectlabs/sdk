@@ -2,10 +2,14 @@
 
 ## [UNRELEASED]
 
+## [1.2.1] - 2024-08-14
+
+- chore: make solana/web3 sdk a direct dependency
+
 ## [1.1.1] - 2024-04-03
 
 - chore: retire luxon
-- 
+
 ## [1.1.0]
 
 - feat: retire on-chain messaging api

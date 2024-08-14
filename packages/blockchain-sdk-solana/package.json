@@ -1,6 +1,6 @@
 {
   "name": "@dialectlabs/blockchain-sdk-solana",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "module",
   "repository": "git@github.com:dialectlabs/sdk.git",
   "author": "dialectlabs",
@@ -28,13 +28,13 @@
   },
   "devDependencies": {
     "@dialectlabs/sdk": "^1.0.0",
-    "@solana/wallet-adapter-base": "^0.9.15",
-    "@solana/web3.js": "^1.78.0"
+    "@solana/wallet-adapter-base": "^0.9.15"
   },
   "peerDependencies": {
     "@dialectlabs/sdk": "1.x",
-    "@solana/wallet-adapter-base": "0.x",
-    "@solana/web3.js": "^1.54.x"
+    "@solana/wallet-adapter-base": "0.x"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@solana/web3.js": "^1.95.2"
+  }
 }
