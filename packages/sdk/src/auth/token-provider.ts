@@ -1,5 +1,4 @@
 import type { AccountAddress, Token } from './auth.interface';
-import { IllegalArgumentError } from '../sdk/errors';
 import { TokenStore } from './token-store';
 import type { TokenParser } from './token-parser';
 import type { TokenValidator } from './token-validator';
@@ -9,7 +8,6 @@ import type { DataServiceWalletsApiClientV1 } from '../dialect-cloud-api/data-se
 import type { WalletCreation } from '../sdk/sdk.interface';
 
 export const DEFAULT_TOKEN_LIFETIME_SECONDS = 24 * 60 * 60; // 24 hours
-export const MAX_TOKEN_LIFETIME_SECONDS = 3 * 30 * 24 * 60 * 60; // 3 months
 
 export abstract class TokenProvider {
   static create(
@@ -42,11 +40,6 @@ export class DefaultTokenProvider extends TokenProvider {
     private readonly ttlSeconds: number,
     private readonly tokenGenerator: TokenGenerator,
   ) {
-    if (ttlSeconds > MAX_TOKEN_LIFETIME_SECONDS) {
-      throw new IllegalArgumentError(
-        `Token TTL ${ttlSeconds} must be <= max ${MAX_TOKEN_LIFETIME_SECONDS}`,
-      );
-    }
     super();
   }
 
